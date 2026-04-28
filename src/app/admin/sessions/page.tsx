@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { formatDate } from '@/lib/utils';
 import { useAuth } from '@/lib/AuthContext';
+import { getDefaultSessionTitle, shouldUseDefaultSessionTitle } from '@/lib/curriculum';
 
 import {
   DndContext,
@@ -24,8 +25,30 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
+type CourseOption = {
+  id: string;
+  name: string;
+};
+
+type AdminSession = {
+  id: string;
+  course_id: string;
+  title: string;
+  session_number: number;
+  session_date: string;
+  is_published: boolean;
+  materials?: { id: string }[];
+};
+
+type SortableSessionRowProps = {
+  session: AdminSession;
+  onEdit: (id: string) => void;
+  onDeleteConfirm: (id: string, action: boolean | 'start') => void;
+  isConfirmingDelete: boolean;
+};
+
 // --- Sortable Row Component ---
-function SortableSessionRow({ session, onEdit, onDeleteConfirm, isConfirmingDelete }: any) {
+function SortableSessionRow({ session, onEdit, onDeleteConfirm, isConfirmingDelete }: SortableSessionRowProps) {
   const {
     attributes,
     listeners,
@@ -98,9 +121,9 @@ function SortableSessionRow({ session, onEdit, onDeleteConfirm, isConfirmingDele
 // --- Main Page Component ---
 export default function AdminSessionsPage() {
   const router = useRouter();
-  const [courses, setCourses] = useState<any[]>([]);
+  const [courses, setCourses] = useState<CourseOption[]>([]);
   const [selectedCourseId, setSelectedCourseId] = useState<string>('');
-  const [sessions, setSessions] = useState<any[]>([]);
+  const [sessions, setSessions] = useState<AdminSession[]>([]);
   
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdatingOrder, setIsUpdatingOrder] = useState(false);
@@ -120,18 +143,6 @@ export default function AdminSessionsPage() {
     })
   );
 
-  useEffect(() => {
-    fetchCourses();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (selectedCourseId) {
-      fetchSessions(selectedCourseId);
-    } else {
-      setSessions([]);
-    }
-  }, [selectedCourseId]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const fetchCourses = async () => {
     setIsLoading(true);
     const { data, error } = await supabase
@@ -140,9 +151,10 @@ export default function AdminSessionsPage() {
       .order('created_at', { ascending: false });
       
     if (!error && data) {
-      setCourses(data);
+      const courseOptions = data as CourseOption[];
+      setCourses(courseOptions);
       if (data.length > 0) {
-        setSelectedCourseId(data[0].id);
+        setSelectedCourseId(courseOptions[0].id);
       }
     }
     setIsLoading(false);
@@ -157,7 +169,31 @@ export default function AdminSessionsPage() {
       .order('session_number', { ascending: true });
       
     if (!error && data) {
-      setSessions(data);
+      const fetchedSessions = data as AdminSession[];
+      const sessionsWithCurriculumTitles = fetchedSessions.map((session) => {
+        const defaultTitle = getDefaultSessionTitle(session.session_number);
+        const shouldUpdateTitle = Boolean(defaultTitle && shouldUseDefaultSessionTitle(session.session_number, session.title));
+
+        return {
+          ...session,
+          title: shouldUpdateTitle && defaultTitle ? defaultTitle : session.title,
+        };
+      });
+
+      setSessions(sessionsWithCurriculumTitles);
+
+      const titleUpdates = sessionsWithCurriculumTitles
+        .filter((session, index) => session.title !== fetchedSessions[index].title)
+        .map((session) => (
+          supabase
+            .from('sessions')
+            .update({ title: session.title })
+            .eq('id', session.id)
+        ));
+
+      if (titleUpdates.length > 0) {
+        await Promise.all(titleUpdates);
+      }
     }
     setIsLoading(false);
   };
@@ -212,7 +248,7 @@ export default function AdminSessionsPage() {
     }
   };
 
-  const saveNewOrder = async (newSessions: any[]) => {
+  const saveNewOrder = async (newSessions: AdminSession[]) => {
     setIsUpdatingOrder(true);
     
     // We update each session's number in the database
@@ -238,6 +274,16 @@ export default function AdminSessionsPage() {
     
     setIsUpdatingOrder(false);
   };
+
+  useEffect(() => {
+    void fetchCourses(); // eslint-disable-line react-hooks/set-state-in-effect
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (selectedCourseId) {
+      void fetchSessions(selectedCourseId); // eslint-disable-line react-hooks/set-state-in-effect
+    }
+  }, [selectedCourseId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (isLoading && courses.length === 0) {
     return (

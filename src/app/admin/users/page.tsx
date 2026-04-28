@@ -5,8 +5,33 @@ import { createClient } from '@/utils/supabase/client';
 import { formatDate } from '@/lib/utils';
 import { useAuth } from '@/lib/AuthContext';
 
+type AdminUser = {
+  id: string;
+  email: string;
+  full_name: string;
+  role: 'admin' | 'student';
+  created_at: string;
+};
+
+type Course = {
+  id: string;
+  name: string;
+};
+
+type Enrollment = {
+  id: string;
+  user_id: string;
+  course_id: string;
+};
+
+type UsersData = {
+  users: AdminUser[];
+  courses: Course[];
+  enrollments: Enrollment[];
+};
+
 export default function AdminUsersPage() {
-  const [data, setData] = useState({
+  const [data, setData] = useState<UsersData>({
     users: [],
     courses: [],
     enrollments: []
@@ -49,10 +74,6 @@ export default function AdminUsersPage() {
     setIsLoading(false);
   };
 
-  useEffect(() => {
-    fetchUsersData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   const handleEnrollAction = async () => {
     if (enrollMode === 'single' && (!newUser.email || !newUser.full_name)) return;
     if (enrollMode === 'bulk' && !bulkEmails) return;
@@ -85,7 +106,7 @@ export default function AdminUsersPage() {
         } else {
           addToast('success', `Successfully processed ${result.success} users!`);
         }
-      } catch (err) {
+      } catch {
         addToast('error', 'Failed to process enrollments.');
       }
     } else if (emailsToProcess.length > 0 && !enrollCourse) {
@@ -100,7 +121,7 @@ export default function AdminUsersPage() {
   };
 
   const handleToggleEnrollment = async (userId: string, courseId: string) => {
-    const isEnrolled = data.enrollments.some((e: any) => e.user_id === userId && e.course_id === courseId);
+    const isEnrolled = data.enrollments.some((e) => e.user_id === userId && e.course_id === courseId);
     
     if (isEnrolled) {
       // Unenroll
@@ -120,7 +141,7 @@ export default function AdminUsersPage() {
       else addToast('success', 'User enrolled.');
     }
     
-    fetchUsersData();
+    void fetchUsersData();
   };
 
   const handleDeleteUser = async (userId: string) => {
@@ -138,15 +159,19 @@ export default function AdminUsersPage() {
       } else {
         addToast('error', result.error || 'Failed to delete user.');
       }
-    } catch (err) {
+    } catch {
       addToast('error', 'An error occurred while deleting user.');
     }
     setDeleteConfirm(null);
     setIsSubmitting(false);
   };
 
-  const students = data.users.filter((u: any) => u.role === 'student');
-  const admins = data.users.filter((u: any) => u.role === 'admin');
+  useEffect(() => {
+    void fetchUsersData(); // eslint-disable-line react-hooks/set-state-in-effect
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const students = data.users.filter((u) => u.role === 'student');
+  const admins = data.users.filter((u) => u.role === 'admin');
 
   if (isLoading) {
     return (
@@ -233,7 +258,7 @@ export default function AdminUsersPage() {
                   onChange={(e) => setEnrollCourse(e.target.value)}
                 >
                   <option value="">Select a batch...</option>
-                  {data.courses.map((c: any) => (
+                  {data.courses.map((c) => (
                     <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
                 </select>
@@ -269,8 +294,8 @@ export default function AdminUsersPage() {
               </tr>
             </thead>
             <tbody>
-              {students.map((student: any) => {
-                const studentEnrollments = data.enrollments.filter((e: any) => e.user_id === student.id);
+              {students.map((student) => {
+                const studentEnrollments = data.enrollments.filter((e) => e.user_id === student.id);
                 return (
                   <tr key={student.id}>
                     <td>
@@ -291,17 +316,17 @@ export default function AdminUsersPage() {
                       {formatDate(student.created_at)}
                     </td>
                     <td style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-                      {data.courses.map((course: any) => {
-                        const isEnrolled = studentEnrollments.some((e: any) => e.course_id === course.id);
+                      {data.courses.map((course) => {
+                        const isEnrolled = studentEnrollments.some((e) => e.course_id === course.id);
                         return (
                           <button
                             key={course.id}
                             className={`btn btn-sm ${isEnrolled ? 'btn-primary' : 'btn-secondary'}`}
-                            style={{ fontSize: '11px', padding: '4px 8px' }}
+                            style={{ fontSize: '11px', padding: '4px 8px', maxWidth: '180px' }}
                             onClick={() => handleToggleEnrollment(student.id, course.id)}
-                            title={course.name}
+                            title={isEnrolled ? `Unenroll from ${course.name}` : `Enroll in ${course.name}`}
                           >
-                            {isEnrolled ? '✓ Enrolled' : 'Enroll'}
+                            {isEnrolled ? `✓ ${course.name}` : course.name}
                           </button>
                         );
                       })}
@@ -350,7 +375,7 @@ export default function AdminUsersPage() {
               </tr>
             </thead>
             <tbody>
-              {admins.map((admin: any) => (
+              {admins.map((admin) => (
                 <tr key={admin.id}>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

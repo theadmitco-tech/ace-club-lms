@@ -5,9 +5,27 @@ import { createClient } from '@/utils/supabase/client';
 import { useAuth } from '@/lib/AuthContext';
 import { MaterialType } from '@/lib/types';
 import { getMaterialTypeIcon } from '@/lib/utils';
+import { DEFAULT_CURRICULUM, getDefaultSessionTitle, shouldUseDefaultSessionTitle } from '@/lib/curriculum';
+
+type MasterMaterial = {
+  id: string;
+  type: MaterialType;
+  title?: string | null;
+  notion_url?: string | null;
+  file_url?: string | null;
+  video_url?: string | null;
+  created_at: string;
+};
+
+type MasterSession = {
+  id: string;
+  title: string;
+  session_number: number;
+  master_materials?: MasterMaterial[];
+};
 
 export default function AdminCurriculumPage() {
-  const [sessions, setSessions] = useState<any[]>([]);
+  const [sessions, setSessions] = useState<MasterSession[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   
@@ -22,18 +40,41 @@ export default function AdminCurriculumPage() {
       .order('session_number', { ascending: true });
     
     if (sessionData) {
-      setSessions(sessionData.map((session) => ({
-        ...session,
-        master_materials: [...(session.master_materials || [])].sort((a: any, b: any) => {
-          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-        }),
-      })));
+      const masterSessions = sessionData as MasterSession[];
+      const sessionsWithCurriculumTitles = masterSessions.map((session) => {
+        const defaultTitle = getDefaultSessionTitle(session.session_number);
+        const shouldUpdateTitle = Boolean(defaultTitle && shouldUseDefaultSessionTitle(session.session_number, session.title));
+
+        return {
+          ...session,
+          title: shouldUpdateTitle && defaultTitle ? defaultTitle : session.title,
+          master_materials: [...(session.master_materials || [])].sort((a, b) => {
+            return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+          }),
+        };
+      });
+
+      setSessions(sessionsWithCurriculumTitles);
+
+      const titleUpdates = sessionsWithCurriculumTitles
+        .filter((session, index) => session.title !== masterSessions[index].title)
+        .map((session) => (
+          supabase
+            .from('master_sessions')
+            .update({ title: session.title })
+            .eq('id', session.id)
+        ));
+
+      if (titleUpdates.length > 0) {
+        await Promise.all(titleUpdates);
+      }
     }
     setIsLoading(false);
   };
 
   useEffect(() => {
-    fetchMasterData();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchMasterData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleUpdateSessionTitle = async (id: string, title: string) => {
@@ -51,15 +92,16 @@ export default function AdminCurriculumPage() {
       const publicUrl = await uploadFile(file);
       await handleUpdateMaterial(sessionId, type, 'file_url', publicUrl);
       addToast('success', 'File uploaded and linked.');
-    } catch (err: any) {
-      addToast('error', 'Upload failed: ' + err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      addToast('error', 'Upload failed: ' + message);
     }
     setIsSaving(false);
   };
 
   const handleUpdateMaterial = async (sessionId: string, type: MaterialType, field: string, value: string) => {
     const session = sessions.find(s => s.id === sessionId);
-    const material = session?.master_materials?.find((m: any) => m.type === type);
+    const material = session?.master_materials?.find((m) => m.type === type);
 
     if (material) {
       // Update existing
@@ -103,7 +145,7 @@ export default function AdminCurriculumPage() {
     const session = sessions.find(s => s.id === sessionId);
     if (!session) return;
 
-    const preReadCount = session.master_materials?.filter((m: any) => m.type === 'pre_read').length || 0;
+    const preReadCount = session.master_materials?.filter((m) => m.type === 'pre_read').length || 0;
     const { error } = await supabase
       .from('master_materials')
       .insert({
@@ -138,8 +180,6 @@ export default function AdminCurriculumPage() {
   const initializeMaster = async () => {
     setIsSaving(true);
     
-    const { DEFAULT_CURRICULUM } = await import('@/lib/curriculum');
-
     for (let i = 0; i < DEFAULT_CURRICULUM.length; i++) {
       const sess = DEFAULT_CURRICULUM[i];
       const { data: newSession } = await supabase
@@ -202,8 +242,8 @@ export default function AdminCurriculumPage() {
               </thead>
               <tbody>
                 {sessions.map((session) => {
-                  const getMat = (type: MaterialType) => session.master_materials?.find((m: any) => m.type === type);
-                  const preReads = session.master_materials?.filter((m: any) => m.type === 'pre_read') || [];
+                  const getMat = (type: MaterialType) => session.master_materials?.find((m) => m.type === type);
+                  const preReads = session.master_materials?.filter((m) => m.type === 'pre_read') || [];
                   
                   return (
                     <tr key={session.id}>
@@ -220,7 +260,7 @@ export default function AdminCurriculumPage() {
                       <td>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                           {preReads.length > 0 ? (
-                            preReads.map((mat: any, index: number) => (
+                            preReads.map((mat, index) => (
                               <div
                                 key={mat.id}
                                 style={{
@@ -283,31 +323,46 @@ export default function AdminCurriculumPage() {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <span style={{ fontSize: '14px' }}>{getMaterialTypeIcon(type as MaterialType)}</span>
-                                <input 
-                                  type="text"
-                                  className="form-input"
-                                  style={{ 
-                                    fontSize: '11px', 
-                                    height: '32px',
-                                    opacity: isStatic ? 1 : 0.5,
-                                    borderStyle: isStatic ? 'solid' : 'dashed'
-                                  }}
-                                  placeholder={
-                                    type === 'worksheet' ? "PDF Link..." : 
-                                    "Unique per batch..."
-                                  }
-                                  value={mat?.[field] || ''}
-                                  disabled={!isStatic}
-                                  onChange={(e) => handleUpdateMaterial(session.id, type as MaterialType, field, e.target.value)}
-                                />
+                                {type === 'worksheet' ? (
+                                  <span style={{ fontSize: '11px', color: mat?.file_url ? 'var(--success)' : 'var(--text-tertiary)' }}>
+                                    {mat?.file_url ? 'PDF uploaded' : 'No worksheet uploaded'}
+                                  </span>
+                                ) : (
+                                  <input 
+                                    type="text"
+                                    className="form-input"
+                                    style={{ 
+                                      fontSize: '11px', 
+                                      height: '32px',
+                                      opacity: isStatic ? 1 : 0.5,
+                                      borderStyle: isStatic ? 'solid' : 'dashed'
+                                    }}
+                                    placeholder="Unique per batch..."
+                                    value={mat?.[field] || ''}
+                                    disabled={!isStatic}
+                                    onChange={(e) => handleUpdateMaterial(session.id, type as MaterialType, field, e.target.value)}
+                                  />
+                                )}
                               </div>
                               {type === 'worksheet' && (
-                                <input 
-                                  type="file" 
-                                  accept="application/pdf"
-                                  style={{ fontSize: '10px' }}
-                                  onChange={(e) => handleFileUpload(session.id, type as MaterialType, e)}
-                                />
+                                <>
+                                  {mat?.file_url && (
+                                    <a
+                                      href={mat.file_url}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      style={{ fontSize: '11px', color: 'var(--accent-primary)' }}
+                                    >
+                                      View current PDF
+                                    </a>
+                                  )}
+                                  <input 
+                                    type="file" 
+                                    accept="application/pdf"
+                                    style={{ fontSize: '10px' }}
+                                    onChange={(e) => handleFileUpload(session.id, type as MaterialType, e)}
+                                  />
+                                </>
                               )}
                             </div>
                           </td>
@@ -323,7 +378,7 @@ export default function AdminCurriculumPage() {
           <div className="empty-state" style={{ padding: '60px' }}>
             <div className="empty-state-icon">🏛️</div>
             <h3 className="empty-state-title">Empty Master Base</h3>
-            <p className="empty-state-text">Click "Initialize" to create the 16-session skeleton.</p>
+            <p className="empty-state-text">Click &quot;Initialize&quot; to create the 16-session skeleton.</p>
           </div>
         )}
       </div>

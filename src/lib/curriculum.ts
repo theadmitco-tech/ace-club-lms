@@ -1,5 +1,3 @@
-import { Session } from './types';
-
 export interface CurriculumSession {
   week: number;
   day: 'Saturday' | 'Sunday';
@@ -41,6 +39,20 @@ export const DEFAULT_CURRICULUM: CurriculumSession[] = [
   { week: 8, day: 'Saturday', category: 'Data Insights', title: 'Multi-Source Reasoning' },
   { week: 8, day: 'Sunday', category: 'Data Insights', title: 'Two-Part Analysis' },
 ];
+
+export function getDefaultSessionTitle(sessionNumber: number) {
+  return DEFAULT_CURRICULUM[sessionNumber - 1]?.title;
+}
+
+export function shouldUseDefaultSessionTitle(sessionNumber: number, title?: string | null) {
+  if (!title?.trim()) return true;
+
+  const normalizedTitle = title.trim().toLowerCase();
+  return (
+    normalizedTitle === `session ${sessionNumber}` ||
+    normalizedTitle === `session ${String(sessionNumber).padStart(2, '0')}`
+  );
+}
 
 /**
  * Generates actual session dates based on a start Saturday.
