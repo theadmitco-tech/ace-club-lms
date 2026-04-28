@@ -3,41 +3,20 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { formatDate, getMaterialTypeIcon, getMaterialTypeLabel } from '@/lib/utils';
-import { useAuth } from '@/lib/AuthContext';
 import { MaterialType } from '@/lib/types';
-
-/**
- * Auto-calculates the available_from date based on material type and session date.
- * - Pre-read: 1 week before session (at 10:00 AM IST)
- * - Class Material, Worksheet, Video: right after session ends (at 12:00 PM IST = 06:30 UTC)
- */
-function getAvailableFrom(type: MaterialType, sessionDateISO: string): string {
-  const sessionDate = new Date(sessionDateISO);
-  
-  if (type === 'pre_read') {
-    // 1 week before, at 10:00 AM IST (04:30 UTC)
-    const preReadDate = new Date(sessionDate);
-    preReadDate.setDate(preReadDate.getDate() - 7);
-    preReadDate.setUTCHours(4, 30, 0, 0);
-    return preReadDate.toISOString();
-  } else {
-    // Right after session ends: 12:00 PM IST = 06:30 UTC on session day
-    const afterSession = new Date(sessionDate);
-    afterSession.setUTCHours(6, 30, 0, 0);
-    return afterSession.toISOString();
-  }
-}
+import { getMaterialTypeIcon, getMaterialTypeLabel } from '@/lib/utils';
+import { useAuth } from '@/lib/AuthContext';
 
 export default function EditSessionPage() {
   const router = useRouter();
   const params = useParams();
   const sessionId = params.id as string;
+  
+  const supabase = createClient();
   const { addToast } = useAuth();
-  const [supabase] = useState(() => createClient());
 
   const [courses, setCourses] = useState<any[]>([]);
-  const [sessionDate, setSessionDate] = useState<string>(''); // raw ISO from DB
+  const [courseName, setCourseName] = useState('');
   const [form, setForm] = useState({
     title: '',
     session_number: '',
@@ -45,11 +24,13 @@ export default function EditSessionPage() {
     course_id: '',
     is_published: true,
   });
+  
   const [materials, setMaterialsList] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showAddMaterial, setShowAddMaterial] = useState(false);
-  const [editingMaterialId, setEditingMaterialId] = useState<string | null>(null);
+  
+  const [isUploading, setIsUploading] = useState(false);
   const [newMaterial, setNewMaterial] = useState({
     type: 'pre_read' as MaterialType,
     title: '',
@@ -59,141 +40,141 @@ export default function EditSessionPage() {
   });
 
   const fetchData = async () => {
-    setLoading(true);
+    setIsLoading(true);
     
-    const { data: coursesData } = await supabase.from('courses').select('id, name');
-    if (coursesData) setCourses(coursesData);
+    const [
+      { data: session },
+      { data: materialsData },
+      { data: coursesData }
+    ] = await Promise.all([
+      supabase.from('sessions').select('*, courses(name)').eq('id', sessionId).single(),
+      supabase.from('materials').select('*').eq('session_id', sessionId).order('created_at', { ascending: true }),
+      supabase.from('courses').select('id, name')
+    ]);
 
-    const { data: session, error: sessionError } = await supabase
-      .from('sessions')
-      .select('*')
-      .eq('id', sessionId)
-      .single();
-
-    if (sessionError || !session) {
-      addToast('error', 'Session not found');
-      router.push('/admin/sessions');
-      return;
+    if (session) {
+      // Convert session_date to local datetime-local format
+      const dt = new Date(session.session_date);
+      const localDt = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+      
+      setForm({
+        title: session.title,
+        session_number: String(session.session_number),
+        session_date: localDt,
+        course_id: session.course_id,
+        is_published: session.is_published,
+      });
+      setCourseName(session.courses?.name || '');
     }
 
-    setSessionDate(session.session_date);
-    
-    const dt = new Date(session.session_date);
-    const localDt = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-    
-    setForm({
-      title: session.title,
-      session_number: String(session.session_number),
-      session_date: localDt,
-      course_id: session.course_id,
-      is_published: session.is_published,
-    });
-
-    const { data: materialsData } = await supabase
-      .from('materials')
-      .select('*')
-      .eq('session_id', sessionId)
-      .order('created_at', { ascending: true });
-    
     if (materialsData) setMaterialsList(materialsData);
+    if (coursesData) setCourses(coursesData);
     
-    setLoading(false);
+    setIsLoading(false);
   };
 
   useEffect(() => {
-    fetchData();
+    if (sessionId) fetchData();
   }, [sessionId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleUpdateSession = async (e: React.FormEvent) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const { uploadFile } = await import('@/utils/supabase/storage');
+      const publicUrl = await uploadFile(file);
+      
+      if (newMaterial.type === 'video') {
+        setNewMaterial({ ...newMaterial, video_url: publicUrl, title: newMaterial.title || file.name });
+      } else {
+        setNewMaterial({ ...newMaterial, file_url: publicUrl, title: newMaterial.title || file.name });
+      }
+      addToast('success', 'File uploaded successfully.');
+    } catch (err: any) {
+      addToast('error', 'Upload failed: ' + err.message);
+    }
+    setIsUploading(false);
+  };
+
+  const handleUpdateSession = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSaving(true);
 
-    const newSessionDate = new Date(form.session_date).toISOString();
-    
     const { error } = await supabase
       .from('sessions')
       .update({
         title: form.title,
-        session_number: parseInt(form.session_number),
-        session_date: newSessionDate,
+        session_number: Number(form.session_number),
+        session_date: new Date(form.session_date).toISOString(),
         course_id: form.course_id,
         is_published: form.is_published,
       })
       .eq('id', sessionId);
 
     if (error) {
-      addToast('error', 'Failed to update session');
+      addToast('error', 'Failed to update session.');
+      console.error(error);
     } else {
-      // Update available_from for all existing materials based on new session date
-      setSessionDate(newSessionDate);
-      for (const mat of materials) {
-        const newAvailableFrom = getAvailableFrom(mat.type, newSessionDate);
-        await supabase
-          .from('materials')
-          .update({ available_from: newAvailableFrom })
-          .eq('id', mat.id);
-      }
-      addToast('success', 'Session and material schedules updated');
-      router.push('/admin/sessions');
+      addToast('success', 'Session updated.');
+      const selectedCourse = courses.find((course) => course.id === form.course_id);
+      if (selectedCourse) setCourseName(selectedCourse.name);
     }
+
     setSaving(false);
   };
 
   const handleAddMaterial = async () => {
     if (!newMaterial.title) return;
-    setSaving(true);
-    
-    // Auto-calculate available_from based on type and the current session date
-    const currentSessionDate = sessionDate || new Date(form.session_date).toISOString();
-    const available_from = getAvailableFrom(newMaterial.type, currentSessionDate);
 
-    const { data, error } = await supabase
-      .from('materials')
-      .insert({
-        session_id: sessionId,
-        type: newMaterial.type,
-        title: newMaterial.title,
-        file_url: newMaterial.file_url || null,
-        notion_url: newMaterial.notion_url || null,
-        video_url: newMaterial.video_url || null,
-        available_from,
-      })
-      .select()
-      .single();
+    // Calculate a valid available_from date based on session date to satisfy the DB constraint
+    const sessionDateObj = new Date(form.session_date);
+    let calculatedDate = new Date(sessionDateObj);
+    if (newMaterial.type === 'pre_read') {
+      calculatedDate = new Date(calculatedDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+    } else {
+      calculatedDate = new Date(calculatedDate.getTime() + 2 * 60 * 60 * 1000);
+    }
+
+    const { error } = await supabase.from('materials').insert({
+      session_id: sessionId,
+      type: newMaterial.type,
+      title: newMaterial.title,
+      file_url: newMaterial.file_url || null,
+      notion_url: newMaterial.notion_url || null,
+      video_url: newMaterial.video_url || null,
+      available_from: calculatedDate.toISOString() // Hidden from UI but required by schema
+    });
 
     if (error) {
-      addToast('error', 'Failed to add material');
+      addToast('error', 'Failed to add material.');
+      console.error(error);
     } else {
-      addToast('success', 'Material added — available on schedule');
-      setMaterialsList([...materials, data]);
-      setNewMaterial({ type: 'pre_read', title: '', file_url: '', notion_url: '', video_url: '' });
+      addToast('success', 'Material added.');
+      setNewMaterial({
+        type: 'pre_read',
+        title: '',
+        file_url: '',
+        notion_url: '',
+        video_url: '',
+      });
       setShowAddMaterial(false);
+      fetchData(); // refresh materials list
     }
-    setSaving(false);
   };
 
   const handleDeleteMaterial = async (id: string) => {
     const { error } = await supabase.from('materials').delete().eq('id', id);
     if (error) {
-      addToast('error', 'Failed to delete material');
+      addToast('error', 'Failed to delete material.');
     } else {
-      addToast('success', 'Material removed');
-      setMaterialsList(materials.filter(m => m.id !== id));
+      addToast('success', 'Material deleted.');
+      fetchData();
     }
   };
 
-  // Helper to show user-friendly availability info
-  function getAvailabilityLabel(type: MaterialType, sessionDateISO: string): string {
-    if (!sessionDateISO) return '';
-    if (type === 'pre_read') {
-      const d = new Date(sessionDateISO);
-      d.setDate(d.getDate() - 7);
-      return `Available 1 week before session (${d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })})`;
-    }
-    return 'Available right after session ends (12:00 PM)';
-  }
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="admin-loading">
         <div className="spinner spinner-lg" />
@@ -205,11 +186,11 @@ export default function EditSessionPage() {
     <div className="animate-fade-in">
       <div className="admin-page-header">
         <div>
-          <h1 className="admin-page-title">Edit Session</h1>
-          <p className="admin-page-subtitle">Update session details and manage materials</p>
+          <h1 className="admin-page-title">{form.title}</h1>
+          <p className="admin-page-subtitle">Batch: {courseName || 'Loading...'}</p>
         </div>
         <button className="btn btn-ghost" onClick={() => router.push('/admin/sessions')}>
-          ← Back
+          ← Back to Schedule
         </button>
       </div>
 
@@ -245,7 +226,7 @@ export default function EditSessionPage() {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="edit-date" className="form-label">Session Date & Time</label>
+              <label htmlFor="edit-date" className="form-label">Session Date</label>
               <input
                 id="edit-date"
                 type="datetime-local"
@@ -254,9 +235,6 @@ export default function EditSessionPage() {
                 onChange={(e) => setForm({ ...form, session_date: e.target.value })}
                 required
               />
-              <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '4px' }}>
-                Default: 10:00 AM – 12:00 PM. Changing this will reschedule all materials automatically.
-              </p>
             </div>
           </div>
 
@@ -306,22 +284,6 @@ export default function EditSessionPage() {
           </button>
         </div>
 
-        {/* Scheduling Info Banner */}
-        {sessionDate && (
-          <div style={{
-            margin: '0 0 16px',
-            padding: '10px 14px',
-            background: 'rgba(79, 124, 255, 0.08)',
-            border: '1px solid rgba(79, 124, 255, 0.2)',
-            borderRadius: 'var(--radius-md)',
-            fontSize: '13px',
-            color: 'var(--text-secondary)',
-            lineHeight: 1.6,
-          }}>
-            📅 <strong>Auto-scheduling active:</strong> Pre-reads release 1 week before session. Class materials, worksheets & videos release at 12:00 PM on session day.
-          </div>
-        )}
-
         {/* Add Material Form */}
         {showAddMaterial && (
           <div style={{
@@ -342,10 +304,10 @@ export default function EditSessionPage() {
                     value={newMaterial.type}
                     onChange={(e) => setNewMaterial({ ...newMaterial, type: e.target.value as MaterialType })}
                   >
-                    <option value="pre_read">📖 Pre-read (Notion)</option>
-                    <option value="class_material">📄 Class Material (PDF)</option>
-                    <option value="worksheet">✍️ Worksheet (PDF)</option>
-                    <option value="video">🎬 Video (YouTube)</option>
+                    <option value="pre_read">📖 Pre-read</option>
+                    <option value="class_material">📄 Class Material</option>
+                    <option value="worksheet">✍️ Worksheet</option>
+                    <option value="video">🎬 Video</option>
                   </select>
                 </div>
                 <div className="form-group">
@@ -361,19 +323,33 @@ export default function EditSessionPage() {
                 </div>
               </div>
 
-              {/* Availability hint */}
-              <div style={{
-                padding: '8px 12px',
-                background: 'rgba(79, 124, 255, 0.06)',
-                borderRadius: 'var(--radius-sm)',
-                fontSize: '12px',
-                color: 'var(--accent-primary)',
-                marginBottom: '12px',
-              }}>
-                🕐 {getAvailabilityLabel(newMaterial.type, sessionDate)}
-              </div>
+              {(newMaterial.type === 'class_material' || newMaterial.type === 'worksheet' || newMaterial.type === 'video') && (
+                <div className="form-group">
+                  <label htmlFor="mat-upload" className="form-label">
+                    {newMaterial.type === 'video' ? 'Upload Video' : 'Upload PDF'}
+                  </label>
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <input
+                      id="mat-upload"
+                      type="file"
+                      className="form-input"
+                      accept={newMaterial.type === 'video' ? 'video/*' : 'application/pdf'}
+                      onChange={handleFileUpload}
+                    />
+                    {isUploading && <div className="spinner" />}
+                  </div>
+                  {newMaterial.file_url || newMaterial.video_url ? (
+                    <div style={{ fontSize: '11px', color: 'var(--accent-primary)', marginTop: '4px' }}>
+                      ✓ File uploaded and ready.
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '4px' }}>
+                      Or paste a URL below if already hosted elsewhere.
+                    </div>
+                  )}
+                </div>
+              )}
 
-              {/* Conditional URL fields */}
               {newMaterial.type === 'pre_read' && (
                 <div className="form-group">
                   <label htmlFor="mat-notion" className="form-label">Notion URL</label>
@@ -395,7 +371,7 @@ export default function EditSessionPage() {
                     id="mat-file"
                     type="url"
                     className="form-input"
-                    placeholder="https://storage.example.com/file.pdf"
+                    placeholder="https://..."
                     value={newMaterial.file_url}
                     onChange={(e) => setNewMaterial({ ...newMaterial, file_url: e.target.value })}
                   />
@@ -404,12 +380,12 @@ export default function EditSessionPage() {
 
               {newMaterial.type === 'video' && (
                 <div className="form-group">
-                  <label htmlFor="mat-video" className="form-label">YouTube URL</label>
+                  <label htmlFor="mat-video" className="form-label">Video URL</label>
                   <input
                     id="mat-video"
                     type="url"
                     className="form-input"
-                    placeholder="https://youtube.com/watch?v=..."
+                    placeholder="https://..."
                     value={newMaterial.video_url}
                     onChange={(e) => setNewMaterial({ ...newMaterial, video_url: e.target.value })}
                   />
@@ -421,9 +397,9 @@ export default function EditSessionPage() {
                   type="button"
                   className="btn btn-primary btn-sm"
                   onClick={handleAddMaterial}
-                  disabled={!newMaterial.title || saving}
+                  disabled={!newMaterial.title}
                 >
-                  {saving ? 'Processing...' : 'Add Material'}
+                  Add Material
                 </button>
               </div>
             </div>
@@ -450,7 +426,8 @@ export default function EditSessionPage() {
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600, fontSize: '14px' }}>{mat.title}</div>
                   <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>
-                    {getMaterialTypeLabel(mat.type)} · Releases {formatDate(mat.available_from)}
+                    {getMaterialTypeLabel(mat.type)} 
+                    {mat.type === 'pre_read' ? ' · Unlocks 1 week before session' : ' · Unlocks right after session'}
                   </div>
                 </div>
                 <button

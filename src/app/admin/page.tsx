@@ -1,20 +1,57 @@
 'use client';
 
-import { getSessions, getUsers, getCourses, getEnrollments } from '@/lib/mockData';
+import { useState, useEffect } from 'react';
+import { createClient } from '@/utils/supabase/client';
 import { formatDate } from '@/lib/utils';
 
 export default function AdminDashboard() {
-  const sessions = getSessions();
-  const users = getUsers();
-  const courses = getCourses();
-  const students = getUsers('student');
-  const admins = getUsers('admin');
-  const enrollments = getEnrollments();
+  const [data, setData] = useState({
+    sessions: [],
+    users: [],
+    courses: [],
+    enrollments: []
+  });
+  const [isLoading, setIsLoading] = useState(true);
 
-  const totalMaterials = sessions.reduce((acc, s) => {
-    const session = getSessions().find(ss => ss.id === s.id);
-    return acc + (session ? 0 : 0);
-  }, 0);
+  const supabase = createClient();
+
+  useEffect(() => {
+    async function fetchDashboardData() {
+      setIsLoading(true);
+
+      const [
+        { data: sessions },
+        { data: users },
+        { data: courses },
+        { data: enrollments }
+      ] = await Promise.all([
+        supabase.from('sessions').select('*').order('created_at', { ascending: false }).limit(5),
+        supabase.from('profiles').select('*').order('created_at', { ascending: false }),
+        supabase.from('courses').select('id'),
+        supabase.from('enrollments').select('*')
+      ]);
+
+      setData({
+        sessions: sessions || [],
+        users: users || [],
+        courses: courses || [],
+        enrollments: enrollments || []
+      });
+      setIsLoading(false);
+    }
+
+    fetchDashboardData();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const students = data.users.filter((u: any) => u.role === 'student');
+
+  if (isLoading) {
+    return (
+      <div className="admin-loading">
+        <div className="spinner spinner-lg" />
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-in">
@@ -30,8 +67,8 @@ export default function AdminDashboard() {
         <div className="admin-stat-card">
           <div className="admin-stat-icon">📋</div>
           <div className="admin-stat-info">
-            <div className="admin-stat-number">{sessions.length}</div>
-            <div className="admin-stat-label">Sessions</div>
+            <div className="admin-stat-number">{data.sessions.length}+</div>
+            <div className="admin-stat-label">Recent Sessions</div>
           </div>
         </div>
         <div className="admin-stat-card">
@@ -44,14 +81,14 @@ export default function AdminDashboard() {
         <div className="admin-stat-card">
           <div className="admin-stat-icon">📚</div>
           <div className="admin-stat-info">
-            <div className="admin-stat-number">{courses.length}</div>
+            <div className="admin-stat-number">{data.courses.length}</div>
             <div className="admin-stat-label">Courses</div>
           </div>
         </div>
         <div className="admin-stat-card">
           <div className="admin-stat-icon">🎫</div>
           <div className="admin-stat-info">
-            <div className="admin-stat-number">{enrollments.length}</div>
+            <div className="admin-stat-number">{data.enrollments.length}</div>
             <div className="admin-stat-label">Enrollments</div>
           </div>
         </div>
@@ -73,7 +110,7 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {sessions.slice(0, 5).map((session) => (
+              {data.sessions.map((session: any) => (
                 <tr key={session.id}>
                   <td>
                     <span style={{ fontWeight: 700, color: 'var(--accent-primary)' }}>
@@ -109,8 +146,8 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {students.map((student) => {
-                const studentEnrollments = getEnrollments(student.id);
+              {students.slice(0, 10).map((student: any) => {
+                const studentEnrollments = data.enrollments.filter((e: any) => e.user_id === student.id);
                 return (
                   <tr key={student.id}>
                     <td>
@@ -127,7 +164,7 @@ export default function AdminDashboard() {
                           alignItems: 'center',
                           justifyContent: 'center',
                         }}>
-                          {student.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                          {student.full_name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
                         </div>
                         <span style={{ fontWeight: 500 }}>{student.full_name}</span>
                       </div>

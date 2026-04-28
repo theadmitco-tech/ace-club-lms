@@ -19,15 +19,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [user, isLoading, router]);
 
-  if (isLoading) {
-    return (
-      <div className="admin-loading">
-        <div className="spinner spinner-lg" />
-      </div>
-    );
-  }
-
-  if (!user || user.role !== 'admin') {
+  if (isLoading || !user || user.role !== 'admin') {
     return (
       <div className="admin-loading">
         <div className="spinner spinner-lg" />
@@ -37,6 +29,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { href: '/admin', label: 'Dashboard', icon: '📊' },
+    { href: '/admin/curriculum', label: 'Master Base', icon: '🏛️' },
     { href: '/admin/sessions', label: 'Sessions', icon: '📋' },
     { href: '/admin/users', label: 'Users', icon: '👥' },
     { href: '/admin/courses', label: 'Batches', icon: '📚' },

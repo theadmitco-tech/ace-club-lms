@@ -7,10 +7,13 @@ import './login.css';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const { user, login, isLoading } = useAuth();
+  const [authMethod, setAuthMethod] = useState<'magic' | 'password'>('magic');
+  
+  const { user, login, loginWithPassword, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -34,12 +37,25 @@ export default function LoginPage() {
       return;
     }
 
-    const result = await login(email);
+    let result;
+    if (authMethod === 'password') {
+      if (!password) {
+        setError('Please enter your password');
+        setIsSubmitting(false);
+        return;
+      }
+      result = await loginWithPassword(email, password);
+    } else {
+      result = await login(email);
+    }
     
     if (result.success) {
-      setShowSuccess(true);
+      if (authMethod === 'magic') {
+        setShowSuccess(true);
+      }
+      // Password login will trigger the useEffect redirect
     } else {
-      setError(result.error || 'Failed to send login link. Please try again.');
+      setError(result.error || 'Failed to sign in. Please try again.');
       setIsSubmitting(false);
     }
   };
@@ -96,9 +112,21 @@ export default function LoginPage() {
           ) : (
             <>
               <h2 className="login-title">Sign in to continue</h2>
-              <p className="login-description">
-                Enter the email address associated with your Ace Club account.
-              </p>
+              
+              <div className="login-method-tabs">
+                <button 
+                  className={`method-tab ${authMethod === 'magic' ? 'active' : ''}`}
+                  onClick={() => setAuthMethod('magic')}
+                >
+                  Magic Link
+                </button>
+                <button 
+                  className={`method-tab ${authMethod === 'password' ? 'active' : ''}`}
+                  onClick={() => setAuthMethod('password')}
+                >
+                  Password
+                </button>
+              </div>
 
               <form onSubmit={handleSubmit} className="login-form">
                 <div className="form-group">
@@ -118,6 +146,24 @@ export default function LoginPage() {
                   />
                 </div>
 
+                {authMethod === 'password' && (
+                  <div className="form-group animate-fade-in">
+                    <label htmlFor="password" className="form-label">Password</label>
+                    <input
+                      id="password"
+                      type="password"
+                      className="form-input"
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        setError('');
+                      }}
+                      autoComplete="current-password"
+                    />
+                  </div>
+                )}
+
                 {error && (
                   <div className="login-error animate-fade-in">
                     <span className="login-error-icon">⚠</span>
@@ -136,34 +182,42 @@ export default function LoginPage() {
                       Signing in...
                     </>
                   ) : (
-                    'Continue with Email'
+                    authMethod === 'magic' ? 'Send Magic Link' : 'Sign In'
                   )}
                 </button>
               </form>
 
               <div className="login-divider">
-                <span>Demo Accounts</span>
+                <span>Quick Access (Demo)</span>
               </div>
 
               <div className="login-demo-accounts">
                 <button
                   className="login-demo-btn"
-                  onClick={() => setEmail('student@aceclub.in')}
+                  onClick={() => {
+                    setEmail('student@aceclub.in');
+                    setPassword('StudentPassword123!');
+                    setAuthMethod('password');
+                  }}
                 >
-                  <span className="login-demo-avatar">RS</span>
+                  <span className="login-demo-avatar">TS</span>
                   <div>
-                    <div className="login-demo-name">Rahul Sharma</div>
-                    <div className="login-demo-role">Student</div>
+                    <div className="login-demo-name">Test Student</div>
+                    <div className="login-demo-role">Student Account</div>
                   </div>
                 </button>
                 <button
                   className="login-demo-btn"
-                  onClick={() => setEmail('admin@aceclub.in')}
+                  onClick={() => {
+                    setEmail('admin@aceclub.in');
+                    setPassword('AdminPassword123!');
+                    setAuthMethod('password');
+                  }}
                 >
-                  <span className="login-demo-avatar admin">AA</span>
+                  <span className="login-demo-avatar admin">SA</span>
                   <div>
-                    <div className="login-demo-name">Ace Admin</div>
-                    <div className="login-demo-role">Admin</div>
+                    <div className="login-demo-name">Super Admin</div>
+                    <div className="login-demo-role">Admin Account</div>
                   </div>
                 </button>
               </div>

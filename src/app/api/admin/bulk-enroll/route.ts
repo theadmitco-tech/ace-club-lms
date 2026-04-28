@@ -1,100 +1,98 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+// We MUST use the service role key to bypass RLS and create users in auth.users
+// without logging out the current admin.
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY! // Note: NOT the public anon key
 );
 
 export async function POST(req: NextRequest) {
   try {
-    const { emails, courseId, sendMagicLink } = await req.json();
+    const { emails, courseId } = await req.json();
 
     if (!emails || !Array.isArray(emails) || !courseId) {
       return NextResponse.json({ error: 'Missing emails or courseId' }, { status: 400 });
     }
 
-    const results = { success: 0, failed: 0, errors: [] as string[] };
+    const results = {
+      success: 0,
+      failed: 0,
+      errors: [] as string[]
+    };
 
     for (const email of emails) {
-      let userId: string | undefined;
-
-      // 1. Try to create user in Auth
-      const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+      // 1. Try to invite the user via email (this automatically sends an invitation email)
+      const { data: authData, error: authError } = await supabaseAdmin.auth.admin.inviteUserByEmail(
         email,
-        email_confirm: true,
-        user_metadata: { full_name: email.split('@')[0] }
-      });
+        {
+          data: { full_name: email.split('@')[0] },
+          redirectTo: process.env.NEXT_PUBLIC_SITE_URL ? `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard` : 'http://localhost:3001/dashboard'
+        }
+      );
+
+      let userId = authData?.user?.id;
 
       if (authError) {
-        // User already exists — look them up by email in profiles
+        // If user already exists, we need to fetch their ID
         if (authError.message.includes('already exists') || authError.message.includes('already registered')) {
-          const { data: existing } = await supabaseAdmin
+          const { data: existingProfiles } = await supabaseAdmin
             .from('profiles')
             .select('id')
             .eq('email', email)
             .single();
-
-          if (existing) {
-            userId = existing.id;
+          
+          if (existingProfiles) {
+            userId = existingProfiles.id;
           } else {
-            // Profile not found — list users and find their ID
-            const { data: usersData } = await supabaseAdmin.auth.admin.listUsers();
-            const existingUser = usersData?.users.find(u => u.email === email);
-            if (existingUser) {
-              userId = existingUser.id;
-              // Try inserting profile if it doesn't exist
-              await supabaseAdmin.from('profiles').upsert({
-                id: existingUser.id,
-                email,
-                full_name: email.split('@')[0],
-                role: 'student',
-              }, { onConflict: 'id' });
-            }
+            results.failed++;
+            results.errors.push(`Could not find existing profile for ${email}`);
+            continue;
           }
+        } 
+        // Fallback for Supabase free tier email rate limits (typically 3-4 per hour)
+        else if (authError.status === 429 || authError.message.includes('rate limit')) {
+          console.warn(`Rate limit hit for ${email}, falling back to manual creation without email.`);
+          const { data: createData, error: createError } = await supabaseAdmin.auth.admin.createUser({
+            email: email,
+            password: 'StudentPassword123!', // Provide a default password since they won't get the magic link
+            email_confirm: true,
+            user_metadata: { full_name: email.split('@')[0] }
+          });
+          
+          if (createError) {
+            results.failed++;
+            results.errors.push(`${email}: ${createError.message}`);
+            continue;
+          }
+          userId = createData.user?.id;
         } else {
           results.failed++;
           results.errors.push(`${email}: ${authError.message}`);
           continue;
         }
-      } else {
-        userId = authData?.user?.id;
-        // Wait briefly for the profile trigger to fire
-        await new Promise(r => setTimeout(r, 500));
       }
 
-      if (!userId) {
-        results.failed++;
-        results.errors.push(`${email}: Could not determine user ID`);
-        continue;
-      }
-
-      // 2. Enroll user in the course (ignore duplicate enrollment error)
-      const { error: enrollError } = await supabaseAdmin
-        .from('enrollments')
-        .insert({ user_id: userId, course_id: courseId });
-
-      if (enrollError && !enrollError.message.includes('duplicate key value')) {
-        results.failed++;
-        results.errors.push(`${email}: Failed to enroll — ${enrollError.message}`);
-        continue;
-      }
-
-      results.success++;
-
-      // 3. Send magic link email if requested (used when adding students to existing batch)
-      if (sendMagicLink) {
-        const { error: otpError } = await supabaseAdmin.auth.admin.generateLink({
-          type: 'magiclink',
-          email,
-          options: {
-            redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/dashboard`,
-          }
+      // 2. Ensure profile exists (manually upsert to be safe)
+      if (userId) {
+        await supabaseAdmin.from('profiles').upsert({
+          id: userId,
+          email: email,
+          full_name: email.split('@')[0],
+          role: 'student'
         });
 
-        if (otpError) {
-          // Don't fail the enrollment if email fails, just log it
-          console.warn(`Magic link failed for ${email}:`, otpError.message);
+        // 3. Enroll the user in the course
+        const { error: enrollError } = await supabaseAdmin
+          .from('enrollments')
+          .insert({ user_id: userId, course_id: courseId });
+        
+        if (enrollError && !enrollError.message.includes('duplicate key value')) {
+          results.failed++;
+          results.errors.push(`${email}: Failed to enroll`);
+        } else {
+          results.success++;
         }
       }
     }

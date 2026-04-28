@@ -97,3 +97,31 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
+-- 6. Master Curriculum (Templates)
+CREATE TABLE public.master_sessions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title TEXT NOT NULL,
+  session_number INTEGER NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE public.master_materials (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  master_session_id UUID REFERENCES public.master_sessions(id) ON DELETE CASCADE NOT NULL,
+  type TEXT NOT NULL CHECK (type IN ('pre_read', 'class_material', 'worksheet', 'video')),
+  title TEXT NOT NULL,
+  notion_url TEXT,
+  file_url TEXT,
+  video_url TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE public.master_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.master_materials ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can manage master sessions" ON public.master_sessions FOR ALL USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+CREATE POLICY "Admins can manage master materials" ON public.master_materials FOR ALL USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+CREATE POLICY "Master sessions viewable by everyone" ON public.master_sessions FOR SELECT USING (true);
+CREATE POLICY "Master materials viewable by everyone" ON public.master_materials FOR SELECT USING (true);
+

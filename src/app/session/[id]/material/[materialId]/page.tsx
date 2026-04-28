@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { NotionRenderer } from 'react-notion-x';
-import { createClient } from '@/utils/supabase/client';
 import { extractNotionPageId } from '@/lib/notion';
+import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
 
 // Core styles are required
@@ -14,49 +14,36 @@ import 'prismjs/themes/prism-tomorrow.css';
 import 'katex/dist/katex.min.css';
 
 export default function MaterialViewerPage() {
-  const params = useParams();
-  const sessionId = params.id as string;
-  const materialId = params.materialId as string;
+  const { id: sessionId, materialId } = useParams();
   const router = useRouter();
+  const supabase = createClient();
   
-  const [material, setMaterial] = useState<any | null>(null);
-  const [session, setSession] = useState<any | null>(null);
+  const [material, setMaterial] = useState<any>(null);
+  const [session, setSession] = useState<any>(null);
   const [recordMap, setRecordMap] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [supabase] = useState(() => createClient());
-
   useEffect(() => {
     async function loadContent() {
-      if (!materialId || !sessionId) return;
-      
       try {
-        setLoading(true);
+        const [
+          { data: mat, error: matError },
+          { data: sess, error: sessError }
+        ] = await Promise.all([
+          supabase.from('materials').select('*').eq('id', materialId).single(),
+          supabase.from('sessions').select('*').eq('id', sessionId).single()
+        ]);
         
-        // 1. Fetch material from Supabase
-        const { data: mat, error: matError } = await supabase
-          .from('materials')
-          .select('*')
-          .eq('id', materialId)
-          .single();
-        
-        if (matError || !mat) {
-          setError('Material not found');
+        if (matError || !mat || sessError || !sess) {
+          setError('Material or Session not found');
+          setLoading(false);
           return;
         }
-
-        // 2. Fetch session details
-        const { data: sess } = await supabase
-          .from('sessions')
-          .select('title')
-          .eq('id', sessionId)
-          .single();
 
         setMaterial(mat);
         setSession(sess);
 
-        // 3. Load Notion content if applicable
         if (mat.type === 'pre_read' && mat.notion_url) {
           const pageId = extractNotionPageId(mat.notion_url);
           if (pageId) {
@@ -79,26 +66,16 @@ export default function MaterialViewerPage() {
       }
     }
 
-    loadContent();
+    if (sessionId && materialId) {
+      loadContent();
+    }
   }, [materialId, sessionId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) {
     return (
       <div className="viewer-loading">
         <div className="spinner" />
-        <p>Fetching content from Notion...</p>
-        <style jsx>{`
-          .viewer-loading {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            gap: 16px;
-            background: var(--bg-primary);
-            color: var(--text-secondary);
-          }
-        `}</style>
+        <p>Fetching content...</p>
       </div>
     );
   }
@@ -109,17 +86,6 @@ export default function MaterialViewerPage() {
         <h1>Oops!</h1>
         <p>{error}</p>
         <Link href={`/session/${sessionId}`} className="btn btn-primary">Back to Session</Link>
-        <style jsx>{`
-          .viewer-error {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            gap: 16px;
-            background: var(--bg-primary);
-          }
-        `}</style>
       </div>
     );
   }
@@ -132,7 +98,7 @@ export default function MaterialViewerPage() {
             ← Back to {session?.title || 'Session'}
           </Link>
           <div className="viewer-info">
-            <span className="material-type-tag">{material?.type?.replace('_', ' ')}</span>
+            <span className="material-type-tag">{material?.type.replace('_', ' ')}</span>
             <h1 className="viewer-title">{material?.title}</h1>
           </div>
         </div>
@@ -149,7 +115,7 @@ export default function MaterialViewerPage() {
             />
           ) : (
             <div className="file-viewer-fallback">
-              <p>This material is a {material?.type}.</p>
+              <p>This material is a {material?.type.replace('_', ' ')}.</p>
               {material?.file_url && (
                 <a href={material.file_url} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
                   Open File
@@ -216,6 +182,14 @@ export default function MaterialViewerPage() {
           border-radius: 16px;
           padding: 20px;
         }
+        .viewer-loading, .viewer-error {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+          gap: 16px;
+        }
         
         /* Custom Notion Overrides */
         .notion {
@@ -228,14 +202,6 @@ export default function MaterialViewerPage() {
           width: 100% !important;
         }
         .notion-header { display: none !important; }
-        .file-viewer-fallback {
-          text-align: center;
-          padding: 40px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 16px;
-        }
       `}</style>
     </div>
   );

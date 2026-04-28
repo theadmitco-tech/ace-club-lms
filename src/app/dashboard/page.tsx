@@ -13,9 +13,19 @@ interface SessionCard {
   status: 'available' | 'locked' | 'upcoming';
 }
 
-function isMaterialAvailable(material: any) {
-  if (!material.available_from) return true;
-  return new Date(material.available_from) <= new Date();
+function isMaterialAvailable(material: any, session: any) {
+  const sessionDate = new Date(session.session_date);
+  const now = new Date();
+  
+  if (material.type === 'pre_read') {
+    // 1 week before the session
+    const availableDate = new Date(sessionDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+    return now >= availableDate;
+  } else {
+    // right after the session (defaulting to 10 AM session, so +2 hours = 12 PM UTC)
+    const availableDate = new Date(sessionDate.getTime() + 2 * 60 * 60 * 1000);
+    return now >= availableDate;
+  }
 }
 
 function getSessionStatus(session: any) {
@@ -36,7 +46,7 @@ export default function DashboardPage() {
   const [filter, setFilter] = useState<'all' | 'available' | 'locked'>('all');
   const [dataLoading, setDataLoading] = useState(true);
 
-  const [supabase] = useState(() => createClient());
+  const supabase = createClient();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -251,21 +261,38 @@ export default function DashboardPage() {
                 {/* Materials Indicators */}
                 <div className="session-card-materials">
                   {(['pre_read', 'class_material', 'worksheet', 'video'] as const).map((type) => {
-                    const mat = card.materials.find(m => m.type === type);
+                    const matchingMaterials = card.materials.filter(m => m.type === type);
+                    const mat = matchingMaterials[0];
                     if (!mat) return null;
-                    const available = isMaterialAvailable(mat);
+                    const available = isMaterialAvailable(mat, card.session);
+                    const label =
+                      type === 'pre_read'
+                        ? `Pre-read${matchingMaterials.length > 1 ? `s (${matchingMaterials.length})` : ''}`
+                        : type === 'class_material'
+                          ? 'Slides'
+                          : type === 'worksheet'
+                            ? 'Worksheet'
+                            : 'Video';
+                    
+                    let availabilityText = '';
+                    if (!available) {
+                      if (type === 'pre_read') {
+                        const availableDate = new Date(new Date(card.session.session_date).getTime() - 7 * 24 * 60 * 60 * 1000);
+                        availabilityText = `Available ${formatRelativeDate(availableDate.toISOString())}`;
+                      } else {
+                        availabilityText = `Available after class`;
+                      }
+                    }
+
                     return (
                       <div
                         key={type}
                         className={`material-indicator ${available ? 'available' : 'locked'}`}
-                        title={`${getMaterialTypeIcon(type)} ${mat.title} — ${available ? 'Available' : `Available ${formatRelativeDate(mat.available_from)}`}`}
+                        title={`${getMaterialTypeIcon(type)} ${label} — ${available ? 'Available' : availabilityText}`}
                       >
                         <span className="material-indicator-icon">{getMaterialTypeIcon(type)}</span>
                         <span className="material-indicator-label">
-                          {type === 'pre_read' && 'Pre-read'}
-                          {type === 'class_material' && 'Slides'}
-                          {type === 'worksheet' && 'Worksheet'}
-                          {type === 'video' && 'Video'}
+                          {label}
                         </span>
                         {!available && <span className="material-lock-icon">🔒</span>}
                         {available && <span className="material-check-icon">✓</span>}

@@ -4,6 +4,9 @@
  * Supports standard Notion URLs.
  */
 export function extractNotionPageId(url: string): string | null {
+  const hyphenatedMatch = url.match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i);
+  if (hyphenatedMatch) return hyphenatedMatch[0].replace(/-/g, '');
+
   const match = url.match(/([a-f0-9]{32})/);
   if (match) return match[1];
   

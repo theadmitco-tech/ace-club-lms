@@ -4,12 +4,22 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
 import { createClient } from '@/utils/supabase/client';
-import { formatDate, formatDateTime, formatRelativeDate, getYouTubeEmbedUrl, getMaterialTypeIcon, getMaterialTypeLabel } from '@/lib/utils';
+import { formatDate, formatRelativeDate, getYouTubeEmbedUrl, getMaterialTypeIcon, getMaterialTypeLabel } from '@/lib/utils';
 import './session.css';
 
-function isMaterialAvailable(material: any) {
-  if (!material.available_from) return true;
-  return new Date(material.available_from) <= new Date();
+function isMaterialAvailable(material: any, session: any) {
+  const sessionDate = new Date(session.session_date);
+  const now = new Date();
+  
+  if (material.type === 'pre_read') {
+    // 1 week before the session
+    const availableDate = new Date(sessionDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+    return now >= availableDate;
+  } else {
+    // right after the session (defaulting to 10 AM session, so +2 hours = 12 PM UTC)
+    const availableDate = new Date(sessionDate.getTime() + 2 * 60 * 60 * 1000);
+    return now >= availableDate;
+  }
 }
 
 export default function SessionPage() {
@@ -17,10 +27,10 @@ export default function SessionPage() {
   const router = useRouter();
   const params = useParams();
   const sessionId = params.id as string;
-  const [session, setSession] = useState<any | null>(null);
+  const [session, setSession] = useState<any>(null);
   const [dataLoading, setDataLoading] = useState(true);
 
-  const [supabase] = useState(() => createClient());
+  const supabase = createClient();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -28,10 +38,8 @@ export default function SessionPage() {
       return;
     }
 
-    async function fetchSessionData() {
-      if (!sessionId) return;
+    async function fetchSession() {
       setDataLoading(true);
-      
       const { data, error } = await supabase
         .from('sessions')
         .select('*, materials(*)')
@@ -44,8 +52,8 @@ export default function SessionPage() {
       setDataLoading(false);
     }
 
-    if (user && !authLoading) {
-      fetchSessionData();
+    if (user && sessionId) {
+      fetchSession();
     }
   }, [user, authLoading, router, sessionId]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -60,17 +68,27 @@ export default function SessionPage() {
   }
 
   const materials = session.materials || [];
-  const preRead = materials.find((m: any) => m.type === 'pre_read');
+  const preReads = materials.filter((m: any) => m.type === 'pre_read');
   const classMaterial = materials.find((m: any) => m.type === 'class_material');
   const worksheet = materials.find((m: any) => m.type === 'worksheet');
   const video = materials.find((m: any) => m.type === 'video');
 
-  const renderMaterialSection = (material: any | undefined, type: string) => {
+  const renderMaterialSection = (material: any, type: string) => {
     if (!material) return null;
     
-    const available = isMaterialAvailable(material);
+    const available = isMaterialAvailable(material, session);
     const icon = getMaterialTypeIcon(type);
     const label = getMaterialTypeLabel(type);
+
+    let availabilityText = '';
+    if (!available) {
+      if (type === 'pre_read') {
+        const availableDate = new Date(new Date(session.session_date).getTime() - 7 * 24 * 60 * 60 * 1000);
+        availabilityText = formatRelativeDate(availableDate.toISOString());
+      } else {
+        availabilityText = `after class`;
+      }
+    }
 
     return (
       <div className={`material-section glass-card ${available ? 'available' : 'locked'}`}>
@@ -85,7 +103,7 @@ export default function SessionPage() {
               <span className="badge badge-available">● Available</span>
             ) : (
               <span className="badge badge-locked">
-                🔒 {formatRelativeDate(material.available_from)}
+                🔒 {availabilityText}
               </span>
             )}
           </div>
@@ -159,7 +177,7 @@ export default function SessionPage() {
         ) : (
           <div className="material-locked-message">
             <div className="locked-icon-large">🔒</div>
-            <p>This content will be available on <strong>{formatDateTime(material.available_from)}</strong></p>
+            <p>This content will be available <strong>{availabilityText}</strong></p>
           </div>
         )}
       </div>
@@ -196,15 +214,20 @@ export default function SessionPage() {
             <h1 className="session-title">{session.title}</h1>
             <div className="session-meta">
               <div className="session-material-count">
-                {materials.length} material{materials.length !== 1 ? 's' : ''} · {materials.filter((m: any) => isMaterialAvailable(m)).length} available
+                {materials.length} material{materials.length !== 1 ? 's' : ''} · {materials.filter((m: any) => isMaterialAvailable(m, session)).length} available
               </div>
             </div>
           </div>
 
           {/* Content Sections */}
-          <div className="session-content animate-fade-in-up stagger-1">
-            {renderMaterialSection(preRead, 'pre_read')}
-          </div>
+          {preReads.map((preRead: any, index: number) => (
+            <div className="session-content animate-fade-in-up stagger-1" key={preRead.id}>
+              {renderMaterialSection(preRead, 'pre_read')}
+              {index === 0 && preReads.length > 1 && (
+                <div style={{ height: 'var(--space-sm)' }} />
+              )}
+            </div>
+          ))}
 
           <div className="session-content animate-fade-in-up stagger-2">
             {renderMaterialSection(video, 'video')}

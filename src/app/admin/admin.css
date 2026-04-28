@@ -12,6 +12,7 @@
 .admin-layout {
   display: flex;
   min-height: 100vh;
+  width: 100%;
 }
 
 /* ============================================
@@ -180,6 +181,8 @@
   margin-left: var(--sidebar-width);
   padding: var(--space-2xl);
   min-height: 100vh;
+  min-width: 0;
+  width: calc(100% - var(--sidebar-width));
 }
 
 /* ============================================
@@ -212,6 +215,8 @@
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
+  max-width: 100%;
+  min-width: 0;
 }
 
 .admin-card-header {
@@ -230,13 +235,17 @@
    Admin Tables
    ============================================ */
 .admin-table-container {
+  max-width: 100%;
   overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
 }
 
 .admin-table {
   width: 100%;
+  min-width: 760px;
   border-collapse: collapse;
 }
 
@@ -270,6 +279,8 @@
 .admin-table-actions {
   display: flex;
   gap: var(--space-sm);
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
 /* ============================================
@@ -382,6 +393,7 @@
     margin-left: 0;
     padding: var(--space-lg);
     padding-top: 60px;
+    width: 100%;
   }
 
   .admin-page-header {
