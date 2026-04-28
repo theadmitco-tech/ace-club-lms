@@ -1,22 +1,60 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getSessions, deleteSession, getCourses, getMaterials } from '@/lib/mockData';
+import { createClient } from '@/utils/supabase/client';
 import { formatDate } from '@/lib/utils';
-import { Session } from '@/lib/types';
+import { useAuth } from '@/lib/AuthContext';
 
 export default function AdminSessionsPage() {
   const router = useRouter();
-  const [sessions, setSessionsList] = useState(getSessions());
-  const courses = getCourses();
+  const [sessions, setSessionsList] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  
+  const [supabase] = useState(() => createClient());
+  const { addToast } = useAuth();
 
-  const handleDelete = (id: string) => {
-    deleteSession(id);
-    setSessionsList(getSessions());
+  const fetchSessions = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('sessions')
+        .select(`
+          *,
+          courses (name),
+          materials (id)
+        `)
+        .order('session_date', { ascending: true });
+        
+      if (error) {
+        addToast('error', 'Database error: ' + error.message);
+      } else if (data) {
+        setSessionsList(data);
+      }
+    } catch (err) {
+      console.error('fetchSessions error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSessions();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from('sessions').delete().eq('id', id);
+    if (error) {
+      addToast('error', 'Failed to delete session.');
+    } else {
+      addToast('success', 'Session deleted successfully.');
+      await fetchSessions();
+    }
     setDeleteConfirm(null);
   };
+
+
 
   return (
     <div className="animate-fade-in">
@@ -25,12 +63,20 @@ export default function AdminSessionsPage() {
           <h1 className="admin-page-title">Sessions</h1>
           <p className="admin-page-subtitle">Manage all course sessions and their materials</p>
         </div>
-        <button
-          className="btn btn-primary"
-          onClick={() => router.push('/admin/sessions/new')}
-        >
-          + New Session
-        </button>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button
+            className="btn btn-ghost"
+            onClick={() => router.push('/admin/sessions/manage')}
+          >
+            🔄 Manage Schedule
+          </button>
+          <button
+            className="btn btn-primary"
+            onClick={() => router.push('/admin/sessions/new')}
+          >
+            + New Session
+          </button>
+        </div>
       </div>
 
       <div className="admin-table-container">
@@ -39,7 +85,7 @@ export default function AdminSessionsPage() {
             <tr>
               <th>#</th>
               <th>Title</th>
-              <th>Course</th>
+              <th>Batch</th>
               <th>Date</th>
               <th>Materials</th>
               <th>Status</th>
@@ -47,9 +93,22 @@ export default function AdminSessionsPage() {
             </tr>
           </thead>
           <tbody>
-            {sessions.map((session) => {
-              const course = courses.find(c => c.id === session.course_id);
-              const mats = getMaterials(session.id);
+            {isLoading ? (
+              <tr>
+                <td colSpan={7} style={{ textAlign: 'center', padding: '48px' }}>
+                  <div className="spinner" />
+                </td>
+              </tr>
+            ) : sessions.length === 0 ? (
+              <tr>
+                <td colSpan={7} style={{ textAlign: 'center', padding: '48px', color: 'var(--text-tertiary)' }}>
+                  No sessions yet. Create a batch to auto-generate sessions.
+                </td>
+              </tr>
+            ) : (
+              sessions.map((session) => {
+              const courseName = session.courses?.name || 'Unknown';
+              const materialsCount = session.materials?.length || 0;
               return (
                 <tr key={session.id}>
                   <td>
@@ -59,11 +118,11 @@ export default function AdminSessionsPage() {
                   </td>
                   <td style={{ fontWeight: 500 }}>{session.title}</td>
                   <td style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>
-                    {course?.name || 'Unknown'}
+                    {courseName}
                   </td>
                   <td style={{ color: 'var(--text-secondary)' }}>{formatDate(session.session_date)}</td>
                   <td>
-                    <span className="badge badge-available">{mats.length} items</span>
+                    <span className="badge badge-available">{materialsCount} items</span>
                   </td>
                   <td>
                     <span className={`badge ${session.is_published ? 'badge-available' : 'badge-locked'}`}>
@@ -106,25 +165,13 @@ export default function AdminSessionsPage() {
                   </td>
                 </tr>
               );
-            })}
+            })
+            )}
           </tbody>
         </table>
       </div>
 
-      {sessions.length === 0 && (
-        <div className="empty-state">
-          <div className="empty-state-icon">📋</div>
-          <h3 className="empty-state-title">No sessions yet</h3>
-          <p className="empty-state-text">Create your first session to get started.</p>
-          <button
-            className="btn btn-primary"
-            style={{ marginTop: '16px' }}
-            onClick={() => router.push('/admin/sessions/new')}
-          >
-            + Create Session
-          </button>
-        </div>
-      )}
+
     </div>
   );
 }

@@ -3,57 +3,103 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
-import { getSessions, getMaterials, getEnrollments, getCourse, isMaterialAvailable, getSessionStatus } from '@/lib/mockData';
-import { Session, Material, Course } from '@/lib/types';
+import { createClient } from '@/utils/supabase/client';
 import { formatDate, formatRelativeDate, getMaterialTypeIcon } from '@/lib/utils';
 import './dashboard.css';
 
 interface SessionCard {
-  session: Session;
-  materials: Material[];
+  session: any;
+  materials: any[];
   status: 'available' | 'locked' | 'upcoming';
 }
 
+function isMaterialAvailable(material: any) {
+  if (!material.available_from) return true;
+  return new Date(material.available_from) <= new Date();
+}
+
+function getSessionStatus(session: any) {
+  const sessionDate = new Date(session.session_date);
+  const now = new Date();
+  const diffDays = (sessionDate.getTime() - now.getTime()) / (1000 * 3600 * 24);
+
+  if (diffDays <= 0) return 'available'; // Past or today
+  if (diffDays <= 7) return 'upcoming'; // Within next 7 days
+  return 'locked'; // More than 7 days out
+}
+
 export default function DashboardPage() {
-  const { user, isLoading, logout } = useAuth();
+  const { user, isLoading: authLoading, logout } = useAuth();
   const router = useRouter();
   const [sessionCards, setSessionCards] = useState<SessionCard[]>([]);
-  const [course, setCourse] = useState<Course | null>(null);
+  const [course, setCourse] = useState<any>(null);
   const [filter, setFilter] = useState<'all' | 'available' | 'locked'>('all');
+  const [dataLoading, setDataLoading] = useState(true);
+
+  const [supabase] = useState(() => createClient());
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!authLoading && !user) {
       router.replace('/login');
       return;
     }
-    if (!isLoading && user?.role === 'admin') {
+    if (!authLoading && user?.role === 'admin') {
       router.replace('/admin');
       return;
     }
 
-    if (user) {
-      // Get enrolled course
-      const enrollments = getEnrollments(user.id);
-      if (enrollments.length > 0) {
-        const courseData = getCourse(enrollments[0].course_id);
-        setCourse(courseData);
+    async function fetchDashboardData() {
+      if (!user) return;
+      setDataLoading(true);
 
-        // Get sessions with materials
-        const allSessions = getSessions(enrollments[0].course_id);
-        const cards: SessionCard[] = allSessions
-          .filter(s => s.is_published)
-          .map(session => {
-            const mats = getMaterials(session.id);
+      // 1. Get user's enrollment
+      const { data: enrollments } = await supabase
+        .from('enrollments')
+        .select('course_id')
+        .eq('user_id', user.id)
+        .limit(1);
+
+      if (enrollments && enrollments.length > 0) {
+        const courseId = enrollments[0].course_id;
+
+        // 2. Get course details
+        const { data: courseData } = await supabase
+          .from('courses')
+          .select('*')
+          .eq('id', courseId)
+          .single();
+        
+        if (courseData) setCourse(courseData);
+
+        // 3. Get sessions and their materials
+        const { data: sessionsData } = await supabase
+          .from('sessions')
+          .select('*, materials(*)')
+          .eq('course_id', courseId)
+          .eq('is_published', true)
+          .order('session_number', { ascending: true });
+
+        if (sessionsData) {
+          const cards: SessionCard[] = sessionsData.map((session) => {
+            const materials = session.materials || [];
             return {
               session,
-              materials: mats,
+              materials,
               status: getSessionStatus(session),
             };
           });
-        setSessionCards(cards);
+          setSessionCards(cards);
+        }
       }
+      setDataLoading(false);
     }
-  }, [user, isLoading, router]);
+
+    if (user && !authLoading) {
+      fetchDashboardData();
+    }
+  }, [user, authLoading, router]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const isLoading = authLoading || dataLoading;
 
   if (isLoading || !user) {
     return (
@@ -96,7 +142,7 @@ export default function DashboardPage() {
           <div className="dashboard-nav-right">
             <div className="nav-user-info">
               <div className="nav-user-avatar">
-                {user.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                {user.full_name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
               </div>
               <div className="nav-user-details">
                 <span className="nav-user-name">{user.full_name}</span>
@@ -230,7 +276,7 @@ export default function DashboardPage() {
 
                 {/* Card Footer */}
                 {card.status !== 'locked' && (
-                  <div className="session-card-footer">
+                 <div className="session-card-footer">
                     <span className="session-card-cta">
                       View Session →
                     </span>

@@ -34,12 +34,12 @@ export default function LoginPage() {
       return;
     }
 
-    const success = await login(email);
+    const result = await login(email);
     
-    if (success) {
+    if (result.success) {
       setShowSuccess(true);
     } else {
-      setError('No account found with this email. Please contact Ace Club team.');
+      setError(result.error || 'Failed to send login link. Please try again.');
       setIsSubmitting(false);
     }
   };
@@ -87,9 +87,11 @@ export default function LoginPage() {
           {showSuccess ? (
             <div className="login-success animate-fade-in-up">
               <div className="login-success-icon">✓</div>
-              <h2>Welcome back!</h2>
-              <p>Redirecting to your dashboard...</p>
-              <div className="spinner" style={{ margin: '16px auto 0' }} />
+              <h2>Check your inbox!</h2>
+              <p>We've sent a magic login link to your email address.</p>
+              <p style={{ fontSize: '13px', marginTop: '12px', color: 'var(--text-tertiary)' }}>
+                You can close this window.
+              </p>
             </div>
           ) : (
             <>

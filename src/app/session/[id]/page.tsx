@@ -3,30 +3,53 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
-import { getSession, isMaterialAvailable } from '@/lib/mockData';
-import { Session, Material } from '@/lib/types';
+import { createClient } from '@/utils/supabase/client';
 import { formatDate, formatDateTime, formatRelativeDate, getYouTubeEmbedUrl, getMaterialTypeIcon, getMaterialTypeLabel } from '@/lib/utils';
 import './session.css';
 
+function isMaterialAvailable(material: any) {
+  if (!material.available_from) return true;
+  return new Date(material.available_from) <= new Date();
+}
+
 export default function SessionPage() {
-  const { user, isLoading, logout } = useAuth();
+  const { user, isLoading: authLoading, logout } = useAuth();
   const router = useRouter();
   const params = useParams();
   const sessionId = params.id as string;
-  const [session, setSession] = useState<Session | null>(null);
-  const [activeTab, setActiveTab] = useState<string>('all');
+  const [session, setSession] = useState<any | null>(null);
+  const [dataLoading, setDataLoading] = useState(true);
+
+  const [supabase] = useState(() => createClient());
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!authLoading && !user) {
       router.replace('/login');
       return;
     }
 
-    if (sessionId) {
-      const data = getSession(sessionId);
-      setSession(data);
+    async function fetchSessionData() {
+      if (!sessionId) return;
+      setDataLoading(true);
+      
+      const { data, error } = await supabase
+        .from('sessions')
+        .select('*, materials(*)')
+        .eq('id', sessionId)
+        .single();
+      
+      if (!error && data) {
+        setSession(data);
+      }
+      setDataLoading(false);
     }
-  }, [user, isLoading, router, sessionId]);
+
+    if (user && !authLoading) {
+      fetchSessionData();
+    }
+  }, [user, authLoading, router, sessionId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const isLoading = authLoading || dataLoading;
 
   if (isLoading || !user || !session) {
     return (
@@ -37,12 +60,12 @@ export default function SessionPage() {
   }
 
   const materials = session.materials || [];
-  const preRead = materials.find(m => m.type === 'pre_read');
-  const classMaterial = materials.find(m => m.type === 'class_material');
-  const worksheet = materials.find(m => m.type === 'worksheet');
-  const video = materials.find(m => m.type === 'video');
+  const preRead = materials.find((m: any) => m.type === 'pre_read');
+  const classMaterial = materials.find((m: any) => m.type === 'class_material');
+  const worksheet = materials.find((m: any) => m.type === 'worksheet');
+  const video = materials.find((m: any) => m.type === 'video');
 
-  const renderMaterialSection = (material: Material | undefined, type: string) => {
+  const renderMaterialSection = (material: any | undefined, type: string) => {
     if (!material) return null;
     
     const available = isMaterialAvailable(material);
@@ -77,17 +100,15 @@ export default function SessionPage() {
                   <div className="notion-preview-icon">📖</div>
                   <div className="notion-preview-info">
                     <h4>Pre-read Material</h4>
-                    <p>Open in Notion to read the concept overview before your session.</p>
+                    <p>Read the concept overview directly within the Ace Club platform.</p>
                   </div>
                 </div>
-                <a
-                  href={material.notion_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => router.push(`/session/${sessionId}/material/${material.id}`)}
                   className="btn btn-primary"
                 >
-                  Open in Notion →
-                </a>
+                  Start Reading →
+                </button>
               </div>
             )}
 
@@ -155,7 +176,7 @@ export default function SessionPage() {
           </button>
           <div className="session-nav-right">
             <div className="nav-user-avatar">
-              {user.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+              {user.full_name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
             </div>
             <button className="btn btn-ghost btn-sm" onClick={logout}>
               Sign Out
@@ -175,7 +196,7 @@ export default function SessionPage() {
             <h1 className="session-title">{session.title}</h1>
             <div className="session-meta">
               <div className="session-material-count">
-                {materials.length} material{materials.length !== 1 ? 's' : ''} · {materials.filter(m => isMaterialAvailable(m)).length} available
+                {materials.length} material{materials.length !== 1 ? 's' : ''} · {materials.filter((m: any) => isMaterialAvailable(m)).length} available
               </div>
             </div>
           </div>
