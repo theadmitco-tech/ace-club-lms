@@ -40,6 +40,12 @@ type AdminSession = {
   materials?: { id: string }[];
 };
 
+type SessionMaterial = {
+  id: string;
+  session_id: string;
+  type: 'pre_read' | 'class_material' | 'worksheet' | 'video';
+};
+
 type SortableSessionRowProps = {
   session: AdminSession;
   onEdit: (id: string) => void;
@@ -118,6 +124,24 @@ function SortableSessionRow({ session, onEdit, onDeleteConfirm, isConfirmingDele
   );
 }
 
+function toDateTimeLocalValue(dateValue: string) {
+  const date = new Date(dateValue);
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return localDate.toISOString().slice(0, 16);
+}
+
+function getMaterialAvailableFrom(type: SessionMaterial['type'], sessionDate: string) {
+  const date = new Date(sessionDate);
+
+  if (type === 'pre_read') {
+    date.setDate(date.getDate() - 7);
+  } else {
+    date.setHours(date.getHours() + 2);
+  }
+
+  return date.toISOString();
+}
+
 // --- Main Page Component ---
 export default function AdminSessionsPage() {
   const router = useRouter();
@@ -128,6 +152,9 @@ export default function AdminSessionsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdatingOrder, setIsUpdatingOrder] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [pushFromSessionId, setPushFromSessionId] = useState('');
+  const [pushToDate, setPushToDate] = useState('');
+  const [isPushingSchedule, setIsPushingSchedule] = useState(false);
   
   const supabase = createClient();
   const { addToast } = useAuth();
@@ -181,6 +208,16 @@ export default function AdminSessionsPage() {
       });
 
       setSessions(sessionsWithCurriculumTitles);
+      setPushFromSessionId((currentId) => {
+        if (currentId && sessionsWithCurriculumTitles.some((session) => session.id === currentId)) {
+          return currentId;
+        }
+
+        return sessionsWithCurriculumTitles[0]?.id || '';
+      });
+      setPushToDate((currentDate) => currentDate || (
+        sessionsWithCurriculumTitles[0] ? toDateTimeLocalValue(sessionsWithCurriculumTitles[0].session_date) : ''
+      ));
 
       const titleUpdates = sessionsWithCurriculumTitles
         .filter((session, index) => session.title !== fetchedSessions[index].title)
@@ -197,6 +234,17 @@ export default function AdminSessionsPage() {
     }
     setIsLoading(false);
   };
+
+  const selectedPushSession = sessions.find((session) => session.id === pushFromSessionId);
+  const pushDeltaMs = selectedPushSession && pushToDate
+    ? new Date(pushToDate).getTime() - new Date(selectedPushSession.session_date).getTime()
+    : 0;
+  const pushedSessionCount = selectedPushSession
+    ? sessions.filter((session) => session.session_number >= selectedPushSession.session_number).length
+    : 0;
+  const pushPreviewDate = selectedPushSession && pushToDate
+    ? new Date(new Date(selectedPushSession.session_date).getTime() + pushDeltaMs).toISOString()
+    : '';
 
   const handleDeleteRequest = async (id: string, action: boolean | 'start') => {
     if (action === 'start') {
@@ -275,6 +323,91 @@ export default function AdminSessionsPage() {
     setIsUpdatingOrder(false);
   };
 
+  const handlePushSchedule = async () => {
+    if (!selectedPushSession || !pushToDate) {
+      addToast('info', 'Choose a session and its new date first.');
+      return;
+    }
+
+    const targetDate = new Date(pushToDate);
+    if (Number.isNaN(targetDate.getTime())) {
+      addToast('error', 'Enter a valid date and time.');
+      return;
+    }
+
+    const deltaMs = targetDate.getTime() - new Date(selectedPushSession.session_date).getTime();
+    if (deltaMs === 0) {
+      addToast('info', 'The new date matches the current date.');
+      return;
+    }
+
+    const affectedSessions = sessions
+      .filter((session) => session.session_number >= selectedPushSession.session_number)
+      .map((session) => ({
+        ...session,
+        session_date: new Date(new Date(session.session_date).getTime() + deltaMs).toISOString(),
+      }));
+
+    setIsPushingSchedule(true);
+
+    const sessionUpdates = affectedSessions.map((session) => ({
+      id: session.id,
+      course_id: session.course_id,
+      title: session.title,
+      session_number: session.session_number,
+      session_date: session.session_date,
+      is_published: session.is_published,
+    }));
+
+    const { error: sessionError } = await supabase
+      .from('sessions')
+      .upsert(sessionUpdates, { onConflict: 'id' });
+
+    if (sessionError) {
+      addToast('error', 'Failed to push the schedule.');
+      console.error(sessionError);
+      setIsPushingSchedule(false);
+      return;
+    }
+
+    const affectedSessionIds = affectedSessions.map((session) => session.id);
+    const nextDatesBySessionId = new Map(affectedSessions.map((session) => [session.id, session.session_date]));
+    const { data: materials, error: materialsError } = await supabase
+      .from('materials')
+      .select('id, session_id, type')
+      .in('session_id', affectedSessionIds);
+
+    if (materialsError) {
+      addToast('info', 'Schedule pushed, but material unlock dates could not be refreshed.');
+      console.error(materialsError);
+    } else if (materials) {
+      const materialUpdates = (materials as SessionMaterial[]).map((material) => {
+        const nextSessionDate = nextDatesBySessionId.get(material.session_id);
+        if (!nextSessionDate) return Promise.resolve({ error: null });
+
+        return supabase
+          .from('materials')
+          .update({ available_from: getMaterialAvailableFrom(material.type, nextSessionDate) })
+          .eq('id', material.id);
+      });
+
+      const materialResults = await Promise.all(materialUpdates);
+      const failedMaterialUpdate = materialResults.find((result) => result.error);
+      if (failedMaterialUpdate) {
+        addToast('info', 'Schedule pushed, but some material unlock dates could not be refreshed.');
+        console.error(failedMaterialUpdate.error);
+      }
+    }
+
+    setSessions((currentSessions) => currentSessions.map((session) => {
+      const updatedSession = affectedSessions.find((affected) => affected.id === session.id);
+      return updatedSession || session;
+    }));
+    setPushToDate('');
+    addToast('success', `Updated ${affectedSessions.length} session${affectedSessions.length === 1 ? '' : 's'}.`);
+    setIsPushingSchedule(false);
+  };
+
   useEffect(() => {
     void fetchCourses(); // eslint-disable-line react-hooks/set-state-in-effect
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -317,7 +450,10 @@ export default function AdminSessionsPage() {
             <select
               className="form-select"
               value={selectedCourseId}
-              onChange={(e) => setSelectedCourseId(e.target.value)}
+              onChange={(e) => {
+                setSelectedCourseId(e.target.value);
+                setPushToDate('');
+              }}
             >
               <option value="" disabled>-- Select a Batch --</option>
               {courses.map(course => (
@@ -332,6 +468,62 @@ export default function AdminSessionsPage() {
           )}
         </div>
       </div>
+
+      {selectedCourseId && sessions.length > 0 && (
+        <div className="admin-card" style={{ marginBottom: 'var(--space-xl)' }}>
+          <div className="admin-card-header">
+            <div>
+              <h2 className="admin-card-title">Push Missed Class</h2>
+              <p className="admin-page-subtitle">Move one class and automatically shift every following session.</p>
+            </div>
+          </div>
+          <div className="admin-form-row" style={{ alignItems: 'flex-end' }}>
+            <div className="form-group" style={{ flex: 1, margin: 0 }}>
+              <label htmlFor="push-session" className="form-label">Start from</label>
+              <select
+                id="push-session"
+                className="form-select"
+                value={pushFromSessionId}
+                onChange={(e) => {
+                  const nextSession = sessions.find((session) => session.id === e.target.value);
+                  setPushFromSessionId(e.target.value);
+                  setPushToDate(nextSession ? toDateTimeLocalValue(nextSession.session_date) : '');
+                }}
+              >
+                {sessions.map((session) => (
+                  <option key={session.id} value={session.id}>
+                    {String(session.session_number).padStart(2, '0')} · {session.title} · {formatDate(session.session_date)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group" style={{ minWidth: 220, margin: 0 }}>
+              <label htmlFor="push-date" className="form-label">New date</label>
+              <input
+                id="push-date"
+                type="datetime-local"
+                className="form-input"
+                value={pushToDate}
+                onChange={(e) => setPushToDate(e.target.value)}
+              />
+            </div>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handlePushSchedule}
+              disabled={isPushingSchedule || !pushToDate || !selectedPushSession || pushDeltaMs === 0}
+            >
+              {isPushingSchedule ? <><div className="spinner" /> Pushing...</> : 'Push Schedule'}
+            </button>
+          </div>
+          {selectedPushSession && pushToDate && pushDeltaMs !== 0 && (
+            <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '12px' }}>
+              {pushedSessionCount} session{pushedSessionCount === 1 ? '' : 's'} will move by {Math.round(pushDeltaMs / (24 * 60 * 60 * 1000))} day{Math.abs(Math.round(pushDeltaMs / (24 * 60 * 60 * 1000))) === 1 ? '' : 's'}.
+              {' '}Session {selectedPushSession.session_number} becomes {formatDate(pushPreviewDate)}.
+            </p>
+          )}
+        </div>
+      )}
 
       {selectedCourseId && (
         <div className="admin-card">

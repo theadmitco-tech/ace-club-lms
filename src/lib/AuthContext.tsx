@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { User, Toast } from '@/lib/types';
-import { createClient } from '@/utils/supabase/client';
+import { createClient, hasSupabaseConfig } from '@/utils/supabase/client';
 
 interface AuthContextType {
   user: User | null;
@@ -20,6 +20,43 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AUTH_INIT_TIMEOUT_MS = 8000;
 
+function SupabaseSetupRequired() {
+  return (
+    <main style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '100vh',
+      padding: '24px',
+      background: 'var(--bg-primary)',
+    }}>
+      <section className="glass-card" style={{ maxWidth: '680px', padding: '32px' }}>
+        <p style={{ color: 'var(--warning)', fontWeight: 700, marginBottom: '8px' }}>
+          Supabase setup required
+        </p>
+        <h1 style={{ fontSize: '28px', lineHeight: 1.2, marginBottom: '16px' }}>
+          Add your local Supabase environment variables.
+        </h1>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>
+          The app needs these public values before it can load auth, admin pages, or course data.
+        </p>
+        <pre style={{
+          padding: '16px',
+          borderRadius: 'var(--radius-md)',
+          background: 'var(--bg-secondary)',
+          border: '1px solid var(--border-primary)',
+          color: 'var(--text-primary)',
+          overflowX: 'auto',
+        }}>{`NEXT_PUBLIC_SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key`}</pre>
+        <p style={{ color: 'var(--text-tertiary)', marginTop: '20px', fontSize: '14px' }}>
+          Put them in <code>.env.local</code>, then restart the dev server.
+        </p>
+      </section>
+    </main>
+  );
+}
+
 function withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> {
   return new Promise((resolve, reject) => {
     const timeoutId = window.setTimeout(() => {
@@ -34,13 +71,16 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string)
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const isSupabaseConfigured = hasSupabaseConfig();
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(isSupabaseConfigured);
   const [toasts, setToasts] = useState<Toast[]>([]);
   // Use a stable reference for the Supabase client to prevent lock contention
-  const [supabase] = useState(() => createClient());
+  const [supabase] = useState(() => isSupabaseConfigured ? createClient() : null);
 
   const loadUserFromSession = useCallback(async (session: Session | null) => {
+    if (!supabase) return;
+
     if (!session?.user) {
       setUser(null);
       return;
@@ -73,6 +113,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [supabase]);
 
   useEffect(() => {
+    if (!supabase) {
+      return;
+    }
+
     let isMounted = true;
 
     const fetchUser = async () => {
@@ -128,6 +172,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [loadUserFromSession, supabase]);
 
   const login = useCallback(async (email: string) => {
+    if (!supabase) {
+      return { success: false, error: 'Supabase is not configured.' };
+    }
+
     setIsLoading(true);
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -145,6 +193,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [supabase]);
 
   const loginWithPassword = useCallback(async (email: string, password: string) => {
+    if (!supabase) {
+      return { success: false, error: 'Supabase is not configured.' };
+    }
+
     setIsLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -159,6 +211,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [supabase]);
 
   const logout = useCallback(async () => {
+    if (!supabase) return;
+
     await supabase.auth.signOut();
   }, [supabase]);
 
@@ -174,10 +228,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToasts(prev => prev.filter(t => t.id !== id));
   }, []);
 
-  return (
+  return isSupabaseConfigured ? (
     <AuthContext.Provider value={{ user, isLoading, login, loginWithPassword, logout, toasts, addToast, removeToast }}>
       {children}
     </AuthContext.Provider>
+  ) : (
+    <SupabaseSetupRequired />
   );
 }
 

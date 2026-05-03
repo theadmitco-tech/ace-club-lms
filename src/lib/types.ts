@@ -46,6 +46,35 @@ export interface Material {
   created_at: string;
 }
 
+export interface PracticeSet {
+  id: string;
+  session_id: string;
+  title: string;
+  created_at: string;
+  questions?: PracticeQuestion[];
+}
+
+export interface PracticeQuestion {
+  id: string;
+  practice_set_id: string;
+  question_text: string;
+  options: string[];
+  correct_answer: string;
+  explanation: string;
+  order_index: number;
+  created_at: string;
+  attempts?: PracticeAttempt[];
+}
+
+export interface PracticeAttempt {
+  id: string;
+  user_id: string;
+  question_id: string;
+  selected_answer: string;
+  is_correct: boolean;
+  answered_at: string;
+}
+
 export interface Enrollment {
   id: string;
   user_id: string;

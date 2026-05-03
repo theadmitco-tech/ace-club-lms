@@ -26,9 +26,13 @@ export default function EditSessionPage() {
   });
   
   const [materials, setMaterialsList] = useState<any[]>([]);
+  const [practiceSet, setPracticeSet] = useState<any | null>(null);
+  const [practiceQuestions, setPracticeQuestions] = useState<any[]>([]);
+  const [practiceUnavailable, setPracticeUnavailable] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showAddMaterial, setShowAddMaterial] = useState(false);
+  const [showAddQuestion, setShowAddQuestion] = useState(false);
   
   const [isUploading, setIsUploading] = useState(false);
   const [newMaterial, setNewMaterial] = useState({
@@ -37,6 +41,12 @@ export default function EditSessionPage() {
     file_url: '',
     notion_url: '',
     video_url: '',
+  });
+  const [newQuestion, setNewQuestion] = useState({
+    question_text: '',
+    optionsText: '',
+    correct_answer: '',
+    explanation: '',
   });
 
   const fetchData = async () => {
@@ -69,6 +79,37 @@ export default function EditSessionPage() {
 
     if (materialsData) setMaterialsList(materialsData);
     if (coursesData) setCourses(coursesData);
+
+    try {
+      const { data: sets, error: setError } = await supabase
+        .from('practice_sets')
+        .select('*')
+        .eq('session_id', sessionId)
+        .order('created_at', { ascending: true })
+        .limit(1);
+
+      if (setError) throw setError;
+
+      const firstSet = sets?.[0] || null;
+      setPracticeSet(firstSet);
+
+      if (firstSet) {
+        const { data: questions, error: questionsError } = await supabase
+          .from('practice_questions')
+          .select('*')
+          .eq('practice_set_id', firstSet.id)
+          .order('order_index', { ascending: true });
+
+        if (questionsError) throw questionsError;
+        setPracticeQuestions(questions || []);
+      } else {
+        setPracticeQuestions([]);
+      }
+      setPracticeUnavailable(false);
+    } catch (practiceError) {
+      console.info('Practice tables are not available yet.', practiceError);
+      setPracticeUnavailable(true);
+    }
     
     setIsLoading(false);
   };
@@ -170,6 +211,77 @@ export default function EditSessionPage() {
       addToast('error', 'Failed to delete material.');
     } else {
       addToast('success', 'Material deleted.');
+      fetchData();
+    }
+  };
+
+  const ensurePracticeSet = async () => {
+    if (practiceSet) return practiceSet;
+
+    const { data, error } = await supabase
+      .from('practice_sets')
+      .insert({
+        session_id: sessionId,
+        title: `${form.title || 'Session'} Practice`,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    setPracticeSet(data);
+    return data;
+  };
+
+  const handleAddPracticeQuestion = async () => {
+    const options = newQuestion.optionsText
+      .split('\n')
+      .map((option) => option.trim())
+      .filter(Boolean);
+
+    if (!newQuestion.question_text.trim() || options.length < 2 || !newQuestion.correct_answer.trim()) {
+      addToast('error', 'Add a prompt, at least two options, and the correct answer.');
+      return;
+    }
+
+    if (!options.includes(newQuestion.correct_answer.trim())) {
+      addToast('error', 'Correct answer must exactly match one option.');
+      return;
+    }
+
+    try {
+      const set = await ensurePracticeSet();
+      const { error } = await supabase.from('practice_questions').insert({
+        practice_set_id: set.id,
+        question_text: newQuestion.question_text.trim(),
+        options,
+        correct_answer: newQuestion.correct_answer.trim(),
+        explanation: newQuestion.explanation.trim(),
+        order_index: practiceQuestions.length + 1,
+      });
+
+      if (error) throw error;
+
+      addToast('success', 'Practice question added.');
+      setNewQuestion({
+        question_text: '',
+        optionsText: '',
+        correct_answer: '',
+        explanation: '',
+      });
+      setShowAddQuestion(false);
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      addToast('error', 'Failed to add practice question.');
+    }
+  };
+
+  const handleDeletePracticeQuestion = async (id: string) => {
+    const { error } = await supabase.from('practice_questions').delete().eq('id', id);
+    if (error) {
+      addToast('error', 'Failed to delete practice question.');
+    } else {
+      addToast('success', 'Practice question deleted.');
       fetchData();
     }
   };
@@ -445,6 +557,130 @@ export default function EditSessionPage() {
             <div className="empty-state-icon">📭</div>
             <p className="empty-state-text">No materials added yet. Click &quot;Add Material&quot; to get started.</p>
           </div>
+        )}
+      </div>
+
+      {/* Practice Questions Section */}
+      <div className="admin-card" style={{ marginTop: 'var(--space-xl)' }}>
+        <div className="admin-card-header">
+          <div>
+            <h2 className="admin-card-title">Native Practice Questions ({practiceQuestions.length})</h2>
+            <p className="admin-page-subtitle">These appear in the student Practice tab before the worksheet fallback.</p>
+          </div>
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={() => setShowAddQuestion(!showAddQuestion)}
+            disabled={practiceUnavailable}
+          >
+            {showAddQuestion ? '✕ Cancel' : '+ Add Question'}
+          </button>
+        </div>
+
+        {practiceUnavailable ? (
+          <div className="empty-state" style={{ padding: '24px' }}>
+            <p className="empty-state-text">Practice tables are not available in this database yet. Apply the schema update first.</p>
+          </div>
+        ) : (
+          <>
+            {showAddQuestion && (
+              <div style={{
+                padding: 'var(--space-xl)',
+                background: 'var(--bg-secondary)',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--border-secondary)',
+                marginBottom: 'var(--space-lg)',
+              }}>
+                <div className="admin-form">
+                  <div className="form-group">
+                    <label htmlFor="practice-prompt" className="form-label">Question Prompt</label>
+                    <textarea
+                      id="practice-prompt"
+                      className="form-textarea"
+                      value={newQuestion.question_text}
+                      onChange={(e) => setNewQuestion({ ...newQuestion, question_text: e.target.value })}
+                      placeholder="What is 25% of 160?"
+                    />
+                  </div>
+                  <div className="admin-form-row">
+                    <div className="form-group">
+                      <label htmlFor="practice-options" className="form-label">Options (one per line)</label>
+                      <textarea
+                        id="practice-options"
+                        className="form-textarea"
+                        value={newQuestion.optionsText}
+                        onChange={(e) => setNewQuestion({ ...newQuestion, optionsText: e.target.value })}
+                        placeholder={'20\n30\n40\n50'}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="practice-answer" className="form-label">Correct Answer</label>
+                      <input
+                        id="practice-answer"
+                        className="form-input"
+                        value={newQuestion.correct_answer}
+                        onChange={(e) => setNewQuestion({ ...newQuestion, correct_answer: e.target.value })}
+                        placeholder="40"
+                      />
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="practice-explanation" className="form-label">Explanation</label>
+                    <textarea
+                      id="practice-explanation"
+                      className="form-textarea"
+                      value={newQuestion.explanation}
+                      onChange={(e) => setNewQuestion({ ...newQuestion, explanation: e.target.value })}
+                      placeholder="25% is one fourth, and one fourth of 160 is 40."
+                    />
+                  </div>
+                  <div className="admin-form-actions">
+                    <button className="btn btn-primary btn-sm" onClick={handleAddPracticeQuestion}>
+                      Add Question
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {practiceQuestions.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {practiceQuestions.map((question, index) => (
+                  <div
+                    key={question.id}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '16px',
+                      padding: '12px 16px',
+                      background: 'var(--bg-secondary)',
+                      borderRadius: 'var(--radius-md)',
+                      border: '1px solid var(--border-primary)',
+                    }}
+                  >
+                    <span style={{ fontWeight: 800, color: 'var(--accent-primary)' }}>{index + 1}</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600, fontSize: '14px' }}>{question.question_text}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>
+                        Answer: {question.correct_answer}
+                      </div>
+                    </div>
+                    <button
+                      className="btn btn-ghost btn-sm"
+                      onClick={() => handleDeletePracticeQuestion(question.id)}
+                      style={{ color: 'var(--error)' }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state" style={{ padding: '32px' }}>
+                <div className="empty-state-icon">✍️</div>
+                <p className="empty-state-text">No native questions yet. Students will see the worksheet fallback.</p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

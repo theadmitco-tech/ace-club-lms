@@ -82,15 +82,9 @@ export default function LoginPage() {
           <div className="login-logo">
             <div className="login-logo-icon">
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <path d="M16 2L30 9V23L16 30L2 23V9L16 2Z" fill="url(#logo-grad)" fillOpacity="0.2" stroke="url(#logo-grad)" strokeWidth="1.5"/>
-                <path d="M16 8L24 12.5V21.5L16 26L8 21.5V12.5L16 8Z" fill="url(#logo-grad)" fillOpacity="0.4"/>
+                <path d="M16 2L30 9V23L16 30L2 23V9L16 2Z" fill="#003b30" stroke="#003b30" strokeWidth="1.5"/>
+                <path d="M16 8L24 12.5V21.5L16 26L8 21.5V12.5L16 8Z" fill="#0f5a4c"/>
                 <text x="16" y="20" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">A</text>
-                <defs>
-                  <linearGradient id="logo-grad" x1="2" y1="2" x2="30" y2="30">
-                    <stop offset="0%" stopColor="#4F7CFF"/>
-                    <stop offset="100%" stopColor="#7C3AED"/>
-                  </linearGradient>
-                </defs>
               </svg>
             </div>
             <h1 className="login-brand">Ace Club</h1>
@@ -104,7 +98,7 @@ export default function LoginPage() {
             <div className="login-success animate-fade-in-up">
               <div className="login-success-icon">✓</div>
               <h2>Check your inbox!</h2>
-              <p>We've sent a magic login link to your email address.</p>
+              <p>We&apos;ve sent a magic login link to your email address.</p>
               <p style={{ fontSize: '13px', marginTop: '12px', color: 'var(--text-tertiary)' }}>
                 You can close this window.
               </p>

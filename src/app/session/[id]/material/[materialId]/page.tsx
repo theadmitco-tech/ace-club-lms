@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { NotionRenderer } from 'react-notion-x';
+import type { ExtendedRecordMap } from 'notion-types';
 import { extractNotionPageId } from '@/lib/notion';
 import { createClient } from '@/utils/supabase/client';
+import type { Material, Session } from '@/lib/types';
 import Link from 'next/link';
 
 // Core styles are required
@@ -15,12 +17,11 @@ import 'katex/dist/katex.min.css';
 
 export default function MaterialViewerPage() {
   const { id: sessionId, materialId } = useParams();
-  const router = useRouter();
   const supabase = createClient();
   
-  const [material, setMaterial] = useState<any>(null);
-  const [session, setSession] = useState<any>(null);
-  const [recordMap, setRecordMap] = useState<any>(null);
+  const [material, setMaterial] = useState<Material | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [recordMap, setRecordMap] = useState<ExtendedRecordMap | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -110,7 +111,7 @@ export default function MaterialViewerPage() {
             <NotionRenderer 
               recordMap={recordMap} 
               fullPage={false} 
-              darkMode={true}
+              darkMode={false}
               className="custom-notion"
             />
           ) : (
@@ -177,7 +178,7 @@ export default function MaterialViewerPage() {
           padding: 40px 24px;
         }
         .notion-container {
-          background: var(--bg-glass);
+          background: #ffffff;
           border: 1px solid var(--border-primary);
           border-radius: 16px;
           padding: 20px;
@@ -191,12 +192,6 @@ export default function MaterialViewerPage() {
           gap: 16px;
         }
         
-        /* Custom Notion Overrides */
-        .notion {
-          font-family: var(--font-primary) !important;
-          color: var(--text-primary) !important;
-          background: transparent !important;
-        }
         .notion-page {
           padding: 0 !important;
           width: 100% !important;

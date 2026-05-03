@@ -10,23 +10,20 @@
   position: relative;
   overflow: hidden;
   padding: var(--space-lg);
+  background:
+    linear-gradient(180deg, #ffffff 0%, #f7faf8 48%, #eef5f2 100%);
 }
 
 /* Background Effects */
 .login-bg-gradient {
   position: fixed;
   inset: 0;
-  background: radial-gradient(ellipse at 30% 20%, rgba(79, 124, 255, 0.08) 0%, transparent 50%),
-              radial-gradient(ellipse at 70% 80%, rgba(124, 58, 237, 0.06) 0%, transparent 50%);
+  background: linear-gradient(135deg, rgba(0, 59, 48, 0.08) 0%, transparent 52%);
   pointer-events: none;
 }
 
 .login-bg-orb {
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(80px);
-  pointer-events: none;
-  animation: float 8s ease-in-out infinite;
+  display: none;
 }
 
 .login-bg-orb-1 {
@@ -50,8 +47,8 @@
   position: fixed;
   inset: 0;
   background-image: 
-    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    linear-gradient(rgba(0, 59, 48, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 59, 48, 0.04) 1px, transparent 1px);
   background-size: 60px 60px;
   pointer-events: none;
 }
@@ -87,11 +84,8 @@
 .login-brand {
   font-size: var(--font-size-3xl);
   font-weight: 800;
-  background: var(--accent-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.02em;
+  color: var(--accent-primary);
+  letter-spacing: 0;
 }
 
 .login-subtitle {
@@ -148,9 +142,9 @@
 }
 
 .method-tab.active {
-  background: var(--bg-tertiary);
+  background: var(--bg-secondary);
   color: var(--text-primary);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Form */
@@ -267,7 +261,7 @@
   width: 36px;
   height: 36px;
   border-radius: var(--radius-sm);
-  background: var(--accent-gradient);
+  background: var(--accent-primary);
   color: white;
   font-size: var(--font-size-xs);
   font-weight: 700;
@@ -278,7 +272,7 @@
 }
 
 .login-demo-avatar.admin {
-  background: linear-gradient(135deg, var(--accent-secondary) 0%, #EC4899 100%);
+  background: var(--accent-secondary);
 }
 
 .login-demo-name {

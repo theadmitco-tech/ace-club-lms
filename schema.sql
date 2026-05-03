@@ -43,7 +43,36 @@ CREATE TABLE public.materials (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 5. Enrollments Table
+-- 5. Native Practice / Q&A Tables
+CREATE TABLE public.practice_sets (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  session_id UUID REFERENCES public.sessions(id) ON DELETE CASCADE NOT NULL,
+  title TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE public.practice_questions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  practice_set_id UUID REFERENCES public.practice_sets(id) ON DELETE CASCADE NOT NULL,
+  question_text TEXT NOT NULL,
+  options JSONB NOT NULL,
+  correct_answer TEXT NOT NULL,
+  explanation TEXT NOT NULL,
+  order_index INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE public.practice_attempts (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  question_id UUID REFERENCES public.practice_questions(id) ON DELETE CASCADE NOT NULL,
+  selected_answer TEXT NOT NULL,
+  is_correct BOOLEAN NOT NULL,
+  answered_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(user_id, question_id)
+);
+
+-- 6. Enrollments Table
 CREATE TABLE public.enrollments (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
@@ -59,6 +88,9 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.courses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.materials ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.practice_sets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.practice_questions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.practice_attempts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.enrollments ENABLE ROW LEVEL SECURITY;
 
 -- Profiles: Anyone can read profiles (useful for admin dashboard), but only owner can update
@@ -80,6 +112,16 @@ CREATE POLICY "Admins can manage sessions" ON public.sessions FOR ALL USING (EXI
 CREATE POLICY "Materials viewable by everyone" ON public.materials FOR SELECT USING (true);
 CREATE POLICY "Admins can manage materials" ON public.materials FOR ALL USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
 
+-- Practice: Students can read questions, users manage their attempts, admins manage content
+CREATE POLICY "Practice sets viewable by everyone" ON public.practice_sets FOR SELECT USING (true);
+CREATE POLICY "Practice questions viewable by everyone" ON public.practice_questions FOR SELECT USING (true);
+CREATE POLICY "Admins can manage practice sets" ON public.practice_sets FOR ALL USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+CREATE POLICY "Admins can manage practice questions" ON public.practice_questions FOR ALL USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+CREATE POLICY "Users can view own practice attempts" ON public.practice_attempts FOR SELECT USING (auth.uid() = user_id OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+CREATE POLICY "Users can insert own practice attempts" ON public.practice_attempts FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own practice attempts" ON public.practice_attempts FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Admins can manage practice attempts" ON public.practice_attempts FOR ALL USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+
 -- Enrollments: Users can view their own, admins can manage all
 CREATE POLICY "Users can view own enrollments" ON public.enrollments FOR SELECT USING (auth.uid() = user_id OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
 CREATE POLICY "Admins can manage enrollments" ON public.enrollments FOR ALL USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
@@ -98,7 +140,7 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
 
--- 6. Master Curriculum (Templates)
+-- 7. Master Curriculum (Templates)
 CREATE TABLE public.master_sessions (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL,
@@ -124,4 +166,3 @@ CREATE POLICY "Admins can manage master sessions" ON public.master_sessions FOR 
 CREATE POLICY "Admins can manage master materials" ON public.master_materials FOR ALL USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
 CREATE POLICY "Master sessions viewable by everyone" ON public.master_sessions FOR SELECT USING (true);
 CREATE POLICY "Master materials viewable by everyone" ON public.master_materials FOR SELECT USING (true);
-
