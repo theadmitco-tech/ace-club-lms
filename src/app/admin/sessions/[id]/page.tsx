@@ -33,6 +33,8 @@ export default function EditSessionPage() {
   const [saving, setSaving] = useState(false);
   const [showAddMaterial, setShowAddMaterial] = useState(false);
   const [showAddQuestion, setShowAddQuestion] = useState(false);
+  const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
+  const [worksheetEditorOnly, setWorksheetEditorOnly] = useState(false);
   
   const [isUploading, setIsUploading] = useState(false);
   const [newMaterial, setNewMaterial] = useState({
@@ -47,6 +49,14 @@ export default function EditSessionPage() {
     optionsText: '',
     correct_answer: '',
     explanation: '',
+    difficulty: 'basic' as 'basic' | 'advanced',
+  });
+  const [editingQuestion, setEditingQuestion] = useState({
+    question_text: '',
+    optionsText: '',
+    correct_answer: '',
+    explanation: '',
+    difficulty: 'basic' as 'basic' | 'advanced',
   });
 
   const fetchData = async () => {
@@ -117,6 +127,10 @@ export default function EditSessionPage() {
   useEffect(() => {
     if (sessionId) fetchData();
   }, [sessionId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    setWorksheetEditorOnly(new URLSearchParams(window.location.search).get('view') === 'worksheet');
+  }, []);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -238,12 +252,17 @@ export default function EditSessionPage() {
       .map((option) => option.trim())
       .filter(Boolean);
 
-    if (!newQuestion.question_text.trim() || options.length < 2 || !newQuestion.correct_answer.trim()) {
-      addToast('error', 'Add a prompt, at least two options, and the correct answer.');
+    if (!newQuestion.question_text.trim() || !newQuestion.correct_answer.trim()) {
+      addToast('error', 'Add a prompt and the correct answer.');
       return;
     }
 
-    if (!options.includes(newQuestion.correct_answer.trim())) {
+    if (options.length === 1) {
+      addToast('error', 'Use zero options for open-answer questions, or at least two options for multiple choice.');
+      return;
+    }
+
+    if (options.length > 0 && !options.includes(newQuestion.correct_answer.trim())) {
       addToast('error', 'Correct answer must exactly match one option.');
       return;
     }
@@ -256,6 +275,7 @@ export default function EditSessionPage() {
         options,
         correct_answer: newQuestion.correct_answer.trim(),
         explanation: newQuestion.explanation.trim(),
+        difficulty: newQuestion.difficulty,
         order_index: practiceQuestions.length + 1,
       });
 
@@ -267,12 +287,79 @@ export default function EditSessionPage() {
         optionsText: '',
         correct_answer: '',
         explanation: '',
+        difficulty: 'basic',
       });
       setShowAddQuestion(false);
       fetchData();
     } catch (err) {
       console.error(err);
       addToast('error', 'Failed to add practice question.');
+    }
+  };
+
+  const handleStartEditPracticeQuestion = (question: any) => {
+    setEditingQuestionId(question.id);
+    setEditingQuestion({
+      question_text: question.question_text || '',
+      optionsText: Array.isArray(question.options) ? question.options.join('\n') : '',
+      correct_answer: question.correct_answer || '',
+      explanation: question.explanation || '',
+      difficulty: question.difficulty === 'advanced' ? 'advanced' : 'basic',
+    });
+  };
+
+  const handleCancelEditPracticeQuestion = () => {
+    setEditingQuestionId(null);
+    setEditingQuestion({
+      question_text: '',
+      optionsText: '',
+      correct_answer: '',
+      explanation: '',
+      difficulty: 'basic',
+    });
+  };
+
+  const handleUpdatePracticeQuestion = async () => {
+    if (!editingQuestionId) return;
+
+    const options = editingQuestion.optionsText
+      .split('\n')
+      .map((option) => option.trim())
+      .filter(Boolean);
+
+    if (!editingQuestion.question_text.trim() || !editingQuestion.correct_answer.trim()) {
+      addToast('error', 'Add a prompt and the correct answer.');
+      return;
+    }
+
+    if (options.length === 1) {
+      addToast('error', 'Use zero options for open-answer questions, or at least two options for multiple choice.');
+      return;
+    }
+
+    if (options.length > 0 && !options.includes(editingQuestion.correct_answer.trim())) {
+      addToast('error', 'Correct answer must exactly match one option.');
+      return;
+    }
+
+    const { error } = await supabase
+      .from('practice_questions')
+      .update({
+        question_text: editingQuestion.question_text.trim(),
+        options,
+        correct_answer: editingQuestion.correct_answer.trim(),
+        explanation: editingQuestion.explanation.trim(),
+        difficulty: editingQuestion.difficulty,
+      })
+      .eq('id', editingQuestionId);
+
+    if (error) {
+      console.error(error);
+      addToast('error', 'Failed to update practice question.');
+    } else {
+      addToast('success', 'Practice question updated.');
+      handleCancelEditPracticeQuestion();
+      fetchData();
     }
   };
 
@@ -298,15 +385,22 @@ export default function EditSessionPage() {
     <div className="animate-fade-in">
       <div className="admin-page-header">
         <div>
-          <h1 className="admin-page-title">{form.title}</h1>
-          <p className="admin-page-subtitle">Batch: {courseName || 'Loading...'}</p>
+          <h1 className="admin-page-title">
+            {worksheetEditorOnly ? `${form.title} Worksheet` : form.title}
+          </h1>
+          <p className="admin-page-subtitle">
+            {worksheetEditorOnly
+              ? `Session ${form.session_number || ''} worksheet questions`
+              : `Batch: ${courseName || 'Loading...'}`}
+          </p>
         </div>
-        <button className="btn btn-ghost" onClick={() => router.push('/admin/sessions')}>
-          ← Back to Schedule
+        <button className="btn btn-ghost" onClick={() => router.push(worksheetEditorOnly ? '/admin/curriculum' : '/admin/sessions')}>
+          {worksheetEditorOnly ? '← Back to Master Base' : '← Back to Schedule'}
         </button>
       </div>
 
       {/* Session Details Form */}
+      {!worksheetEditorOnly && (
       <div className="admin-card" style={{ marginBottom: 'var(--space-xl)' }}>
         <div className="admin-card-header">
           <h2 className="admin-card-title">Session Details</h2>
@@ -383,8 +477,10 @@ export default function EditSessionPage() {
           </div>
         </form>
       </div>
+      )}
 
       {/* Materials Section */}
+      {!worksheetEditorOnly && (
       <div className="admin-card">
         <div className="admin-card-header">
           <h2 className="admin-card-title">Materials ({materials.length})</h2>
@@ -559,13 +655,20 @@ export default function EditSessionPage() {
           </div>
         )}
       </div>
+      )}
 
       {/* Practice Questions Section */}
-      <div className="admin-card" style={{ marginTop: 'var(--space-xl)' }}>
+      <div className="admin-card" style={{ marginTop: worksheetEditorOnly ? 0 : 'var(--space-xl)' }}>
         <div className="admin-card-header">
           <div>
-            <h2 className="admin-card-title">Native Practice Questions ({practiceQuestions.length})</h2>
-            <p className="admin-page-subtitle">These appear in the student Practice tab before the worksheet fallback.</p>
+            <h2 className="admin-card-title">
+              {worksheetEditorOnly ? 'Worksheet Questions' : 'Native Practice Questions'} ({practiceQuestions.length})
+            </h2>
+            <p className="admin-page-subtitle">
+              {worksheetEditorOnly
+                ? 'Edit the questions, options, answers, explanations, and difficulty for this session worksheet.'
+                : 'These appear in the student Practice tab before the worksheet fallback.'}
+            </p>
           </div>
           <button
             className="btn btn-primary btn-sm"
@@ -603,7 +706,7 @@ export default function EditSessionPage() {
                   </div>
                   <div className="admin-form-row">
                     <div className="form-group">
-                      <label htmlFor="practice-options" className="form-label">Options (one per line)</label>
+                      <label htmlFor="practice-options" className="form-label">Options (one per line, optional for open answer)</label>
                       <textarea
                         id="practice-options"
                         className="form-textarea"
@@ -633,6 +736,18 @@ export default function EditSessionPage() {
                       placeholder="25% is one fourth, and one fourth of 160 is 40."
                     />
                   </div>
+                  <div className="form-group">
+                    <label htmlFor="practice-difficulty" className="form-label">Difficulty</label>
+                    <select
+                      id="practice-difficulty"
+                      className="form-input"
+                      value={newQuestion.difficulty}
+                      onChange={(e) => setNewQuestion({ ...newQuestion, difficulty: e.target.value as 'basic' | 'advanced' })}
+                    >
+                      <option value="basic">Basic</option>
+                      <option value="advanced">Advanced</option>
+                    </select>
+                  </div>
                   <div className="admin-form-actions">
                     <button className="btn btn-primary btn-sm" onClick={handleAddPracticeQuestion}>
                       Add Question
@@ -649,7 +764,7 @@ export default function EditSessionPage() {
                     key={question.id}
                     style={{
                       display: 'flex',
-                      alignItems: 'center',
+                      alignItems: editingQuestionId === question.id ? 'flex-start' : 'center',
                       gap: '16px',
                       padding: '12px 16px',
                       background: 'var(--bg-secondary)',
@@ -658,19 +773,92 @@ export default function EditSessionPage() {
                     }}
                   >
                     <span style={{ fontWeight: 800, color: 'var(--accent-primary)' }}>{index + 1}</span>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, fontSize: '14px' }}>{question.question_text}</div>
-                      <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>
-                        Answer: {question.correct_answer}
+                    {editingQuestionId === question.id ? (
+                      <div className="admin-form" style={{ flex: 1 }}>
+                        <div className="form-group">
+                          <label htmlFor={`edit-practice-prompt-${question.id}`} className="form-label">Question Prompt</label>
+                          <textarea
+                            id={`edit-practice-prompt-${question.id}`}
+                            className="form-textarea"
+                            value={editingQuestion.question_text}
+                            onChange={(e) => setEditingQuestion({ ...editingQuestion, question_text: e.target.value })}
+                          />
+                        </div>
+                        <div className="admin-form-row">
+                          <div className="form-group">
+                            <label htmlFor={`edit-practice-options-${question.id}`} className="form-label">Options (one per line, optional for open answer)</label>
+                            <textarea
+                              id={`edit-practice-options-${question.id}`}
+                              className="form-textarea"
+                              value={editingQuestion.optionsText}
+                              onChange={(e) => setEditingQuestion({ ...editingQuestion, optionsText: e.target.value })}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor={`edit-practice-answer-${question.id}`} className="form-label">Correct Answer</label>
+                            <input
+                              id={`edit-practice-answer-${question.id}`}
+                              className="form-input"
+                              value={editingQuestion.correct_answer}
+                              onChange={(e) => setEditingQuestion({ ...editingQuestion, correct_answer: e.target.value })}
+                            />
+                          </div>
+                        </div>
+                        <div className="form-group">
+                          <label htmlFor={`edit-practice-explanation-${question.id}`} className="form-label">Explanation</label>
+                          <textarea
+                            id={`edit-practice-explanation-${question.id}`}
+                            className="form-textarea"
+                            value={editingQuestion.explanation}
+                            onChange={(e) => setEditingQuestion({ ...editingQuestion, explanation: e.target.value })}
+                          />
+                        </div>
+                        <div className="admin-form-row">
+                          <div className="form-group">
+                            <label htmlFor={`edit-practice-difficulty-${question.id}`} className="form-label">Difficulty</label>
+                            <select
+                              id={`edit-practice-difficulty-${question.id}`}
+                              className="form-input"
+                              value={editingQuestion.difficulty}
+                              onChange={(e) => setEditingQuestion({ ...editingQuestion, difficulty: e.target.value as 'basic' | 'advanced' })}
+                            >
+                              <option value="basic">Basic</option>
+                              <option value="advanced">Advanced</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div className="admin-form-actions">
+                          <button className="btn btn-primary btn-sm" onClick={handleUpdatePracticeQuestion}>
+                            Save
+                          </button>
+                          <button className="btn btn-ghost btn-sm" onClick={handleCancelEditPracticeQuestion}>
+                            Cancel
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <button
-                      className="btn btn-ghost btn-sm"
-                      onClick={() => handleDeletePracticeQuestion(question.id)}
-                      style={{ color: 'var(--error)' }}
-                    >
-                      Remove
-                    </button>
+                    ) : (
+                      <>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 600, fontSize: '14px', whiteSpace: 'pre-wrap' }}>{question.question_text}</div>
+                          <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>
+                            {question.difficulty === 'advanced' ? 'Advanced' : 'Basic'} · Answer: {question.correct_answer}
+                          </div>
+                        </div>
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => handleStartEditPracticeQuestion(question)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => handleDeletePracticeQuestion(question.id)}
+                          style={{ color: 'var(--error)' }}
+                        >
+                          Remove
+                        </button>
+                      </>
+                    )}
                   </div>
                 ))}
               </div>

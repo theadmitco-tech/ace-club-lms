@@ -6,6 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "question-bank:import": "node scratch/import_question_bank_csv.js",
+    "question-bank:dry-run": "node scratch/import_question_bank_csv.js --dry-run",
+    "worksheets:convert": "node scratch/convert_worksheet_pdfs.js",
+    "worksheets:dry-run": "node scratch/convert_worksheet_pdfs.js --dry-run",
     "lint": "eslint"
   },
   "dependencies": {

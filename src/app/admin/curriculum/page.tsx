@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { useAuth } from '@/lib/AuthContext';
 import { MaterialType } from '@/lib/types';
@@ -21,10 +22,12 @@ type MasterSession = {
   id: string;
   title: string;
   session_number: number;
+  worksheet_question_count?: number;
   master_materials?: MasterMaterial[];
 };
 
 export default function AdminCurriculumPage() {
+  const router = useRouter();
   const [sessions, setSessions] = useState<MasterSession[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -38,6 +41,39 @@ export default function AdminCurriculumPage() {
       .from('master_sessions')
       .select('*, master_materials(*)')
       .order('session_number', { ascending: true });
+
+    const masterSessionIds = (sessionData || []).map((session) => session.id);
+    const { data: masterPracticeSetData, error: masterPracticeSetError } = masterSessionIds.length > 0
+      ? await supabase
+          .from('master_practice_sets')
+          .select('id, master_session_id')
+          .in('master_session_id', masterSessionIds)
+      : { data: [], error: null };
+
+    const masterPracticeSetIds = (masterPracticeSetData || []).map((set) => set.id);
+    const { data: masterQuestionData } = !masterPracticeSetError && masterPracticeSetIds.length > 0
+      ? await supabase
+          .from('master_practice_questions')
+          .select('master_practice_set_id')
+          .in('master_practice_set_id', masterPracticeSetIds)
+      : { data: [] };
+
+    if (masterPracticeSetError) {
+      console.info('Master practice tables are not available yet.', masterPracticeSetError);
+    }
+
+    const masterSessionIdByPracticeSetId = new Map(
+      (masterPracticeSetData || []).map((set) => [set.id, set.master_session_id])
+    );
+    const questionCountByMasterSessionId = new Map<string, number>();
+    for (const question of masterQuestionData || []) {
+      const linkedMasterSessionId = masterSessionIdByPracticeSetId.get(question.master_practice_set_id);
+      if (!linkedMasterSessionId) continue;
+      questionCountByMasterSessionId.set(
+        linkedMasterSessionId,
+        (questionCountByMasterSessionId.get(linkedMasterSessionId) || 0) + 1
+      );
+    }
     
     if (sessionData) {
       const masterSessions = sessionData as MasterSession[];
@@ -48,6 +84,7 @@ export default function AdminCurriculumPage() {
         return {
           ...session,
           title: shouldUpdateTitle && defaultTitle ? defaultTitle : session.title,
+          worksheet_question_count: questionCountByMasterSessionId.get(session.id) || 0,
           master_materials: [...(session.master_materials || [])].sort((a, b) => {
             return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
           }),
@@ -101,6 +138,7 @@ export default function AdminCurriculumPage() {
 
   const handleUpdateMaterial = async (sessionId: string, type: MaterialType, field: string, value: string) => {
     const session = sessions.find(s => s.id === sessionId);
+    if (!session) return;
     const material = session?.master_materials?.find((m) => m.type === type);
 
     if (material) {
@@ -177,6 +215,10 @@ export default function AdminCurriculumPage() {
     }
   };
 
+  const handleEditSessionWorksheet = (session: MasterSession) => {
+    router.push(`/admin/curriculum/worksheets/${session.id}`);
+  };
+
   const initializeMaster = async () => {
     setIsSaving(true);
     
@@ -217,13 +259,18 @@ export default function AdminCurriculumPage() {
       <div className="admin-page-header">
         <div>
           <h1 className="admin-page-title">Session Master Base</h1>
-          <p className="admin-page-subtitle">Define the default materials for all your sessions here.</p>
+          <p className="admin-page-subtitle">Define the universal materials and worksheet plan for all batches here.</p>
         </div>
-        {sessions.length === 0 && (
-          <button className="btn btn-primary" onClick={initializeMaster} disabled={isSaving}>
-            Initialize 16 Sessions
+        <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          <button className="btn btn-secondary" onClick={() => router.push('/admin/worksheets')}>
+            Edit Universal Worksheet
           </button>
-        )}
+          {sessions.length === 0 && (
+            <button className="btn btn-primary" onClick={initializeMaster} disabled={isSaving}>
+              Initialize 16 Sessions
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="admin-card">
@@ -324,8 +371,8 @@ export default function AdminCurriculumPage() {
                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <span style={{ fontSize: '14px' }}>{getMaterialTypeIcon(type as MaterialType)}</span>
                                 {type === 'worksheet' ? (
-                                  <span style={{ fontSize: '11px', color: mat?.file_url ? 'var(--success)' : 'var(--text-tertiary)' }}>
-                                    {mat?.file_url ? 'PDF uploaded' : 'No worksheet uploaded'}
+                                  <span style={{ fontSize: '11px', color: session.worksheet_question_count ? 'var(--success)' : 'var(--text-tertiary)' }}>
+                                    {session.worksheet_question_count ? `${session.worksheet_question_count} questions` : 'No questions yet'}
                                   </span>
                                 ) : (
                                   <input 
@@ -346,22 +393,12 @@ export default function AdminCurriculumPage() {
                               </div>
                               {type === 'worksheet' && (
                                 <>
-                                  {mat?.file_url && (
-                                    <a
-                                      href={mat.file_url}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                      style={{ fontSize: '11px', color: 'var(--accent-primary)' }}
-                                    >
-                                      View current PDF
-                                    </a>
-                                  )}
-                                  <input 
-                                    type="file" 
-                                    accept="application/pdf"
-                                    style={{ fontSize: '10px' }}
-                                    onChange={(e) => handleFileUpload(session.id, type as MaterialType, e)}
-                                  />
+                                  <button
+                                    className="btn btn-secondary btn-sm"
+                                    onClick={() => handleEditSessionWorksheet(session)}
+                                  >
+                                    Edit worksheet
+                                  </button>
                                 </>
                               )}
                             </div>

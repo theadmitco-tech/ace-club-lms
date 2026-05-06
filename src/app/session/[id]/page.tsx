@@ -1,11 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
 import { createClient } from '@/utils/supabase/client';
 import type { Material, MaterialType, PracticeAttempt, PracticeQuestion, PracticeSet, Session } from '@/lib/types';
 import { formatDate, formatRelativeDate, getYouTubeEmbedUrl, getMaterialTypeIcon, getMaterialTypeLabel } from '@/lib/utils';
+import {
+  getAvailabilityText,
+  isMaterialAvailable,
+  isSessionPracticeAvailable,
+} from '@/lib/sessionAvailability';
 import './session.css';
 
 type SessionWithMaterials = Session & {
@@ -16,7 +21,9 @@ type PracticeSetWithQuestions = PracticeSet & {
   questions: PracticeQuestion[];
 };
 
+type PracticeSource = 'master' | 'legacy';
 type TabId = 'pre_reads' | 'practice' | 'recording' | 'class_material';
+type PracticeMode = 'today' | 'all' | 'unattempted' | 'incorrect' | 'marked';
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'pre_reads', label: 'Pre-reads' },
@@ -25,40 +32,22 @@ const TABS: { id: TabId; label: string }[] = [
   { id: 'class_material', label: 'Class Material' },
 ];
 
-function isMaterialAvailable(material: Material, session: Session) {
-  const sessionDate = new Date(session.session_date);
-  const now = new Date();
-
-  if (material.type === 'pre_read') {
-    const availableDate = new Date(sessionDate.getTime() - 7 * 24 * 60 * 60 * 1000);
-    return now >= availableDate;
-  }
-
-  const availableDate = new Date(sessionDate.getTime() + 2 * 60 * 60 * 1000);
-  return now >= availableDate;
-}
-
-function getAvailabilityText(type: MaterialType, sessionDate: string) {
-  if (type === 'pre_read') {
-    const availableDate = new Date(new Date(sessionDate).getTime() - 7 * 24 * 60 * 60 * 1000);
-    return formatRelativeDate(availableDate.toISOString());
-  }
-
-  return 'after class';
-}
-
 export default function SessionPage() {
   const { user, isLoading: authLoading, logout } = useAuth();
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const sessionId = params.id as string;
   const [session, setSession] = useState<SessionWithMaterials | null>(null);
   const [practiceSet, setPracticeSet] = useState<PracticeSetWithQuestions | null>(null);
+  const [practiceSource, setPracticeSource] = useState<PracticeSource>('legacy');
   const [attemptsByQuestionId, setAttemptsByQuestionId] = useState<Record<string, PracticeAttempt>>({});
   const [practiceUnavailable, setPracticeUnavailable] = useState(false);
-  const [activeTab, setActiveTab] = useState<TabId>('pre_reads');
+  const [activeTab, setActiveTab] = useState<TabId>(searchParams.get('tab') === 'practice' ? 'practice' : 'pre_reads');
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState('');
+  const [practiceMode, setPracticeMode] = useState<PracticeMode>('today');
+  const [markedForReviewIds, setMarkedForReviewIds] = useState<string[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
   const [savingAttempt, setSavingAttempt] = useState(false);
 
@@ -85,6 +74,70 @@ export default function SessionPage() {
       }
 
       try {
+        const loadedSession = data as SessionWithMaterials | null;
+        if (!loadedSession) throw new Error('Session not found');
+
+        const { data: masterSession, error: masterSessionError } = await supabase
+          .from('master_sessions')
+          .select('id, title, session_number')
+          .eq('session_number', loadedSession.session_number)
+          .maybeSingle();
+
+        if (masterSessionError) throw masterSessionError;
+
+        if (masterSession) {
+          const { data: masterSets, error: masterSetError } = await supabase
+            .from('master_practice_sets')
+            .select('*')
+            .eq('master_session_id', masterSession.id)
+            .order('created_at', { ascending: true })
+            .limit(1);
+
+          if (masterSetError) {
+            console.info('Master practice tables are not available yet; falling back to legacy practice.', masterSetError);
+          }
+
+          const firstMasterSet = !masterSetError ? masterSets?.[0] as PracticeSet | undefined : undefined;
+          if (firstMasterSet) {
+            const { data: masterQuestions, error: masterQuestionsError } = await supabase
+              .from('master_practice_questions')
+              .select('*')
+              .eq('master_practice_set_id', firstMasterSet.id)
+              .order('order_index', { ascending: true });
+
+            if (masterQuestionsError) {
+              console.info('Master practice questions are not available yet; falling back to legacy practice.', masterQuestionsError);
+            } else {
+              const normalizedMasterQuestions = (masterQuestions || []).map((question) => ({
+                ...question,
+                options: Array.isArray(question.options) ? question.options : [],
+              })) as PracticeQuestion[];
+
+              setPracticeSource('master');
+              setPracticeSet({ ...firstMasterSet, questions: normalizedMasterQuestions });
+
+              if (normalizedMasterQuestions.length > 0) {
+                const { data: masterAttempts } = await supabase
+                  .from('master_practice_attempts')
+                  .select('*')
+                  .eq('user_id', user.id)
+                  .eq('session_id', sessionId)
+                  .in('master_question_id', normalizedMasterQuestions.map((question) => question.id));
+
+                const attemptsMap = (masterAttempts || []).reduce<Record<string, PracticeAttempt>>((acc, attempt) => {
+                  acc[attempt.master_question_id] = attempt as PracticeAttempt;
+                  return acc;
+                }, {});
+                setAttemptsByQuestionId(attemptsMap);
+              }
+
+              setPracticeUnavailable(false);
+              setDataLoading(false);
+              return;
+            }
+          }
+        }
+
         const { data: sets, error: setError } = await supabase
           .from('practice_sets')
           .select('*')
@@ -110,6 +163,7 @@ export default function SessionPage() {
           })) as PracticeQuestion[];
 
           setPracticeSet({ ...firstSet, questions: normalizedQuestions });
+          setPracticeSource('legacy');
 
           if (normalizedQuestions.length > 0) {
             const { data: attempts } = await supabase
@@ -138,6 +192,25 @@ export default function SessionPage() {
     }
   }, [user, authLoading, router, sessionId]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    if (!user || !sessionId) return;
+
+    const storedMarks = window.localStorage.getItem(`practice-review:${user.id}:${sessionId}`);
+    if (storedMarks) {
+      try {
+        setMarkedForReviewIds(JSON.parse(storedMarks));
+      } catch {
+        setMarkedForReviewIds([]);
+      }
+    }
+  }, [user, sessionId]);
+
+  useEffect(() => {
+    if (searchParams.get('tab') === 'practice') {
+      setActiveTab('practice');
+    }
+  }, [searchParams]);
+
   const isLoading = authLoading || dataLoading;
 
   if (isLoading || !user || !session) {
@@ -154,32 +227,106 @@ export default function SessionPage() {
   const worksheet = materials.find((m) => m.type === 'worksheet');
   const video = materials.find((m) => m.type === 'video');
   const availableMaterialsCount = materials.filter((m) => isMaterialAvailable(m, session)).length;
+  const practiceAvailable = isSessionPracticeAvailable(session);
   const questions = practiceSet?.questions || [];
   const activeQuestion = questions[activeQuestionIndex];
-  const activeAttempt = activeQuestion ? attemptsByQuestionId[activeQuestion.id] : undefined;
+  const attemptedCount = questions.filter((question) => attemptsByQuestionId[question.id]).length;
+  const incorrectCount = questions.filter((question) => attemptsByQuestionId[question.id] && !attemptsByQuestionId[question.id].is_correct).length;
+  const unattemptedCount = Math.max(questions.length - attemptedCount, 0);
+  const markedCount = markedForReviewIds.filter((id) => questions.some((question) => question.id === id)).length;
+  const unattemptedQuestions = questions.filter((question) => !attemptsByQuestionId[question.id]);
+  const todayQuestionIds = new Set(unattemptedQuestions.slice(0, 10).map((question) => question.id));
+  const visibleQuestions = questions.filter((question) => {
+    if (practiceMode === 'today') return todayQuestionIds.has(question.id) || todayQuestionIds.size === 0;
+    if (practiceMode === 'unattempted') return !attemptsByQuestionId[question.id];
+    if (practiceMode === 'incorrect') return Boolean(attemptsByQuestionId[question.id] && !attemptsByQuestionId[question.id].is_correct);
+    if (practiceMode === 'marked') return markedForReviewIds.includes(question.id);
+    return true;
+  });
+  const activeVisibleIndex = visibleQuestions.findIndex((question) => question.id === activeQuestion?.id);
+  const displayedQuestion = activeVisibleIndex >= 0 ? activeQuestion : visibleQuestions[0] || activeQuestion;
+  const displayedQuestionIndex = displayedQuestion ? questions.findIndex((question) => question.id === displayedQuestion.id) : activeQuestionIndex;
+  const displayedAttempt = displayedQuestion ? attemptsByQuestionId[displayedQuestion.id] : undefined;
+  const currentModeLabel = {
+    today: "Today's 10",
+    all: 'All questions',
+    unattempted: 'Unattempted',
+    incorrect: 'Incorrect',
+    marked: 'Marked',
+  }[practiceMode];
+
+  const jumpToQuestion = (questionId: string) => {
+    const nextIndex = questions.findIndex((question) => question.id === questionId);
+    if (nextIndex >= 0) {
+      setActiveQuestionIndex(nextIndex);
+      setSelectedAnswer('');
+    }
+  };
+
+  const setModeAndFocus = (mode: PracticeMode) => {
+    setPracticeMode(mode);
+    const nextVisible = questions.find((question) => {
+      if (mode === 'today') return todayQuestionIds.has(question.id) || todayQuestionIds.size === 0;
+      if (mode === 'unattempted') return !attemptsByQuestionId[question.id];
+      if (mode === 'incorrect') return Boolean(attemptsByQuestionId[question.id] && !attemptsByQuestionId[question.id].is_correct);
+      if (mode === 'marked') return markedForReviewIds.includes(question.id);
+      return true;
+    });
+    if (nextVisible) jumpToQuestion(nextVisible.id);
+  };
+
+  const toggleMarkedForReview = () => {
+    if (!displayedQuestion || !user) return;
+    const nextMarks = markedForReviewIds.includes(displayedQuestion.id)
+      ? markedForReviewIds.filter((id) => id !== displayedQuestion.id)
+      : [...markedForReviewIds, displayedQuestion.id];
+    setMarkedForReviewIds(nextMarks);
+    window.localStorage.setItem(`practice-review:${user.id}:${sessionId}`, JSON.stringify(nextMarks));
+  };
+
+  const moveWithinVisibleQuestions = (direction: -1 | 1) => {
+    if (visibleQuestions.length === 0) return;
+    const safeIndex = activeVisibleIndex >= 0 ? activeVisibleIndex : 0;
+    const nextVisibleIndex = Math.min(Math.max(safeIndex + direction, 0), visibleQuestions.length - 1);
+    jumpToQuestion(visibleQuestions[nextVisibleIndex].id);
+  };
 
   const submitAnswer = async () => {
-    if (!activeQuestion || !selectedAnswer || !user) return;
+    if (!displayedQuestion || !selectedAnswer || !user) return;
 
-    const isCorrect = selectedAnswer === activeQuestion.correct_answer;
+    const isCorrect = selectedAnswer === displayedQuestion.correct_answer;
     setSavingAttempt(true);
 
-    const { data, error } = await supabase
-      .from('practice_attempts')
-      .upsert({
-        user_id: user.id,
-        question_id: activeQuestion.id,
-        selected_answer: selectedAnswer,
-        is_correct: isCorrect,
-        answered_at: new Date().toISOString(),
-      }, { onConflict: 'user_id,question_id' })
-      .select()
-      .single();
+    const { data, error } = practiceSource === 'master'
+      ? await supabase
+          .from('master_practice_attempts')
+          .upsert({
+            course_id: session.course_id,
+            session_id: session.id,
+            user_id: user.id,
+            master_question_id: displayedQuestion.id,
+            selected_answer: selectedAnswer,
+            is_correct: isCorrect,
+            answered_at: new Date().toISOString(),
+          }, { onConflict: 'course_id,session_id,user_id,master_question_id' })
+          .select()
+          .single()
+      : await supabase
+          .from('practice_attempts')
+          .upsert({
+            user_id: user.id,
+            question_id: displayedQuestion.id,
+            selected_answer: selectedAnswer,
+            is_correct: isCorrect,
+            answered_at: new Date().toISOString(),
+          }, { onConflict: 'user_id,question_id' })
+          .select()
+          .single();
 
     if (!error && data) {
       setAttemptsByQuestionId((current) => ({
         ...current,
-        [activeQuestion.id]: data as PracticeAttempt,
+        [displayedQuestion.id]: data as PracticeAttempt,
       }));
     }
 
@@ -309,68 +456,163 @@ export default function SessionPage() {
 
               {activeTab === 'practice' && (
                 <div className="practice-panel">
-                  {questions.length > 0 && activeQuestion ? (
+                  {!practiceAvailable ? (
+                    renderLockedInline('worksheet')
+                  ) : questions.length > 0 && displayedQuestion ? (
                     <>
-                      <div className="practice-header">
-                        <span>Question {activeQuestionIndex + 1} of {questions.length}</span>
-                        <strong>{practiceSet?.title || 'Practice'}</strong>
+                      <div className="practice-overview">
+                        <div>
+                          <strong>{attemptedCount}</strong>
+                          <span>Attempted</span>
+                        </div>
+                        <div>
+                          <strong>{unattemptedCount}</strong>
+                          <span>Not attempted</span>
+                        </div>
+                        <div>
+                          <strong>{incorrectCount}</strong>
+                          <span>Wrong</span>
+                        </div>
+                        <div>
+                          <strong>{markedCount}</strong>
+                          <span>Marked</span>
+                        </div>
                       </div>
 
-                      <div className="practice-question">{activeQuestion.question_text}</div>
+                      <div className="practice-mode-bar" aria-label="Practice filters">
+                        {([
+                          ['today', "Today's 10"],
+                          ['all', 'All'],
+                          ['unattempted', 'Unattempted'],
+                          ['incorrect', 'Wrong'],
+                          ['marked', 'Marked'],
+                        ] as [PracticeMode, string][]).map(([mode, label]) => (
+                          <button
+                            key={mode}
+                            type="button"
+                            className={`practice-mode ${practiceMode === mode ? 'active' : ''}`}
+                            onClick={() => setModeAndFocus(mode)}
+                          >
+                            {label}
+                          </button>
+                        ))}
+                      </div>
 
-                      <div className="answer-list">
-                        {activeQuestion.options.map((option) => {
-                          const answered = Boolean(activeAttempt);
-                          const isSelected = (activeAttempt?.selected_answer || selectedAnswer) === option;
-                          const isCorrect = activeQuestion.correct_answer === option;
+                      <div className="practice-map" aria-label="Question overview">
+                        {questions.map((question, index) => {
+                          const attempt = attemptsByQuestionId[question.id];
+                          const isMarked = markedForReviewIds.includes(question.id);
+                          const isToday = todayQuestionIds.has(question.id);
 
                           return (
                             <button
-                              key={option}
+                              key={question.id}
                               type="button"
-                              className={`answer-option ${isSelected ? 'selected' : ''} ${answered && isCorrect ? 'correct' : ''} ${answered && isSelected && !isCorrect ? 'incorrect' : ''}`}
-                              onClick={() => !answered && setSelectedAnswer(option)}
-                              disabled={answered}
+                              className={`practice-map-dot ${displayedQuestion.id === question.id ? 'active' : ''} ${attempt ? 'attempted' : 'unattempted'} ${attempt && !attempt.is_correct ? 'wrong' : ''} ${isMarked ? 'marked' : ''} ${isToday ? 'today' : ''}`}
+                              onClick={() => jumpToQuestion(question.id)}
+                              title={`Question ${index + 1}`}
                             >
-                              {option}
+                              {question.order_index || index + 1}
                             </button>
                           );
                         })}
                       </div>
 
-                      {activeAttempt ? (
-                        <div className={`practice-result ${activeAttempt.is_correct ? 'correct' : 'incorrect'}`}>
-                          <strong>{activeAttempt.is_correct ? 'Correct' : 'Not quite'}</strong>
-                          <p>{activeQuestion.explanation}</p>
+                      {visibleQuestions.length === 0 && (
+                        <div className="tab-empty">
+                          <strong>No questions in {currentModeLabel}.</strong>
+                          <p>Switch filters or mark questions for review as you practice.</p>
                         </div>
-                      ) : (
-                        <button className="btn btn-primary" onClick={submitAnswer} disabled={!selectedAnswer || savingAttempt}>
-                          {savingAttempt ? 'Saving...' : 'Submit Answer'}
-                        </button>
                       )}
 
-                      <div className="practice-nav">
-                        <button
-                          className="btn btn-secondary btn-sm"
-                          onClick={() => {
-                            setActiveQuestionIndex(Math.max(activeQuestionIndex - 1, 0));
-                            setSelectedAnswer('');
-                          }}
-                          disabled={activeQuestionIndex === 0}
-                        >
-                          Previous
-                        </button>
-                        <button
-                          className="btn btn-secondary btn-sm"
-                          onClick={() => {
-                            setActiveQuestionIndex(Math.min(activeQuestionIndex + 1, questions.length - 1));
-                            setSelectedAnswer('');
-                          }}
-                          disabled={activeQuestionIndex === questions.length - 1}
-                        >
-                          Next
-                        </button>
-                      </div>
+                      {visibleQuestions.length > 0 && (
+                        <>
+                          <div className="practice-header">
+                            <span>{currentModeLabel} · Q{displayedQuestion.order_index || displayedQuestionIndex + 1} · {questions.length} loaded</span>
+                            <strong>{practiceSet?.title || 'Practice'}</strong>
+                          </div>
+                          <div className="practice-question-tools">
+                            <span className={`practice-difficulty ${displayedQuestion.difficulty || 'basic'}`}>
+                              {displayedQuestion.difficulty === 'advanced' ? 'Advanced' : 'Basic'}
+                            </span>
+                            <button
+                              type="button"
+                              className={`review-toggle ${markedForReviewIds.includes(displayedQuestion.id) ? 'active' : ''}`}
+                              onClick={toggleMarkedForReview}
+                            >
+                              {markedForReviewIds.includes(displayedQuestion.id) ? 'Marked for review' : 'Mark for review'}
+                            </button>
+                          </div>
+
+                          <div className="practice-question">{displayedQuestion.question_text}</div>
+
+                          {displayedQuestion.options.length > 0 ? (
+                            <div className="answer-list">
+                              {displayedQuestion.options.map((option) => {
+                                const answered = Boolean(displayedAttempt);
+                                const isSelected = (displayedAttempt?.selected_answer || selectedAnswer) === option;
+                                const isCorrect = displayedQuestion.correct_answer === option;
+
+                                return (
+                                  <button
+                                    key={option}
+                                    type="button"
+                                    className={`answer-option ${isSelected ? 'selected' : ''} ${answered && isCorrect ? 'correct' : ''} ${answered && isSelected && !isCorrect ? 'incorrect' : ''}`}
+                                    onClick={() => !answered && setSelectedAnswer(option)}
+                                    disabled={answered}
+                                  >
+                                    {option}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <div className="form-group">
+                              <label className="form-label" htmlFor="open-answer">Your answer</label>
+                              <input
+                                id="open-answer"
+                                className="form-input"
+                                value={displayedAttempt?.selected_answer || selectedAnswer}
+                                onChange={(event) => setSelectedAnswer(event.target.value)}
+                                disabled={Boolean(displayedAttempt)}
+                                placeholder="Type your answer"
+                              />
+                            </div>
+                          )}
+
+                          {displayedAttempt ? (
+                            <div className={`practice-result ${displayedAttempt.is_correct ? 'correct' : 'incorrect'}`}>
+                              <strong>{displayedAttempt.is_correct ? 'Correct' : 'Not quite'}</strong>
+                              <p>{displayedQuestion.explanation}</p>
+                            </div>
+                          ) : (
+                            <button className="btn btn-primary" onClick={submitAnswer} disabled={!selectedAnswer || savingAttempt}>
+                              {savingAttempt ? 'Saving...' : 'Submit Answer'}
+                            </button>
+                          )}
+
+                          <div className="practice-nav">
+                            <button
+                              className="btn btn-secondary btn-sm"
+                              onClick={() => {
+                                moveWithinVisibleQuestions(-1);
+                              }}
+                              disabled={activeVisibleIndex <= 0}
+                            >
+                              Previous
+                            </button>
+                            <button
+                              className="btn btn-secondary btn-sm"
+                              onClick={() => {
+                                moveWithinVisibleQuestions(1);
+                              }}
+                              disabled={activeVisibleIndex === visibleQuestions.length - 1}
+                            >
+                              Next
+                            </button>
+                          </div>
+                        </>
+                      )}
                     </>
                   ) : (
                     <>

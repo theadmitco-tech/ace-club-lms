@@ -44,6 +44,14 @@ export function getDefaultSessionTitle(sessionNumber: number) {
   return DEFAULT_CURRICULUM[sessionNumber - 1]?.title;
 }
 
+export function getCurriculumWorksheetSection(sessionNumber: number) {
+  const category = DEFAULT_CURRICULUM[sessionNumber - 1]?.category;
+  if (category === 'Quants') return 'quant';
+  if (category === 'Verbal') return 'verbal';
+  if (category === 'Data Insights') return 'di';
+  return null;
+}
+
 export function shouldUseDefaultSessionTitle(sessionNumber: number, title?: string | null) {
   if (!title?.trim()) return true;
 

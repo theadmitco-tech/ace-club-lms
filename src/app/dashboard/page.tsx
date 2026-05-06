@@ -4,9 +4,21 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
 import { createClient } from '@/utils/supabase/client';
-import type { Material, Session } from '@/lib/types';
-import { DEFAULT_CURRICULUM } from '@/lib/curriculum';
+import type { MasterWorksheetPlan, Material, Session, WorksheetDailyTarget } from '@/lib/types';
+import { DEFAULT_CURRICULUM, getCurriculumWorksheetSection } from '@/lib/curriculum';
 import { formatDate, formatRelativeDate } from '@/lib/utils';
+import {
+  getSessionStatus,
+  isMaterialAvailable,
+  isSessionPracticeAvailable,
+} from '@/lib/sessionAvailability';
+import {
+  WORKSHEET_SECTION_LABELS,
+  formatWorksheetTargetDate,
+  getRankBand,
+  summarizeWorksheetProgress,
+  toDateKey,
+} from '@/lib/worksheetProgress';
 import './dashboard.css';
 
 type DashboardSession = Session & {
@@ -19,30 +31,32 @@ interface SessionCard {
   status: 'available' | 'locked' | 'upcoming';
 }
 
-function isMaterialAvailable(material: Material, session: Session) {
-  const sessionDate = new Date(session.session_date);
-  const now = new Date();
-  
-  if (material.type === 'pre_read') {
-    // 1 week before the session
-    const availableDate = new Date(sessionDate.getTime() - 7 * 24 * 60 * 60 * 1000);
-    return now >= availableDate;
-  } else {
-    // right after the session (defaulting to 10 AM session, so +2 hours = 12 PM UTC)
-    const availableDate = new Date(sessionDate.getTime() + 2 * 60 * 60 * 1000);
-    return now >= availableDate;
-  }
+interface WorksheetRankData {
+  user_total: number;
+  user_correct: number;
+  user_accuracy: number;
+  class_average: number;
+  class_accuracy: number;
+  percentile: number | null;
+  enrolled_count: number;
+  active_today: number;
 }
 
-function getSessionStatus(session: Session) {
-  const sessionDate = new Date(session.session_date);
-  const now = new Date();
-  const diffDays = (sessionDate.getTime() - now.getTime()) / (1000 * 3600 * 24);
-
-  if (diffDays <= 0) return 'available'; // Past or today
-  if (diffDays <= 7) return 'upcoming'; // Within next 7 days
-  return 'locked'; // More than 7 days out
+interface WorksheetTargetAttempt {
+  target_id: string;
+  attempted_count: number;
+  correct_count: number;
 }
+
+interface WorksheetAttemptRow {
+  answered_at: string;
+  is_correct: boolean | null;
+  session_id: string | null;
+}
+
+type WorksheetTargetWithSession = WorksheetDailyTarget & {
+  sessions?: Pick<Session, 'id' | 'title' | 'session_number' | 'session_date'> | null;
+};
 
 function getMaterialColumnState(materials: Material[], session: Session, type: 'pre_read' | 'worksheet') {
   const matchingMaterials = materials.filter((material) => material.type === type);
@@ -80,8 +94,111 @@ export default function DashboardPage() {
   const [sessionCards, setSessionCards] = useState<SessionCard[]>([]);
   const [hasEnrollment, setHasEnrollment] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
+  const [courseId, setCourseId] = useState<string | null>(null);
+  const [worksheetPlan, setWorksheetPlan] = useState<MasterWorksheetPlan | null>(null);
+  const [worksheetTargets, setWorksheetTargets] = useState<WorksheetTargetWithSession[]>([]);
+  const [worksheetTargetAttempts, setWorksheetTargetAttempts] = useState<Record<string, WorksheetTargetAttempt>>({});
+  const [worksheetAttemptDates, setWorksheetAttemptDates] = useState<string[]>([]);
+  const [worksheetAttemptRows, setWorksheetAttemptRows] = useState<WorksheetAttemptRow[]>([]);
+  const [worksheetRank, setWorksheetRank] = useState<WorksheetRankData | null>(null);
+  const [worksheetUnavailable, setWorksheetUnavailable] = useState(false);
 
   const supabase = createClient();
+
+  const loadWorksheetData = async (batchId: string, studentId: string) => {
+    try {
+      setWorksheetUnavailable(false);
+      const { data: planData, error: planError } = await supabase
+        .from('master_worksheet_plans')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (planError) throw planError;
+      const activePlan = planData as MasterWorksheetPlan | null;
+      setWorksheetPlan(activePlan);
+
+      if (!activePlan) {
+        setWorksheetTargets([]);
+        setWorksheetTargetAttempts({});
+        setWorksheetAttemptDates([]);
+        setWorksheetAttemptRows([]);
+        setWorksheetRank(null);
+        return;
+      }
+
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+      sevenDaysAgo.setHours(0, 0, 0, 0);
+
+      const [
+        { data: targetsData, error: targetsError },
+        { data: targetAttemptsData, error: targetAttemptsError },
+        { data: rankData, error: rankError },
+        { data: attemptDateData, error: attemptDateError },
+        { data: attemptRowsData, error: attemptRowsError },
+      ] = await Promise.all([
+        supabase
+          .from('worksheet_daily_targets')
+          .select('*, sessions(id, title, session_number, session_date)')
+          .eq('course_id', batchId)
+          .eq('is_active', true)
+          .order('target_date', { ascending: true }),
+        supabase.rpc('get_student_worksheet_target_attempts', {
+          p_course_id: batchId,
+        }),
+        supabase.rpc('get_student_worksheet_attempt_rank', {
+          p_course_id: batchId,
+        }),
+        supabase
+          .from('master_practice_attempts')
+          .select('answered_at')
+          .eq('course_id', batchId)
+          .eq('user_id', studentId),
+        supabase
+          .from('master_practice_attempts')
+          .select('answered_at, is_correct, session_id')
+          .eq('course_id', batchId)
+          .eq('user_id', studentId)
+          .gte('answered_at', sevenDaysAgo.toISOString()),
+      ]);
+
+      if (targetsError) throw targetsError;
+      if (targetAttemptsError) throw targetAttemptsError;
+      if (attemptDateError) throw attemptDateError;
+      if (attemptRowsError) throw attemptRowsError;
+
+      const nextTargets = (targetsData || []) as WorksheetTargetWithSession[];
+      setWorksheetTargets(nextTargets);
+      setWorksheetTargetAttempts(
+        ((targetAttemptsData || []) as WorksheetTargetAttempt[]).reduce<Record<string, WorksheetTargetAttempt>>((acc, row) => {
+          acc[row.target_id] = row;
+          return acc;
+        }, {})
+      );
+      setWorksheetAttemptDates(
+        Array.from(new Set(((attemptDateData || []) as WorksheetAttemptRow[]).map((attempt) => attempt.answered_at.slice(0, 10))))
+      );
+      setWorksheetAttemptRows((attemptRowsData || []) as WorksheetAttemptRow[]);
+
+      if (!rankError && rankData?.[0]) {
+        setWorksheetRank(rankData[0] as WorksheetRankData);
+      } else {
+        setWorksheetRank(null);
+      }
+    } catch (error) {
+      console.info('Worksheet tracker is not available yet.', error);
+      setWorksheetUnavailable(true);
+      setWorksheetPlan(null);
+      setWorksheetTargets([]);
+      setWorksheetTargetAttempts({});
+      setWorksheetAttemptDates([]);
+      setWorksheetAttemptRows([]);
+      setWorksheetRank(null);
+    }
+  };
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -108,6 +225,7 @@ export default function DashboardPage() {
         const courseId = enrollments[0].course_id;
 
         setHasEnrollment(true);
+        setCourseId(courseId);
 
         // 2. Get sessions and their materials
         const { data: sessionsData } = await supabase
@@ -128,6 +246,8 @@ export default function DashboardPage() {
           });
           setSessionCards(cards);
         }
+
+        await loadWorksheetData(courseId, user.id);
       }
       setDataLoading(false);
     }
@@ -174,6 +294,119 @@ export default function DashboardPage() {
     : nextSessionAvailableMaterials.length > 0
       ? 'Prepare for Class'
       : 'View Next Class';
+  const todayKey = toDateKey(new Date());
+  const eligibleSectionsBySessionId = new Map(
+    sessionCards
+      .filter((card) => card.session.session_number > 1 && isSessionPracticeAvailable(card.session, now))
+      .map((card) => [card.session.id, getCurriculumWorksheetSection(card.session.session_number)])
+      .filter((entry): entry is [string, 'quant' | 'verbal' | 'di'] => Boolean(entry[1]))
+  );
+  const eligibleWorksheetTargets = Array.from(
+    worksheetTargets
+      .filter((target) => {
+        const sessionSection = target.sessions
+          ? getCurriculumWorksheetSection(target.sessions.session_number)
+          : eligibleSectionsBySessionId.get(target.session_id);
+        const sessionAvailable = target.sessions
+          ? target.sessions.session_number > 1 && isSessionPracticeAvailable(target.sessions as Session, now)
+          : eligibleSectionsBySessionId.has(target.session_id);
+        return sessionAvailable && sessionSection === target.section;
+      })
+      .reduce<Map<string, WorksheetTargetWithSession>>((acc, target) => {
+        const key = `${target.session_id}:${target.section}:${target.target_date}:${target.question_start}:${target.question_end}`;
+        if (!acc.has(key)) acc.set(key, target);
+        return acc;
+      }, new Map())
+      .values()
+  );
+  const todayWorksheetTargets = eligibleWorksheetTargets.filter((target) => target.target_date === todayKey);
+  const worksheetAttemptLogs = eligibleWorksheetTargets
+    .map((target) => ({
+      id: target.id,
+      target_id: target.id,
+      course_id: target.course_id,
+      user_id: user.id,
+      log_date: target.target_date,
+      section: target.section,
+      attempted_count: worksheetTargetAttempts[target.id]?.attempted_count || 0,
+      created_at: target.created_at,
+    }));
+  const worksheetSummary = summarizeWorksheetProgress({ targets: eligibleWorksheetTargets, logs: worksheetAttemptLogs });
+  const rankBand = getRankBand(worksheetRank?.percentile ?? null);
+  const classAverage = worksheetRank ? Math.round(Number(worksheetRank.class_average || 0)) : null;
+  const classAccuracy = worksheetRank ? Math.round(Number(worksheetRank.class_accuracy || 0)) : null;
+  const userAccuracy = worksheetRank ? Math.round(Number(worksheetRank.user_accuracy || 0)) : 0;
+  const attemptStreak = (() => {
+    const attemptDateSet = new Set(worksheetAttemptDates);
+    let streak = 0;
+    const cursor = new Date();
+    while (cursor.getDay() === 0 || cursor.getDay() === 6) {
+      cursor.setDate(cursor.getDate() - 1);
+    }
+    while (attemptDateSet.has(toDateKey(cursor))) {
+      streak += 1;
+      cursor.setDate(cursor.getDate() - 1);
+      while (cursor.getDay() === 0 || cursor.getDay() === 6) {
+        cursor.setDate(cursor.getDate() - 1);
+      }
+    }
+    return streak;
+  })();
+  const completionPercent = Math.min(100, Math.max(0, worksheetSummary.completionPercent));
+  const todayExpectedTotal = todayWorksheetTargets.reduce((sum, target) => sum + target.target_count, 0);
+  const todayAttemptedTotal = todayWorksheetTargets.reduce(
+    (sum, target) => sum + (worksheetTargetAttempts[target.id]?.attempted_count || 0),
+    0
+  );
+  const todayCompletionPercent = todayExpectedTotal > 0
+    ? Math.min(100, Math.round((todayAttemptedTotal / todayExpectedTotal) * 100))
+    : 0;
+  const nextWorksheetTarget = todayWorksheetTargets.find((target) => (
+    (worksheetTargetAttempts[target.id]?.attempted_count || 0) < target.target_count
+  )) || todayWorksheetTargets[0] || eligibleWorksheetTargets.find((target) => target.target_date >= todayKey);
+  const catchupTargets = eligibleWorksheetTargets
+    .filter((target) => (
+      target.target_date < todayKey
+      && (worksheetTargetAttempts[target.id]?.attempted_count || 0) < target.target_count
+    ))
+    .slice(0, 3);
+  const primaryPracticeTarget = catchupTargets[0] || nextWorksheetTarget;
+  const primaryPracticeAttempted = primaryPracticeTarget
+    ? worksheetTargetAttempts[primaryPracticeTarget.id]?.attempted_count || 0
+    : todayAttemptedTotal;
+  const primaryPracticeTotal = primaryPracticeTarget?.target_count || todayExpectedTotal;
+  const primaryPracticePercent = primaryPracticeTotal > 0
+    ? Math.min(100, Math.round((primaryPracticeAttempted / primaryPracticeTotal) * 100))
+    : 0;
+  const primaryPracticeDateLabel = primaryPracticeTarget
+    ? formatWorksheetTargetDate(primaryPracticeTarget.target_date)
+    : '';
+  const getPracticeHref = (target: WorksheetDailyTarget) => `/session/${target.session_id}?tab=practice`;
+  const sevenDayActivity = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date();
+    date.setDate(date.getDate() - (6 - index));
+    const dateKey = toDateKey(date);
+    const attempts = worksheetAttemptRows.filter((attempt) => attempt.answered_at.slice(0, 10) === dateKey);
+    return {
+      dateKey,
+      label: date.toLocaleDateString('en-US', { weekday: 'short' }),
+      attempted: attempts.length,
+      correct: attempts.filter((attempt) => attempt.is_correct).length,
+    };
+  });
+  const maxDailyAttempts = Math.max(1, ...sevenDayActivity.map((day) => day.attempted));
+  const ringRadius = 42;
+  const ringCircumference = 2 * Math.PI * ringRadius;
+  const ringOffset = ringCircumference - (completionPercent / 100) * ringCircumference;
+  const classAttemptPercent = classAverage && worksheetSummary.expectedTotal > 0
+    ? Math.min(100, Math.round((classAverage / worksheetSummary.expectedTotal) * 100))
+    : 0;
+  const classAccuracyValue = classAccuracy ?? 0;
+  const statusDetail = worksheetSummary.status === 'behind'
+    ? `${worksheetSummary.shortfall} questions behind expected pace`
+    : worksheetSummary.status === 'ahead'
+      ? "Ahead of today's expected pace"
+      : 'On pace for today';
 
   return (
     <div className="dashboard">
@@ -211,6 +444,161 @@ export default function DashboardPage() {
       {/* Main Content */}
       <main className="dashboard-main">
         <div className="dashboard-container">
+          {worksheetPlan && !worksheetUnavailable && (
+            <section className="worksheet-tracker-card animate-fade-in-up" aria-label="Daily worksheet progress">
+              <div className="worksheet-tracker-header">
+                <div>
+                  <span className="dashboard-eyebrow">Daily worksheet</span>
+                  <h1>{worksheetPlan.title}</h1>
+                  <p>{statusDetail}</p>
+                </div>
+                <span className={`worksheet-status-pill ${worksheetSummary.status}`}>
+                  {worksheetSummary.status === 'ahead' ? 'Ahead' : worksheetSummary.status === 'behind' ? 'Behind' : 'On track'}
+                </span>
+              </div>
+
+              <div className="worksheet-hero-grid">
+                <div className="worksheet-overview-panel">
+                  <div className="worksheet-ring-wrap" aria-label={`${completionPercent}% complete against expected work`}>
+                    <svg className="worksheet-ring" viewBox="0 0 108 108" role="img">
+                      <circle cx="54" cy="54" r={ringRadius} className="worksheet-ring-base" />
+                      <circle
+                        cx="54"
+                        cy="54"
+                        r={ringRadius}
+                        className="worksheet-ring-progress"
+                        strokeDasharray={ringCircumference}
+                        strokeDashoffset={ringOffset}
+                      />
+                    </svg>
+                    <div className="worksheet-ring-center">
+                      <strong>{completionPercent}%</strong>
+                      <span>complete</span>
+                    </div>
+                  </div>
+
+                  <div className="worksheet-kpi-stack">
+                    <div>
+                      <span>Attempted</span>
+                      <strong>{worksheetSummary.attemptedTotal}</strong>
+                    </div>
+                    <div>
+                      <span>Expected today</span>
+                      <strong>{worksheetSummary.expectedTotal}</strong>
+                    </div>
+                    <div>
+                      <span>{worksheetSummary.shortfall > 0 ? 'Behind' : 'Pace buffer'}</span>
+                      <strong>{worksheetSummary.shortfall > 0 ? worksheetSummary.shortfall : Math.max(worksheetSummary.attemptedTotal - worksheetSummary.expectedTotal, 0)}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="worksheet-focus-panel">
+                  <div>
+                    <span className="worksheet-panel-label">Next target</span>
+                    <strong>{primaryPracticeTarget ? primaryPracticeTarget.range_label : `${todayAttemptedTotal}/${todayExpectedTotal}`}</strong>
+                    <p>
+                      {primaryPracticeTarget
+                        ? `${WORKSHEET_SECTION_LABELS[primaryPracticeTarget.section]} due ${primaryPracticeDateLabel}`
+                        : 'No practice target scheduled'}
+                    </p>
+                  </div>
+                  <div className="worksheet-progress-track" aria-hidden="true">
+                    <span style={{ width: `${primaryPracticePercent}%` }} />
+                  </div>
+                  {primaryPracticeTarget ? (
+                    <button
+                      className="btn btn-primary btn-sm"
+                      onClick={() => router.push(getPracticeHref(primaryPracticeTarget))}
+                    >
+                      Practice next target
+                    </button>
+                  ) : (
+                    <button className="btn btn-secondary btn-sm" disabled>
+                      No practice due
+                    </button>
+                  )}
+                </div>
+
+                <div className="worksheet-compare-panel">
+                  <div className="worksheet-compare-row">
+                    <span>Class comparison</span>
+                    <strong>{classAverage === null ? 'Pending' : `${classAverage} questions`}</strong>
+                  </div>
+                  <div className="worksheet-comparison-group" aria-label="Student pace compared with class average pace">
+                    <span className="worksheet-comparison-title">Pace</span>
+                    <div className="worksheet-comparison-bars">
+                      <div>
+                        <span>You</span>
+                        <strong>{worksheetSummary.attemptedTotal}/{worksheetSummary.expectedTotal}</strong>
+                        <div className="worksheet-progress-track">
+                          <span style={{ width: `${completionPercent}%` }} />
+                        </div>
+                      </div>
+                      <div>
+                        <span>Class</span>
+                        <strong>{classAverage === null ? 'Pending' : `${classAverage}/${worksheetSummary.expectedTotal}`}</strong>
+                        <div className="worksheet-progress-track muted">
+                          <span style={{ width: `${classAttemptPercent}%` }} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="worksheet-comparison-group" aria-label="Student accuracy compared with class average accuracy">
+                    <span className="worksheet-comparison-title">Accuracy</span>
+                    <div className="worksheet-comparison-bars">
+                      <div>
+                        <span>You</span>
+                        <strong>{userAccuracy}%</strong>
+                        <div className="worksheet-progress-track">
+                          <span style={{ width: `${userAccuracy}%` }} />
+                        </div>
+                      </div>
+                      <div>
+                        <span>Class</span>
+                        <strong>{classAccuracy === null ? 'Pending' : `${classAccuracyValue}%`}</strong>
+                        <div className="worksheet-progress-track muted">
+                          <span style={{ width: `${classAccuracyValue}%` }} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="worksheet-rank-row">
+                    <span>{rankBand}</span>
+                    <strong>{attemptStreak} day study streak</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div className="worksheet-analytics-grid">
+                <div className="worksheet-chart-card">
+                  <div className="worksheet-chart-heading">
+                    <span>7-day activity</span>
+                    <strong>{sevenDayActivity.reduce((sum, day) => sum + day.attempted, 0)} attempts</strong>
+                  </div>
+                  <div className="worksheet-bars" aria-label="Attempts over the last seven days">
+                    {sevenDayActivity.map((day) => {
+                      const height = Math.max(day.attempted > 0 ? 8 : 2, Math.round((day.attempted / maxDailyAttempts) * 72));
+                      const correctHeight = day.attempted > 0 ? Math.round((day.correct / day.attempted) * height) : 0;
+
+                      return (
+                        <div key={day.dateKey} className="worksheet-day-bar">
+                          <div className="worksheet-day-column" title={`${day.attempted} attempted, ${day.correct} correct`}>
+                            <span className="worksheet-day-fill" style={{ height: `${height}px` }}>
+                              <span className="worksheet-day-correct" style={{ height: `${correctHeight}px` }} />
+                            </span>
+                          </div>
+                          <span>{day.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+            </section>
+          )}
+
           <section className="student-progress-card animate-fade-in-up stagger-1" aria-label="Course progress">
             <div className="progress-copy">
               <span className="dashboard-eyebrow">Hi {firstName}</span>

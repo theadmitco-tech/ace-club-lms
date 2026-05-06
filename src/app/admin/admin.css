@@ -360,6 +360,60 @@
   font-weight: 600;
 }
 
+.worksheet-section-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+
+.worksheet-section-card {
+  padding: var(--space-md);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  opacity: 0.72;
+}
+
+.worksheet-section-card.enabled {
+  border-color: var(--border-secondary);
+  opacity: 1;
+}
+
+.worksheet-section-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.worksheet-rule-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.worksheet-rule-row {
+  display: grid;
+  grid-template-columns: 64px minmax(220px, 1fr) 120px 80px 80px 80px;
+  gap: var(--space-sm);
+  align-items: center;
+  padding: var(--space-sm);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  opacity: 0.72;
+}
+
+.worksheet-rule-row.enabled {
+  border-color: var(--border-secondary);
+  opacity: 1;
+}
+
+.worksheet-rule-row.focused {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.14);
+}
+
 
 /* ============================================
    Category Badges
@@ -403,6 +457,14 @@
   }
 
   .admin-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .worksheet-section-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .worksheet-rule-row {
     grid-template-columns: 1fr;
   }
 
