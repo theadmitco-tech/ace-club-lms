@@ -25,15 +25,51 @@ export default function AdminCoursesPage() {
   const [form, setForm] = useState({
     name: '',
     is_active: true,
+    registration_open: false,
+    capacity: '8',
+    price_amount: '',
+    currency: 'INR',
+    registration_closes_at: '',
+    public_note: '',
     startDate: '',
     bulkEmails: '',
   });
+
+  const formatMoney = (amount: number, currency = 'INR') => new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency,
+    maximumFractionDigits: 0,
+  }).format((amount || 0) / 100);
+
+  const getCourseRegistrationStats = (course: any) => {
+    const now = new Date();
+    const registrations = course.registrations || [];
+    const paidPayments = registrations.flatMap((registration: any) => (
+      (registration.payments || []).filter((payment: any) => payment.status === 'paid')
+    ));
+    const pendingReservations = registrations.filter((registration: any) => (
+      registration.status === 'pending_payment'
+      && registration.reserved_until
+      && new Date(registration.reserved_until) > now
+    )).length;
+    const revenue = paidPayments.reduce((sum: number, payment: any) => sum + (payment.amount || 0), 0);
+    const capacity = course.capacity || 8;
+    const paidSeats = course.enrollments?.length || 0;
+
+    return {
+      capacity,
+      paidSeats,
+      pendingReservations,
+      availableSeats: Math.max(capacity - paidSeats - pendingReservations, 0),
+      revenue,
+    };
+  };
 
   const fetchCourses = async () => {
     setIsLoading(true);
     const { data, error } = await supabase
       .from('courses')
-      .select('*, sessions(id, session_date), enrollments(id)')
+      .select('*, sessions(id, session_date), enrollments(id), registrations(id, status, reserved_until, payments(amount, status))')
       .order('created_at', { ascending: false });
       
     if (!error && data) {
@@ -68,6 +104,12 @@ export default function AdminCoursesPage() {
       .insert({
         name: form.name,
         is_active: form.is_active,
+        registration_open: form.registration_open,
+        capacity: Number(form.capacity) || 8,
+        price_amount: Math.max(0, Math.round(Number(form.price_amount || 0) * 100)),
+        currency: form.currency || 'INR',
+        registration_closes_at: form.registration_closes_at ? new Date(form.registration_closes_at).toISOString() : null,
+        public_note: form.public_note.trim() || null,
       })
       .select()
       .single();
@@ -173,6 +215,12 @@ export default function AdminCoursesPage() {
     setForm({
       name: course.name,
       is_active: course.is_active,
+      registration_open: Boolean(course.registration_open),
+      capacity: String(course.capacity || 8),
+      price_amount: course.price_amount ? String((course.price_amount || 0) / 100) : '',
+      currency: course.currency || 'INR',
+      registration_closes_at: course.registration_closes_at ? new Date(course.registration_closes_at).toISOString().slice(0, 16) : '',
+      public_note: course.public_note || '',
       startDate: '',
       bulkEmails: '',
     });
@@ -189,6 +237,12 @@ export default function AdminCoursesPage() {
       .update({
         name: form.name,
         is_active: form.is_active,
+        registration_open: form.registration_open,
+        capacity: Number(form.capacity) || 8,
+        price_amount: Math.max(0, Math.round(Number(form.price_amount || 0) * 100)),
+        currency: form.currency || 'INR',
+        registration_closes_at: form.registration_closes_at ? new Date(form.registration_closes_at).toISOString() : null,
+        public_note: form.public_note.trim() || null,
       })
       .eq('id', editingId);
 
@@ -244,7 +298,18 @@ export default function AdminCoursesPage() {
 
   const resetForm = () => {
     setEditingId(null);
-    setForm({ name: '', is_active: true, startDate: '', bulkEmails: '' });
+    setForm({
+      name: '',
+      is_active: true,
+      registration_open: false,
+      capacity: '8',
+      price_amount: '',
+      currency: 'INR',
+      registration_closes_at: '',
+      public_note: '',
+      startDate: '',
+      bulkEmails: '',
+    });
     setStudentsInBatch([]);
   };
 
@@ -324,6 +389,65 @@ export default function AdminCoursesPage() {
               </div>
             )}
 
+            <div className="admin-form-row">
+              <div className="form-group">
+                <label htmlFor="batch-capacity" className="form-label">Capacity</label>
+                <input
+                  id="batch-capacity"
+                  type="number"
+                  min="1"
+                  className="form-input"
+                  value={form.capacity}
+                  onChange={(e) => setForm({ ...form, capacity: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="batch-price" className="form-label">Price (INR)</label>
+                <input
+                  id="batch-price"
+                  type="number"
+                  min="0"
+                  className="form-input"
+                  placeholder="e.g., 49999"
+                  value={form.price_amount}
+                  onChange={(e) => setForm({ ...form, price_amount: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="admin-form-row">
+              <div className="form-group">
+                <label htmlFor="registration-closes" className="form-label">Registration Closes</label>
+                <input
+                  id="registration-closes"
+                  type="datetime-local"
+                  className="form-input"
+                  value={form.registration_closes_at}
+                  onChange={(e) => setForm({ ...form, registration_closes_at: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="batch-currency" className="form-label">Currency</label>
+                <input
+                  id="batch-currency"
+                  className="form-input"
+                  value={form.currency}
+                  onChange={(e) => setForm({ ...form, currency: e.target.value.toUpperCase() })}
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="public-note" className="form-label">Public Registration Note</label>
+              <input
+                id="public-note"
+                className="form-input"
+                placeholder="e.g., Weekend classes at 10 AM IST"
+                value={form.public_note}
+                onChange={(e) => setForm({ ...form, public_note: e.target.value })}
+              />
+            </div>
+
             {/* List existing students while editing */}
             {editingId && studentsInBatch.length > 0 && (
               <div className="form-group">
@@ -379,6 +503,18 @@ export default function AdminCoursesPage() {
                 Published / Active
               </label>
             </div>
+
+            <div className="form-group">
+              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={form.registration_open}
+                  onChange={(e) => setForm({ ...form, registration_open: e.target.checked })}
+                  style={{ width: 16, height: 16, accentColor: 'var(--accent-primary)' }}
+                />
+                Open public registration
+              </label>
+            </div>
             
             <div className="admin-form-actions">
               <button
@@ -403,6 +539,8 @@ export default function AdminCoursesPage() {
                   <th>Batch Name</th>
                   <th>Sessions Done</th>
                   <th>Students</th>
+                  <th>Registration</th>
+                  <th>Revenue</th>
                   <th>Status</th>
                   <th style={{ textAlign: 'right' }}>Actions</th>
                 </tr>
@@ -413,6 +551,7 @@ export default function AdminCoursesPage() {
                   const sessionsDone = course.sessions?.filter((s: any) => new Date(s.session_date) < now).length || 0;
                   const totalSessions = course.sessions?.length || 0;
                   const progress = totalSessions > 0 ? Math.round((sessionsDone / totalSessions) * 100) : 0;
+                  const registrationStats = getCourseRegistrationStats(course);
 
                   return (
                     <tr key={course.id}>
@@ -439,6 +578,22 @@ export default function AdminCoursesPage() {
                         >
                           {course.enrollments?.length || 0} students →
                         </button>
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          <span className={`badge ${course.registration_open ? 'badge-available' : 'badge-locked'}`}>
+                            {course.registration_open ? 'Open' : 'Closed'}
+                          </span>
+                          <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
+                            {registrationStats.availableSeats} open · {registrationStats.pendingReservations} reserved
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        <div style={{ fontWeight: 700 }}>{formatMoney(registrationStats.revenue, course.currency || 'INR')}</div>
+                        <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
+                          Price {formatMoney(course.price_amount || 0, course.currency || 'INR')}
+                        </div>
                       </td>
                       <td>
                         <span className={`badge ${course.is_active ? 'badge-available' : 'badge-locked'}`}>

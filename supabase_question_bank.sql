@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS public.questions (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   external_id TEXT UNIQUE,
   import_batch_id UUID,
+  master_session_id UUID REFERENCES public.master_sessions(id) ON DELETE SET NULL,
+  session_number INTEGER CHECK (session_number BETWEEN 2 AND 16),
   section TEXT NOT NULL CHECK (section IN ('Quant', 'Verbal')),
   question_type TEXT NOT NULL CHECK (question_type IN ('QA', 'CR', 'DS')),
   primary_topic TEXT NOT NULL,
@@ -45,6 +47,8 @@ CREATE TABLE IF NOT EXISTS public.question_sets (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   external_id TEXT UNIQUE,
   import_batch_id UUID,
+  master_session_id UUID REFERENCES public.master_sessions(id) ON DELETE SET NULL,
+  session_number INTEGER CHECK (session_number BETWEEN 2 AND 16),
   type TEXT NOT NULL CHECK (type IN ('RC', 'DI')),
   di_type TEXT CHECK (di_type IN ('table', 'graph', 'caselet', 'multi_source')),
   section TEXT NOT NULL CHECK (section IN ('Verbal', 'DI')),
@@ -101,12 +105,14 @@ CREATE TABLE IF NOT EXISTS public.set_questions (
 );
 
 CREATE INDEX IF NOT EXISTS questions_section_primary_topic_idx ON public.questions (section, primary_topic);
+CREATE INDEX IF NOT EXISTS questions_session_number_idx ON public.questions (session_number, display_order) WHERE is_active = true;
 CREATE INDEX IF NOT EXISTS questions_question_type_idx ON public.questions (question_type);
 CREATE INDEX IF NOT EXISTS questions_difficulty_idx ON public.questions (difficulty);
 CREATE INDEX IF NOT EXISTS questions_active_display_idx ON public.questions (is_active, display_order);
 CREATE INDEX IF NOT EXISTS questions_topic_route_idx ON public.questions (section, question_type, primary_topic, subtopic) WHERE is_active = true;
 
 CREATE INDEX IF NOT EXISTS question_sets_type_primary_topic_idx ON public.question_sets (type, primary_topic);
+CREATE INDEX IF NOT EXISTS question_sets_session_number_idx ON public.question_sets (session_number, display_order) WHERE is_active = true;
 CREATE INDEX IF NOT EXISTS question_sets_di_type_idx ON public.question_sets (di_type);
 CREATE INDEX IF NOT EXISTS question_sets_active_display_idx ON public.question_sets (is_active, display_order);
 CREATE INDEX IF NOT EXISTS question_sets_route_idx ON public.question_sets (type, di_type, primary_topic, subtopic) WHERE is_active = true;

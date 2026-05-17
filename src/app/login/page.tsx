@@ -221,7 +221,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <p className="login-footer">
-          Don&apos;t have an account? Contact the Ace Club team.
+          Don&apos;t have an account? <button type="button" onClick={() => router.push('/')} className="login-footer-link">Register for a batch.</button>
         </p>
       </div>
     </div>

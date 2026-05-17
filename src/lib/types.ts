@@ -18,6 +18,12 @@ export interface Course {
   name: string;
   description: string;
   is_active: boolean;
+  registration_open?: boolean;
+  capacity?: number;
+  price_amount?: number;
+  currency?: string;
+  registration_closes_at?: string | null;
+  public_note?: string | null;
   created_at: string;
 }
 
@@ -64,6 +70,15 @@ export interface PracticeQuestion {
   correct_answer: string;
   explanation: string;
   difficulty: 'basic' | 'advanced';
+  question_type?: 'problem_solving' | 'data_sufficiency' | 'critical_reasoning' | 'reading_comprehension' | 'data_insights';
+  di_question_type?: 'data_sufficiency' | 'multi_source_reasoning' | 'table_analysis' | 'graphics_interpretation' | 'two_part_analysis' | null;
+  answer_mode?: 'single_choice' | 'multi_select' | 'numeric' | 'two_part' | 'dropdown';
+  stimulus_group_key?: string | null;
+  stimulus_title?: string | null;
+  stimulus_text?: string | null;
+  stimulus_data?: Record<string, unknown> | null;
+  content_format?: 'plain' | 'markdown';
+  admin_notes?: string | null;
   order_index: number;
   created_at: string;
   attempts?: PracticeAttempt[];
@@ -92,6 +107,8 @@ export interface QuestionBankQuestion {
   id: string;
   external_id?: string | null;
   import_batch_id?: string | null;
+  master_session_id?: string | null;
+  session_number?: number | null;
   section: 'Quant' | 'Verbal';
   question_type: StandaloneQuestionType;
   primary_topic: string;
@@ -122,6 +139,8 @@ export interface QuestionBankSet {
   id: string;
   external_id?: string | null;
   import_batch_id?: string | null;
+  master_session_id?: string | null;
+  session_number?: number | null;
   type: QuestionSetType;
   di_type?: DataInsightsType | null;
   section: 'Verbal' | 'DI';
@@ -174,6 +193,37 @@ export interface Enrollment {
   user_id: string;
   course_id: string;
   enrolled_at: string;
+}
+
+export type RegistrationStatus = 'pending_payment' | 'paid' | 'failed' | 'expired' | 'cancelled';
+export type PaymentStatus = 'created' | 'paid' | 'failed' | 'refunded';
+
+export interface Registration {
+  id: string;
+  course_id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  target_gmat_date?: string | null;
+  consent: boolean;
+  status: RegistrationStatus;
+  reserved_until?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Payment {
+  id: string;
+  registration_id: string;
+  razorpay_order_id?: string | null;
+  razorpay_payment_id?: string | null;
+  razorpay_signature?: string | null;
+  amount: number;
+  currency: string;
+  status: PaymentStatus;
+  raw_payload?: Record<string, unknown> | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export type WorksheetSectionKey = 'quant' | 'verbal' | 'di';

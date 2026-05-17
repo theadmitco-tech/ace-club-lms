@@ -350,6 +350,10 @@
   box-shadow: inset 0 -2px 0 var(--accent-secondary);
 }
 
+.practice-map-dot.catchup {
+  box-shadow: inset 0 -2px 0 var(--warning);
+}
+
 .practice-map-dot.attempted {
   border-color: rgba(0, 59, 48, 0.24);
   background: rgba(0, 59, 48, 0.07);
@@ -377,6 +381,28 @@
   border-color: var(--accent-primary);
   background: var(--accent-primary);
   color: white;
+}
+
+.practice-focus-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  border: 1px solid rgba(215, 154, 43, 0.28);
+  border-radius: var(--radius-md);
+  background: var(--warning-bg);
+}
+
+.practice-focus-note strong {
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.practice-focus-note span {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  text-align: right;
 }
 
 .practice-header {
@@ -447,6 +473,34 @@
   font-size: var(--font-size-lg);
   font-weight: 700;
   line-height: 1.4;
+}
+
+.practice-stimulus {
+  padding: var(--space-lg);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+}
+
+.practice-stimulus span {
+  display: block;
+  margin-bottom: var(--space-xs);
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.practice-stimulus strong {
+  display: block;
+  margin-bottom: var(--space-sm);
+}
+
+.practice-stimulus p {
+  color: var(--text-secondary);
+  line-height: 1.75;
+  white-space: pre-wrap;
 }
 
 .answer-list {
@@ -571,5 +625,14 @@
   .practice-question-tools {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .practice-focus-note {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .practice-focus-note span {
+    text-align: left;
   }
 }

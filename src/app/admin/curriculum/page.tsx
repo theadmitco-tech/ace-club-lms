@@ -23,6 +23,8 @@ type MasterSession = {
   title: string;
   session_number: number;
   worksheet_question_count?: number;
+  question_bank_count?: number;
+  question_bank_set_count?: number;
   master_materials?: MasterMaterial[];
 };
 
@@ -62,6 +64,21 @@ export default function AdminCurriculumPage() {
       console.info('Master practice tables are not available yet.', masterPracticeSetError);
     }
 
+    const [{ data: standaloneQuestionData, error: standaloneQuestionError }, { data: questionSetData, error: questionSetError }] = await Promise.all([
+      supabase
+        .from('questions')
+        .select('id, session_number')
+        .not('session_number', 'is', null),
+      supabase
+        .from('question_sets')
+        .select('id, session_number, set_questions(id)')
+        .not('session_number', 'is', null),
+    ]);
+
+    if (standaloneQuestionError || questionSetError) {
+      console.info('Session question-bank tables are not available yet.', standaloneQuestionError || questionSetError);
+    }
+
     const masterSessionIdByPracticeSetId = new Map(
       (masterPracticeSetData || []).map((set) => [set.id, set.master_session_id])
     );
@@ -72,6 +89,28 @@ export default function AdminCurriculumPage() {
       questionCountByMasterSessionId.set(
         linkedMasterSessionId,
         (questionCountByMasterSessionId.get(linkedMasterSessionId) || 0) + 1
+      );
+    }
+
+    const questionBankCountBySessionNumber = new Map<number, number>();
+    const questionBankSetCountBySessionNumber = new Map<number, number>();
+    for (const question of standaloneQuestionData || []) {
+      if (!question.session_number) continue;
+      questionBankCountBySessionNumber.set(
+        question.session_number,
+        (questionBankCountBySessionNumber.get(question.session_number) || 0) + 1
+      );
+    }
+    for (const set of questionSetData || []) {
+      if (!set.session_number) continue;
+      questionBankSetCountBySessionNumber.set(
+        set.session_number,
+        (questionBankSetCountBySessionNumber.get(set.session_number) || 0) + 1
+      );
+      const childCount = Array.isArray(set.set_questions) ? set.set_questions.length : 0;
+      questionBankCountBySessionNumber.set(
+        set.session_number,
+        (questionBankCountBySessionNumber.get(set.session_number) || 0) + childCount
       );
     }
     
@@ -85,6 +124,8 @@ export default function AdminCurriculumPage() {
           ...session,
           title: shouldUpdateTitle && defaultTitle ? defaultTitle : session.title,
           worksheet_question_count: questionCountByMasterSessionId.get(session.id) || 0,
+          question_bank_count: questionBankCountBySessionNumber.get(session.session_number) || 0,
+          question_bank_set_count: questionBankSetCountBySessionNumber.get(session.session_number) || 0,
           master_materials: [...(session.master_materials || [])].sort((a, b) => {
             return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
           }),
@@ -282,7 +323,7 @@ export default function AdminCurriculumPage() {
                   <th style={{ width: '50px' }}>#</th>
                   <th style={{ width: '200px' }}>Session Title</th>
                   <th style={{ minWidth: '320px' }}>Pre-reads (Global)</th>
-                  <th>Worksheet (Global)</th>
+                  <th>Question Bank (Global)</th>
                   <th>Class Material (Batch-Specific)</th>
                   <th>Video (Batch-Specific)</th>
                 </tr>
@@ -372,7 +413,11 @@ export default function AdminCurriculumPage() {
                                 <span style={{ fontSize: '14px' }}>{getMaterialTypeIcon(type as MaterialType)}</span>
                                 {type === 'worksheet' ? (
                                   <span style={{ fontSize: '11px', color: session.worksheet_question_count ? 'var(--success)' : 'var(--text-tertiary)' }}>
-                                    {session.worksheet_question_count ? `${session.worksheet_question_count} questions` : 'No questions yet'}
+                                    {session.session_number === 1
+                                      ? 'Orientation has no questions'
+                                      : session.worksheet_question_count
+                                        ? `${session.worksheet_question_count} questions`
+                                        : 'No questions yet'}
                                   </span>
                                 ) : (
                                   <input 
@@ -396,8 +441,9 @@ export default function AdminCurriculumPage() {
                                   <button
                                     className="btn btn-secondary btn-sm"
                                     onClick={() => handleEditSessionWorksheet(session)}
+                                    disabled={session.session_number === 1}
                                   >
-                                    Edit worksheet
+                                    Edit questions
                                   </button>
                                 </>
                               )}

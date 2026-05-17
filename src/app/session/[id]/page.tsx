@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
 import { createClient } from '@/utils/supabase/client';
-import type { Material, MaterialType, PracticeAttempt, PracticeQuestion, PracticeSet, Session } from '@/lib/types';
+import type { Material, MaterialType, PracticeAttempt, PracticeQuestion, PracticeSet, Session, WorksheetDailyTarget } from '@/lib/types';
 import { formatDate, formatRelativeDate, getYouTubeEmbedUrl, getMaterialTypeIcon, getMaterialTypeLabel } from '@/lib/utils';
 import {
   getAvailabilityText,
@@ -23,7 +23,7 @@ type PracticeSetWithQuestions = PracticeSet & {
 
 type PracticeSource = 'master' | 'legacy';
 type TabId = 'pre_reads' | 'practice' | 'recording' | 'class_material';
-type PracticeMode = 'today' | 'all' | 'unattempted' | 'incorrect' | 'marked';
+type PracticeMode = 'today' | 'catchup' | 'all' | 'incorrect' | 'marked';
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'pre_reads', label: 'Pre-reads' },
@@ -31,6 +31,21 @@ const TABS: { id: TabId; label: string }[] = [
   { id: 'recording', label: 'Recording' },
   { id: 'class_material', label: 'Class Material' },
 ];
+
+function getIstDateKey(date: Date) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+
+  const year = parts.find((part) => part.type === 'year')?.value;
+  const month = parts.find((part) => part.type === 'month')?.value;
+  const day = parts.find((part) => part.type === 'day')?.value;
+
+  return `${year}-${month}-${day}`;
+}
 
 export default function SessionPage() {
   const { user, isLoading: authLoading, logout } = useAuth();
@@ -47,6 +62,7 @@ export default function SessionPage() {
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState('');
   const [practiceMode, setPracticeMode] = useState<PracticeMode>('today');
+  const [worksheetTargets, setWorksheetTargets] = useState<WorksheetDailyTarget[]>([]);
   const [markedForReviewIds, setMarkedForReviewIds] = useState<string[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
   const [savingAttempt, setSavingAttempt] = useState(false);
@@ -63,6 +79,7 @@ export default function SessionPage() {
       if (!user) return;
 
       setDataLoading(true);
+      setWorksheetTargets([]);
       const { data, error } = await supabase
         .from('sessions')
         .select('*, materials(*)')
@@ -76,6 +93,21 @@ export default function SessionPage() {
       try {
         const loadedSession = data as SessionWithMaterials | null;
         if (!loadedSession) throw new Error('Session not found');
+
+        const { data: targetRows, error: targetError } = await supabase
+          .from('worksheet_daily_targets')
+          .select('*')
+          .eq('course_id', loadedSession.course_id)
+          .eq('session_id', loadedSession.id)
+          .eq('is_active', true)
+          .order('target_date', { ascending: true })
+          .order('question_start', { ascending: true });
+
+        if (targetError) {
+          console.info('Worksheet daily targets are not available yet.', targetError);
+        } else {
+          setWorksheetTargets((targetRows || []) as WorksheetDailyTarget[]);
+        }
 
         const { data: masterSession, error: masterSessionError } = await supabase
           .from('master_sessions')
@@ -230,16 +262,58 @@ export default function SessionPage() {
   const practiceAvailable = isSessionPracticeAvailable(session);
   const questions = practiceSet?.questions || [];
   const activeQuestion = questions[activeQuestionIndex];
+  const getOptionLetter = (option: string, question: PracticeQuestion) => {
+    const index = question.options.findIndex((candidate) => candidate === option);
+    return index >= 0 ? String.fromCharCode(65 + index) : '';
+  };
+
+  const answerMatchesQuestion = (answer: string, question: PracticeQuestion) => {
+    const expected = question.correct_answer.trim();
+    const selected = answer.trim();
+    return selected === expected || getOptionLetter(selected, question) === expected.toUpperCase();
+  };
+
+  const isAttemptCorrect = (question: PracticeQuestion) => {
+    const attempt = attemptsByQuestionId[question.id];
+    return Boolean(attempt && answerMatchesQuestion(attempt.selected_answer, question));
+  };
+
   const attemptedCount = questions.filter((question) => attemptsByQuestionId[question.id]).length;
-  const incorrectCount = questions.filter((question) => attemptsByQuestionId[question.id] && !attemptsByQuestionId[question.id].is_correct).length;
+  const incorrectCount = questions.filter((question) => attemptsByQuestionId[question.id] && !isAttemptCorrect(question)).length;
   const unattemptedCount = Math.max(questions.length - attemptedCount, 0);
   const markedCount = markedForReviewIds.filter((id) => questions.some((question) => question.id === id)).length;
-  const unattemptedQuestions = questions.filter((question) => !attemptsByQuestionId[question.id]);
-  const todayQuestionIds = new Set(unattemptedQuestions.slice(0, 10).map((question) => question.id));
+  const todayKey = getIstDateKey(new Date());
+  const uniqueWorksheetTargets = Array.from(
+    worksheetTargets
+      .reduce<Map<string, WorksheetDailyTarget>>((acc, target) => {
+        const key = `${target.target_date}:${target.question_start}:${target.question_end}:${target.section}`;
+        if (!acc.has(key)) acc.set(key, target);
+        return acc;
+      }, new Map())
+      .values()
+  );
+  const todayTargets = uniqueWorksheetTargets.filter((target) => target.target_date === todayKey);
+  const catchupTargets = uniqueWorksheetTargets.filter((target) => target.target_date < todayKey);
+  const getQuestionNumber = (question: PracticeQuestion) => {
+    const fallbackIndex = questions.findIndex((candidate) => candidate.id === question.id);
+    return question.order_index || fallbackIndex + 1;
+  };
+  const isQuestionInTargets = (question: PracticeQuestion, targets: WorksheetDailyTarget[]) => {
+    const questionNumber = getQuestionNumber(question);
+    return targets.some((target) => questionNumber >= target.question_start && questionNumber <= target.question_end);
+  };
+  const todayTargetQuestions = questions.filter((question) => isQuestionInTargets(question, todayTargets));
+  const catchupQuestions = questions.filter((question) => (
+    isQuestionInTargets(question, catchupTargets) && !attemptsByQuestionId[question.id]
+  ));
+  const todayQuestionIds = new Set(todayTargetQuestions.map((question) => question.id));
+  const catchupQuestionIds = new Set(catchupQuestions.map((question) => question.id));
+  const todayCompletedCount = todayTargetQuestions.filter((question) => attemptsByQuestionId[question.id]).length;
+  const todayRemainingCount = Math.max(todayTargetQuestions.length - todayCompletedCount, 0);
   const visibleQuestions = questions.filter((question) => {
-    if (practiceMode === 'today') return todayQuestionIds.has(question.id) || todayQuestionIds.size === 0;
-    if (practiceMode === 'unattempted') return !attemptsByQuestionId[question.id];
-    if (practiceMode === 'incorrect') return Boolean(attemptsByQuestionId[question.id] && !attemptsByQuestionId[question.id].is_correct);
+    if (practiceMode === 'today') return todayQuestionIds.has(question.id);
+    if (practiceMode === 'catchup') return catchupQuestionIds.has(question.id);
+    if (practiceMode === 'incorrect') return Boolean(attemptsByQuestionId[question.id] && !isAttemptCorrect(question));
     if (practiceMode === 'marked') return markedForReviewIds.includes(question.id);
     return true;
   });
@@ -248,12 +322,22 @@ export default function SessionPage() {
   const displayedQuestionIndex = displayedQuestion ? questions.findIndex((question) => question.id === displayedQuestion.id) : activeQuestionIndex;
   const displayedAttempt = displayedQuestion ? attemptsByQuestionId[displayedQuestion.id] : undefined;
   const currentModeLabel = {
-    today: "Today's 10",
+    today: "Today's target",
     all: 'All questions',
-    unattempted: 'Unattempted',
+    catchup: 'Catch up',
     incorrect: 'Incorrect',
     marked: 'Marked',
   }[practiceMode];
+
+  const renderFormattedText = (text: string) => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={index}>{part.slice(2, -2)}</strong>;
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
 
   const jumpToQuestion = (questionId: string) => {
     const nextIndex = questions.findIndex((question) => question.id === questionId);
@@ -266,9 +350,9 @@ export default function SessionPage() {
   const setModeAndFocus = (mode: PracticeMode) => {
     setPracticeMode(mode);
     const nextVisible = questions.find((question) => {
-      if (mode === 'today') return todayQuestionIds.has(question.id) || todayQuestionIds.size === 0;
-      if (mode === 'unattempted') return !attemptsByQuestionId[question.id];
-      if (mode === 'incorrect') return Boolean(attemptsByQuestionId[question.id] && !attemptsByQuestionId[question.id].is_correct);
+      if (mode === 'today') return todayQuestionIds.has(question.id);
+      if (mode === 'catchup') return catchupQuestionIds.has(question.id);
+      if (mode === 'incorrect') return Boolean(attemptsByQuestionId[question.id] && !isAttemptCorrect(question));
       if (mode === 'marked') return markedForReviewIds.includes(question.id);
       return true;
     });
@@ -294,7 +378,7 @@ export default function SessionPage() {
   const submitAnswer = async () => {
     if (!displayedQuestion || !selectedAnswer || !user) return;
 
-    const isCorrect = selectedAnswer === displayedQuestion.correct_answer;
+    const isCorrect = answerMatchesQuestion(selectedAnswer, displayedQuestion);
     setSavingAttempt(true);
 
     const { data, error } = practiceSource === 'master'
@@ -481,9 +565,9 @@ export default function SessionPage() {
 
                       <div className="practice-mode-bar" aria-label="Practice filters">
                         {([
-                          ['today', "Today's 10"],
+                          ['today', "Today's target"],
+                          ['catchup', 'Catch up'],
                           ['all', 'All'],
-                          ['unattempted', 'Unattempted'],
                           ['incorrect', 'Wrong'],
                           ['marked', 'Marked'],
                         ] as [PracticeMode, string][]).map(([mode, label]) => (
@@ -498,17 +582,19 @@ export default function SessionPage() {
                         ))}
                       </div>
 
-                      <div className="practice-map" aria-label="Question overview">
+                          <div className="practice-map" aria-label="Question overview">
                         {questions.map((question, index) => {
                           const attempt = attemptsByQuestionId[question.id];
+                          const attemptCorrect = isAttemptCorrect(question);
                           const isMarked = markedForReviewIds.includes(question.id);
                           const isToday = todayQuestionIds.has(question.id);
+                          const isCatchup = catchupQuestionIds.has(question.id);
 
                           return (
                             <button
                               key={question.id}
                               type="button"
-                              className={`practice-map-dot ${displayedQuestion.id === question.id ? 'active' : ''} ${attempt ? 'attempted' : 'unattempted'} ${attempt && !attempt.is_correct ? 'wrong' : ''} ${isMarked ? 'marked' : ''} ${isToday ? 'today' : ''}`}
+                              className={`practice-map-dot ${displayedQuestion.id === question.id ? 'active' : ''} ${attempt ? 'attempted' : 'unattempted'} ${attempt && !attemptCorrect ? 'wrong' : ''} ${isMarked ? 'marked' : ''} ${isToday ? 'today' : ''} ${isCatchup ? 'catchup' : ''}`}
                               onClick={() => jumpToQuestion(question.id)}
                               title={`Question ${index + 1}`}
                             >
@@ -517,6 +603,36 @@ export default function SessionPage() {
                           );
                         })}
                       </div>
+
+                      {practiceMode === 'today' && (
+                        <div className="practice-focus-note">
+                          <strong>
+                            {todayTargetQuestions.length > 0
+                              ? "Today's target comes from the worksheet schedule."
+                              : 'No questions from this session are due today.'}
+                          </strong>
+                          <span>
+                            {todayTargetQuestions.length > 0
+                              ? `${todayCompletedCount}/${todayTargetQuestions.length} done here. ${todayRemainingCount > 0
+                                ? `Finish these ${todayRemainingCount} first.`
+                                : 'You are done with today’s work for this session.'}`
+                              : catchupQuestions.length > 0
+                                ? `This session has ${catchupQuestions.length} overdue unanswered question${catchupQuestions.length === 1 ? '' : 's'} in Catch up.`
+                                : 'Use All if you want to review this worksheet.'}
+                          </span>
+                        </div>
+                      )}
+
+                      {practiceMode === 'catchup' && (
+                        <div className="practice-focus-note">
+                          <strong>Catch up shows overdue unanswered questions for this session.</strong>
+                          <span>
+                            {catchupQuestions.length > 0
+                              ? `${catchupQuestions.length} overdue question${catchupQuestions.length === 1 ? '' : 's'} left here.`
+                              : 'Nothing overdue is left in this session.'}
+                          </span>
+                        </div>
+                      )}
 
                       {visibleQuestions.length === 0 && (
                         <div className="tab-empty">
@@ -544,14 +660,29 @@ export default function SessionPage() {
                             </button>
                           </div>
 
-                          <div className="practice-question">{displayedQuestion.question_text}</div>
+                          {(displayedQuestion.stimulus_text || displayedQuestion.stimulus_title) && (
+                            <div className="practice-stimulus">
+                              <span>
+                                {displayedQuestion.question_type === 'reading_comprehension'
+                                  ? 'Reading passage'
+                                  : displayedQuestion.question_type === 'data_insights'
+                                    ? 'DI stimulus'
+                                    : 'Shared stimulus'}
+                              </span>
+                              {displayedQuestion.stimulus_title && <strong>{displayedQuestion.stimulus_title}</strong>}
+                              {displayedQuestion.stimulus_text && <p>{renderFormattedText(displayedQuestion.stimulus_text)}</p>}
+                            </div>
+                          )}
+
+                          <div className="practice-question">{renderFormattedText(displayedQuestion.question_text)}</div>
 
                           {displayedQuestion.options.length > 0 ? (
                             <div className="answer-list">
                               {displayedQuestion.options.map((option) => {
                                 const answered = Boolean(displayedAttempt);
-                                const isSelected = (displayedAttempt?.selected_answer || selectedAnswer) === option;
-                                const isCorrect = displayedQuestion.correct_answer === option;
+                                const selectedValue = displayedAttempt?.selected_answer || selectedAnswer;
+                                const isSelected = selectedValue === option || selectedValue.trim().toUpperCase() === getOptionLetter(option, displayedQuestion);
+                                const isCorrect = answerMatchesQuestion(option, displayedQuestion);
 
                                 return (
                                   <button
@@ -581,8 +712,8 @@ export default function SessionPage() {
                           )}
 
                           {displayedAttempt ? (
-                            <div className={`practice-result ${displayedAttempt.is_correct ? 'correct' : 'incorrect'}`}>
-                              <strong>{displayedAttempt.is_correct ? 'Correct' : 'Not quite'}</strong>
+                            <div className={`practice-result ${isAttemptCorrect(displayedQuestion) ? 'correct' : 'incorrect'}`}>
+                              <strong>{isAttemptCorrect(displayedQuestion) ? 'Correct' : 'Not quite'}</strong>
                               <p>{displayedQuestion.explanation}</p>
                             </div>
                           ) : (
