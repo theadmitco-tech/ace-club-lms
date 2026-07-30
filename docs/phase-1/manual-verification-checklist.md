@@ -11,8 +11,10 @@ Complete only the items that require account access. Do not paste secret values,
 - [x] Separate Supabase project `ace-club-lms-staging` created.
 - [x] Local `.env.local` points to staging using public values only.
 - [x] Production Supabase project identified and kept separate.
-- [ ] Lint and production build pass.
-- [ ] Production and staging database inventories captured.
+- [x] Production build passes.
+- [ ] Lint passes — current baseline is 47 errors and 10 warnings.
+- [x] Staging database inventory captured; public LMS schema is empty.
+- [ ] Production database inventory captured.
 - [ ] Authentication test matrix passes.
 - [ ] Release and privacy probes pass.
 

@@ -12,13 +12,15 @@ Audit baseline:
 - Local dependencies install and development startup passed on 31 July 2026.
 - Staging Supabase project created: `ace-club-lms-staging` (`eyphkkginlgoaxflauog`).
 - Production Supabase project identified: `owmlxsnzogfapotmjrqk`; it remains separate.
+- Production build passed on 31 July 2026; lint reported 47 errors and 10 warnings.
+- Staging inventory captured on 31 July 2026. It contains only Supabase-managed storage tables; the public LMS schema, policies, functions, triggers, and buckets are empty.
 
 ## Exit-gate status
 
 | Required output | Status | Evidence or remaining action |
 |---|---|---|
 | Feature inventory | Complete | Inventory below |
-| Database map | Provisional | Repository SQL mapped; staging and production Supabase inventories are still required |
+| Database map | Provisional | Repository SQL and empty staging state mapped; production Supabase inventory is still required |
 | Authentication diagnosis | Static diagnosis complete | Staging magic-link and deactivation tests remain |
 | Validated estimate | Provisional | Finalise after live database and staging checks |
 
