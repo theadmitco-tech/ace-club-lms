@@ -2,6 +2,20 @@
 
 Complete only the items that require account access. Do not paste secret values, private keys, passwords, magic-link URLs, or student data into the results.
 
+## Verified so far — 31 July 2026
+
+- [x] Editable source and Git history recovered.
+- [x] Local `HEAD` matched `origin/main` before the audit commit.
+- [x] Node.js/npm installed and dependencies installed with `npm ci`.
+- [x] Development server started successfully on localhost.
+- [x] Separate Supabase project `ace-club-lms-staging` created.
+- [x] Local `.env.local` points to staging using public values only.
+- [x] Production Supabase project identified and kept separate.
+- [ ] Lint and production build pass.
+- [ ] Production and staging database inventories captured.
+- [ ] Authentication test matrix passes.
+- [ ] Release and privacy probes pass.
+
 ## 1. Deployment baseline
 
 Record:

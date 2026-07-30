@@ -1,20 +1,24 @@
 # Phase 1 — Recovery and Audit
 
-Status: **Static audit complete; live-environment verification pending**
+Status: **Static audit and local recovery complete; live-environment verification pending**
 
 Audit baseline:
 
 - Repository: `theadmitco-tech/ace-club-lms`
 - Audited commit: `1e7d77d7e323db8175a446cc3935130fc3ab5479`
-- At the time of the audit, the currently checked-out commit (`HEAD`), the local `main` branch, and the remote-tracking `origin/main` branch all pointed to the same commit.- The only untracked path was `instruction/`, containing the supplied roadmap and acceptance criteria.
+- `HEAD`, local `main`, and `origin/main` matched at audit time.
+- The only untracked path was `instruction/`, containing the supplied roadmap and acceptance criteria.
 - Stack: Next.js 16.2.4, React 19.2.4, Supabase SSR 0.10.2, Supabase JS 2.104.1.
+- Local dependencies install and development startup passed on 31 July 2026.
+- Staging Supabase project created: `ace-club-lms-staging` (`eyphkkginlgoaxflauog`).
+- Production Supabase project identified: `owmlxsnzogfapotmjrqk`; it remains separate.
 
 ## Exit-gate status
 
 | Required output | Status | Evidence or remaining action |
 |---|---|---|
 | Feature inventory | Complete | Inventory below |
-| Database map | Provisional | Repository SQL mapped; live Supabase export is still required |
+| Database map | Provisional | Repository SQL mapped; staging and production Supabase inventories are still required |
 | Authentication diagnosis | Static diagnosis complete | Staging magic-link and deactivation tests remain |
 | Validated estimate | Provisional | Finalise after live database and staging checks |
 
@@ -42,7 +46,7 @@ Never record values for these variables in this audit. Record only whether each 
 | Area | Current implementation | Decision | Target phase |
 |---|---|---|---|
 | Application shell and styling | Next.js App Router with shared public, student, and admin UI | Keep | — |
-| Student/Admin roles | `admin` and `student` application roles | Keep | 2 |
+| Student/Admin roles | `admin` and student` application roles | Keep | 2 |
 | Magic-link login | Supabase OTP sign-in exists | Repair | 2 |
 | Password login | Public password tab remains | Remove from production | 2 |
 | Quick Access/Test credentials | Hard-coded student/admin credentials and “Super Admin” label | Remove from production | 2 |
@@ -156,4 +160,4 @@ Planning range: approximately **6–8 engineering weeks plus 1–2 weeks of pilo
 
 ## Phase 1 completion decision
 
-The static portion of Phase 1 is complete. The exit gate remains **conditional** until the owner completes `manual-verification-checklist.md` and supplies the output of `supabase-inventory.sql`. After those inputs are reconciled, this document can be marked complete without repeating the source audit.
+The static audit and local recovery portions of Phase 1 are complete. The exit gate remains **conditional** until lint/build, live database inventories, staging authentication, release protection, and privacy probes pass. After those inputs are reconciled, this document can be marked complete without repeating the source audit.
