@@ -1,7 +1,7 @@
 # Ace Club LMS — Instruction Register
 
-Status: Active  
-Owner: Product owner  
+Status: Active
+Owner: Product owner
 Last updated: 31 July 2026
 
 This folder contains the documents that define product intent, scope, phase boundaries, acceptance, and signed checkpoints. Read this register before starting product or engineering work.

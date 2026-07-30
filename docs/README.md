@@ -1,7 +1,7 @@
 # Ace Club LMS — Documentation Index
 
-Status: Active  
-Owner: Engineering  
+Status: Active
+Owner: Engineering
 Last updated: 31 July 2026
 
 This index routes readers to the smallest set of documents needed for a task. Product authority remains in [`instruction/`](../instruction/README.md).

@@ -1,7 +1,7 @@
 # Ace Club LMS — Document Conventions
 
-Status: Active  
-Owner: Product owner and Engineering  
+Status: Active
+Owner: Product owner and Engineering
 Last updated: 31 July 2026
 
 ## 1. Objectives
