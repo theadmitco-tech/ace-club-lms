@@ -11,7 +11,50 @@ Phase 0.5 established a safe, recoverable working environment before product imp
 
 This document is the continuity checkpoint for future sessions. Read it before making changes, together with `AGENTS.md`, the product roadmap, the MVP acceptance criteria, and `docs/development/coding-rules.md`.
 
-## 2. Signed-off outcomes
+## 2. Required reading before work
+
+Read in this order:
+
+1. `AGENTS.md` for repository and Next.js operating constraints.
+2. This Phase 0.5 sign-off for the current checkpoint and non-regression rules.
+3. `instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.docx` for binding product behaviour.
+4. `instruction/Ace_Club_LMS_Product_Roadmap.docx` for phase boundaries, order, and exit gates.
+5. `docs/development/coding-rules.md` for implementation and verification rules.
+6. `docs/phase-1/README.md` and `docs/phase-1/manual-verification-checklist.md` for current audit status.
+7. Only then inspect the code and database files relevant to the immediate task.
+
+Do not begin by rereading the entire repository. Load the documents above, inspect Git status and recent commits, then inspect only the files needed for the current acceptance criterion.
+
+## 3. Working-memory bootstrap
+
+Before planning or editing, the coding agent must be able to state:
+
+- **Product:** Ace Club LMS for the first live GMAT cohort.
+- **Production roles:** Admin and Student only.
+- **Access:** email magic links; production passwords, Quick Access, and Super Admin behaviour are excluded.
+- **Course model:** fixed revised curriculum; Admin creates cohorts and assigns students but does not redesign the curriculum.
+- **Instructor mapping:** DI–Ishan, VA–Tanya, QA–Unnati.
+- **Content journey:** Week 0 available immediately; later Notion pre-reads seven days before class; PDF worksheets after class.
+- **Tracker:** per-student, per-worksheet, per-question manual status with `Done`, `Come back for review`, optional time/comment, and system-owned `Not updated`.
+- **Admin progress:** manual completion and authorised question-level visibility, without advanced MVP-excluded analytics.
+- **Security:** RLS, server-side privileged-route authorization, direct-URL release protection, private student data, and no browser-visible elevated keys.
+- **Environment:** local and Preview use staging; production remains isolated.
+- **Current state:** staging exists but has no LMS schema; production inventory and schema reconciliation are still pending.
+- **Quality state:** production build passes; lint baseline is 47 errors and 10 warnings.
+- **Git state:** preserve the checkpoint commits and continue incrementally on the current branch.
+
+If any item cannot be confirmed from the required reading or current evidence, pause and inspect the relevant source rather than guessing.
+
+## 4. Phase map and naming
+
+- **Phase 0.5 — Setup and recovery:** complete and signed off by this document.
+- **Phase 1 — Recover and audit:** active; static audit/local recovery are complete, but live production inventory, schema reconciliation, lint disposition, authentication validation, and privacy/release checks remain.
+- **Phase 2 — Repair and simplify accounts:** begins only after the Phase 1 exit gate is signed off.
+- **Phases 3–8:** retain the names, order, scope, and exit gates in the product roadmap.
+
+There is currently **no approved Phase 1.5**. Do not invent one automatically. Work needed to close the audit—production inventory, schema reconciliation, migration baseline, and lint classification—remains **Phase 1 closeout**. If later evidence reveals a substantial stabilisation project that does not fit Phase 1 or Phase 2, propose Phase 1.5 with a written objective, scope, duration, dependencies, and exit gate for product-owner approval before using that label.
+
+## 5. Signed-off outcomes
 
 - Editable source and Git history are available.
 - The local repository is connected to `theadmitco-tech/ace-club-lms`.
@@ -28,7 +71,7 @@ This document is the continuity checkpoint for future sessions. Read it before m
 - Staging Supabase inventory is captured and committed.
 - Mac setup and living coding rules are committed.
 
-## 3. Environment boundaries
+## 6. Environment boundaries
 
 ### Production
 
@@ -52,7 +95,7 @@ This document is the continuity checkpoint for future sessions. Read it before m
 - Stop with `Control+C`.
 - `.env.local` points to staging and must never be committed.
 
-## 4. Git checkpoint
+## 7. Git checkpoint
 
 The working branch is:
 
@@ -63,12 +106,13 @@ Checkpoint commits:
 1. `5249316` — Add LMS roadmap and Phase 1 audit
 2. `8b6f45a` — Document local setup and coding rules
 3. `461304a` — Record Phase 1 staging inventory
+4. `1655784` — Add Phase 0.5 recovery sign-off
 
 These commits build on `1e7d77d`, the current `origin/main` baseline at the time of sign-off.
 
 Do not reset, squash, amend, rebase, delete, or overwrite these checkpoints merely to restart work. Continue incrementally. If history cleanup is later desired, do it only as an explicit review decision before publishing.
 
-## 5. Work that is intentionally not complete
+## 8. Work that is intentionally not complete
 
 Phase 0.5 is complete. Phase 1 is not fully signed off.
 
@@ -85,7 +129,7 @@ Remaining Phase 1 gates:
 
 Do not install the overlapping root `schema.sql` and `supabase_*.sql` scripts in staging until reconciliation determines the authoritative order and desired MVP schema.
 
-## 6. Non-regression rules
+## 9. Non-regression rules
 
 - Do not connect local development to production Supabase.
 - Do not place production service-role or secret keys in `.env.local`.
@@ -98,7 +142,7 @@ Do not install the overlapping root `schema.sql` and `supabase_*.sql` scripts in
 - Do not repeat a completed audit unless new evidence invalidates it.
 - Preserve committed evidence; add new dated evidence rather than overwriting history.
 
-## 7. Token-efficient working agreement
+## 10. Token-efficient working agreement
 
 ### Coding agent responsibilities
 
@@ -133,7 +177,7 @@ Use one small handoff at a time:
 
 Avoid repeating project history in every turn. Link to this sign-off or the relevant running document instead.
 
-## 8. How to resume in a future session
+## 11. How to resume in a future session
 
 Use this instruction:
 
@@ -141,7 +185,7 @@ Use this instruction:
 
 The next expected action after this sign-off is the read-only production Supabase inventory. No staging schema installation should occur before that inventory is reconciled with the repository SQL.
 
-## 9. Sign-off decision
+## 12. Sign-off decision
 
 Phase 0.5 is accepted as complete because the source, local toolchain, environment separation, build baseline, audit framework, evidence trail, coding rules, and continuation method are established.
 
