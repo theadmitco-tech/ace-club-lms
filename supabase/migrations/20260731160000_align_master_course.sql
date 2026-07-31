@@ -5,13 +5,25 @@ alter table public.master_sessions
   add column if not exists week_number integer,
   add column if not exists weekday text,
   add column if not exists class_type text,
-  add column if not exists instructor text;
+  add column if not exists instructor text,
+  add column if not exists curriculum_version text,
+  add column if not exists is_archived boolean not null default false;
+
+-- Production has a linked 16-session template. Preserve it as history while
+-- excluding it from current curriculum and cohort-generation workflows.
+update public.master_sessions
+set
+  curriculum_version = coalesce(curriculum_version, 'legacy-v1'),
+  is_archived = true
+where curriculum_key is null;
 
 create unique index if not exists master_sessions_curriculum_key_key
   on public.master_sessions (curriculum_key);
 
-create unique index if not exists master_sessions_session_number_key
-  on public.master_sessions (session_number);
+drop index if exists public.master_sessions_session_number_key;
+
+create unique index if not exists master_sessions_version_session_number_key
+  on public.master_sessions (curriculum_version, session_number);
 
 with curriculum (
   session_number, curriculum_key, week_number, weekday,
@@ -52,16 +64,17 @@ with curriculum (
 )
 insert into public.master_sessions (
   session_number, curriculum_key, week_number, weekday,
-  title, class_type, instructor
+  title, class_type, instructor, curriculum_version, is_archived
 )
-select * from curriculum
+select curriculum.*, 'mvp-2026', false from curriculum
 on conflict (curriculum_key) do update set
   session_number = excluded.session_number,
   week_number = excluded.week_number,
   weekday = excluded.weekday,
   title = excluded.title,
   class_type = excluded.class_type,
-  instructor = excluded.instructor;
+  instructor = excluded.instructor,
+  curriculum_version = excluded.curriculum_version,
+  is_archived = excluded.is_archived;
 
 commit;
-

@@ -5,7 +5,7 @@ import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
 import { createClient } from '@/utils/supabase/client';
 import type { Material, MaterialType, PracticeAttempt, PracticeQuestion, PracticeSet, Session, WorksheetDailyTarget } from '@/lib/types';
-import { formatDate, formatRelativeDate, getYouTubeEmbedUrl, getMaterialTypeIcon, getMaterialTypeLabel } from '@/lib/utils';
+import { formatDate, getYouTubeEmbedUrl, getMaterialTypeIcon, getMaterialTypeLabel } from '@/lib/utils';
 import {
   getAvailabilityText,
   isMaterialAvailable,
@@ -109,11 +109,16 @@ export default function SessionPage() {
           setWorksheetTargets((targetRows || []) as WorksheetDailyTarget[]);
         }
 
-        const { data: masterSession, error: masterSessionError } = await supabase
+        const masterSessionQuery = supabase
           .from('master_sessions')
-          .select('id, title, session_number')
-          .eq('session_number', loadedSession.session_number)
-          .maybeSingle();
+          .select('id, title, session_number');
+        const { data: masterSession, error: masterSessionError } = loadedSession.master_session_id
+          ? await masterSessionQuery.eq('id', loadedSession.master_session_id).maybeSingle()
+          : await masterSessionQuery
+              .eq('session_number', loadedSession.session_number)
+              .eq('is_archived', true)
+              .limit(1)
+              .maybeSingle();
 
         if (masterSessionError) throw masterSessionError;
 
@@ -227,20 +232,23 @@ export default function SessionPage() {
   useEffect(() => {
     if (!user || !sessionId) return;
 
-    const storedMarks = window.localStorage.getItem(`practice-review:${user.id}:${sessionId}`);
-    if (storedMarks) {
-      try {
-        setMarkedForReviewIds(JSON.parse(storedMarks));
-      } catch {
-        setMarkedForReviewIds([]);
+    const timeoutId = window.setTimeout(() => {
+      const storedMarks = window.localStorage.getItem(`practice-review:${user.id}:${sessionId}`);
+      if (storedMarks) {
+        try {
+          setMarkedForReviewIds(JSON.parse(storedMarks));
+        } catch {
+          setMarkedForReviewIds([]);
+        }
       }
-    }
+    }, 0);
+    return () => window.clearTimeout(timeoutId);
   }, [user, sessionId]);
 
   useEffect(() => {
-    if (searchParams.get('tab') === 'practice') {
-      setActiveTab('practice');
-    }
+    if (searchParams.get('tab') !== 'practice') return;
+    const timeoutId = window.setTimeout(() => setActiveTab('practice'), 0);
+    return () => window.clearTimeout(timeoutId);
   }, [searchParams]);
 
   const isLoading = authLoading || dataLoading;
@@ -417,9 +425,9 @@ export default function SessionPage() {
     setSavingAttempt(false);
   };
 
-  const renderLockedInline = (type: MaterialType) => (
+  const renderLockedInline = (type: MaterialType, availableFrom?: string) => (
     <div className="tab-empty">
-      <strong>Available {getAvailabilityText(type, session.session_date)}</strong>
+      <strong>Available {getAvailabilityText(type, session.session_date, availableFrom)}</strong>
       <p>This material unlocks based on the class schedule.</p>
     </div>
   );
@@ -434,7 +442,7 @@ export default function SessionPage() {
       );
     }
 
-    if (!isMaterialAvailable(material, session)) return renderLockedInline(material.type);
+    if (!isMaterialAvailable(material, session)) return renderLockedInline(material.type, material.available_from);
 
     return (
       <div className="single-resource">
@@ -515,7 +523,7 @@ export default function SessionPage() {
                         <div className="resource-icon">{getMaterialTypeIcon('pre_read')}</div>
                         <div className="resource-copy">
                           <strong>{preRead.title}</strong>
-                          <span>{available ? 'Ready to read' : `Available ${getAvailabilityText('pre_read', session.session_date)}`}</span>
+                          <span>{available ? 'Ready to read' : `Available ${getAvailabilityText('pre_read', session.session_date, preRead.available_from)}`}</span>
                         </div>
                         {available && preRead.notion_url ? (
                           <button
@@ -541,7 +549,7 @@ export default function SessionPage() {
               {activeTab === 'practice' && (
                 <div className="practice-panel">
                   {!practiceAvailable ? (
-                    renderLockedInline('worksheet')
+                    renderLockedInline('worksheet', worksheet?.available_from)
                   ) : questions.length > 0 && displayedQuestion ? (
                     <>
                       <div className="practice-overview">
@@ -771,7 +779,7 @@ export default function SessionPage() {
                         className="video-embed"
                       />
                     </div>
-                  ) : video ? renderLockedInline('video') : (
+                  ) : video ? renderLockedInline('video', video.available_from) : (
                     <div className="tab-empty">
                       <strong>No recording yet.</strong>
                       <p>The class recording will appear here once it is uploaded.</p>

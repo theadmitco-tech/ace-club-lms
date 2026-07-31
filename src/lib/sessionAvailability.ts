@@ -3,43 +3,21 @@ import { formatRelativeDate } from '@/lib/utils';
 
 type SessionStatus = 'available' | 'locked' | 'upcoming';
 
-function getIstDateKey(date: Date) {
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'Asia/Kolkata',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).formatToParts(date);
-
-  const year = parts.find((part) => part.type === 'year')?.value;
-  const month = parts.find((part) => part.type === 'month')?.value;
-  const day = parts.find((part) => part.type === 'day')?.value;
-
-  return `${year}-${month}-${day}`;
-}
-
 export function getSessionClassStart(sessionDate: string) {
-  const istDateKey = getIstDateKey(new Date(sessionDate));
-  return new Date(`${istDateKey}T04:30:00.000Z`);
+  return new Date(sessionDate);
 }
 
-export function getSessionClassEnd(sessionDate: string) {
-  const istDateKey = getIstDateKey(new Date(sessionDate));
-  return new Date(`${istDateKey}T06:30:00.000Z`);
+export function getSessionClassEnd(sessionDate: string, sessionEndAt?: string | null) {
+  if (sessionEndAt) return new Date(sessionEndAt);
+  return new Date(new Date(sessionDate).getTime() + 2 * 60 * 60 * 1000);
 }
 
 export function isSessionPracticeAvailable(session: Session, now = new Date()) {
-  return now >= getSessionClassEnd(session.session_date);
+  return now >= getSessionClassEnd(session.session_date, session.session_end_at);
 }
 
-export function isMaterialAvailable(material: Material, session: Session, now = new Date()) {
-  if (material.type === 'pre_read') {
-    const classStart = getSessionClassStart(session.session_date);
-    const availableDate = new Date(classStart.getTime() - 7 * 24 * 60 * 60 * 1000);
-    return now >= availableDate;
-  }
-
-  return isSessionPracticeAvailable(session, now);
+export function isMaterialAvailable(material: Material, _session: Session, now = new Date()) {
+  return now >= new Date(material.available_from);
 }
 
 export function getSessionStatus(session: Session, now = new Date()): SessionStatus {
@@ -51,12 +29,14 @@ export function getSessionStatus(session: Session, now = new Date()): SessionSta
   return 'locked';
 }
 
-export function getAvailabilityText(type: MaterialType, sessionDate: string) {
+export function getAvailabilityText(type: MaterialType, sessionDate: string, availableFrom?: string) {
+  if (availableFrom) return formatRelativeDate(availableFrom);
+
   if (type === 'pre_read') {
     const classStart = getSessionClassStart(sessionDate);
     const availableDate = new Date(classStart.getTime() - 7 * 24 * 60 * 60 * 1000);
     return formatRelativeDate(availableDate.toISOString());
   }
 
-  return 'after class, 12:00 PM IST';
+  return 'after class';
 }

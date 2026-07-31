@@ -3,20 +3,43 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { formatDate } from '@/lib/utils';
-import { generateSchedule } from '@/lib/curriculum';
 import { useAuth } from '@/lib/AuthContext';
 
+type ProfileSummary = { full_name: string; email: string };
+type EnrollmentRow = { id: string; user_id: string; profiles: ProfileSummary | null };
+type CourseRow = {
+  id: string;
+  name: string;
+  is_active: boolean;
+  registration_open: boolean;
+  capacity: number;
+  price_amount: number;
+  currency: string;
+  registration_closes_at: string | null;
+  public_note: string | null;
+  created_at: string;
+  sessions?: { id: string; session_date: string }[];
+  enrollments?: { id: string }[];
+  registrations?: {
+    id: string;
+    status: string;
+    reserved_until: string | null;
+    payments?: { amount: number; status: string }[];
+  }[];
+};
+
 export default function AdminCoursesPage() {
-  const [courses, setCoursesList] = useState<any[]>([]);
+  const [courses, setCoursesList] = useState<CourseRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [syncingCourseId, setSyncingCourseId] = useState<string | null>(null);
   
   // Student management state
-  const [viewingStudentsFor, setViewingStudentsFor] = useState<any | null>(null);
-  const [studentsInBatch, setStudentsInBatch] = useState<any[]>([]);
+  const [viewingStudentsFor, setViewingStudentsFor] = useState<CourseRow | null>(null);
+  const [studentsInBatch, setStudentsInBatch] = useState<EnrollmentRow[]>([]);
   const [isStudentsLoading, setIsStudentsLoading] = useState(false);
   
   const supabase = createClient();
@@ -41,18 +64,18 @@ export default function AdminCoursesPage() {
     maximumFractionDigits: 0,
   }).format((amount || 0) / 100);
 
-  const getCourseRegistrationStats = (course: any) => {
+  const getCourseRegistrationStats = (course: CourseRow) => {
     const now = new Date();
     const registrations = course.registrations || [];
-    const paidPayments = registrations.flatMap((registration: any) => (
-      (registration.payments || []).filter((payment: any) => payment.status === 'paid')
+    const paidPayments = registrations.flatMap((registration) => (
+      (registration.payments || []).filter((payment) => payment.status === 'paid')
     ));
-    const pendingReservations = registrations.filter((registration: any) => (
+    const pendingReservations = registrations.filter((registration) => (
       registration.status === 'pending_payment'
       && registration.reserved_until
       && new Date(registration.reserved_until) > now
     )).length;
-    const revenue = paidPayments.reduce((sum: number, payment: any) => sum + (payment.amount || 0), 0);
+    const revenue = paidPayments.reduce((sum, payment) => sum + (payment.amount || 0), 0);
     const capacity = course.capacity || 8;
     const paidSeats = course.enrollments?.length || 0;
 
@@ -73,7 +96,7 @@ export default function AdminCoursesPage() {
       .order('created_at', { ascending: false });
       
     if (!error && data) {
-      setCoursesList(data);
+      setCoursesList(data as unknown as CourseRow[]);
     }
     setIsLoading(false);
   };
@@ -86,17 +109,24 @@ export default function AdminCoursesPage() {
       .eq('course_id', courseId);
     
     if (!error && data) {
-      setStudentsInBatch(data);
+      const rows = data as unknown as Array<Omit<EnrollmentRow, 'profiles'> & {
+        profiles: ProfileSummary | ProfileSummary[] | null;
+      }>;
+      setStudentsInBatch(rows.map((row) => ({
+        ...row,
+        profiles: Array.isArray(row.profiles) ? row.profiles[0] || null : row.profiles,
+      })));
     }
     setIsStudentsLoading(false);
   };
 
   useEffect(() => {
-    fetchCourses();
+    const timeoutId = window.setTimeout(() => void fetchCourses(), 0);
+    return () => window.clearTimeout(timeoutId);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleCreate = async () => {
-    if (!form.name) return;
+    if (!form.name || !form.startDate) return;
     setIsSubmitting(true);
     
     const { data: newCourse, error: courseError } = await supabase
@@ -120,71 +150,17 @@ export default function AdminCoursesPage() {
       return;
     }
 
-    // 2. Clone from Master Base if Start Date is provided
-    if (form.startDate) {
-      // Fetch Master Curriculum
-      const { data: masterSessions } = await supabase
-        .from('master_sessions')
-        .select('*, master_materials(*)')
-        .order('session_number', { ascending: true });
+    const { error: scheduleError } = await supabase.rpc('generate_course_schedule', {
+      p_course_id: newCourse.id,
+      p_start_date: form.startDate,
+    });
 
-      if (masterSessions && masterSessions.length > 0) {
-        const startDateObj = new Date(`${form.startDate}T10:00:00Z`);
-        const schedule = generateSchedule(startDateObj, []);
-        
-        for (let i = 0; i < masterSessions.length; i++) {
-          const ms = masterSessions[i];
-          const slot = schedule[i]; // Get the generated date slot
-          
-          if (!slot) continue;
-
-          // Create session for this batch
-          const { data: newSession, error: sErr } = await supabase
-            .from('sessions')
-            .insert({
-              course_id: newCourse.id,
-              title: ms.title,
-              session_number: ms.session_number,
-              session_date: slot.date,
-              is_published: true,
-            })
-            .select()
-            .single();
-
-          if (newSession && ms.master_materials) {
-            // Define which materials are static (copied from master) vs dynamic (unique per batch)
-            const materialsToInsert = ms.master_materials.map((mm: any) => {
-              const isStatic = mm.type === 'pre_read' || mm.type === 'worksheet';
-              
-              return {
-                session_id: newSession.id,
-                type: mm.type,
-                title: mm.title,
-                // Only copy URLs for static materials; leave dynamic ones empty to be filled per batch
-                notion_url: isStatic ? mm.notion_url : null,
-                file_url: isStatic ? mm.file_url : null,
-                video_url: isStatic ? mm.video_url : null,
-                available_from: mm.type === 'pre_read' 
-                  ? new Date(new Date(slot.date).getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
-                  : new Date(new Date(slot.date).getTime() + 2 * 60 * 60 * 1000).toISOString()
-              };
-            });
-            await supabase.from('materials').insert(materialsToInsert);
-          }
-        }
-      } else {
-        // Fallback to basic schedule if master is empty
-        const startDateObj = new Date(`${form.startDate}T10:00:00Z`);
-        const schedule = generateSchedule(startDateObj, []);
-        const sessionsToInsert = schedule.map((sess, index) => ({
-          course_id: newCourse.id,
-          title: sess.title,
-          session_number: index + 1,
-          session_date: sess.date,
-          is_published: true,
-        }));
-        await supabase.from('sessions').insert(sessionsToInsert);
-      }
+    if (scheduleError) {
+      console.error('Cohort schedule generation failed:', scheduleError);
+      await supabase.from('courses').delete().eq('id', newCourse.id);
+      addToast('error', scheduleError.message || 'Failed to generate the cohort schedule.');
+      setIsSubmitting(false);
+      return;
     }
 
     if (form.bulkEmails) {
@@ -210,7 +186,7 @@ export default function AdminCoursesPage() {
     setIsSubmitting(false);
   };
 
-  const handleEdit = (course: any) => {
+  const handleEdit = (course: CourseRow) => {
     setEditingId(course.id);
     setForm({
       name: course.name,
@@ -282,6 +258,22 @@ export default function AdminCoursesPage() {
       await fetchCourses();
     }
     setDeleteConfirm(null);
+  };
+
+  const handleSyncMasterMaterials = async (courseId: string) => {
+    setSyncingCourseId(courseId);
+    const { data, error } = await supabase.rpc('sync_course_master_materials', {
+      p_course_id: courseId,
+    });
+
+    if (error) {
+      console.error('Master material sync failed:', error);
+      addToast('error', 'Failed to sync new master materials.');
+    } else {
+      const count = Number((data as { materials_added?: number } | null)?.materials_added || 0);
+      addToast('success', count > 0 ? `Added ${count} new master materials.` : 'Batch already has all master materials.');
+    }
+    setSyncingCourseId(null);
   };
 
   const handleRemoveStudent = async (enrollmentId: string) => {
@@ -375,9 +367,9 @@ export default function AdminCoursesPage() {
 
             {!editingId && (
               <div className="form-group">
-                <label htmlFor="start-date" className="form-label">Start Date (Auto-generate 16 Sessions)</label>
+                <label htmlFor="start-date" className="form-label">Week 0 Friday</label>
                 <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginBottom: '8px' }}>
-                  Select the Saturday of Week 1. This will automatically build out your 8-week schedule.
+                  Generates all 31 timeline items. Friday sessions begin at 8 PM IST; Saturday and Sunday sessions begin at 10 AM IST.
                 </p>
                 <input
                   id="start-date"
@@ -520,7 +512,7 @@ export default function AdminCoursesPage() {
               <button
                 className="btn btn-primary"
                 onClick={editingId ? handleUpdate : handleCreate}
-                disabled={!form.name || isSubmitting}
+                disabled={!form.name || (!editingId && !form.startDate) || isSubmitting}
               >
                 {isSubmitting ? 'Processing...' : (editingId ? 'Update Batch' : 'Create Batch')}
               </button>
@@ -548,7 +540,7 @@ export default function AdminCoursesPage() {
               <tbody>
                 {courses.map((course) => {
                   const now = new Date();
-                  const sessionsDone = course.sessions?.filter((s: any) => new Date(s.session_date) < now).length || 0;
+                  const sessionsDone = course.sessions?.filter((session) => new Date(session.session_date) < now).length || 0;
                   const totalSessions = course.sessions?.length || 0;
                   const progress = totalSessions > 0 ? Math.round((sessionsDone / totalSessions) * 100) : 0;
                   const registrationStats = getCourseRegistrationStats(course);
@@ -605,6 +597,14 @@ export default function AdminCoursesPage() {
                           <button className="btn btn-ghost btn-sm" onClick={() => handleEdit(course)}>
                             Edit
                           </button>
+                          <button
+                            className="btn btn-ghost btn-sm"
+                            onClick={() => handleSyncMasterMaterials(course.id)}
+                            disabled={syncingCourseId === course.id || totalSessions !== 31}
+                            title={totalSessions === 31 ? 'Add master materials that are missing from this batch' : 'Only Phase 4 cohorts can be synced'}
+                          >
+                            {syncingCourseId === course.id ? 'Syncing…' : 'Sync materials'}
+                          </button>
                           {deleteConfirm === course.id ? (
                             <>
                               <button className="btn btn-danger btn-sm" onClick={() => handleDelete(course.id)}>Confirm</button>
@@ -631,7 +631,7 @@ export default function AdminCoursesPage() {
             <div className="empty-state" style={{ padding: '40px' }}>
               <div className="empty-state-icon">📚</div>
               <h3 className="empty-state-title">No batches found</h3>
-              <p className="empty-state-text">Click "New Batch" to get started.</p>
+              <p className="empty-state-text">Click &quot;New Batch&quot; to get started.</p>
             </div>
           )}
         </div>

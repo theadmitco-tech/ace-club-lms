@@ -127,7 +127,7 @@ export default function AdminWorksheetsPage() {
   const fetchTemplate = async () => {
     setTablesUnavailable(false);
     const [{ data: sessionData, error: sessionError }, { data: planData, error: planError }] = await Promise.all([
-      supabase.from('master_sessions').select('id, title, session_number').order('session_number', { ascending: true }),
+      supabase.from('master_sessions').select('id, title, session_number').eq('is_archived', false).order('session_number', { ascending: true }),
       supabase
         .from('master_worksheet_plans')
         .select('*, master_worksheet_session_rules(*)')
@@ -203,7 +203,9 @@ export default function AdminWorksheetsPage() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (selectedCourseId) fetchCourseProgress(selectedCourseId);
+    if (!selectedCourseId) return;
+    const timeoutId = window.setTimeout(() => void fetchCourseProgress(selectedCourseId), 0);
+    return () => window.clearTimeout(timeoutId);
   }, [selectedCourseId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -212,13 +214,14 @@ export default function AdminWorksheetsPage() {
     const sessionId = new URLSearchParams(window.location.search).get('session');
     if (!sessionId || !masterSessions.some((session) => session.id === sessionId)) return;
 
-    setFocusedSessionId(sessionId);
-    window.setTimeout(() => {
+    const timeoutId = window.setTimeout(() => {
+      setFocusedSessionId(sessionId);
       document.getElementById(`worksheet-rule-${sessionId}`)?.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
       });
     }, 100);
+    return () => window.clearTimeout(timeoutId);
   }, [masterSessions]);
 
   const riskRows = useMemo<StudentRisk[]>(() => {

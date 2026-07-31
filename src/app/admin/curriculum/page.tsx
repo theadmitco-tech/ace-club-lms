@@ -53,6 +53,7 @@ export default function AdminCurriculumPage() {
           created_at
         )
       `)
+      .eq('is_archived', false)
       .order('session_number', { ascending: true });
 
     if (error) {
