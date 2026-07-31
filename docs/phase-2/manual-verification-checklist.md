@@ -1,6 +1,6 @@
 # Phase 2 Manual Verification Checklist
 
-Status: Active
+Status: Complete
 Owner: Product owner and QA
 Last updated: 31 July 2026
 
@@ -27,7 +27,7 @@ Record only `Present`, `Missing`, `Pass` or `Fail` plus sanitised notes. Never r
 - [x] Production Site URL is `https://aceclub.theadmitco.com`.
 - [x] Production redirect allowlist contains only approved Production paths.
 - [x] Inactive-by-default OAuth profile migration applied to Production.
-- [ ] No staging identity or Quick Access control appears in Production.
+- [x] No staging identity or Quick Access control appears in Production.
 
 Production redirect note: the custom-domain and Production Vercel callbacks are present, no staging Preview callback appears, and the obsolete localhost callback was removed with Product Owner approval.
 
@@ -45,3 +45,13 @@ Production redirect note: the custom-domain and Production Vercel callbacks are 
 | Reactivated Student regains access | Pass | Admin UI reactivation restored Preview `/dashboard` access |
 | Admin can provision a Student | Pass | Existing controlled Student was provisioned, activated and enrolled through the staging Preview Admin UI |
 | Admin can deactivate/reactivate a Student | Pass | Completed through the staging Preview Admin UI |
+
+## 4. Production smoke test
+
+| Test | Result | Sanitised note |
+|---|---|---|
+| Homepage and `/login` are healthy | Pass | Both returned HTTP 200 after the guarded deployment |
+| Google is the only login control | Pass | Password, magic-link and Quick Access controls were absent |
+| OAuth uses Production Supabase | Pass | Google continued to project `owmlxsnzogfapotmjrqk` |
+| Approved Production Admin reaches `/admin` | Pass | Admin dashboard loaded and survived refresh |
+| Production logout blocks `/admin` | Pass | Signed-out protected request returned to `/login` |

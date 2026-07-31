@@ -195,7 +195,7 @@ The approved authentication exception is Phase 2 scope and is recorded as deferr
 
 Date: 31 July 2026
 
-Status: **Active — Production environment recovery in progress**
+Status: **Signed off**
 
 ### Completed implementation and verification
 
@@ -206,12 +206,14 @@ Status: **Active — Production environment recovery in progress**
 - Staging and Production use separate Supabase projects, OAuth clients, callbacks and Vercel scopes.
 - Production access-control migration `20260731110000_require_provisioned_portal_access.sql` was applied successfully.
 - Pull request #1 merged Phase 0.5 through Phase 2 into `main` at `edd3766`.
+- Pull request #2 added permanent deployment safeguards and merged at `eaef0f3`.
+- The guarded Production deployment passed, both `/` and `/login` returned HTTP 200, and the approved Production Admin Google journey, refresh and logout passed.
 
 ### Production deployment incident
 
 The first Phase 2 Production build completed in Vercel but `/login` returned HTTP 500. A rollback redeployment then showed the safe Supabase configuration screen. The root cause was incomplete Vercel Production variables: Production had `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`, but `NEXT_PUBLIC_SUPABASE_ANON_KEY` and `NEXT_PUBLIC_SITE_URL` were not present in the Production scope. Vercel's `Ready` state proved only that the build completed; it did not prove runtime health.
 
-The Production SQL migration is compatible with the previous application and remains applied. Restore the last known-good original Production build while repairing variables; do not use a redeployment built after the variables were removed.
+The two missing Production variables were added, malformed URL values were corrected, and the new build guard rejected the invalid attempt before deployment. The subsequent guarded deployment passed and restored healthy Production service. The Production SQL migration remained compatible throughout and required no rollback.
 
 ### Permanent deployment safeguards
 
@@ -239,3 +241,13 @@ Before every Production merge or promotion:
 8. Record only names, scopes, project references and pass/fail results. Never store or paste key values.
 
 Environment variables are persistent deployment configuration. Once the four correct Production and Preview entries exist, routine releases must reuse them and must not ask the Product Owner to re-enter keys.
+
+### Phase 2 sign-off decision
+
+Phase 2 is accepted as complete because controlled Google-only authentication, provisioning, role enforcement, inactive access, logout, environment separation, staging validation, Production migration, Production deployment and Production Admin smoke testing all pass. Password, magic-link, Super Admin and public Quick Access paths are absent.
+
+### Phase 3 continuation point
+
+Phase 3 is **Align the master course**. Start from updated `origin/main` on a new feature branch. Read the Phase 3 roadmap and acceptance criteria, inventory the current course and material rows in staging, and obtain the approved revised fixed curriculum before changing data. The Phase 3 exit gate is one complete master course with approved titles, class types, DI–Ishan, VA–Tanya and QA–Unnati mappings, Notion pre-reads, PDF worksheets and worksheet question rows, with placeholders and duplicates removed.
+
+Do not reopen Phase 2 authentication or environment work unless a new failing probe contradicts this signed evidence. Continue to use the mandatory release preflight above for every deployment.
