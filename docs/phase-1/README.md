@@ -1,6 +1,6 @@
 # Phase 1 — Recovery and Audit
 
-Status: **Production inventory reconciled; migration baseline and live verification pending**
+Status: **Production inventory and staging baseline reconciled; live authentication verification pending**
 
 Audit baseline:
 
@@ -16,7 +16,7 @@ Audit baseline:
 - Staging inventory captured on 31 July 2026. It contains only Supabase-managed storage tables; the public LMS schema, policies, functions, triggers, and buckets are empty.
 - Production inventory captured on 31 July 2026. It contains 19 public LMS tables, 43 policies, 15 public functions, 5 application triggers, no storage buckets, and no cron table.
 - Obsolete credential-bearing scratch scripts were removed. Lint is now 41 errors and 10 warnings; the product owner approved the scoped legacy deferral on 31 July 2026.
-- Vercel project and environment-variable names are inventoried. Two production deployments exist; no Preview deployment is currently listed. Remote Supabase value mapping is not yet verified.
+- Vercel Preview is configured for staging Supabase and Vercel Production for production Supabase. Two old production deployments exist; no Preview deployment is currently listed, and the corrected mappings require redeployment.
 
 ## Exit-gate status
 

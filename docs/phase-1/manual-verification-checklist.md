@@ -15,6 +15,7 @@ Complete only the items that require account access. Do not paste secret values,
 - [x] Lint disposition approved — credential-bearing scratch scripts were removed; the remaining 41 errors and 10 warnings are scoped legacy deferrals and no new findings are permitted.
 - [x] Staging database baseline applied and post-apply inventory matches production.
 - [x] Production database inventory captured and reconciled.
+- [x] Vercel Preview and Production Supabase URL, anon-key, and service-role mappings separated and configured without recording values.
 - [ ] Authentication test matrix passes.
 - [ ] Release and privacy probes pass.
 
@@ -32,9 +33,9 @@ For each environment, record only **Present**, **Missing**, or **Not applicable*
 
 | Variable | Local | Staging | Production |
 |---|---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Present (staging) | Present, value mapping pending | Present, value mapping pending |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Present (staging) | Present, value mapping pending | Present, value mapping pending |
-| `SUPABASE_SERVICE_ROLE_KEY` | Missing | Present | Present |
+| `NEXT_PUBLIC_SUPABASE_URL` | Present (staging) | Present (staging) | Present (production) |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Present (staging) | Present (staging) | Present (production) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Missing | Present (staging) | Present (production) |
 | `NEXT_PUBLIC_SITE_URL` | Present (`localhost`) | Present, value pending | Present, value pending |
 | Razorpay variables | Missing | Present | Present |
 

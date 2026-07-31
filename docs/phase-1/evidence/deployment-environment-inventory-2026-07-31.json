@@ -33,8 +33,24 @@
       "RAZORPAY_KEY_SECRET",
       "NEXT_PUBLIC_RAZORPAY_KEY_ID",
       "RAZORPAY_WEBHOOK_SECRET"
-    ],
-    "values_verified": false
+    ]
+  },
+  "supabase_environment_mapping": {
+    "verified_without_recording_values": true,
+    "method": "Environment-specific Vercel CLI updates sourced directly from the matching Supabase project API-key inventory",
+    "preview": {
+      "supabase_project_ref": "eyphkkginlgoaxflauog",
+      "NEXT_PUBLIC_SUPABASE_URL": "Configured",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "Configured",
+      "SUPABASE_SERVICE_ROLE_KEY": "Configured"
+    },
+    "production": {
+      "supabase_project_ref": "owmlxsnzogfapotmjrqk",
+      "NEXT_PUBLIC_SUPABASE_URL": "Configured",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "Configured",
+      "SUPABASE_SERVICE_ROLE_KEY": "Configured"
+    },
+    "deployment_required_for_changes_to_take_effect": true
   },
   "local_environment": {
     "supabase_project_ref": "eyphkkginlgoaxflauog",
@@ -42,5 +58,5 @@
     "service_role_present": false,
     "vercel_oidc_token_present_in_ignored_env_local": true
   },
-  "conclusion": "Local is safely connected to staging. Remote variable names exist for Preview and Production, but their environment-specific values still require a no-secrets mapping check. No Preview deployment currently exists."
+  "conclusion": "Local and Vercel Preview are configured for staging; Vercel Production is configured for production. No values are recorded in this evidence. NEXT_PUBLIC_SITE_URL remains unverified, no Preview deployment currently exists, and the environment changes require new deployments to take effect."
 }
