@@ -16,10 +16,13 @@ Current continuation state: [Ace Club LMS Running Handoff](handoffs/ace-club-lms
   - [Manual verification checklist](phase-1/manual-verification-checklist.md)
   - [Read-only Supabase inventory query](phase-1/supabase-inventory.sql)
   - [Evidence](phase-1/evidence/)
-- Phase 2: active with Google Sign-In as the approved login method.
+- Phase 2: signed off with Google Sign-In as the approved login method.
   - [Status and exit gate](phase-2/README.md)
   - [Manual verification checklist](phase-2/manual-verification-checklist.md)
   - [Authentication decision](decisions/adr-0001-google-sign-in.md)
+- Phase 3: active — align the fixed master course.
+  - [Status and exit gate](phase-3/README.md)
+  - [Approved revised course structure](phase-3/revised-course-structure.md)
 
 There is no approved Phase 1.5.
 
@@ -57,6 +60,7 @@ These stable paths are grandfathered. New multi-file feature documentation shoul
 
 - [Instruction register](../instruction/README.md)
 - [Running handoff](handoffs/ace-club-lms-running-handoff.md)
+- [Current code landscape and cleanup plan](development/current-code-landscape-and-cleanup-plan.md)
 - [Document conventions](governance/document-conventions.md)
 - [Living coding rules](development/coding-rules.md)
 - [Mac setup](setup/mac-setup.md)

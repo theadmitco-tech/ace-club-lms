@@ -16,7 +16,8 @@ Read:
 4. The [MVP acceptance criteria](../../instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.md).
 5. The relevant phase in the [product roadmap](../../instruction/Ace_Club_LMS_Product_Roadmap.md).
 6. The [documentation index](../README.md) and [coding rules](../development/coding-rules.md).
-7. Only the implementation files relevant to the immediate task.
+7. The [current code landscape and cleanup plan](../development/current-code-landscape-and-cleanup-plan.md), especially before Phase 3 or cleanup work.
+8. Only the implementation files relevant to the immediate task.
 
 Do not repeat completed recovery or audit work unless newer evidence invalidates it.
 
