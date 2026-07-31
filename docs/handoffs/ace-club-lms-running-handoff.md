@@ -114,7 +114,7 @@ Authoritative Phase 1 records:
 
 ### Current product decision
 
-The product owner deferred the login-method decision to Phase 2. Magic-link verification is not marked as passed. Phase 2 will first inspect any surviving Google Cloud and Supabase OAuth configuration, then choose between email/password, Google Sign-In, or a deliberately supported combination.
+The product owner resolved the deferred login-method decision on 31 July 2026: Phase 2 will use Google Sign-In only for controlled, pre-provisioned accounts. Magic-link and password login are paused and excluded from the Phase 2 exit gate. Phase 2 will inventory surviving Google Cloud and Supabase OAuth configuration before rebuilding it.
 
 Legacy password and Quick Access UI still exists and must not be mistaken for approved launch behaviour.
 
@@ -164,7 +164,7 @@ Legacy password and Quick Access UI still exists and must not be mistaken for ap
 ### Phase 2 starting scope
 
 1. Inventory surviving Google OAuth, Supabase provider, consent-screen, and redirect configuration before rebuilding anything.
-2. Record the approved authentication-method decision.
+2. Implement the approved Google-only authentication decision and record its configuration without secrets.
 3. Remove production Quick Access, hard-coded demo credentials, password behaviour not included in the decision, and “Super Admin” presentation.
 4. Establish server-side route/page authorization and session refresh consistently.
 5. Create controlled staging Admin and Student identities for the selected login method.

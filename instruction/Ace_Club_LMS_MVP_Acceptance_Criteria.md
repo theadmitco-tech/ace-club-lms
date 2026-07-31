@@ -14,7 +14,7 @@ Source artifact: [MVP Acceptance Criteria DOCX](Ace_Club_LMS_MVP_Acceptance_Crit
 | **Version** | MVP — current agreed scope |
 | **Date** | 30 July 2026 |
 
-> **Scope decision:** The MVP uses a fixed curriculum, magic-link access, embedded Notion pre-reads, automatically released PDF worksheets, and a manual spreadsheet-style question tracker.
+> **Scope decision:** The MVP uses Google Sign-In with controlled, pre-provisioned accounts, a fixed curriculum, embedded Notion pre-reads, automatically released PDF worksheets, and a manual spreadsheet-style question tracker.
 
 ## 1. Product roles and boundaries
 | **Role** | **Purpose** | **MVP access** |
@@ -32,15 +32,15 @@ Source artifact: [MVP Acceptance Criteria DOCX](Ace_Club_LMS_MVP_Acceptance_Crit
 ### **AC-AUTH-01 — Add a new student**
 **Given:** An admin is authenticated.
 **When:** The admin enters a new student’s name, email and cohort and submits the form.
-**Then:** The student account and profile are created with Student permissions and an invitation is sent.
-### **AC-AUTH-02 — Sign in with a magic link**
-**Given:** A newly invited student receives a valid magic link.
-**When:** The student opens the link.
-**Then:** The student is authenticated without creating a password and is redirected to the student dashboard.
-### **AC-AUTH-03 — Request a replacement link**
-**Given:** A magic link has expired or has already been used.
-**When:** The user submits their registered email on the login page.
-**Then:** A new link is sent and the confirmation does not reveal whether another email address is registered.
+**Then:** The student profile and course access are created with Student permissions for that email address; the portal does not create a shared password.
+### **AC-AUTH-02 — Sign in with Google**
+**Given:** An Admin or Student has a controlled, active account whose email matches their Google account.
+**When:** They complete Google Sign-In.
+**Then:** A portal session is established and they are redirected to the dashboard allowed by their role.
+### **AC-AUTH-03 — Reject unprovisioned Google accounts**
+**Given:** A Google account has not been provisioned for portal access.
+**When:** It completes Google authentication.
+**Then:** The portal does not grant or auto-provision course access and shows a generic access-support message.
 ### **AC-AUTH-04 — Role-based redirection**
 **Given:** An Admin or Student completes authentication.
 **When:** The session is established.
@@ -48,11 +48,11 @@ Source artifact: [MVP Acceptance Criteria DOCX](Ace_Club_LMS_MVP_Acceptance_Crit
 ### **AC-AUTH-05 — Manage access**
 **Given:** A student exists.
 **When:** The admin deactivates or reactivates the account.
-**Then:** A deactivated student is blocked from future access and a reactivated student can request a new magic link.
+**Then:** A deactivated student is blocked from portal access and a reactivated student can sign in with the approved Google account.
 ### **AC-AUTH-06 — Staging test accounts**
 **Given:** The application is running in staging.
-**When:** The team signs in as Test Admin or Test Student.
-**Then:** Each account reaches the correct journey; test controls and credentials are absent from production.
+**When:** The team uses Google Sign-In as Test Admin or Test Student.
+**Then:** Each controlled account reaches the correct journey quickly; test-only configuration, controls and credentials are absent from production.
 ## 3. Course structure and cohort schedule
 > **Fixed-course rule:** Admins create cohorts and assign students, but do not create, rename or rearrange curriculum classes in the MVP.
 
@@ -205,9 +205,9 @@ Source artifact: [MVP Acceptance Criteria DOCX](Ace_Club_LMS_MVP_Acceptance_Crit
 - Instructor replies to student comments
 - Legacy student migration
 ## 11. MVP launch acceptance
-1. An Admin is invited and signs in using a magic link.
+1. A pre-provisioned Admin signs in with the approved Google account.
 1. The Admin creates a cohort and adds first-time students.
-1. Students receive magic links and reach their own dashboards.
+1. Pre-provisioned Students use Google Sign-In and reach their own dashboards.
 1. Week 0 is immediately available and renders correctly.
 1. A later pre-read opens exactly seven days before its class.
 1. A worksheet opens automatically after its class.

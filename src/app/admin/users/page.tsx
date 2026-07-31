@@ -11,6 +11,7 @@ type AdminUser = {
   full_name: string;
   role: 'admin' | 'student';
   created_at: string;
+  is_active: boolean;
 };
 
 type Course = {
@@ -39,7 +40,6 @@ export default function AdminUsersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAddUser, setShowAddUser] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   
   const [enrollCourse, setEnrollCourse] = useState('');
   const [enrollMode, setEnrollMode] = useState<'single' | 'bulk'>('single');
@@ -97,7 +97,11 @@ export default function AdminUsersPage() {
         const res = await fetch('/api/admin/bulk-enroll', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ emails: emailsToProcess, courseId: enrollCourse })
+          body: JSON.stringify({
+            emails: emailsToProcess,
+            courseId: enrollCourse,
+            fullName: enrollMode === 'single' ? newUser.full_name.trim() : undefined,
+          })
         });
         const result = await res.json();
         
@@ -144,25 +148,24 @@ export default function AdminUsersPage() {
     void fetchUsersData();
   };
 
-  const handleDeleteUser = async (userId: string) => {
+  const handleSetUserActive = async (userId: string, isActive: boolean) => {
     setIsSubmitting(true);
     try {
-      const res = await fetch('/api/admin/delete-user', {
+      const res = await fetch('/api/admin/set-user-active', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId })
+        body: JSON.stringify({ userId, isActive })
       });
       const result = await res.json();
       if (result.success) {
-        addToast('success', 'User deleted from platform.');
-        fetchUsersData();
+        addToast('success', isActive ? 'Student access reactivated.' : 'Student access deactivated.');
+        void fetchUsersData();
       } else {
-        addToast('error', result.error || 'Failed to delete user.');
+        addToast('error', result.error || 'Failed to update student access.');
       }
     } catch {
-      addToast('error', 'An error occurred while deleting user.');
+      addToast('error', 'An error occurred while updating student access.');
     }
-    setDeleteConfirm(null);
     setIsSubmitting(false);
   };
 
@@ -271,7 +274,7 @@ export default function AdminUsersPage() {
                 onClick={handleEnrollAction}
                 disabled={isSubmitting || (enrollMode === 'single' ? (!newUser.email) : !bulkEmails)}
               >
-                {isSubmitting ? 'Processing...' : (enrollMode === 'single' ? 'Invite & Enroll' : 'Enroll All Students')}
+                {isSubmitting ? 'Processing...' : (enrollMode === 'single' ? 'Provision & Enroll' : 'Enroll All Students')}
               </button>
             </div>
           </div>
@@ -290,7 +293,7 @@ export default function AdminUsersPage() {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Joined</th>
-                <th>Enrollment Toggle</th>
+                <th>Enrollment and access</th>
               </tr>
             </thead>
             <tbody>
@@ -331,26 +334,14 @@ export default function AdminUsersPage() {
                         );
                       })}
                       
-                      <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
-                        {deleteConfirm === student.id ? (
-                          <>
-                            <button className="btn btn-danger btn-sm" onClick={() => handleDeleteUser(student.id)}>
-                              Confirm
-                            </button>
-                            <button className="btn btn-ghost btn-sm" onClick={() => setDeleteConfirm(null)}>
-                              Cancel
-                            </button>
-                          </>
-                        ) : (
-                          <button 
-                            className="btn btn-ghost btn-sm" 
-                            style={{ color: 'var(--error)', opacity: 0.6 }}
-                            onClick={() => setDeleteConfirm(student.id)}
-                          >
-                            Delete
-                          </button>
-                        )}
-                      </div>
+                      <button
+                        className={`btn btn-sm ${student.is_active ? 'btn-ghost' : 'btn-primary'}`}
+                        style={{ marginLeft: 'auto' }}
+                        disabled={isSubmitting}
+                        onClick={() => handleSetUserActive(student.id, !student.is_active)}
+                      >
+                        {student.is_active ? 'Deactivate access' : 'Reactivate access'}
+                      </button>
                     </td>
                   </tr>
                 );

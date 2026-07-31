@@ -7,112 +7,103 @@ function getSupabaseAdmin() {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !serviceRoleKey) {
-    throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY.');
+    throw new Error('Missing server-side Supabase configuration.');
   }
 
-  // We MUST use the service role key to bypass RLS and create users in auth.users
-  // without logging out the current admin.
-  return createClient(supabaseUrl, serviceRoleKey);
+  return createClient(supabaseUrl, serviceRoleKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(request: NextRequest) {
+  const authorization = await requireAdmin();
+  if (!authorization.authorized) {
+    return authorization.response;
+  }
+
   try {
-    const authorization = await requireAdmin();
-    if (!authorization.authorized) {
-      return authorization.response;
+    const { emails, courseId, fullName } = await request.json();
+
+    if (!Array.isArray(emails) || emails.length === 0 || !courseId) {
+      return NextResponse.json({ error: 'Emails and course are required.' }, { status: 400 });
     }
 
     const supabaseAdmin = getSupabaseAdmin();
-    const { emails, courseId } = await req.json();
+    const results = { success: 0, failed: 0, errors: [] as string[] };
 
-    if (!emails || !Array.isArray(emails) || !courseId) {
-      return NextResponse.json({ error: 'Missing emails or courseId' }, { status: 400 });
-    }
+    for (const untrustedEmail of emails) {
+      const email = typeof untrustedEmail === 'string'
+        ? untrustedEmail.trim().toLowerCase()
+        : '';
 
-    const results = {
-      success: 0,
-      failed: 0,
-      errors: [] as string[]
-    };
-
-    for (const email of emails) {
-      // 1. Try to invite the user via email (this automatically sends an invitation email)
-      const { data: authData, error: authError } = await supabaseAdmin.auth.admin.inviteUserByEmail(
-        email,
-        {
-          data: { full_name: email.split('@')[0] },
-          redirectTo: process.env.NEXT_PUBLIC_SITE_URL ? `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard` : 'http://localhost:3001/dashboard'
-        }
-      );
-
-      let userId = authData?.user?.id;
-
-      if (authError) {
-        // If user already exists, we need to fetch their ID
-        if (authError.message.includes('already exists') || authError.message.includes('already registered')) {
-          const { data: existingProfiles } = await supabaseAdmin
-            .from('profiles')
-            .select('id')
-            .eq('email', email)
-            .single();
-          
-          if (existingProfiles) {
-            userId = existingProfiles.id;
-          } else {
-            results.failed++;
-            results.errors.push(`Could not find existing profile for ${email}`);
-            continue;
-          }
-        } 
-        // Fallback for Supabase free tier email rate limits (typically 3-4 per hour)
-        else if (authError.status === 429 || authError.message.includes('rate limit')) {
-          console.warn(`Rate limit hit for ${email}, falling back to manual creation without email.`);
-          const { data: createData, error: createError } = await supabaseAdmin.auth.admin.createUser({
-            email: email,
-            password: 'StudentPassword123!', // Provide a default password since they won't get the magic link
-            email_confirm: true,
-            user_metadata: { full_name: email.split('@')[0] }
-          });
-          
-          if (createError) {
-            results.failed++;
-            results.errors.push(`${email}: ${createError.message}`);
-            continue;
-          }
-          userId = createData.user?.id;
-        } else {
-          results.failed++;
-          results.errors.push(`${email}: ${authError.message}`);
-          continue;
-        }
+      if (!email || !email.includes('@')) {
+        results.failed++;
+        results.errors.push('One email address was invalid.');
+        continue;
       }
 
-      // 2. Ensure profile exists (manually upsert to be safe)
-      if (userId) {
-        await supabaseAdmin.from('profiles').upsert({
-          id: userId,
-          email: email,
-          full_name: email.split('@')[0],
-          role: 'student'
+      let userId: string | undefined;
+      const { data: existingProfile } = await supabaseAdmin
+        .from('profiles')
+        .select('id, full_name')
+        .eq('email', email)
+        .maybeSingle();
+      const studentName = emails.length === 1 && typeof fullName === 'string' && fullName.trim()
+        ? fullName.trim()
+        : existingProfile?.full_name || email.split('@')[0];
+
+      if (existingProfile) {
+        userId = existingProfile.id;
+      } else {
+        const { data: createdUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
+          email,
+          email_confirm: true,
+          user_metadata: { full_name: studentName },
         });
 
-        // 3. Enroll the user in the course
-        const { error: enrollError } = await supabaseAdmin
-          .from('enrollments')
-          .insert({ user_id: userId, course_id: courseId });
-        
-        if (enrollError && !enrollError.message.includes('duplicate key value')) {
+        if (createError || !createdUser.user) {
           results.failed++;
-          results.errors.push(`${email}: Failed to enroll`);
-        } else {
-          results.success++;
+          results.errors.push(`Could not provision ${email}.`);
+          continue;
         }
+
+        userId = createdUser.user.id;
       }
+
+      const { error: profileError } = await supabaseAdmin.from('profiles').upsert({
+        id: userId,
+        email,
+        full_name: studentName,
+        role: 'student',
+        is_active: true,
+        invited_at: new Date().toISOString(),
+      });
+
+      if (profileError) {
+        results.failed++;
+        results.errors.push(`Could not activate ${email}.`);
+        continue;
+      }
+
+      const { error: enrollmentError } = await supabaseAdmin
+        .from('enrollments')
+        .upsert(
+          { user_id: userId, course_id: courseId },
+          { onConflict: 'user_id,course_id', ignoreDuplicates: true },
+        );
+
+      if (enrollmentError) {
+        results.failed++;
+        results.errors.push(`Could not enroll ${email}.`);
+        continue;
+      }
+
+      results.success++;
     }
 
     return NextResponse.json(results);
-  } catch (err: unknown) {
-    console.error('Bulk enroll error:', err);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } catch (error) {
+    console.error('Student provisioning failed:', error);
+    return NextResponse.json({ error: 'Unable to provision students.' }, { status: 500 });
   }
 }

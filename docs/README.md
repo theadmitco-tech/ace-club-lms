@@ -16,6 +16,10 @@ Current continuation state: [Ace Club LMS Running Handoff](handoffs/ace-club-lms
   - [Manual verification checklist](phase-1/manual-verification-checklist.md)
   - [Read-only Supabase inventory query](phase-1/supabase-inventory.sql)
   - [Evidence](phase-1/evidence/)
+- Phase 2: active with Google Sign-In as the approved login method.
+  - [Status and exit gate](phase-2/README.md)
+  - [Manual verification checklist](phase-2/manual-verification-checklist.md)
+  - [Authentication decision](decisions/adr-0001-google-sign-in.md)
 
 There is no approved Phase 1.5.
 

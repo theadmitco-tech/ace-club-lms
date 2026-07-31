@@ -18,8 +18,8 @@ When code conflicts with the acceptance criteria, the acceptance criteria win.
 
 - Production roles are `Admin` and `Student` only.
 - Test Admin and Test Student are staging identities, not product roles.
-- Production uses magic-link access.
-- Password login, Quick Access, and Super Admin behaviour are excluded.
+- Production uses Google Sign-In with controlled, pre-provisioned accounts.
+- Password login, magic-link login, Quick Access, and Super Admin behaviour are excluded.
 - The curriculum is fixed for the MVP.
 - The worksheet tracker is manual: `Done`, `Come back for review`, optional time, optional comment, and system-owned `Not updated`.
 - Do not reintroduce excluded advanced analytics, automated grading, curriculum editing, or legacy migration without a documented scope change.

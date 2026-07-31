@@ -1,0 +1,31 @@
+{
+  "date": "2026-07-31",
+  "google_cloud_project_name": "Ace Club Portal",
+  "google_cloud_project_id": "ace-club-portal-504012",
+  "google_oauth_web_client": "Present",
+  "google_oauth_web_client_name": "Ace Club Portal Web",
+  "google_oauth_audience": "External",
+  "google_oauth_publishing_status": "Testing",
+  "google_oauth_test_user_count": 2,
+  "existing_client_environment": "Production",
+  "existing_client_authorized_origins": [
+    "http://localhost:3000",
+    "https://aceclub.theadmitco.com",
+    "https://ace-club-lms.vercel.app"
+  ],
+  "existing_client_redirect_environment": "Production Supabase only",
+  "staging_callback_present_in_existing_client": false,
+  "staging_oauth_web_client": "Created",
+  "staging_oauth_web_client_name": "Ace Club Portal Staging",
+  "staging_oauth_authorized_origin": "http://localhost:3000",
+  "staging_oauth_authorized_redirect_uri": "https://eyphkkginlgoaxflauog.supabase.co/auth/v1/callback",
+  "supabase_project_ref": "eyphkkginlgoaxflauog",
+  "google_provider_enabled": true,
+  "google_client_id": "Present",
+  "google_client_secret": "Present",
+  "downloaded_credentials_copy_removed": true,
+  "supabase_callback_url": "https://eyphkkginlgoaxflauog.supabase.co/auth/v1/callback",
+  "supabase_site_url": "http://localhost:3000",
+  "supabase_allowed_redirect_url": "http://localhost:3000/auth/callback",
+  "conclusion": "The existing Production OAuth client was preserved. A separate staging client now uses the staging Supabase callback, the staging Google provider is enabled, and no downloaded credential copy remains."
+}

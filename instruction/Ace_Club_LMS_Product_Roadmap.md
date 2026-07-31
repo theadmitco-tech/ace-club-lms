@@ -20,7 +20,7 @@ Source artifact: [Product Roadmap DOCX](Ace_Club_LMS_Product_Roadmap.docx)
 ### Present or partially built
 - Next.js portal and role-oriented interfaces
 - Supabase authentication integration
-- Magic-link and password-login paths
+- Google, magic-link and password-login paths requiring consolidation
 - Admin and student dashboard components
 - Notion-page rendering
 - Some form of question or progress tracking
@@ -45,10 +45,11 @@ Source artifact: [Product Roadmap DOCX](Ace_Club_LMS_Product_Roadmap.docx)
 **Duration:** 2–4 working days
 - Correct Supabase URL, keys, redirect URLs and deployment configuration.
 - Retain only Admin and Student as production roles.
-- Create staging Test Admin and Test Student identities.
-- Verify magic-link invitations, callbacks, role redirects, logout and deactivation.
+- Configure Google Sign-In as the only launch login method.
+- Create controlled staging Test Admin and Test Student Google identities.
+- Verify OAuth callbacks, controlled provisioning, role redirects, logout and deactivation.
 - Remove Super Admin and public production Quick Access controls.
-**Exit gate:** New Admin and Student access works; staging test identities pass the full login checklist.
+**Exit gate:** A controlled Admin and Student can use Google Sign-In and reach only their permitted journeys; unprovisioned and deactivated accounts are denied; logout invalidates protected access; staging test identities pass the full login checklist; password, magic-link, Super Admin and public Quick Access paths are absent.
 ### Phase 3 — Align the master course
 **Duration:** 3–5 working days
 - Import the revised fixed curriculum.
@@ -121,7 +122,7 @@ Source artifact: [Product Roadmap DOCX](Ace_Club_LMS_Product_Roadmap.docx)
 ## 5. Sprint plan
 | **Sprint** | **Goal** | **Demonstrable outcome** |
 | --- | --- | --- |
-| Sprint 1 | Audit and authentication | Test Admin, Test Student and magic-link journeys work |
+| Sprint 1 | Audit and authentication | Test Admin and Test Student Google Sign-In journeys work |
 | Sprint 2 | Master course and cohorts | A start date generates one correct cohort schedule |
 | Sprint 3 | Content journey | Week 0, scheduled pre-read and post-class PDF release work |
 | Sprint 4 | Tracker and admin view | Student input persists and Admin sees matching progress |
@@ -130,8 +131,8 @@ Source artifact: [Product Roadmap DOCX](Ace_Club_LMS_Product_Roadmap.docx)
 ## 6. Account setup runbook
 ### Production account model
 - Production users are Admins and Students.
-- Both use email magic links; production passwords are not required.
-- The first Admin is created by the technical team, after which the Admin invites students.
+- Both use controlled Google Sign-In; production passwords and magic links are not supported.
+- The first Admin is provisioned by the technical team, after which the Admin provisions students by their Google-account email.
 - Test Admin and Test Student are staging identities, not additional product roles.
 ### Information required
 - One controlled email address for the first real Admin
@@ -143,12 +144,13 @@ Source artifact: [Product Roadmap DOCX](Ace_Club_LMS_Product_Roadmap.docx)
 ### Technical setup steps
 1. Confirm the application’s Supabase project URL and public key in staging and production.
 1. Set Supabase Site URL and allowed callback URLs for localhost, staging and production.
-1. Configure authenticated email delivery and the magic-link email template.
-1. Create the first Admin authentication user and corresponding application profile.
+1. Configure separate Google OAuth web clients for staging and production.
+1. Configure the Supabase Google provider, callback URL and application redirect allowlist in each environment.
+1. Create the first Admin application profile for the approved Google-account email.
 1. Assign the Admin role and verify row-level security permits only authorised admin actions.
-1. Create Test Admin and Test Student in staging and assign their matching roles.
-1. Invite a first-time Student through the portal and verify the complete magic-link callback.
-1. Test expiry, reuse, logout, deactivation and direct access to protected routes.
+1. Add controlled Test Admin and Test Student Google accounts to the staging OAuth testing audience and assign their matching application roles.
+1. Provision a first-time Student through the portal and verify the complete Google OAuth callback.
+1. Test an unprovisioned Google account, logout, deactivation and direct access to protected routes.
 1. Remove or disable Quick Access and all staging identities from the production interface.
 ### Security rules
 - Never place the Supabase service-role key in browser code or public environment variables.

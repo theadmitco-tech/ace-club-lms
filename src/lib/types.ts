@@ -11,6 +11,7 @@ export interface User {
   role: UserRole;
   avatar_url?: string;
   created_at: string;
+  is_active: boolean;
 }
 
 export interface Course {

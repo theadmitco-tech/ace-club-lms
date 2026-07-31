@@ -1,0 +1,68 @@
+{
+  "date": "2026-07-31",
+  "supabase_project_ref": "eyphkkginlgoaxflauog",
+  "tests": {
+    "test_admin_provisioning": {
+      "result": "Pass",
+      "matched_rows": 1,
+      "role": "admin",
+      "is_active": true
+    },
+    "test_admin_google_sign_in": {
+      "result": "Pass",
+      "observed_destination": "/admin",
+      "dashboard_loaded": true
+    },
+    "admin_student_route_boundary": {
+      "result": "Pass",
+      "attempted_path": "/dashboard",
+      "observed_destination": "/admin"
+    },
+    "logout_invalidates_protected_access": {
+      "result": "Pass",
+      "attempted_path": "/admin",
+      "observed_destination": "/login"
+    },
+    "unprovisioned_google_account": {
+      "result": "Pass",
+      "observed_destination": "/login/access-denied",
+      "observed_message": "Portal access is not active",
+      "portal_access_granted": false
+    },
+    "test_student_initial_state": {
+      "result": "Pass",
+      "is_active": false,
+      "observed_destination": "/login/access-denied"
+    },
+    "test_student_google_sign_in": {
+      "result": "Pass",
+      "observed_destination": "/dashboard",
+      "dashboard_loaded": true
+    },
+    "student_admin_route_boundary": {
+      "result": "Pass",
+      "attempted_path": "/admin",
+      "observed_destination": "/dashboard"
+    },
+    "test_student_logout": {
+      "result": "Pass",
+      "attempted_path_after_logout": "/dashboard",
+      "observed_destination": "/login"
+    },
+    "test_student_deactivation": {
+      "result": "Pass",
+      "is_active": false,
+      "observed_destination": "/login/access-denied"
+    },
+    "test_student_reactivation": {
+      "result": "Pass",
+      "is_active": true,
+      "observed_destination": "/dashboard"
+    },
+    "test_student_final_logout": {
+      "result": "Pass",
+      "attempted_path_after_logout": "/dashboard",
+      "observed_destination": "/login"
+    }
+  }
+}
