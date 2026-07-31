@@ -12,7 +12,7 @@ Complete only the items that require account access. Do not paste secret values,
 - [x] Local `.env.local` points to staging using public values only.
 - [x] Production Supabase project identified and kept separate.
 - [x] Production build passes.
-- [ ] Lint passes — credential-bearing scratch scripts were removed; current baseline is 41 errors and 10 warnings, with scoped deferral pending approval.
+- [x] Lint disposition approved — credential-bearing scratch scripts were removed; the remaining 41 errors and 10 warnings are scoped legacy deferrals and no new findings are permitted.
 - [x] Staging database inventory captured; public LMS schema is empty.
 - [x] Production database inventory captured and reconciled.
 - [ ] Authentication test matrix passes.

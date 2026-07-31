@@ -46,5 +46,5 @@
     }
   ],
   "proposed_disposition": "Defer the remaining legacy typing and effect refactors to the roadmap phases that replace or adapt the affected pages. Keep lint enabled, prohibit new lint findings, and require a clean lint run before launch.",
-  "approval_status": "Pending product-owner approval"
+  "approval_status": "Approved by product owner on 31 July 2026"
 }
