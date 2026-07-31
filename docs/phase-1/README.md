@@ -16,7 +16,7 @@ Audit baseline:
 - Staging inventory captured on 31 July 2026. It contains only Supabase-managed storage tables; the public LMS schema, policies, functions, triggers, and buckets are empty.
 - Production inventory captured on 31 July 2026. It contains 19 public LMS tables, 43 policies, 15 public functions, 5 application triggers, no storage buckets, and no cron table.
 - Obsolete credential-bearing scratch scripts were removed. Lint is now 41 errors and 10 warnings; the product owner approved the scoped legacy deferral on 31 July 2026.
-- A protected Vercel Preview is deployed with staging Supabase. Vercel Production is configured for production Supabase, but its two listed deployments predate the corrected mappings and authorization containment.
+- A protected Vercel Preview is deployed with staging Supabase. Production is live at `aceclub.theadmitco.com` with production Supabase and the privileged-route authorization containment.
 
 ## Exit-gate status
 

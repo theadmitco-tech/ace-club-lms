@@ -11,6 +11,12 @@
     },
     "production": [
       {
+        "url": "https://ace-club-bbe16vpjf-theadmitco-techs-projects.vercel.app",
+        "alias": "https://aceclub.theadmitco.com",
+        "status": "Ready",
+        "deployed_commit": "506bf7dfbbf1c9fc2758e4487019cfd03f600fff"
+      },
+      {
         "url": "https://ace-club-666tywuee-theadmitco-techs-projects.vercel.app",
         "status": "Ready",
         "age_at_inventory": "75 days"
@@ -55,7 +61,7 @@
     },
     "deployment_required_for_changes_to_take_effect": {
       "preview": false,
-      "production": true
+      "production": false
     }
   },
   "local_environment": {
@@ -64,5 +70,5 @@
     "service_role_present": false,
     "vercel_oidc_token_present_in_ignored_env_local": true
   },
-  "conclusion": "Local and the protected Vercel Preview deployment use staging Supabase; Vercel Production is configured for production Supabase. No values are recorded in this evidence. NEXT_PUBLIC_SITE_URL remains unverified, and Production requires redeployment for the corrected mapping and authorization containment to take effect."
+  "conclusion": "Local and the protected Vercel Preview deployment use staging Supabase. The Production deployment uses production Supabase and is live at aceclub.theadmitco.com with the corrected mapping and authorization containment. No secret values are recorded in this evidence."
 }
