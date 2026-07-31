@@ -188,3 +188,54 @@ Legacy password and Quick Access UI still exists and must not be mistaken for ap
 Phase 1 is accepted as complete because the recovery outputs, database map, validated estimate, migration baseline, environment separation, build verification, Production deployment, privileged-route containment, and staging/Production privacy and release evidence are complete.
 
 The approved authentication exception is Phase 2 scope and is recorded as deferred rather than passed.
+
+---
+
+## Phase 2 handoff — Google-only accounts
+
+Date: 31 July 2026
+
+Status: **Active — Production environment recovery in progress**
+
+### Completed implementation and verification
+
+- Google Sign-In is the only portal login method; password, magic-link, Quick Access, demo credentials and Super Admin presentation are removed.
+- Unknown Google identities receive an inactive Student profile and no portal access.
+- Server-side Admin and Student route boundaries, session refresh, logout and reversible activation are implemented.
+- Staging Preview passed Admin, Student, denial, logout, provisioning, enrolment, deactivation and reactivation journeys.
+- Staging and Production use separate Supabase projects, OAuth clients, callbacks and Vercel scopes.
+- Production access-control migration `20260731110000_require_provisioned_portal_access.sql` was applied successfully.
+- Pull request #1 merged Phase 0.5 through Phase 2 into `main` at `edd3766`.
+
+### Production deployment incident
+
+The first Phase 2 Production build completed in Vercel but `/login` returned HTTP 500. A rollback redeployment then showed the safe Supabase configuration screen. The root cause was incomplete Vercel Production variables: Production had `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`, but `NEXT_PUBLIC_SUPABASE_ANON_KEY` and `NEXT_PUBLIC_SITE_URL` were not present in the Production scope. Vercel's `Ready` state proved only that the build completed; it did not prove runtime health.
+
+The Production SQL migration is compatible with the previous application and remains applied. Restore the last known-good original Production build while repairing variables; do not use a redeployment built after the variables were removed.
+
+### Permanent deployment safeguards
+
+- `npm run build` now runs `scripts/validate-deployment-env.mjs` first.
+- Vercel Preview builds fail unless all four required variables are present and the Supabase URL targets staging.
+- Vercel Production builds fail unless all four required variables are present, the Supabase URL targets Production, and the site URL is `https://aceclub.theadmitco.com`.
+- The request proxy no longer converts missing public Supabase variables into an opaque site-wide HTTP 500; the login page can show its explicit configuration error.
+- The build check never prints secret values.
+
+### Mandatory release preflight
+
+Before every Production merge or promotion:
+
+1. In Vercel Environment Variables, filter to **Production** and verify exactly one Production-scoped entry exists for each required name:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `NEXT_PUBLIC_SITE_URL`
+2. Confirm the Production Supabase URL uses project `owmlxsnzogfapotmjrqk` and the site URL is `https://aceclub.theadmitco.com`.
+3. Filter to **Preview** and confirm the same four names exist only with staging values, using project `eyphkkginlgoaxflauog`.
+4. Never delete a shared variable until both replacement scopes have been verified independently.
+5. Save all environment changes before triggering one fresh deployment. Do not redeploy after each variable.
+6. Require a successful Vercel check plus live HTTP probes of `/` and `/login`; never accept `Ready` alone.
+7. Manually verify Google Sign-In uses the expected Supabase project, role routing works, logout blocks protected pages, and deprecated login controls are absent.
+8. Record only names, scopes, project references and pass/fail results. Never store or paste key values.
+
+Environment variables are persistent deployment configuration. Once the four correct Production and Preview entries exist, routine releases must reuse them and must not ask the Product Owner to re-enter keys.

@@ -3,10 +3,18 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 export async function refreshSupabaseSession(request: NextRequest) {
   let response = NextResponse.next({ request });
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // The login page has a safe configuration-error state. Keep a missed
+  // deployment variable from turning every route into an opaque HTTP 500.
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return response;
+  }
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {

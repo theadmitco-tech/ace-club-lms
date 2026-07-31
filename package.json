@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/validate-deployment-env.mjs",
     "build": "next build",
     "start": "next start",
     "question-bank:import": "node scratch/import_question_bank_csv.js",
