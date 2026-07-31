@@ -25,10 +25,11 @@ Record only `Present`, `Missing`, `Pass` or `Fail` plus sanitised notes. Never r
 - [x] Vercel Production and Preview Supabase variables use separate environment scopes and project credentials.
 - [x] Production Supabase Google provider contains only Production credentials.
 - [x] Production Site URL is `https://aceclub.theadmitco.com`.
-- [ ] Production redirect allowlist contains only approved Production paths.
+- [x] Production redirect allowlist contains only approved Production paths.
+- [x] Inactive-by-default OAuth profile migration applied to Production.
 - [ ] No staging identity or Quick Access control appears in Production.
 
-Production redirect note: the custom-domain and Production Vercel callbacks are present and no staging Preview callback appears, but a localhost callback remains and requires an explicitly approved Production cleanup.
+Production redirect note: the custom-domain and Production Vercel callbacks are present, no staging Preview callback appears, and the obsolete localhost callback was removed with Product Owner approval.
 
 ## 3. Staging journey matrix
 

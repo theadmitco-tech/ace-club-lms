@@ -1,0 +1,10 @@
+{
+  "date": "2026-07-31",
+  "supabase_project_ref": "owmlxsnzogfapotmjrqk",
+  "migration": "20260731110000_require_provisioned_portal_access.sql",
+  "application_method": "Supabase SQL Editor",
+  "result": "Success; no rows returned",
+  "behavior": "Future OAuth users receive an inactive Student profile until an Admin explicitly provisions access.",
+  "existing_profiles_modified": false,
+  "secrets_recorded": false
+}

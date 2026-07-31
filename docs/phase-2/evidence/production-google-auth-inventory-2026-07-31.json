@@ -12,14 +12,15 @@
     "custom_production_callback": "Present",
     "vercel_production_callback": "Present",
     "staging_preview_callback": "Absent",
-    "localhost_callback": "Present"
+    "localhost_callback": "Removed"
   },
   "google_cloud_client": {
     "name": "Ace Club Portal Web",
     "production_supabase_callback": "Present",
     "staging_supabase_callback": "Absent"
   },
-  "production_changes_made": false,
+  "production_changes_made": true,
+  "production_change": "Removed only the obsolete localhost authentication redirect; Production HTTPS redirects were preserved.",
   "secrets_recorded": false,
-  "conclusion": "Production credentials and callbacks are separated from staging. A localhost redirect remains in the Production Supabase allowlist and requires explicit approval before removal."
+  "conclusion": "Production credentials and callbacks are separated from staging, and the Production redirect allowlist contains only the approved HTTPS application callbacks."
 }

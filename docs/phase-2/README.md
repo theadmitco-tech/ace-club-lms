@@ -28,7 +28,7 @@ Deliver controlled Google Sign-In for Admin and Student accounts with consistent
 - [x] Positive Admin provisioning and enrolment operations pass in staging.
 - [x] Admin deactivation/reactivation operations pass in staging Preview.
 - [x] Password, magic-link, Quick Access, demo credentials and Super Admin presentation are absent.
-- [ ] Staging and Production OAuth clients, callbacks and secrets are separated.
+- [x] Staging and Production OAuth clients, callbacks and secrets are separated.
 - [x] Touched authentication files pass lint and the Production build passes.
 
 ## Manual dependency
@@ -44,3 +44,5 @@ Vercel environment separation: [sanitised configuration evidence](evidence/verce
 Deployed Preview verification: [staging Preview Google authentication tests](evidence/staging-preview-google-auth-tests-2026-07-31.json).
 
 Production read-only verification: [Production Google authentication inventory](evidence/production-google-auth-inventory-2026-07-31.json).
+
+Production access-control migration: [application result](evidence/production-access-control-migration-2026-07-31.json).
