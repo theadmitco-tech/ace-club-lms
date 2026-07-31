@@ -15,6 +15,7 @@ Audit baseline:
 - Production build passed on 31 July 2026; lint reported 47 errors and 10 warnings.
 - Staging inventory captured on 31 July 2026. It contains only Supabase-managed storage tables; the public LMS schema, policies, functions, triggers, and buckets are empty.
 - Production inventory captured on 31 July 2026. It contains 19 public LMS tables, 43 policies, 15 public functions, 5 application triggers, no storage buckets, and no cron table.
+- Obsolete credential-bearing scratch scripts were removed. Lint is now 41 errors and 10 warnings; the remaining legacy findings are classified pending scoped-deferral approval.
 
 ## Exit-gate status
 
@@ -24,6 +25,21 @@ Audit baseline:
 | Database map | Prepared | Production objects and exact definitions are inventoried; the ordered baseline awaits staging validation |
 | Authentication diagnosis | Static diagnosis complete | Staging magic-link and deactivation tests remain |
 | Validated estimate | Provisional | Finalise after live database and staging checks |
+
+### Lint disposition
+
+Evidence: [lint classification](evidence/lint-classification-2026-07-31.json).
+
+Six lint errors came from two obsolete scratch scripts containing hard-coded test credentials, a private email address, and service-role operations. Those scripts were removed.
+
+The remaining 41 errors and 10 warnings are concentrated in legacy pages that roadmap Phases 2–7 will repair, adapt, or replace:
+
+- 31 explicit `any` errors;
+- 8 effect/state refactor errors;
+- 2 unescaped-entity errors;
+- 10 unused-variable or dependency warnings.
+
+Proposed scoped disposition: keep lint enabled, permit no new findings, resolve affected-file findings when each page is changed, and require a clean lint run before launch. Product-owner approval is pending.
 
 Phase 2 should not begin until the critical privileged-route exposure is confirmed and contained in the deployed environment.
 
