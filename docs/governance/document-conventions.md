@@ -20,11 +20,12 @@ Documentation must:
 ```text
 instruction/
   README.md                         Authority register and reading paths
-  *.docx                            Binding product requirements/roadmaps
-  Phase_*.md                        Signed cross-phase checkpoints
+  *.md                              Binding product requirements/roadmaps
+  *.docx                            Retained source artifacts
 
 docs/
   README.md                         Documentation router
+  handoffs/                         Running cross-phase continuity
   governance/                       Documentation and delivery conventions
   development/                      Living engineering rules
   setup/                            Local and environment setup
@@ -42,8 +43,10 @@ Do not move grandfathered feature guides merely for visual consistency. Move fil
 
 | Type | Location | Behaviour |
 |---|---|---|
-| Product requirement | `instruction/` | Binding; product-owner approval required |
-| Roadmap | `instruction/` | Binding phase definitions and gates |
+| Product requirement | `instruction/*.md` | Binding; product-owner approval required |
+| Roadmap | `instruction/*.md` | Binding phase definitions and gates |
+| Source artifact | `instruction/*.docx` | Retain for provenance; do not maintain as a second active copy |
+| Running handoff | `docs/handoffs/` | Append signed phase sections; latest section is current |
 | Signed checkpoint | `instruction/` or `docs/phase-N/` | Preserve accepted facts; amend transparently |
 | Living rule/guide | `docs/development/`, `docs/setup/`, or `docs/governance/` | Update in place as the current method changes |
 | Phase status | `docs/phase-N/README.md` | Update in place until sign-off |
@@ -63,7 +66,7 @@ For new files:
 - Use decision records: `adr-0001-private-worksheet-storage.md`.
 - Keep extensions accurate: `.md`, `.sql`, `.json`, `.csv`, `.docx`.
 
-Existing authoritative DOCX filenames and committed stable paths are grandfathered.
+Existing DOCX filenames and committed stable paths are retained as source artifacts. Their Markdown conversions are the active repository copies.
 
 Do not introduce Phase 1.5 or another phase label without a documented, approved scope and exit gate.
 

@@ -6,6 +6,8 @@ Last updated: 31 July 2026
 
 This index routes readers to the smallest set of documents needed for a task. Product authority remains in [`instruction/`](../instruction/README.md).
 
+Current continuation state: [Ace Club LMS Running Handoff](handoffs/ace-club-lms-running-handoff.md).
+
 ## Current phase
 
 - Phase 0.5: signed off in [Setup and Recovery Sign-off](../instruction/Phase_0.5_Setup_Recovery_Signoff.md).
@@ -25,6 +27,7 @@ There is no approved Phase 1.5.
 | Governance | [`docs/governance/`](governance/) | Documentation organization and conventions |
 | Development | [`docs/development/`](development/) | Living engineering and coding rules |
 | Setup | [`docs/setup/`](setup/) | Local-machine and environment setup |
+| Handoffs | [`docs/handoffs/`](handoffs/) | Running cross-phase continuity with preserved signed sections |
 | Phase records | `docs/phase-N/` | Active status, checklist, sign-off, and evidence for a delivery phase |
 | Decisions | `docs/decisions/` | Approved architecture/product/security/data decisions when created |
 | Feature references | Files directly under `docs/` | Existing focused guides retained at their stable paths |
@@ -39,7 +42,7 @@ These stable paths are grandfathered. New multi-file feature documentation shoul
 
 ## How to use this index
 
-- Resume work: read the instruction register, Phase 0.5 sign-off, and current phase record.
+- Resume work: read the instruction register, latest running-handoff section, and current phase record.
 - Change code: also read the coding rules and the relevant feature reference.
 - Change environment/setup: read the Mac setup guide.
 - Add documentation: follow the document conventions.
@@ -49,6 +52,7 @@ These stable paths are grandfathered. New multi-file feature documentation shoul
 ## Key documents
 
 - [Instruction register](../instruction/README.md)
+- [Running handoff](handoffs/ace-club-lms-running-handoff.md)
 - [Document conventions](governance/document-conventions.md)
 - [Living coding rules](development/coding-rules.md)
 - [Mac setup](setup/mac-setup.md)
