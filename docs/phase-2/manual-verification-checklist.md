@@ -21,6 +21,7 @@ Record only `Present`, `Missing`, `Pass` or `Fail` plus sanitised notes. Never r
 
 - [x] Existing `Ace Club Portal Web` client identified as Production-only from its Supabase callback.
 - [x] Staging uses a separate Google OAuth Web client: `Ace Club Portal Staging`.
+- [x] Vercel Production and Preview Supabase variables use separate environment scopes and project credentials.
 - [ ] Production Supabase Google provider contains only Production credentials.
 - [ ] Production Site URL is `https://aceclub.theadmitco.com`.
 - [ ] Production redirect allowlist contains only approved Production paths.

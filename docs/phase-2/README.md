@@ -37,3 +37,5 @@ The product owner completes one console-dependent configuration or identity task
 Current evidence: [staging Google provider inventory](evidence/staging-google-provider-inventory-2026-07-31.json).
 
 Staging access-control migration: [application result](evidence/staging-access-control-migration-2026-07-31.json).
+
+Vercel environment separation: [sanitised configuration evidence](evidence/vercel-environment-separation-2026-07-31.json).
