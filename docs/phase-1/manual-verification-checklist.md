@@ -16,7 +16,7 @@ Complete only the items that require account access. Do not paste secret values,
 - [x] Staging database baseline applied and post-apply inventory matches production.
 - [x] Production database inventory captured and reconciled.
 - [x] Vercel Preview and Production Supabase URL, anon-key, and service-role mappings separated and configured without recording values.
-- [ ] Authentication test matrix passes.
+- [ ] Authentication test matrix passes. Magic-link verification was deferred by the product owner to the Phase 2 authentication redesign.
 - [ ] Release and privacy probes pass.
 
 ## 1. Deployment baseline

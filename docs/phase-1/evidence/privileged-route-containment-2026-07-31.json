@@ -1,0 +1,26 @@
+{
+  "date": "2026-07-31",
+  "scope": [
+    "/api/admin/bulk-enroll",
+    "/api/admin/delete-user"
+  ],
+  "change": "Both routes now verify the Supabase session, active profile state, and admin role before creating or using a service-role client.",
+  "local_verification": {
+    "targeted_eslint": "Pass",
+    "production_build": "Pass",
+    "unauthenticated_bulk_enroll": {
+      "status": 401,
+      "response": "Authentication required"
+    },
+    "unauthenticated_delete_user": {
+      "status": 401,
+      "response": "Authentication required"
+    }
+  },
+  "deployment_status": "Pending",
+  "remaining_verification": [
+    "Authenticated non-admin receives 403",
+    "Active admin can perform the intended operation",
+    "New Preview and Production deployments contain the fix"
+  ]
+}

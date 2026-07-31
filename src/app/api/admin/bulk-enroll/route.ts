@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { requireAdmin } from '@/lib/server/requireAdmin';
 
 function getSupabaseAdmin() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -16,6 +17,11 @@ function getSupabaseAdmin() {
 
 export async function POST(req: NextRequest) {
   try {
+    const authorization = await requireAdmin();
+    if (!authorization.authorized) {
+      return authorization.response;
+    }
+
     const supabaseAdmin = getSupabaseAdmin();
     const { emails, courseId } = await req.json();
 
@@ -105,7 +111,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(results);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Bulk enroll error:', err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }

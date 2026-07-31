@@ -95,8 +95,8 @@ Never record values for these variables in this audit. Record only whether each 
 | `/session/[id]` | Enrolled Student | Client redirect; reads session by ID | Enrollment and release enforcement must be moved server/database side |
 | `/session/[id]/material/[materialId]` | Enrolled Student after release | UI availability checks | Direct-URL protection requires authoritative server/RLS checks |
 | `/admin/*` | Admin | Client-side admin layout redirect and RLS | UI redirect is not an authorization boundary |
-| `/api/admin/bulk-enroll` | Admin | No caller authentication/role check before service-role use | **Critical** |
-| `/api/admin/delete-user` | Admin | No caller authentication/role check before service-role use | **Critical** |
+| `/api/admin/bulk-enroll` | Active Admin | Server verifies session, profile state, and Admin role before service-role use | Local containment complete; deployment pending |
+| `/api/admin/delete-user` | Active Admin | Server verifies session, profile state, and Admin role before service-role use | Local containment complete; deployment pending |
 | `/api/notion` | Enrolled Student/Admin after release | No caller, enrollment, or release check | **High** |
 | `/api/register/*`, payment APIs | Public | Input/signature logic varies by route | Review separately if retained |
 
@@ -144,8 +144,8 @@ Do not apply `schema.sql` or the standalone `supabase_*.sql` files to staging. T
 
 ### Critical
 
-1. `/api/admin/bulk-enroll` constructs a service-role client before verifying the caller. An unauthorised caller could potentially invite/create users and write profiles/enrollments.
-2. `/api/admin/delete-user` uses the service role without verifying the caller. An unauthorised caller could potentially delete an authentication user by ID.
+1. At the audited commit, `/api/admin/bulk-enroll` constructed a service-role client before verifying the caller. Local containment now requires an active Admin session before service-role use; deployment and positive-role verification remain.
+2. At the audited commit, `/api/admin/delete-user` used the service role without verifying the caller. The same local containment now protects this route; deployment and positive-role verification remain.
 3. The bulk-enrolment rate-limit fallback creates confirmed users with a shared hard-coded password.
 
 ### High
@@ -167,7 +167,7 @@ Do not apply `schema.sql` or the standalone `supabase_*.sql` files to staging. T
 
 | ID | Gap | Severity | Required disposition |
 |---|---|---:|---|
-| P1-01 | Privileged admin APIs lack caller authorization | Critical | Repair first in Phase 2 |
+| P1-01 | Privileged admin APIs lacked caller authorization | Critical | Contained locally; deploy and verify before closure |
 | P1-02 | Shared fallback password and public test credentials | Critical | Remove in Phase 2 |
 | P1-03 | Repository SQL is not an ordered migration history | High | Export live schema, reconcile, then establish migrations |
 | P1-04 | Public/select RLS conflicts with enrollment and release boundaries | High | Redesign and cross-student test in Phase 2/4 |

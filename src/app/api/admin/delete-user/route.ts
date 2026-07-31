@@ -1,7 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/server/requireAdmin';
 
 export async function POST(request: Request) {
+  const authorization = await requireAdmin();
+  if (!authorization.authorized) {
+    return authorization.response;
+  }
+
   const { userId } = await request.json();
 
   if (!userId) {
