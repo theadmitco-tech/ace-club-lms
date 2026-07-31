@@ -23,10 +23,12 @@ Record only `Present`, `Missing`, `Pass` or `Fail` plus sanitised notes. Never r
 - [x] Existing `Ace Club Portal Web` client identified as Production-only from its Supabase callback.
 - [x] Staging uses a separate Google OAuth Web client: `Ace Club Portal Staging`.
 - [x] Vercel Production and Preview Supabase variables use separate environment scopes and project credentials.
-- [ ] Production Supabase Google provider contains only Production credentials.
-- [ ] Production Site URL is `https://aceclub.theadmitco.com`.
+- [x] Production Supabase Google provider contains only Production credentials.
+- [x] Production Site URL is `https://aceclub.theadmitco.com`.
 - [ ] Production redirect allowlist contains only approved Production paths.
 - [ ] No staging identity or Quick Access control appears in Production.
+
+Production redirect note: the custom-domain and Production Vercel callbacks are present and no staging Preview callback appears, but a localhost callback remains and requires an explicitly approved Production cleanup.
 
 ## 3. Staging journey matrix
 
@@ -40,5 +42,5 @@ Record only `Present`, `Missing`, `Pass` or `Fail` plus sanitised notes. Never r
 | Logout invalidates protected access | Pass | Signed-out Preview `/admin` and `/dashboard` redirected to `/login` |
 | Deactivated Student is blocked | Pass | Admin UI deactivation caused Preview Google callback to show inactive access |
 | Reactivated Student regains access | Pass | Admin UI reactivation restored Preview `/dashboard` access |
-| Admin can provision a Student |  |  |
+| Admin can provision a Student | Pass | Existing controlled Student was provisioned, activated and enrolled through the staging Preview Admin UI |
 | Admin can deactivate/reactivate a Student | Pass | Completed through the staging Preview Admin UI |

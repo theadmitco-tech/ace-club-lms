@@ -41,6 +41,13 @@
       "result": "Pass",
       "observed_destination": "/dashboard"
     },
+    "admin_provisioned_and_enrolled_student": {
+      "result": "Pass",
+      "method": "staging Preview Admin UI",
+      "profile_active": true,
+      "batch_enrollment_present": true,
+      "student_dashboard_access": true
+    },
     "final_student_logout": {
       "result": "Pass"
     }

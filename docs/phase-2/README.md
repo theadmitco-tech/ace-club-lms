@@ -25,7 +25,7 @@ Deliver controlled Google Sign-In for Admin and Student accounts with consistent
 - [x] An unprovisioned Google account receives no portal or course access.
 - [x] A deactivated Student is blocked; reactivation restores Google Sign-In access.
 - [x] Logout invalidates protected-page access.
-- [ ] Positive Admin provisioning and enrolment operations pass in staging.
+- [x] Positive Admin provisioning and enrolment operations pass in staging.
 - [x] Admin deactivation/reactivation operations pass in staging Preview.
 - [x] Password, magic-link, Quick Access, demo credentials and Super Admin presentation are absent.
 - [ ] Staging and Production OAuth clients, callbacks and secrets are separated.
@@ -42,3 +42,5 @@ Staging access-control migration: [application result](evidence/staging-access-c
 Vercel environment separation: [sanitised configuration evidence](evidence/vercel-environment-separation-2026-07-31.json).
 
 Deployed Preview verification: [staging Preview Google authentication tests](evidence/staging-preview-google-auth-tests-2026-07-31.json).
+
+Production read-only verification: [Production Google authentication inventory](evidence/production-google-auth-inventory-2026-07-31.json).
