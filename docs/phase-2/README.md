@@ -1,6 +1,6 @@
 # Phase 2 — Repair and Simplify Accounts
 
-Status: Active
+Status: Complete
 Owner: Product owner and Engineering
 Last updated: 31 July 2026
 
@@ -46,3 +46,9 @@ Deployed Preview verification: [staging Preview Google authentication tests](evi
 Production read-only verification: [Production Google authentication inventory](evidence/production-google-auth-inventory-2026-07-31.json).
 
 Production access-control migration: [application result](evidence/production-access-control-migration-2026-07-31.json).
+
+Production deployment and Google Sign-In: [final verification](evidence/production-google-auth-tests-2026-07-31.json).
+
+## Sign-off
+
+Phase 2 is accepted as complete. Google Sign-In is the only Production portal login method; controlled Admin and Student journeys, inactive access, role boundaries, provisioning, enrolment, deactivation/reactivation and logout pass; staging and Production are separated; and deployment environment validation now fails safely before an invalid release can replace Production.
