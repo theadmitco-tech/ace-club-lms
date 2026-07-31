@@ -25,7 +25,10 @@
   "google_client_secret": "Present",
   "downloaded_credentials_copy_removed": true,
   "supabase_callback_url": "https://eyphkkginlgoaxflauog.supabase.co/auth/v1/callback",
-  "supabase_site_url": "http://localhost:3000",
-  "supabase_allowed_redirect_url": "http://localhost:3000/auth/callback",
+  "supabase_site_url": "https://ace-club-lms-git-agent-phase-2-1acd97-theadmitco-techs-projects.vercel.app",
+  "supabase_allowed_redirect_urls": [
+    "http://localhost:3000/auth/callback",
+    "https://ace-club-lms-git-agent-phase-2-1acd97-theadmitco-techs-projects.vercel.app/auth/callback"
+  ],
   "conclusion": "The existing Production OAuth client was preserved. A separate staging client now uses the staging Supabase callback, the staging Google provider is enabled, and no downloaded credential copy remains."
 }

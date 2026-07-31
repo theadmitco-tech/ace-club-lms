@@ -15,7 +15,8 @@ Record only `Present`, `Missing`, `Pass` or `Fail` plus sanitised notes. Never r
 - [x] Supabase staging Google provider enabled.
 - [x] Client ID and client secret each recorded as Present; downloaded credential JSON removed after configuration.
 - [x] Staging Google client redirect URI exactly matches the callback shown by staging Supabase.
-- [x] Supabase Site URL is `http://localhost:3000` and local callback redirect is `http://localhost:3000/auth/callback`.
+- [x] Supabase staging Site URL is the stable Phase 2 Preview URL.
+- [x] Supabase staging redirects allow both the stable Preview callback and `http://localhost:3000/auth/callback`.
 
 ## 2. Production separation
 
@@ -31,13 +32,13 @@ Record only `Present`, `Missing`, `Pass` or `Fail` plus sanitised notes. Never r
 
 | Test | Result | Sanitised note |
 |---|---|---|
-| Test Admin Google Sign-In reaches `/admin` | Pass | Admin dashboard loaded |
-| Test Student Google Sign-In reaches `/dashboard` | Pass | Student dashboard loaded |
-| Student cannot open `/admin` | Pass | Opening `/admin` redirected to `/dashboard` |
-| Admin is not sent to the Student journey | Pass | Opening `/dashboard` redirected to `/admin` |
+| Test Admin Google Sign-In reaches `/admin` | Pass | Preview Admin dashboard loaded and survived refresh |
+| Test Student Google Sign-In reaches `/dashboard` | Pass | Preview Student dashboard loaded |
+| Student cannot open `/admin` | Pass | Preview `/admin` redirected to `/dashboard` |
+| Admin is not sent to the Student journey | Pass | Preview `/dashboard` redirected to `/admin` |
 | Unprovisioned Google account receives no access | Pass | OAuth completed; generic inactive-access page shown |
-| Logout invalidates protected access | Pass | Signed-out `/admin` request redirected to `/login` |
-| Deactivated Student is blocked | Pass | Google callback showed the inactive-access page |
-| Reactivated Student regains access | Pass | Google Sign-In returned to `/dashboard` |
+| Logout invalidates protected access | Pass | Signed-out Preview `/admin` and `/dashboard` redirected to `/login` |
+| Deactivated Student is blocked | Pass | Admin UI deactivation caused Preview Google callback to show inactive access |
+| Reactivated Student regains access | Pass | Admin UI reactivation restored Preview `/dashboard` access |
 | Admin can provision a Student |  |  |
-| Admin can deactivate/reactivate a Student |  |  |
+| Admin can deactivate/reactivate a Student | Pass | Completed through the staging Preview Admin UI |
