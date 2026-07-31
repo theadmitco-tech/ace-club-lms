@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const environment = process.env.PHASE1_PROBE_ENVIRONMENT ?? 'staging';
 
 if (!url || !anonKey || !serviceRoleKey) {
   throw new Error('Staging Supabase URL, anon key, and service-role key are required.');
@@ -161,7 +162,7 @@ try {
   };
 
   console.log(JSON.stringify({
-    environment: 'staging',
+    environment,
     checks,
     counts: {
       enrolled_student_materials_visible: studentAMaterials.length,

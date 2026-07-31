@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-31",
+  "environment": "production",
+  "authorization": "Product owner approved the release-policy migration and disposable verification probe.",
+  "migration": {
+    "baseline_history_repair": "Marked 20260731051000 applied because the production-derived schema already existed while the migration ledger was empty.",
+    "dry_run": [
+      "20260731062700_enforce_material_release.sql"
+    ],
+    "applied": [
+      "20260731062700_enforce_material_release.sql"
+    ],
+    "result": "Success"
+  },
+  "probe": {
+    "fixture": "Temporary synthetic Admin and two Student identities, course/session/enrollment data, and released/future materials; cleanup ran after each probe.",
+    "credentials_or_personal_data_recorded": false,
+    "passed": 12,
+    "failed": 0,
+    "future_materials_created": 1,
+    "future_materials_visible_to_enrolled_student": 0
+  },
+  "local_link_restored_to": "eyphkkginlgoaxflauog"
+}

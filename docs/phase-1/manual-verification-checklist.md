@@ -12,13 +12,15 @@ Complete only the items that require account access. Do not paste secret values,
 - [x] Local `.env.local` points to staging using public values only.
 - [x] Production Supabase project identified and kept separate.
 - [x] Production build passes.
-- [x] Lint disposition approved — credential-bearing scratch scripts were removed; the remaining 41 errors and 10 warnings are scoped legacy deferrals and no new findings are permitted.
+- [x] Lint disposition approved — credential-bearing scratch scripts were removed; the remaining 40 errors and 10 warnings are scoped legacy deferrals and no new findings are permitted.
 - [x] Staging database baseline applied and post-apply inventory matches production.
 - [x] Production database inventory captured and reconciled.
 - [x] Vercel Preview and Production Supabase URL, anon-key, and service-role mappings separated and configured without recording values.
 - [ ] Authentication test matrix passes. Magic-link verification was deferred by the product owner to the Phase 2 authentication redesign.
 - [x] Anonymous, cross-Student, enrollment, Admin-visibility, and deactivation privacy probes pass in staging.
 - [x] Release-boundary probe passes in staging after enforcing `materials.available_from <= now()` in RLS.
+- [x] Production privacy/release probe passes 12/12 after the approved release-policy migration.
+- [ ] Authenticated/RLS-gated Notion proxy containment is verified locally; Production deployment pending.
 
 ## 1. Deployment baseline
 

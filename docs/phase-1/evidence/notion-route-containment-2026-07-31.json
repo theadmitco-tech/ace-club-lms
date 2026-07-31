@@ -1,0 +1,12 @@
+{
+  "date": "2026-07-31",
+  "route": "/api/notion",
+  "change": "Require an active authenticated profile and verify that the requested page belongs to a material visible to the caller through RLS before fetching Notion.",
+  "local_verification": {
+    "targeted_eslint": "Pass",
+    "production_build": "Pass",
+    "unauthenticated_request_status": 401,
+    "unauthenticated_response": "Authentication required"
+  },
+  "deployment_status": "Pending"
+}

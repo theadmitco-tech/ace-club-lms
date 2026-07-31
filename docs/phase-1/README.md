@@ -15,9 +15,10 @@ Audit baseline:
 - Production build passed on 31 July 2026; lint reported 47 errors and 10 warnings.
 - Staging inventory captured on 31 July 2026. It contains only Supabase-managed storage tables; the public LMS schema, policies, functions, triggers, and buckets are empty.
 - Production inventory captured on 31 July 2026. It contains 19 public LMS tables, 43 policies, 15 public functions, 5 application triggers, no storage buckets, and no cron table.
-- Obsolete credential-bearing scratch scripts were removed. Lint is now 41 errors and 10 warnings; the product owner approved the scoped legacy deferral on 31 July 2026.
+- Obsolete credential-bearing scratch scripts were removed. Lint is now 40 errors and 10 warnings; the product owner approved the scoped legacy deferral on 31 July 2026.
 - A protected Vercel Preview is deployed with staging Supabase. Production is live at `aceclub.theadmitco.com` with production Supabase and the privileged-route authorization containment.
-- Disposable staging privacy and release probes pass 12/12 after adding an authoritative `materials.available_from <= now()` RLS guard. Production migration is pending approval.
+- Disposable staging and Production privacy/release probes pass 12/12 after adding an authoritative `materials.available_from <= now()` RLS guard.
+- The Notion proxy now requires an active session and an RLS-visible material match locally; Production deployment is pending.
 
 ## Exit-gate status
 
@@ -34,7 +35,7 @@ Evidence: [lint classification](evidence/lint-classification-2026-07-31.json).
 
 Six lint errors came from two obsolete scratch scripts containing hard-coded test credentials, a private email address, and service-role operations. Those scripts were removed.
 
-The remaining 41 errors and 10 warnings are concentrated in legacy pages that roadmap Phases 2–7 will repair, adapt, or replace:
+The remaining 40 errors and 10 warnings are concentrated in legacy pages that roadmap Phases 2–7 will repair, adapt, or replace:
 
 - 31 explicit `any` errors;
 - 8 effect/state refactor errors;
@@ -173,7 +174,7 @@ Do not apply `schema.sql` or the standalone `supabase_*.sql` files to staging. T
 | P1-03 | Repository SQL is not an ordered migration history | High | Export live schema, reconcile, then establish migrations |
 | P1-04 | Public/select RLS conflicts with enrollment and release boundaries | High | Redesign and cross-student test in Phase 2/4 |
 | P1-05 | Release checks are client-side/fixed-time logic | High | Store release timestamps and enforce server/RLS-side |
-| P1-06 | Notion endpoint lacks auth/enrollment/release validation | High | Repair before content journey |
+| P1-06 | Notion endpoint lacked auth/enrollment/release validation | High | Contained locally; deploy and verify before closure |
 | P1-07 | Storage public/private state is unknown | High | Verify live buckets; use signed/private access where required |
 | P1-08 | No deactivation model | Medium | Add active/access state and test reactivation |
 | P1-09 | Current tracker implements excluded automated analytics | Medium | Replace incrementally in Phase 6–7 |
