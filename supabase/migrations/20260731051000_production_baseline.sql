@@ -242,13 +242,6 @@ end
 $$;
 do $$
 begin
-  if not exists (select 1 from pg_constraint where conname = 'enrollments_course_id_fkey' and conrelid = 'public.enrollments'::regclass) then
-    alter table public."enrollments" add constraint "enrollments_course_id_fkey" FOREIGN KEY (course_id) REFERENCES public.courses(id) ON DELETE CASCADE;
-  end if;
-end
-$$;
-do $$
-begin
   if not exists (select 1 from pg_constraint where conname = 'enrollments_pkey' and conrelid = 'public.enrollments'::regclass) then
     alter table public."enrollments" add constraint "enrollments_pkey" PRIMARY KEY (id);
   end if;
@@ -258,20 +251,6 @@ do $$
 begin
   if not exists (select 1 from pg_constraint where conname = 'enrollments_user_id_course_id_key' and conrelid = 'public.enrollments'::regclass) then
     alter table public."enrollments" add constraint "enrollments_user_id_course_id_key" UNIQUE (user_id, course_id);
-  end if;
-end
-$$;
-do $$
-begin
-  if not exists (select 1 from pg_constraint where conname = 'enrollments_user_id_fkey' and conrelid = 'public.enrollments'::regclass) then
-    alter table public."enrollments" add constraint "enrollments_user_id_fkey" FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
-  end if;
-end
-$$;
-do $$
-begin
-  if not exists (select 1 from pg_constraint where conname = 'master_materials_master_session_id_fkey' and conrelid = 'public.master_materials'::regclass) then
-    alter table public."master_materials" add constraint "master_materials_master_session_id_fkey" FOREIGN KEY (master_session_id) REFERENCES public.master_sessions(id) ON DELETE CASCADE;
   end if;
 end
 $$;
@@ -291,22 +270,8 @@ end
 $$;
 do $$
 begin
-  if not exists (select 1 from pg_constraint where conname = 'master_practice_attempts_course_id_fkey' and conrelid = 'public.master_practice_attempts'::regclass) then
-    alter table public."master_practice_attempts" add constraint "master_practice_attempts_course_id_fkey" FOREIGN KEY (course_id) REFERENCES public.courses(id) ON DELETE CASCADE;
-  end if;
-end
-$$;
-do $$
-begin
   if not exists (select 1 from pg_constraint where conname = 'master_practice_attempts_course_id_session_id_user_id_maste_key' and conrelid = 'public.master_practice_attempts'::regclass) then
     alter table public."master_practice_attempts" add constraint "master_practice_attempts_course_id_session_id_user_id_maste_key" UNIQUE (course_id, session_id, user_id, master_question_id);
-  end if;
-end
-$$;
-do $$
-begin
-  if not exists (select 1 from pg_constraint where conname = 'master_practice_attempts_master_question_id_fkey' and conrelid = 'public.master_practice_attempts'::regclass) then
-    alter table public."master_practice_attempts" add constraint "master_practice_attempts_master_question_id_fkey" FOREIGN KEY (master_question_id) REFERENCES public.master_practice_questions(id) ON DELETE CASCADE;
   end if;
 end
 $$;
@@ -319,29 +284,8 @@ end
 $$;
 do $$
 begin
-  if not exists (select 1 from pg_constraint where conname = 'master_practice_attempts_session_id_fkey' and conrelid = 'public.master_practice_attempts'::regclass) then
-    alter table public."master_practice_attempts" add constraint "master_practice_attempts_session_id_fkey" FOREIGN KEY (session_id) REFERENCES public.sessions(id) ON DELETE CASCADE;
-  end if;
-end
-$$;
-do $$
-begin
-  if not exists (select 1 from pg_constraint where conname = 'master_practice_attempts_user_id_fkey' and conrelid = 'public.master_practice_attempts'::regclass) then
-    alter table public."master_practice_attempts" add constraint "master_practice_attempts_user_id_fkey" FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
-  end if;
-end
-$$;
-do $$
-begin
   if not exists (select 1 from pg_constraint where conname = 'master_practice_questions_difficulty_check' and conrelid = 'public.master_practice_questions'::regclass) then
     alter table public."master_practice_questions" add constraint "master_practice_questions_difficulty_check" CHECK (difficulty = ANY (ARRAY['basic'::text, 'advanced'::text]));
-  end if;
-end
-$$;
-do $$
-begin
-  if not exists (select 1 from pg_constraint where conname = 'master_practice_questions_master_practice_set_id_fkey' and conrelid = 'public.master_practice_questions'::regclass) then
-    alter table public."master_practice_questions" add constraint "master_practice_questions_master_practice_set_id_fkey" FOREIGN KEY (master_practice_set_id) REFERENCES public.master_practice_sets(id) ON DELETE CASCADE;
   end if;
 end
 $$;
@@ -356,13 +300,6 @@ do $$
 begin
   if not exists (select 1 from pg_constraint where conname = 'master_practice_questions_pkey' and conrelid = 'public.master_practice_questions'::regclass) then
     alter table public."master_practice_questions" add constraint "master_practice_questions_pkey" PRIMARY KEY (id);
-  end if;
-end
-$$;
-do $$
-begin
-  if not exists (select 1 from pg_constraint where conname = 'master_practice_sets_master_session_id_fkey' and conrelid = 'public.master_practice_sets'::regclass) then
-    alter table public."master_practice_sets" add constraint "master_practice_sets_master_session_id_fkey" FOREIGN KEY (master_session_id) REFERENCES public.master_sessions(id) ON DELETE CASCADE;
   end if;
 end
 $$;
@@ -410,22 +347,8 @@ end
 $$;
 do $$
 begin
-  if not exists (select 1 from pg_constraint where conname = 'master_worksheet_session_rules_master_session_id_fkey' and conrelid = 'public.master_worksheet_session_rules'::regclass) then
-    alter table public."master_worksheet_session_rules" add constraint "master_worksheet_session_rules_master_session_id_fkey" FOREIGN KEY (master_session_id) REFERENCES public.master_sessions(id) ON DELETE CASCADE;
-  end if;
-end
-$$;
-do $$
-begin
   if not exists (select 1 from pg_constraint where conname = 'master_worksheet_session_rules_pkey' and conrelid = 'public.master_worksheet_session_rules'::regclass) then
     alter table public."master_worksheet_session_rules" add constraint "master_worksheet_session_rules_pkey" PRIMARY KEY (id);
-  end if;
-end
-$$;
-do $$
-begin
-  if not exists (select 1 from pg_constraint where conname = 'master_worksheet_session_rules_plan_id_fkey' and conrelid = 'public.master_worksheet_session_rules'::regclass) then
-    alter table public."master_worksheet_session_rules" add constraint "master_worksheet_session_rules_plan_id_fkey" FOREIGN KEY (plan_id) REFERENCES public.master_worksheet_plans(id) ON DELETE CASCADE;
   end if;
 end
 $$;
@@ -454,13 +377,6 @@ do $$
 begin
   if not exists (select 1 from pg_constraint where conname = 'materials_pkey' and conrelid = 'public.materials'::regclass) then
     alter table public."materials" add constraint "materials_pkey" PRIMARY KEY (id);
-  end if;
-end
-$$;
-do $$
-begin
-  if not exists (select 1 from pg_constraint where conname = 'materials_session_id_fkey' and conrelid = 'public.materials'::regclass) then
-    alter table public."materials" add constraint "materials_session_id_fkey" FOREIGN KEY (session_id) REFERENCES public.sessions(id) ON DELETE CASCADE;
   end if;
 end
 $$;
@@ -501,13 +417,6 @@ end
 $$;
 do $$
 begin
-  if not exists (select 1 from pg_constraint where conname = 'payments_registration_id_fkey' and conrelid = 'public.payments'::regclass) then
-    alter table public."payments" add constraint "payments_registration_id_fkey" FOREIGN KEY (registration_id) REFERENCES public.registrations(id) ON DELETE CASCADE;
-  end if;
-end
-$$;
-do $$
-begin
   if not exists (select 1 from pg_constraint where conname = 'payments_status_check' and conrelid = 'public.payments'::regclass) then
     alter table public."payments" add constraint "payments_status_check" CHECK (status = ANY (ARRAY['created'::text, 'paid'::text, 'failed'::text, 'refunded'::text]));
   end if;
@@ -517,20 +426,6 @@ do $$
 begin
   if not exists (select 1 from pg_constraint where conname = 'practice_attempts_pkey' and conrelid = 'public.practice_attempts'::regclass) then
     alter table public."practice_attempts" add constraint "practice_attempts_pkey" PRIMARY KEY (id);
-  end if;
-end
-$$;
-do $$
-begin
-  if not exists (select 1 from pg_constraint where conname = 'practice_attempts_question_id_fkey' and conrelid = 'public.practice_attempts'::regclass) then
-    alter table public."practice_attempts" add constraint "practice_attempts_question_id_fkey" FOREIGN KEY (question_id) REFERENCES public.practice_questions(id) ON DELETE CASCADE;
-  end if;
-end
-$$;
-do $$
-begin
-  if not exists (select 1 from pg_constraint where conname = 'practice_attempts_user_id_fkey' and conrelid = 'public.practice_attempts'::regclass) then
-    alter table public."practice_attempts" add constraint "practice_attempts_user_id_fkey" FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
   end if;
 end
 $$;
@@ -557,13 +452,6 @@ end
 $$;
 do $$
 begin
-  if not exists (select 1 from pg_constraint where conname = 'practice_questions_practice_set_id_fkey' and conrelid = 'public.practice_questions'::regclass) then
-    alter table public."practice_questions" add constraint "practice_questions_practice_set_id_fkey" FOREIGN KEY (practice_set_id) REFERENCES public.practice_sets(id) ON DELETE CASCADE;
-  end if;
-end
-$$;
-do $$
-begin
   if not exists (select 1 from pg_constraint where conname = 'practice_sets_pkey' and conrelid = 'public.practice_sets'::regclass) then
     alter table public."practice_sets" add constraint "practice_sets_pkey" PRIMARY KEY (id);
   end if;
@@ -571,22 +459,8 @@ end
 $$;
 do $$
 begin
-  if not exists (select 1 from pg_constraint where conname = 'practice_sets_session_id_fkey' and conrelid = 'public.practice_sets'::regclass) then
-    alter table public."practice_sets" add constraint "practice_sets_session_id_fkey" FOREIGN KEY (session_id) REFERENCES public.sessions(id) ON DELETE CASCADE;
-  end if;
-end
-$$;
-do $$
-begin
   if not exists (select 1 from pg_constraint where conname = 'profiles_email_key' and conrelid = 'public.profiles'::regclass) then
     alter table public."profiles" add constraint "profiles_email_key" UNIQUE (email);
-  end if;
-end
-$$;
-do $$
-begin
-  if not exists (select 1 from pg_constraint where conname = 'profiles_id_fkey' and conrelid = 'public.profiles'::regclass) then
-    alter table public."profiles" add constraint "profiles_id_fkey" FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE;
   end if;
 end
 $$;
@@ -606,13 +480,6 @@ end
 $$;
 do $$
 begin
-  if not exists (select 1 from pg_constraint where conname = 'registrations_course_id_fkey' and conrelid = 'public.registrations'::regclass) then
-    alter table public."registrations" add constraint "registrations_course_id_fkey" FOREIGN KEY (course_id) REFERENCES public.courses(id) ON DELETE CASCADE;
-  end if;
-end
-$$;
-do $$
-begin
   if not exists (select 1 from pg_constraint where conname = 'registrations_pkey' and conrelid = 'public.registrations'::regclass) then
     alter table public."registrations" add constraint "registrations_pkey" PRIMARY KEY (id);
   end if;
@@ -622,13 +489,6 @@ do $$
 begin
   if not exists (select 1 from pg_constraint where conname = 'registrations_status_check' and conrelid = 'public.registrations'::regclass) then
     alter table public."registrations" add constraint "registrations_status_check" CHECK (status = ANY (ARRAY['pending_payment'::text, 'paid'::text, 'failed'::text, 'expired'::text, 'cancelled'::text]));
-  end if;
-end
-$$;
-do $$
-begin
-  if not exists (select 1 from pg_constraint where conname = 'sessions_course_id_fkey' and conrelid = 'public.sessions'::regclass) then
-    alter table public."sessions" add constraint "sessions_course_id_fkey" FOREIGN KEY (course_id) REFERENCES public.courses(id) ON DELETE CASCADE;
   end if;
 end
 $$;
@@ -648,13 +508,6 @@ end
 $$;
 do $$
 begin
-  if not exists (select 1 from pg_constraint where conname = 'student_worksheet_logs_course_id_fkey' and conrelid = 'public.student_worksheet_logs'::regclass) then
-    alter table public."student_worksheet_logs" add constraint "student_worksheet_logs_course_id_fkey" FOREIGN KEY (course_id) REFERENCES public.courses(id) ON DELETE CASCADE;
-  end if;
-end
-$$;
-do $$
-begin
   if not exists (select 1 from pg_constraint where conname = 'student_worksheet_logs_pkey' and conrelid = 'public.student_worksheet_logs'::regclass) then
     alter table public."student_worksheet_logs" add constraint "student_worksheet_logs_pkey" PRIMARY KEY (id);
   end if;
@@ -669,22 +522,8 @@ end
 $$;
 do $$
 begin
-  if not exists (select 1 from pg_constraint where conname = 'student_worksheet_logs_target_id_fkey' and conrelid = 'public.student_worksheet_logs'::regclass) then
-    alter table public."student_worksheet_logs" add constraint "student_worksheet_logs_target_id_fkey" FOREIGN KEY (target_id) REFERENCES public.worksheet_daily_targets(id) ON DELETE CASCADE;
-  end if;
-end
-$$;
-do $$
-begin
   if not exists (select 1 from pg_constraint where conname = 'student_worksheet_logs_target_id_user_id_key' and conrelid = 'public.student_worksheet_logs'::regclass) then
     alter table public."student_worksheet_logs" add constraint "student_worksheet_logs_target_id_user_id_key" UNIQUE (target_id, user_id);
-  end if;
-end
-$$;
-do $$
-begin
-  if not exists (select 1 from pg_constraint where conname = 'student_worksheet_logs_user_id_fkey' and conrelid = 'public.student_worksheet_logs'::regclass) then
-    alter table public."student_worksheet_logs" add constraint "student_worksheet_logs_user_id_fkey" FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
   end if;
 end
 $$;
@@ -697,13 +536,6 @@ end
 $$;
 do $$
 begin
-  if not exists (select 1 from pg_constraint where conname = 'worksheet_daily_targets_course_id_fkey' and conrelid = 'public.worksheet_daily_targets'::regclass) then
-    alter table public."worksheet_daily_targets" add constraint "worksheet_daily_targets_course_id_fkey" FOREIGN KEY (course_id) REFERENCES public.courses(id) ON DELETE CASCADE;
-  end if;
-end
-$$;
-do $$
-begin
   if not exists (select 1 from pg_constraint where conname = 'worksheet_daily_targets_course_id_session_id_section_target_key' and conrelid = 'public.worksheet_daily_targets'::regclass) then
     alter table public."worksheet_daily_targets" add constraint "worksheet_daily_targets_course_id_session_id_section_target_key" UNIQUE (course_id, session_id, section, target_date, question_start, question_end);
   end if;
@@ -711,22 +543,8 @@ end
 $$;
 do $$
 begin
-  if not exists (select 1 from pg_constraint where conname = 'worksheet_daily_targets_master_rule_id_fkey' and conrelid = 'public.worksheet_daily_targets'::regclass) then
-    alter table public."worksheet_daily_targets" add constraint "worksheet_daily_targets_master_rule_id_fkey" FOREIGN KEY (master_rule_id) REFERENCES public.master_worksheet_session_rules(id) ON DELETE SET NULL;
-  end if;
-end
-$$;
-do $$
-begin
   if not exists (select 1 from pg_constraint where conname = 'worksheet_daily_targets_pkey' and conrelid = 'public.worksheet_daily_targets'::regclass) then
     alter table public."worksheet_daily_targets" add constraint "worksheet_daily_targets_pkey" PRIMARY KEY (id);
-  end if;
-end
-$$;
-do $$
-begin
-  if not exists (select 1 from pg_constraint where conname = 'worksheet_daily_targets_plan_id_fkey' and conrelid = 'public.worksheet_daily_targets'::regclass) then
-    alter table public."worksheet_daily_targets" add constraint "worksheet_daily_targets_plan_id_fkey" FOREIGN KEY (plan_id) REFERENCES public.master_worksheet_plans(id) ON DELETE CASCADE;
   end if;
 end
 $$;
@@ -746,19 +564,200 @@ end
 $$;
 do $$
 begin
-  if not exists (select 1 from pg_constraint where conname = 'worksheet_daily_targets_session_id_fkey' and conrelid = 'public.worksheet_daily_targets'::regclass) then
-    alter table public."worksheet_daily_targets" add constraint "worksheet_daily_targets_session_id_fkey" FOREIGN KEY (session_id) REFERENCES public.sessions(id) ON DELETE CASCADE;
-  end if;
-end
-$$;
-do $$
-begin
   if not exists (select 1 from pg_constraint where conname = 'worksheet_daily_targets_target_count_check' and conrelid = 'public.worksheet_daily_targets'::regclass) then
     alter table public."worksheet_daily_targets" add constraint "worksheet_daily_targets_target_count_check" CHECK (target_count > 0);
   end if;
 end
 $$;
-
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'enrollments_course_id_fkey' and conrelid = 'public.enrollments'::regclass) then
+    alter table public."enrollments" add constraint "enrollments_course_id_fkey" FOREIGN KEY (course_id) REFERENCES public.courses(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'enrollments_user_id_fkey' and conrelid = 'public.enrollments'::regclass) then
+    alter table public."enrollments" add constraint "enrollments_user_id_fkey" FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'master_materials_master_session_id_fkey' and conrelid = 'public.master_materials'::regclass) then
+    alter table public."master_materials" add constraint "master_materials_master_session_id_fkey" FOREIGN KEY (master_session_id) REFERENCES public.master_sessions(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'master_practice_attempts_course_id_fkey' and conrelid = 'public.master_practice_attempts'::regclass) then
+    alter table public."master_practice_attempts" add constraint "master_practice_attempts_course_id_fkey" FOREIGN KEY (course_id) REFERENCES public.courses(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'master_practice_attempts_master_question_id_fkey' and conrelid = 'public.master_practice_attempts'::regclass) then
+    alter table public."master_practice_attempts" add constraint "master_practice_attempts_master_question_id_fkey" FOREIGN KEY (master_question_id) REFERENCES public.master_practice_questions(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'master_practice_attempts_session_id_fkey' and conrelid = 'public.master_practice_attempts'::regclass) then
+    alter table public."master_practice_attempts" add constraint "master_practice_attempts_session_id_fkey" FOREIGN KEY (session_id) REFERENCES public.sessions(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'master_practice_attempts_user_id_fkey' and conrelid = 'public.master_practice_attempts'::regclass) then
+    alter table public."master_practice_attempts" add constraint "master_practice_attempts_user_id_fkey" FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'master_practice_questions_master_practice_set_id_fkey' and conrelid = 'public.master_practice_questions'::regclass) then
+    alter table public."master_practice_questions" add constraint "master_practice_questions_master_practice_set_id_fkey" FOREIGN KEY (master_practice_set_id) REFERENCES public.master_practice_sets(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'master_practice_sets_master_session_id_fkey' and conrelid = 'public.master_practice_sets'::regclass) then
+    alter table public."master_practice_sets" add constraint "master_practice_sets_master_session_id_fkey" FOREIGN KEY (master_session_id) REFERENCES public.master_sessions(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'master_worksheet_session_rules_master_session_id_fkey' and conrelid = 'public.master_worksheet_session_rules'::regclass) then
+    alter table public."master_worksheet_session_rules" add constraint "master_worksheet_session_rules_master_session_id_fkey" FOREIGN KEY (master_session_id) REFERENCES public.master_sessions(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'master_worksheet_session_rules_plan_id_fkey' and conrelid = 'public.master_worksheet_session_rules'::regclass) then
+    alter table public."master_worksheet_session_rules" add constraint "master_worksheet_session_rules_plan_id_fkey" FOREIGN KEY (plan_id) REFERENCES public.master_worksheet_plans(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'materials_session_id_fkey' and conrelid = 'public.materials'::regclass) then
+    alter table public."materials" add constraint "materials_session_id_fkey" FOREIGN KEY (session_id) REFERENCES public.sessions(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'payments_registration_id_fkey' and conrelid = 'public.payments'::regclass) then
+    alter table public."payments" add constraint "payments_registration_id_fkey" FOREIGN KEY (registration_id) REFERENCES public.registrations(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'practice_attempts_question_id_fkey' and conrelid = 'public.practice_attempts'::regclass) then
+    alter table public."practice_attempts" add constraint "practice_attempts_question_id_fkey" FOREIGN KEY (question_id) REFERENCES public.practice_questions(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'practice_attempts_user_id_fkey' and conrelid = 'public.practice_attempts'::regclass) then
+    alter table public."practice_attempts" add constraint "practice_attempts_user_id_fkey" FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'practice_questions_practice_set_id_fkey' and conrelid = 'public.practice_questions'::regclass) then
+    alter table public."practice_questions" add constraint "practice_questions_practice_set_id_fkey" FOREIGN KEY (practice_set_id) REFERENCES public.practice_sets(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'practice_sets_session_id_fkey' and conrelid = 'public.practice_sets'::regclass) then
+    alter table public."practice_sets" add constraint "practice_sets_session_id_fkey" FOREIGN KEY (session_id) REFERENCES public.sessions(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'profiles_id_fkey' and conrelid = 'public.profiles'::regclass) then
+    alter table public."profiles" add constraint "profiles_id_fkey" FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'registrations_course_id_fkey' and conrelid = 'public.registrations'::regclass) then
+    alter table public."registrations" add constraint "registrations_course_id_fkey" FOREIGN KEY (course_id) REFERENCES public.courses(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'sessions_course_id_fkey' and conrelid = 'public.sessions'::regclass) then
+    alter table public."sessions" add constraint "sessions_course_id_fkey" FOREIGN KEY (course_id) REFERENCES public.courses(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'student_worksheet_logs_course_id_fkey' and conrelid = 'public.student_worksheet_logs'::regclass) then
+    alter table public."student_worksheet_logs" add constraint "student_worksheet_logs_course_id_fkey" FOREIGN KEY (course_id) REFERENCES public.courses(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'student_worksheet_logs_target_id_fkey' and conrelid = 'public.student_worksheet_logs'::regclass) then
+    alter table public."student_worksheet_logs" add constraint "student_worksheet_logs_target_id_fkey" FOREIGN KEY (target_id) REFERENCES public.worksheet_daily_targets(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'student_worksheet_logs_user_id_fkey' and conrelid = 'public.student_worksheet_logs'::regclass) then
+    alter table public."student_worksheet_logs" add constraint "student_worksheet_logs_user_id_fkey" FOREIGN KEY (user_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'worksheet_daily_targets_course_id_fkey' and conrelid = 'public.worksheet_daily_targets'::regclass) then
+    alter table public."worksheet_daily_targets" add constraint "worksheet_daily_targets_course_id_fkey" FOREIGN KEY (course_id) REFERENCES public.courses(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'worksheet_daily_targets_master_rule_id_fkey' and conrelid = 'public.worksheet_daily_targets'::regclass) then
+    alter table public."worksheet_daily_targets" add constraint "worksheet_daily_targets_master_rule_id_fkey" FOREIGN KEY (master_rule_id) REFERENCES public.master_worksheet_session_rules(id) ON DELETE SET NULL;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'worksheet_daily_targets_plan_id_fkey' and conrelid = 'public.worksheet_daily_targets'::regclass) then
+    alter table public."worksheet_daily_targets" add constraint "worksheet_daily_targets_plan_id_fkey" FOREIGN KEY (plan_id) REFERENCES public.master_worksheet_plans(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'worksheet_daily_targets_session_id_fkey' and conrelid = 'public.worksheet_daily_targets'::regclass) then
+    alter table public."worksheet_daily_targets" add constraint "worksheet_daily_targets_session_id_fkey" FOREIGN KEY (session_id) REFERENCES public.sessions(id) ON DELETE CASCADE;
+  end if;
+end
+$$;
 -- Non-constraint indexes.
 CREATE INDEX IF NOT EXISTS master_practice_attempts_question_idx ON public.master_practice_attempts USING btree (master_question_id);
 CREATE INDEX IF NOT EXISTS master_practice_attempts_user_session_idx ON public.master_practice_attempts USING btree (user_id, session_id);
