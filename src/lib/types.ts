@@ -44,11 +44,13 @@ export type MaterialType = 'pre_read' | 'class_material' | 'worksheet' | 'video'
 export interface Material {
   id: string;
   session_id: string;
+  master_material_id?: string | null;
   type: MaterialType;
   title: string;
   file_url?: string;
   notion_url?: string;
   video_url?: string;
+  question_count?: number | null;
   available_from: string;
   created_at: string;
 }

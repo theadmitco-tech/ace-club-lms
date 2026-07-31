@@ -1,20 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { createClient } from '@/utils/supabase/client';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/lib/AuthContext';
-import { MaterialType } from '@/lib/types';
 import { getMaterialTypeIcon } from '@/lib/utils';
-import { DEFAULT_CURRICULUM, getDefaultSessionTitle, shouldUseDefaultSessionTitle } from '@/lib/curriculum';
+import { createClient } from '@/utils/supabase/client';
 
 type MasterMaterial = {
   id: string;
-  type: MaterialType;
-  title?: string | null;
-  notion_url?: string | null;
-  file_url?: string | null;
-  video_url?: string | null;
+  type: 'pre_read' | 'worksheet';
+  title: string;
+  notion_url: string | null;
+  file_url: string | null;
+  question_count: number | null;
   created_at: string;
 };
 
@@ -22,273 +19,156 @@ type MasterSession = {
   id: string;
   title: string;
   session_number: number;
-  worksheet_question_count?: number;
-  question_bank_count?: number;
-  question_bank_set_count?: number;
-  master_materials?: MasterMaterial[];
+  master_materials: MasterMaterial[];
+};
+
+type UploadResponse = {
+  error?: string;
+  fileName?: string;
+  fileReference?: string;
 };
 
 export default function AdminCurriculumPage() {
-  const router = useRouter();
+  const supabase = useMemo(() => createClient(), []);
+  const { addToast } = useAuth();
   const [sessions, setSessions] = useState<MasterSession[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  
-  const supabase = createClient();
-  const { addToast } = useAuth();
+  const [savingMaterialId, setSavingMaterialId] = useState<string | null>(null);
 
-  const fetchMasterData = async () => {
+  const fetchMasterData = useCallback(async () => {
     setIsLoading(true);
-    const { data: sessionData } = await supabase
+    const { data, error } = await supabase
       .from('master_sessions')
-      .select('*, master_materials(*)')
+      .select(`
+        id,
+        title,
+        session_number,
+        master_materials (
+          id,
+          type,
+          title,
+          notion_url,
+          file_url,
+          question_count,
+          created_at
+        )
+      `)
       .order('session_number', { ascending: true });
 
-    const masterSessionIds = (sessionData || []).map((session) => session.id);
-    const { data: masterPracticeSetData, error: masterPracticeSetError } = masterSessionIds.length > 0
-      ? await supabase
-          .from('master_practice_sets')
-          .select('id, master_session_id')
-          .in('master_session_id', masterSessionIds)
-      : { data: [], error: null };
-
-    const masterPracticeSetIds = (masterPracticeSetData || []).map((set) => set.id);
-    const { data: masterQuestionData } = !masterPracticeSetError && masterPracticeSetIds.length > 0
-      ? await supabase
-          .from('master_practice_questions')
-          .select('master_practice_set_id')
-          .in('master_practice_set_id', masterPracticeSetIds)
-      : { data: [] };
-
-    if (masterPracticeSetError) {
-      console.info('Master practice tables are not available yet.', masterPracticeSetError);
+    if (error) {
+      console.error('Master course load failed:', error);
+      addToast('error', 'Unable to load the master course. Apply the Phase 3 migration first.');
+      setSessions([]);
+    } else {
+      const masterSessions = (data ?? []) as MasterSession[];
+      setSessions(masterSessions.map((session) => ({
+        ...session,
+        master_materials: [...(session.master_materials ?? [])].sort(
+          (left, right) => new Date(left.created_at).getTime() - new Date(right.created_at).getTime(),
+        ),
+      })));
     }
 
-    const [{ data: standaloneQuestionData, error: standaloneQuestionError }, { data: questionSetData, error: questionSetError }] = await Promise.all([
-      supabase
-        .from('questions')
-        .select('id, session_number')
-        .not('session_number', 'is', null),
-      supabase
-        .from('question_sets')
-        .select('id, session_number, set_questions(id)')
-        .not('session_number', 'is', null),
-    ]);
-
-    if (standaloneQuestionError || questionSetError) {
-      console.info('Session question-bank tables are not available yet.', standaloneQuestionError || questionSetError);
-    }
-
-    const masterSessionIdByPracticeSetId = new Map(
-      (masterPracticeSetData || []).map((set) => [set.id, set.master_session_id])
-    );
-    const questionCountByMasterSessionId = new Map<string, number>();
-    for (const question of masterQuestionData || []) {
-      const linkedMasterSessionId = masterSessionIdByPracticeSetId.get(question.master_practice_set_id);
-      if (!linkedMasterSessionId) continue;
-      questionCountByMasterSessionId.set(
-        linkedMasterSessionId,
-        (questionCountByMasterSessionId.get(linkedMasterSessionId) || 0) + 1
-      );
-    }
-
-    const questionBankCountBySessionNumber = new Map<number, number>();
-    const questionBankSetCountBySessionNumber = new Map<number, number>();
-    for (const question of standaloneQuestionData || []) {
-      if (!question.session_number) continue;
-      questionBankCountBySessionNumber.set(
-        question.session_number,
-        (questionBankCountBySessionNumber.get(question.session_number) || 0) + 1
-      );
-    }
-    for (const set of questionSetData || []) {
-      if (!set.session_number) continue;
-      questionBankSetCountBySessionNumber.set(
-        set.session_number,
-        (questionBankSetCountBySessionNumber.get(set.session_number) || 0) + 1
-      );
-      const childCount = Array.isArray(set.set_questions) ? set.set_questions.length : 0;
-      questionBankCountBySessionNumber.set(
-        set.session_number,
-        (questionBankCountBySessionNumber.get(set.session_number) || 0) + childCount
-      );
-    }
-    
-    if (sessionData) {
-      const masterSessions = sessionData as MasterSession[];
-      const sessionsWithCurriculumTitles = masterSessions.map((session) => {
-        const defaultTitle = getDefaultSessionTitle(session.session_number);
-        const shouldUpdateTitle = Boolean(defaultTitle && shouldUseDefaultSessionTitle(session.session_number, session.title));
-
-        return {
-          ...session,
-          title: shouldUpdateTitle && defaultTitle ? defaultTitle : session.title,
-          worksheet_question_count: questionCountByMasterSessionId.get(session.id) || 0,
-          question_bank_count: questionBankCountBySessionNumber.get(session.session_number) || 0,
-          question_bank_set_count: questionBankSetCountBySessionNumber.get(session.session_number) || 0,
-          master_materials: [...(session.master_materials || [])].sort((a, b) => {
-            return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-          }),
-        };
-      });
-
-      setSessions(sessionsWithCurriculumTitles);
-
-      const titleUpdates = sessionsWithCurriculumTitles
-        .filter((session, index) => session.title !== masterSessions[index].title)
-        .map((session) => (
-          supabase
-            .from('master_sessions')
-            .update({ title: session.title })
-            .eq('id', session.id)
-        ));
-
-      if (titleUpdates.length > 0) {
-        await Promise.all(titleUpdates);
-      }
-    }
     setIsLoading(false);
-  };
+  }, [addToast, supabase]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void fetchMasterData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    const timeoutId = window.setTimeout(() => void fetchMasterData(), 0);
+    return () => window.clearTimeout(timeoutId);
+  }, [fetchMasterData]);
 
-  const handleUpdateSessionTitle = async (id: string, title: string) => {
-    await supabase.from('master_sessions').update({ title }).eq('id', id);
-    setSessions(prev => prev.map(s => s.id === id ? { ...s, title } : s));
+  const updateLocalMaterial = (materialId: string, changes: Partial<MasterMaterial>) => {
+    setSessions((current) => current.map((session) => ({
+      ...session,
+      master_materials: session.master_materials.map((material) => (
+        material.id === materialId ? { ...material, ...changes } : material
+      )),
+    })));
   };
 
-  const handleFileUpload = async (sessionId: string, type: MaterialType, e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const persistMaterial = async (materialId: string, changes: Partial<MasterMaterial>) => {
+    setSavingMaterialId(materialId);
+    const { error } = await supabase
+      .from('master_materials')
+      .update(changes)
+      .eq('id', materialId);
 
-    setIsSaving(true);
+    if (error) {
+      console.error('Master material update failed:', error);
+      addToast('error', 'Unable to save this master material.');
+      await fetchMasterData();
+    }
+    setSavingMaterialId(null);
+  };
+
+  const addMaterial = async (session: MasterSession, type: MasterMaterial['type']) => {
+    const existingCount = session.master_materials.filter((material) => material.type === type).length;
+    const label = type === 'pre_read' ? 'Pre-read' : 'Worksheet';
+    const { error } = await supabase.from('master_materials').insert({
+      master_session_id: session.id,
+      type,
+      title: `${label} ${existingCount + 1} — ${session.title}`,
+      notion_url: type === 'pre_read' ? '' : null,
+      question_count: null,
+    });
+
+    if (error) {
+      console.error('Master material creation failed:', error);
+      addToast('error', `Unable to add the ${label.toLowerCase()}.`);
+      return;
+    }
+
+    addToast('success', `${label} added to the master course.`);
+    await fetchMasterData();
+  };
+
+  const removeMaterial = async (materialId: string) => {
+    const { error } = await supabase.from('master_materials').delete().eq('id', materialId);
+    if (error) {
+      console.error('Master material removal failed:', error);
+      addToast('error', 'Unable to remove the master material.');
+      return;
+    }
+
+    addToast('success', 'Master material removed.');
+    await fetchMasterData();
+  };
+
+  const uploadWorksheet = async (
+    masterSessionId: string,
+    material: MasterMaterial,
+    file: File,
+  ) => {
+    setSavingMaterialId(material.id);
+    const formData = new FormData();
+    formData.set('masterSessionId', masterSessionId);
+    formData.set('file', file);
+
     try {
-      const { uploadFile } = await import('@/utils/supabase/storage');
-      const publicUrl = await uploadFile(file);
-      await handleUpdateMaterial(sessionId, type, 'file_url', publicUrl);
-      addToast('success', 'File uploaded and linked.');
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Unknown error';
-      addToast('error', 'Upload failed: ' + message);
-    }
-    setIsSaving(false);
-  };
-
-  const handleUpdateMaterial = async (sessionId: string, type: MaterialType, field: string, value: string) => {
-    const session = sessions.find(s => s.id === sessionId);
-    if (!session) return;
-    const material = session?.master_materials?.find((m) => m.type === type);
-
-    if (material) {
-      // Update existing
-      const { error } = await supabase
-        .from('master_materials')
-        .update({ [field]: value })
-        .eq('id', material.id);
-      
-      if (!error) {
-        fetchMasterData();
-      }
-    } else {
-      // Create new
-      const { error } = await supabase
-        .from('master_materials')
-        .insert({
-          master_session_id: sessionId,
-          type,
-          title: `${type.replace('_', ' ')} for ${session.title}`,
-          [field]: value
-        });
-      
-      if (!error) {
-        fetchMasterData();
-      }
-    }
-  };
-
-  const handleUpdateMaterialById = async (materialId: string, field: string, value: string) => {
-    const { error } = await supabase
-      .from('master_materials')
-      .update({ [field]: value })
-      .eq('id', materialId);
-
-    if (!error) {
-      fetchMasterData();
-    }
-  };
-
-  const handleAddPreRead = async (sessionId: string) => {
-    const session = sessions.find(s => s.id === sessionId);
-    if (!session) return;
-
-    const preReadCount = session.master_materials?.filter((m) => m.type === 'pre_read').length || 0;
-    const { error } = await supabase
-      .from('master_materials')
-      .insert({
-        master_session_id: sessionId,
-        type: 'pre_read',
-        title: `Pre-read ${preReadCount + 1} for ${session.title}`,
-        notion_url: '',
+      const response = await fetch('/api/admin/master-material-upload', {
+        method: 'POST',
+        body: formData,
       });
-
-    if (error) {
-      addToast('error', 'Failed to add pre-read.');
-    } else {
-      addToast('success', 'Pre-read added.');
-      fetchMasterData();
-    }
-  };
-
-  const handleDeleteMasterMaterial = async (materialId: string) => {
-    const { error } = await supabase
-      .from('master_materials')
-      .delete()
-      .eq('id', materialId);
-
-    if (error) {
-      addToast('error', 'Failed to remove material.');
-    } else {
-      addToast('success', 'Material removed.');
-      fetchMasterData();
-    }
-  };
-
-  const handleEditSessionWorksheet = (session: MasterSession) => {
-    router.push(`/admin/curriculum/worksheets/${session.id}`);
-  };
-
-  const initializeMaster = async () => {
-    setIsSaving(true);
-    
-    for (let i = 0; i < DEFAULT_CURRICULUM.length; i++) {
-      const sess = DEFAULT_CURRICULUM[i];
-      const { data: newSession } = await supabase
-        .from('master_sessions')
-        .insert({
-          title: sess.title,
-          session_number: i + 1
-        })
-        .select()
-        .single();
-
-      if (newSession) {
-        // Create the 4 placeholders immediately
-        const types: MaterialType[] = ['pre_read', 'class_material', 'worksheet', 'video'];
-        const materialsToInsert = types.map(type => ({
-          master_session_id: newSession.id,
-          type,
-          title: `${type.replace('_', ' ')} for ${sess.title}`,
-        }));
-        await supabase.from('master_materials').insert(materialsToInsert);
+      const result = await response.json() as UploadResponse;
+      if (!response.ok || !result.fileReference) {
+        throw new Error(result.error || 'Unable to upload the worksheet.');
       }
-    }
 
-    addToast('success', 'Master Curriculum initialized with real session names.');
-    fetchMasterData();
-    setIsSaving(false);
+      const title = material.title.trim() || result.fileName || 'Worksheet';
+      const { error } = await supabase
+        .from('master_materials')
+        .update({ file_url: result.fileReference, title })
+        .eq('id', material.id);
+
+      if (error) throw error;
+      updateLocalMaterial(material.id, { file_url: result.fileReference, title });
+      addToast('success', 'Worksheet uploaded to the private master library.');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unable to upload the worksheet.';
+      addToast('error', message);
+    } finally {
+      setSavingMaterialId(null);
+    }
   };
 
   if (isLoading) {
@@ -299,172 +179,138 @@ export default function AdminCurriculumPage() {
     <div className="animate-fade-in">
       <div className="admin-page-header">
         <div>
-          <h1 className="admin-page-title">Session Master Base</h1>
-          <p className="admin-page-subtitle">Define the universal materials and worksheet plan for all batches here.</p>
-        </div>
-        <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-          <button className="btn btn-secondary" onClick={() => router.push('/admin/worksheets')}>
-            Edit Universal Worksheet
-          </button>
-          {sessions.length === 0 && (
-            <button className="btn btn-primary" onClick={initializeMaster} disabled={isSaving}>
-              Initialize 16 Sessions
-            </button>
-          )}
+          <h1 className="admin-page-title">Master Course Content</h1>
+          <p className="admin-page-subtitle">
+            Add reusable Notion pre-reads and PDF worksheets once. New cohorts inherit them automatically.
+          </p>
         </div>
       </div>
 
-      <div className="admin-card">
-        {sessions.length > 0 ? (
-          <div className="admin-table-container">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th style={{ width: '50px' }}>#</th>
-                  <th style={{ width: '200px' }}>Session Title</th>
-                  <th style={{ minWidth: '320px' }}>Pre-reads (Global)</th>
-                  <th>Question Bank (Global)</th>
-                  <th>Class Material (Batch-Specific)</th>
-                  <th>Video (Batch-Specific)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sessions.map((session) => {
-                  const getMat = (type: MaterialType) => session.master_materials?.find((m) => m.type === type);
-                  const preReads = session.master_materials?.filter((m) => m.type === 'pre_read') || [];
-                  
-                  return (
-                    <tr key={session.id}>
-                      <td style={{ fontWeight: 700, color: 'var(--accent-primary)' }}>{session.session_number}</td>
-                      <td>
-                        <input 
-                          type="text" 
-                          className="form-input" 
-                          style={{ border: 'none', background: 'transparent', padding: '4px', fontWeight: 600 }}
-                          value={session.title}
-                          onChange={(e) => handleUpdateSessionTitle(session.id, e.target.value)}
-                        />
-                      </td>
-                      <td>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                          {preReads.length > 0 ? (
-                            preReads.map((mat, index) => (
-                              <div
-                                key={mat.id}
-                                style={{
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  gap: '6px',
-                                  padding: '10px',
-                                  background: 'var(--bg-secondary)',
-                                  border: '1px solid var(--border-primary)',
-                                  borderRadius: 'var(--radius-md)'
-                                }}
-                              >
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  <span style={{ fontSize: '14px' }}>{getMaterialTypeIcon('pre_read')}</span>
-                                  <input
-                                    type="text"
-                                    className="form-input"
-                                    style={{ fontSize: '11px', height: '32px' }}
-                                    placeholder={`Pre-read ${index + 1} name`}
-                                    value={mat.title || ''}
-                                    onChange={(e) => handleUpdateMaterialById(mat.id, 'title', e.target.value)}
-                                  />
-                                  <button
-                                    className="btn btn-ghost btn-sm"
-                                    style={{ color: 'var(--error)', padding: '4px 8px' }}
-                                    onClick={() => handleDeleteMasterMaterial(mat.id)}
-                                  >
-                                    Remove
-                                  </button>
-                                </div>
-                                <input
-                                  type="text"
-                                  className="form-input"
-                                  style={{ fontSize: '11px', height: '32px' }}
-                                  placeholder="Notion URL or page ID"
-                                  value={mat.notion_url || ''}
-                                  onChange={(e) => handleUpdateMaterialById(mat.id, 'notion_url', e.target.value)}
-                                />
-                              </div>
-                            ))
-                          ) : (
-                            <span style={{ color: 'var(--text-tertiary)', fontSize: '12px' }}>No pre-reads yet.</span>
-                          )}
-                          <button
-                            className="btn btn-secondary btn-sm"
-                            onClick={() => handleAddPreRead(session.id)}
-                          >
-                            + Add Pre-read
-                          </button>
+      {sessions.length === 0 ? (
+        <div className="admin-card empty-state">
+          <h2 className="empty-state-title">Master course not imported</h2>
+          <p className="empty-state-text">Apply the reviewed Phase 3 curriculum import before adding content.</p>
+        </div>
+      ) : (
+        <div className="master-content-list">
+          {sessions.map((session) => {
+            const preReads = session.master_materials.filter((material) => material.type === 'pre_read');
+            const worksheets = session.master_materials.filter((material) => material.type === 'worksheet');
+
+            return (
+              <section className="admin-card master-session-card" key={session.id}>
+                <div className="master-session-heading">
+                  <span className="master-session-number">{session.session_number}</span>
+                  <h2>{session.title}</h2>
+                </div>
+
+                <div className="master-content-grid">
+                  <div>
+                    <div className="master-content-heading">
+                      <h3>{getMaterialTypeIcon('pre_read')} Notion pre-reads</h3>
+                      <button className="btn btn-secondary btn-sm" onClick={() => void addMaterial(session, 'pre_read')}>
+                        + Add pre-read
+                      </button>
+                    </div>
+                    {preReads.length === 0 && <p className="master-content-empty">No pre-reads added.</p>}
+                    {preReads.map((material) => (
+                      <div className="master-material-card" key={material.id}>
+                        <label>
+                          Name
+                          <input
+                            className="form-input"
+                            value={material.title}
+                            onChange={(event) => updateLocalMaterial(material.id, { title: event.target.value })}
+                            onBlur={() => void persistMaterial(material.id, { title: material.title.trim() })}
+                          />
+                        </label>
+                        <label>
+                          Notion link
+                          <input
+                            className="form-input"
+                            type="url"
+                            placeholder="https://www.notion.so/..."
+                            value={material.notion_url ?? ''}
+                            onChange={(event) => updateLocalMaterial(material.id, { notion_url: event.target.value })}
+                            onBlur={() => void persistMaterial(material.id, { notion_url: material.notion_url?.trim() || null })}
+                          />
+                        </label>
+                        <div className="master-material-actions">
+                          {savingMaterialId === material.id && <span>Saving…</span>}
+                          <button className="btn btn-ghost btn-sm" onClick={() => void removeMaterial(material.id)}>Remove</button>
                         </div>
-                      </td>
+                      </div>
+                    ))}
+                  </div>
 
-                      {['worksheet', 'class_material', 'video'].map((type) => {
-                        const mat = getMat(type as MaterialType);
-                        const isStatic = type === 'worksheet';
-                        const field = type === 'video' ? 'video_url' : 'file_url';
-                        
-                        return (
-                          <td key={type}>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <span style={{ fontSize: '14px' }}>{getMaterialTypeIcon(type as MaterialType)}</span>
-                                {type === 'worksheet' ? (
-                                  <span style={{ fontSize: '11px', color: session.worksheet_question_count ? 'var(--success)' : 'var(--text-tertiary)' }}>
-                                    {session.session_number === 1
-                                      ? 'Orientation has no questions'
-                                      : session.worksheet_question_count
-                                        ? `${session.worksheet_question_count} questions`
-                                        : 'No questions yet'}
-                                  </span>
-                                ) : (
-                                  <input 
-                                    type="text"
-                                    className="form-input"
-                                    style={{ 
-                                      fontSize: '11px', 
-                                      height: '32px',
-                                      opacity: isStatic ? 1 : 0.5,
-                                      borderStyle: isStatic ? 'solid' : 'dashed'
-                                    }}
-                                    placeholder="Unique per batch..."
-                                    value={mat?.[field] || ''}
-                                    disabled={!isStatic}
-                                    onChange={(e) => handleUpdateMaterial(session.id, type as MaterialType, field, e.target.value)}
-                                  />
-                                )}
-                              </div>
-                              {type === 'worksheet' && (
-                                <>
-                                  <button
-                                    className="btn btn-secondary btn-sm"
-                                    onClick={() => handleEditSessionWorksheet(session)}
-                                    disabled={session.session_number === 1}
-                                  >
-                                    Edit questions
-                                  </button>
-                                </>
-                              )}
-                            </div>
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="empty-state" style={{ padding: '60px' }}>
-            <div className="empty-state-icon">🏛️</div>
-            <h3 className="empty-state-title">Empty Master Base</h3>
-            <p className="empty-state-text">Click &quot;Initialize&quot; to create the 16-session skeleton.</p>
-          </div>
-        )}
-      </div>
+                  <div>
+                    <div className="master-content-heading">
+                      <h3>{getMaterialTypeIcon('worksheet')} PDF worksheets</h3>
+                      <button className="btn btn-secondary btn-sm" onClick={() => void addMaterial(session, 'worksheet')}>
+                        + Add worksheet
+                      </button>
+                    </div>
+                    {worksheets.length === 0 && <p className="master-content-empty">No worksheets added.</p>}
+                    {worksheets.map((material) => (
+                      <div className="master-material-card" key={material.id}>
+                        <label>
+                          Name
+                          <input
+                            className="form-input"
+                            value={material.title}
+                            onChange={(event) => updateLocalMaterial(material.id, { title: event.target.value })}
+                            onBlur={() => void persistMaterial(material.id, { title: material.title.trim() })}
+                          />
+                        </label>
+                        <label>
+                          Worksheet PDF
+                          <input
+                            className="form-input"
+                            type="file"
+                            accept="application/pdf,.pdf"
+                            disabled={savingMaterialId === material.id}
+                            onChange={(event) => {
+                              const file = event.target.files?.[0];
+                              if (file) void uploadWorksheet(session.id, material, file);
+                              event.target.value = '';
+                            }}
+                          />
+                        </label>
+                        <p className={material.file_url ? 'master-file-ready' : 'master-content-empty'}>
+                          {material.file_url ? 'PDF uploaded' : 'No PDF uploaded'}
+                        </p>
+                        <label>
+                          Question count
+                          <input
+                            className="form-input"
+                            type="number"
+                            inputMode="numeric"
+                            min="1"
+                            step="1"
+                            placeholder="e.g. 30"
+                            value={material.question_count ?? ''}
+                            onChange={(event) => {
+                              const value = Number(event.target.value);
+                              updateLocalMaterial(material.id, {
+                                question_count: Number.isInteger(value) && value > 0 ? value : null,
+                              });
+                            }}
+                            onBlur={() => void persistMaterial(material.id, { question_count: material.question_count })}
+                          />
+                        </label>
+                        <div className="master-material-actions">
+                          {savingMaterialId === material.id && <span>Saving…</span>}
+                          <button className="btn btn-ghost btn-sm" onClick={() => void removeMaterial(material.id)}>Remove</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
