@@ -23,9 +23,9 @@ Complete only the items that require account access. Do not paste secret values,
 
 Record:
 
-- Staging URL: Not deployed
+- Staging URL: `https://ace-club-ato6ugfo0-theadmitco-techs-projects.vercel.app` (protected Preview)
 - Production URL: `https://ace-club-666tywuee-theadmitco-techs-projects.vercel.app` (latest listed production deployment)
-- Staging deployed commit SHA:
+- Staging deployed commit SHA: `7bbe8fc500fc4e4ed1a00c20cf7d0575c4d46222`
 - Production deployed commit SHA:
 - Are both deployments connected to the expected Git repository? Yes/No
 

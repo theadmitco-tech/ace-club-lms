@@ -4,7 +4,10 @@
   "vercel_project": "theadmitco-techs-projects/ace-club-lms",
   "deployments": {
     "preview": {
-      "status": "No deployment listed"
+      "url": "https://ace-club-ato6ugfo0-theadmitco-techs-projects.vercel.app",
+      "status": "Ready",
+      "deployed_commit": "7bbe8fc500fc4e4ed1a00c20cf7d0575c4d46222",
+      "deployment_protection": "Vercel Authentication"
     },
     "production": [
       {
@@ -50,7 +53,10 @@
       "NEXT_PUBLIC_SUPABASE_ANON_KEY": "Configured",
       "SUPABASE_SERVICE_ROLE_KEY": "Configured"
     },
-    "deployment_required_for_changes_to_take_effect": true
+    "deployment_required_for_changes_to_take_effect": {
+      "preview": false,
+      "production": true
+    }
   },
   "local_environment": {
     "supabase_project_ref": "eyphkkginlgoaxflauog",
@@ -58,5 +64,5 @@
     "service_role_present": false,
     "vercel_oidc_token_present_in_ignored_env_local": true
   },
-  "conclusion": "Local and Vercel Preview are configured for staging; Vercel Production is configured for production. No values are recorded in this evidence. NEXT_PUBLIC_SITE_URL remains unverified, no Preview deployment currently exists, and the environment changes require new deployments to take effect."
+  "conclusion": "Local and the protected Vercel Preview deployment use staging Supabase; Vercel Production is configured for production Supabase. No values are recorded in this evidence. NEXT_PUBLIC_SITE_URL remains unverified, and Production requires redeployment for the corrected mapping and authorization containment to take effect."
 }
