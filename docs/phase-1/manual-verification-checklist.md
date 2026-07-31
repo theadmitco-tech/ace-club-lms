@@ -68,12 +68,13 @@ Record:
 
 Record:
 
-- Site URL:
-- Allowed redirect URL hostnames/paths:
-- Email provider configured: Yes/No
+- Site URL: `http://localhost:3000` (staging)
+- Allowed redirect URL hostnames/paths: None configured
+- Email provider configured: Yes
+- Confirm email: Enabled
 - Magic-link email delivery succeeds: Yes/No
-- Magic-link expiry setting:
-- Staging and production use separate projects or identities: Yes/No
+- Magic-link expiry setting: Not shown in dashboard
+- Staging and production use separate projects: Yes
 
 Do not paste an actual magic-link URL.
 
