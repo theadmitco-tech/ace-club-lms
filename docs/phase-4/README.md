@@ -1,6 +1,6 @@
 # Phase 4 — Cohorts and Release Automation
 
-Status: Active
+Status: Signed off
 Owner: Product owner and Engineering
 Last updated: 31 July 2026
 
@@ -23,14 +23,22 @@ See [ADR-0002](../decisions/adr-0002-cohort-schedule-and-material-sync.md) for s
 
 ## Verification status
 
+- [Staging verification evidence](evidence/staging-verification-2026-07-31.md)
+- [Production rollout evidence](evidence/production-rollout-2026-07-31.md)
 - Phase 4 migration applied successfully to staging through the SQL Editor.
 - Two disposable cohorts with different Week 0 Fridays generated and passed schedule verification.
 - All 31 dates, weekday start times, Orientation duration, and release timestamps passed.
 - Week 0 and direct-URL release behavior passed with staging Admin and Student identities.
 - Additive and idempotent explicit material sync passed with a disposable master material.
 - Disposable cohorts, copied materials, enrollment, and master probe were removed after verification.
-- Confirm archived legacy rows are absent from current Admin workflows while linked history remains intact.
+- Production preserved 16 archived legacy rows, added 31 current rows, and hid the legacy template from current Admin workflows.
+- Pull request #4 merged at `579f468`; the guarded Production deployment and Admin smoke test passed.
+- Production migration history records all seven applied migrations through `20260731180000`.
 
 ## Exit gate
 
 Two cohorts with different start dates receive correct schedules and releases, and locked content remains protected through direct URLs.
+
+## Sign-off decision
+
+Phase 4 is accepted because two staging cohorts received correct 31-item schedules and release timestamps; additive material sync, Week 0, direct-URL protection, cleanup, Production legacy preservation, deployment health, Admin visibility, and migration-ledger reconciliation all passed.

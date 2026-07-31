@@ -294,3 +294,32 @@ Phase 3 is accepted as complete because the revised structure, instructor mappin
 Production rollout is intentionally coordinated with Phase 4. Do not apply the current Phase 3 migrations to Production unchanged: they must preserve and archive legacy master records instead of remapping or deleting them. Phase 4 must also replace the 16-slot cohort generator with the 31-item timeline and define existing-cohort material propagation.
 
 Continue with one account-dependent task at a time and never paste credentials, OAuth codes, signed file URLs, or private student data into chat or documentation.
+
+---
+
+## Phase 4 handoff — Cohorts and release automation
+
+Date: 31 July 2026
+
+Status: **Signed off**
+
+### Completed implementation and verification
+
+- New cohorts generate all 31 approved timeline items from a Week 0 Friday in one database transaction.
+- Friday items start at 8:00 PM IST; Saturday and Sunday items start at 10:00 AM IST. Orientation lasts one hour and other items use the approved two-hour default.
+- Week 0 pre-reads release immediately, later pre-reads release exactly seven days before their item, and worksheets release at item end.
+- New cohorts inherit current master materials and worksheet counts. Existing Phase 4 cohorts receive later additions through an explicit, additive, idempotent Admin sync.
+- Student availability uses database-owned release timestamps, locked Notion and worksheet direct URLs remain denied, and the obsolete inferred Section column is removed.
+- Two disposable staging cohorts with different start dates each generated 31 correct sessions with zero date, time, duration, material-link, release, or question-count errors.
+- Production preserved 16 linked legacy master sessions as archived history and added 31 current `mvp-2026` sessions. Existing batches remained readable while current Admin workflows show only the 31 approved items.
+- Pull request #4 merged at `579f468`. The guarded Production deployment, HTTP probes, Production Admin Google journey, logout, and migration-ledger reconciliation passed.
+
+### Phase 4 sign-off decision
+
+Phase 4 is accepted because cohort generation, programme time-zone rules, all required material releases, direct-URL protection, master inheritance, explicit synchronization, legacy preservation, staging verification, Production rollout, and operational migration records pass.
+
+### Phase 5 continuation point
+
+Phase 5 is **Adapt the Student experience**. Start from updated `origin/main` on a new feature branch. Retain the 31-item schedule and database-owned release boundaries. Adapt the dashboard to show the next relevant action and a chronological Week 0 timeline with pre-read, class, worksheet, and tracker order plus Available now, Upcoming, Available after class, empty, and actionable error states.
+
+Do not reopen Phase 4 scheduling, legacy archival, or release enforcement unless a new failing probe contradicts this signed evidence. Remaining master Notion links and worksheets may be populated through Admin as approved in Phase 3.

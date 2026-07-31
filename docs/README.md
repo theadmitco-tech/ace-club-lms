@@ -23,10 +23,11 @@ Current continuation state: [Ace Club LMS Running Handoff](handoffs/ace-club-lms
 - Phase 3: signed off — align the fixed master course.
   - [Status and exit gate](phase-3/README.md)
   - [Approved revised course structure](phase-3/revised-course-structure.md)
-- Phase 4: active — cohorts and release automation.
+- Phase 4: signed off — cohorts and release automation.
   - [Status and exit gate](phase-4/README.md)
   - [Manual verification checklist](phase-4/manual-verification-checklist.md)
   - [Schedule and material-sync decision](decisions/adr-0002-cohort-schedule-and-material-sync.md)
+- Phase 5: next — adapt the Student experience.
 
 There is no approved Phase 1.5.
 
