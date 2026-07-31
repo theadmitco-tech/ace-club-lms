@@ -14,7 +14,7 @@ Complete only the items that require account access. Do not paste secret values,
 - [x] Production build passes.
 - [ ] Lint passes — current baseline is 47 errors and 10 warnings.
 - [x] Staging database inventory captured; public LMS schema is empty.
-- [ ] Production database inventory captured.
+- [x] Production database inventory captured and reconciled.
 - [ ] Authentication test matrix passes.
 - [ ] Release and privacy probes pass.
 

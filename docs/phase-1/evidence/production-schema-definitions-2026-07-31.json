@@ -1,0 +1,781 @@
+{
+  "views": [],
+  "indexes": [
+    {
+      "definition": "CREATE UNIQUE INDEX courses_pkey ON public.courses USING btree (id)",
+      "index_name": "courses_pkey",
+      "table_name": "courses"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX enrollments_pkey ON public.enrollments USING btree (id)",
+      "index_name": "enrollments_pkey",
+      "table_name": "enrollments"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX enrollments_user_id_course_id_key ON public.enrollments USING btree (user_id, course_id)",
+      "index_name": "enrollments_user_id_course_id_key",
+      "table_name": "enrollments"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX master_materials_pkey ON public.master_materials USING btree (id)",
+      "index_name": "master_materials_pkey",
+      "table_name": "master_materials"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX master_practice_attempts_course_id_session_id_user_id_maste_key ON public.master_practice_attempts USING btree (course_id, session_id, user_id, master_question_id)",
+      "index_name": "master_practice_attempts_course_id_session_id_user_id_maste_key",
+      "table_name": "master_practice_attempts"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX master_practice_attempts_pkey ON public.master_practice_attempts USING btree (id)",
+      "index_name": "master_practice_attempts_pkey",
+      "table_name": "master_practice_attempts"
+    },
+    {
+      "definition": "CREATE INDEX master_practice_attempts_question_idx ON public.master_practice_attempts USING btree (master_question_id)",
+      "index_name": "master_practice_attempts_question_idx",
+      "table_name": "master_practice_attempts"
+    },
+    {
+      "definition": "CREATE INDEX master_practice_attempts_user_session_idx ON public.master_practice_attempts USING btree (user_id, session_id)",
+      "index_name": "master_practice_attempts_user_session_idx",
+      "table_name": "master_practice_attempts"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX master_practice_questions_master_practice_set_id_order_inde_key ON public.master_practice_questions USING btree (master_practice_set_id, order_index)",
+      "index_name": "master_practice_questions_master_practice_set_id_order_inde_key",
+      "table_name": "master_practice_questions"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX master_practice_questions_pkey ON public.master_practice_questions USING btree (id)",
+      "index_name": "master_practice_questions_pkey",
+      "table_name": "master_practice_questions"
+    },
+    {
+      "definition": "CREATE INDEX master_practice_questions_set_order_idx ON public.master_practice_questions USING btree (master_practice_set_id, order_index)",
+      "index_name": "master_practice_questions_set_order_idx",
+      "table_name": "master_practice_questions"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX master_practice_sets_master_session_id_key ON public.master_practice_sets USING btree (master_session_id)",
+      "index_name": "master_practice_sets_master_session_id_key",
+      "table_name": "master_practice_sets"
+    },
+    {
+      "definition": "CREATE INDEX master_practice_sets_master_session_idx ON public.master_practice_sets USING btree (master_session_id)",
+      "index_name": "master_practice_sets_master_session_idx",
+      "table_name": "master_practice_sets"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX master_practice_sets_pkey ON public.master_practice_sets USING btree (id)",
+      "index_name": "master_practice_sets_pkey",
+      "table_name": "master_practice_sets"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX master_sessions_pkey ON public.master_sessions USING btree (id)",
+      "index_name": "master_sessions_pkey",
+      "table_name": "master_sessions"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX master_worksheet_plans_one_active ON public.master_worksheet_plans USING btree (is_active) WHERE (is_active = true)",
+      "index_name": "master_worksheet_plans_one_active",
+      "table_name": "master_worksheet_plans"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX master_worksheet_plans_pkey ON public.master_worksheet_plans USING btree (id)",
+      "index_name": "master_worksheet_plans_pkey",
+      "table_name": "master_worksheet_plans"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX master_worksheet_session_rules_pkey ON public.master_worksheet_session_rules USING btree (id)",
+      "index_name": "master_worksheet_session_rules_pkey",
+      "table_name": "master_worksheet_session_rules"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX master_worksheet_session_rules_plan_id_master_session_id_key ON public.master_worksheet_session_rules USING btree (plan_id, master_session_id)",
+      "index_name": "master_worksheet_session_rules_plan_id_master_session_id_key",
+      "table_name": "master_worksheet_session_rules"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX materials_pkey ON public.materials USING btree (id)",
+      "index_name": "materials_pkey",
+      "table_name": "materials"
+    },
+    {
+      "definition": "CREATE INDEX payments_order_idx ON public.payments USING btree (razorpay_order_id)",
+      "index_name": "payments_order_idx",
+      "table_name": "payments"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX payments_pkey ON public.payments USING btree (id)",
+      "index_name": "payments_pkey",
+      "table_name": "payments"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX payments_razorpay_order_id_key ON public.payments USING btree (razorpay_order_id)",
+      "index_name": "payments_razorpay_order_id_key",
+      "table_name": "payments"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX payments_razorpay_payment_id_key ON public.payments USING btree (razorpay_payment_id)",
+      "index_name": "payments_razorpay_payment_id_key",
+      "table_name": "payments"
+    },
+    {
+      "definition": "CREATE INDEX payments_registration_idx ON public.payments USING btree (registration_id)",
+      "index_name": "payments_registration_idx",
+      "table_name": "payments"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX practice_attempts_pkey ON public.practice_attempts USING btree (id)",
+      "index_name": "practice_attempts_pkey",
+      "table_name": "practice_attempts"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX practice_attempts_user_id_question_id_key ON public.practice_attempts USING btree (user_id, question_id)",
+      "index_name": "practice_attempts_user_id_question_id_key",
+      "table_name": "practice_attempts"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX practice_questions_pkey ON public.practice_questions USING btree (id)",
+      "index_name": "practice_questions_pkey",
+      "table_name": "practice_questions"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX practice_sets_pkey ON public.practice_sets USING btree (id)",
+      "index_name": "practice_sets_pkey",
+      "table_name": "practice_sets"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX profiles_email_key ON public.profiles USING btree (email)",
+      "index_name": "profiles_email_key",
+      "table_name": "profiles"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX profiles_pkey ON public.profiles USING btree (id)",
+      "index_name": "profiles_pkey",
+      "table_name": "profiles"
+    },
+    {
+      "definition": "CREATE INDEX registrations_course_status_idx ON public.registrations USING btree (course_id, status)",
+      "index_name": "registrations_course_status_idx",
+      "table_name": "registrations"
+    },
+    {
+      "definition": "CREATE INDEX registrations_email_idx ON public.registrations USING btree (lower(email))",
+      "index_name": "registrations_email_idx",
+      "table_name": "registrations"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX registrations_pkey ON public.registrations USING btree (id)",
+      "index_name": "registrations_pkey",
+      "table_name": "registrations"
+    },
+    {
+      "definition": "CREATE INDEX registrations_reserved_until_idx ON public.registrations USING btree (reserved_until)",
+      "index_name": "registrations_reserved_until_idx",
+      "table_name": "registrations"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX sessions_pkey ON public.sessions USING btree (id)",
+      "index_name": "sessions_pkey",
+      "table_name": "sessions"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX student_worksheet_logs_pkey ON public.student_worksheet_logs USING btree (id)",
+      "index_name": "student_worksheet_logs_pkey",
+      "table_name": "student_worksheet_logs"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX student_worksheet_logs_target_id_user_id_key ON public.student_worksheet_logs USING btree (target_id, user_id)",
+      "index_name": "student_worksheet_logs_target_id_user_id_key",
+      "table_name": "student_worksheet_logs"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX worksheet_daily_targets_course_id_session_id_section_target_key ON public.worksheet_daily_targets USING btree (course_id, session_id, section, target_date, question_start, question_end)",
+      "index_name": "worksheet_daily_targets_course_id_session_id_section_target_key",
+      "table_name": "worksheet_daily_targets"
+    },
+    {
+      "definition": "CREATE UNIQUE INDEX worksheet_daily_targets_pkey ON public.worksheet_daily_targets USING btree (id)",
+      "index_name": "worksheet_daily_targets_pkey",
+      "table_name": "worksheet_daily_targets"
+    }
+  ],
+  "database": "postgres",
+  "triggers": [
+    {
+      "definition": "CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION handle_new_user()",
+      "table_name": "users",
+      "table_schema": "auth",
+      "trigger_name": "on_auth_user_created"
+    },
+    {
+      "definition": "CREATE TRIGGER set_master_practice_questions_updated_at BEFORE UPDATE ON master_practice_questions FOR EACH ROW EXECUTE FUNCTION set_updated_at()",
+      "table_name": "master_practice_questions",
+      "table_schema": "public",
+      "trigger_name": "set_master_practice_questions_updated_at"
+    },
+    {
+      "definition": "CREATE TRIGGER set_master_practice_sets_updated_at BEFORE UPDATE ON master_practice_sets FOR EACH ROW EXECUTE FUNCTION set_updated_at()",
+      "table_name": "master_practice_sets",
+      "table_schema": "public",
+      "trigger_name": "set_master_practice_sets_updated_at"
+    },
+    {
+      "definition": "CREATE TRIGGER set_payments_updated_at BEFORE UPDATE ON payments FOR EACH ROW EXECUTE FUNCTION set_registration_updated_at()",
+      "table_name": "payments",
+      "table_schema": "public",
+      "trigger_name": "set_payments_updated_at"
+    },
+    {
+      "definition": "CREATE TRIGGER set_registrations_updated_at BEFORE UPDATE ON registrations FOR EACH ROW EXECUTE FUNCTION set_registration_updated_at()",
+      "table_name": "registrations",
+      "table_schema": "public",
+      "trigger_name": "set_registrations_updated_at"
+    }
+  ],
+  "functions": [
+    {
+      "arguments": "p_course_id uuid",
+      "definition": "CREATE OR REPLACE FUNCTION public.can_access_course(p_course_id uuid)\n RETURNS boolean\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\n                                    SELECT EXISTS (\n                                        SELECT 1\n                                            FROM public.profiles profile\n                                                WHERE profile.id = auth.uid()\n                                                      AND profile.is_active = true\n                                                            AND (\n                                                                    profile.role = 'admin'\n                                                                            OR EXISTS (\n                                                                                      SELECT 1 FROM public.enrollments enrollment\n                                                                                                WHERE enrollment.user_id = auth.uid()\n                                                                                                            AND enrollment.course_id = p_course_id\n                                                                                                                    )\n                                                                                                                          )\n                                                                                                                            );\n                                                                                                                            $function$\n",
+      "function_name": "can_access_course"
+    },
+    {
+      "arguments": "p_course_id uuid",
+      "definition": "CREATE OR REPLACE FUNCTION public.get_course_worksheet_attempt_stats(p_course_id uuid)\n RETURNS TABLE(user_id uuid, attempted_total integer, correct_total integer, accuracy numeric, last_attempt_date date, active_today boolean)\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\nBEGIN\n  IF NOT EXISTS (\n    SELECT 1 FROM public.profiles\n    WHERE id = auth.uid() AND role = 'admin'\n  ) THEN\n    RAISE EXCEPTION 'Admin access required';\n  END IF;\n\n  RETURN QUERY\n  SELECT\n    enrollment.user_id,\n    COUNT(attempt.id)::INTEGER AS attempted_total,\n    COUNT(attempt.id) FILTER (WHERE attempt.is_correct)::INTEGER AS correct_total,\n    CASE WHEN COUNT(attempt.id) = 0 THEN 0 ELSE ROUND((COUNT(attempt.id) FILTER (WHERE attempt.is_correct)::NUMERIC / COUNT(attempt.id)::NUMERIC) * 100, 1) END AS accuracy,\n    MAX(attempt.answered_at::DATE) AS last_attempt_date,\n    COUNT(attempt.id) FILTER (WHERE attempt.answered_at::DATE = CURRENT_DATE) > 0 AS active_today\n  FROM public.enrollments enrollment\n  LEFT JOIN public.master_practice_attempts attempt\n    ON attempt.course_id = p_course_id AND attempt.user_id = enrollment.user_id\n  WHERE enrollment.course_id = p_course_id\n  GROUP BY enrollment.user_id;\nEND;\n$function$\n",
+      "function_name": "get_course_worksheet_attempt_stats"
+    },
+    {
+      "arguments": "p_course_id uuid",
+      "definition": "CREATE OR REPLACE FUNCTION public.get_student_worksheet_attempt_rank(p_course_id uuid)\n RETURNS TABLE(user_total integer, user_correct integer, user_accuracy numeric, class_average numeric, class_accuracy numeric, percentile numeric, enrolled_count integer, active_today integer)\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\nDECLARE\n  current_total INTEGER;\n  current_correct INTEGER;\nBEGIN\n  IF NOT EXISTS (\n    SELECT 1 FROM public.enrollments\n    WHERE course_id = p_course_id AND user_id = auth.uid()\n  ) THEN\n    RAISE EXCEPTION 'Not enrolled in this batch';\n  END IF;\n\n  SELECT\n    COUNT(*)::INTEGER,\n    COUNT(*) FILTER (WHERE is_correct)::INTEGER\n  INTO current_total, current_correct\n  FROM public.master_practice_attempts\n  WHERE course_id = p_course_id AND user_id = auth.uid();\n\n  RETURN QUERY\n  WITH enrolled AS (\n    SELECT user_id FROM public.enrollments WHERE course_id = p_course_id\n  ),\n  totals AS (\n    SELECT\n      e.user_id,\n      COUNT(a.id)::INTEGER AS attempted,\n      COUNT(a.id) FILTER (WHERE a.is_correct)::INTEGER AS correct,\n      COUNT(a.id) FILTER (WHERE a.answered_at::DATE = CURRENT_DATE)::INTEGER AS today_attempts\n    FROM enrolled e\n    LEFT JOIN public.master_practice_attempts a\n      ON a.course_id = p_course_id AND a.user_id = e.user_id\n    GROUP BY e.user_id\n  )\n  SELECT\n    COALESCE(current_total, 0),\n    COALESCE(current_correct, 0),\n    CASE WHEN COALESCE(current_total, 0) = 0 THEN 0 ELSE ROUND((current_correct::NUMERIC / current_total::NUMERIC) * 100, 1) END,\n    COALESCE(AVG(attempted), 0),\n    CASE WHEN COALESCE(SUM(attempted), 0) = 0 THEN 0 ELSE ROUND((SUM(correct)::NUMERIC / SUM(attempted)::NUMERIC) * 100, 1) END,\n    CASE\n      WHEN COUNT(*) <= 1 THEN NULL\n      ELSE ROUND((COUNT(*) FILTER (WHERE attempted <= COALESCE(current_total, 0))::NUMERIC / COUNT(*)::NUMERIC) * 100, 1)\n    END,\n    COUNT(*)::INTEGER,\n    COUNT(*) FILTER (WHERE today_attempts > 0)::INTEGER\n  FROM totals;\nEND;\n$function$\n",
+      "function_name": "get_student_worksheet_attempt_rank"
+    },
+    {
+      "arguments": "p_course_id uuid",
+      "definition": "CREATE OR REPLACE FUNCTION public.get_student_worksheet_rank(p_course_id uuid)\n RETURNS TABLE(user_total integer, class_average numeric, percentile numeric, enrolled_count integer)\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\nDECLARE\n  current_total INTEGER;\nBEGIN\n  IF NOT EXISTS (\n    SELECT 1 FROM public.enrollments\n    WHERE course_id = p_course_id AND user_id = auth.uid()\n  ) THEN\n    RAISE EXCEPTION 'Not enrolled in this batch';\n  END IF;\n\n  SELECT COALESCE(SUM(attempted_count), 0)::INTEGER\n  INTO current_total\n  FROM public.student_worksheet_logs\n  WHERE course_id = p_course_id AND user_id = auth.uid();\n\n  RETURN QUERY\n  WITH enrolled AS (\n    SELECT user_id FROM public.enrollments WHERE course_id = p_course_id\n  ),\n  totals AS (\n    SELECT e.user_id, COALESCE(SUM(l.attempted_count), 0)::INTEGER AS total\n    FROM enrolled e\n    LEFT JOIN public.student_worksheet_logs l\n      ON l.course_id = p_course_id AND l.user_id = e.user_id\n    GROUP BY e.user_id\n  )\n  SELECT\n    current_total,\n    COALESCE(AVG(total), 0),\n    CASE\n      WHEN COUNT(*) <= 1 THEN NULL\n      ELSE ROUND((COUNT(*) FILTER (WHERE total <= current_total)::NUMERIC / COUNT(*)::NUMERIC) * 100, 1)\n    END,\n    COUNT(*)::INTEGER\n  FROM totals;\nEND;\n$function$\n",
+      "function_name": "get_student_worksheet_rank"
+    },
+    {
+      "arguments": "p_course_id uuid",
+      "definition": "CREATE OR REPLACE FUNCTION public.get_student_worksheet_target_attempts(p_course_id uuid)\n RETURNS TABLE(target_id uuid, attempted_count integer, correct_count integer)\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\nBEGIN\n  IF NOT EXISTS (\n    SELECT 1 FROM public.enrollments\n    WHERE course_id = p_course_id AND user_id = auth.uid()\n  ) THEN\n    RAISE EXCEPTION 'Not enrolled in this batch';\n  END IF;\n\n  RETURN QUERY\n  SELECT\n    target.id,\n    COUNT(question.id)::INTEGER AS attempted_count,\n    COUNT(question.id) FILTER (WHERE attempt.is_correct)::INTEGER AS correct_count\n  FROM public.worksheet_daily_targets target\n  LEFT JOIN public.master_practice_attempts attempt\n    ON attempt.course_id = target.course_id\n    AND attempt.session_id = target.session_id\n    AND attempt.user_id = auth.uid()\n  LEFT JOIN public.master_practice_questions question\n    ON question.id = attempt.master_question_id\n    AND question.order_index BETWEEN target.question_start AND target.question_end\n  WHERE target.course_id = p_course_id\n    AND target.is_active = true\n  GROUP BY target.id;\nEND;\n$function$\n",
+      "function_name": "get_student_worksheet_target_attempts"
+    },
+    {
+      "arguments": "",
+      "definition": "CREATE OR REPLACE FUNCTION public.handle_new_user()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\n                                                                                                                            BEGIN\n                                                                                                                              INSERT INTO public.profiles (id, email, full_name, role, is_active, invited_at)\n                                                                                                                                VALUES (\n                                                                                                                                    new.id,\n                                                                                                                                        new.email,\n                                                                                                                                            COALESCE(new.raw_user_meta_data->>'full_name', split_part(new.email, '@', 1)),\n                                                                                                                                                CASE WHEN new.raw_user_meta_data->>'role' = 'admin' THEN 'admin' ELSE 'student' END,\n                                                                                                                                                    true,\n                                                                                                                                                        NOW()\n                                                                                                                                                          )\n                                                                                                                                                            ON CONFLICT (id) DO NOTHING;\n                                                                                                                                                              RETURN new;\n                                                                                                                                                              END;\n                                                                                                                                                              $function$\n",
+      "function_name": "handle_new_user"
+    },
+    {
+      "arguments": "",
+      "definition": "CREATE OR REPLACE FUNCTION public.is_active_portal_user()\n RETURNS boolean\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\n            SELECT EXISTS (\n                SELECT 1 FROM public.profiles\n                    WHERE id = auth.uid() AND is_active = true\n                      );\n                      $function$\n",
+      "function_name": "is_active_portal_user"
+    },
+    {
+      "arguments": "",
+      "definition": "CREATE OR REPLACE FUNCTION public.is_portal_admin()\n RETURNS boolean\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\n                        SELECT EXISTS (\n                            SELECT 1 FROM public.profiles\n                                WHERE id = auth.uid() AND role = 'admin' AND is_active = true\n                                  );\n                                  $function$\n",
+      "function_name": "is_portal_admin"
+    },
+    {
+      "arguments": "",
+      "definition": "CREATE OR REPLACE FUNCTION public.mark_own_account_active()\n RETURNS void\n LANGUAGE sql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\n                                                                                                                                                                UPDATE public.profiles\n                                                                                                                                                                  SET activated_at = COALESCE(activated_at, NOW())\n                                                                                                                                                                    WHERE id = auth.uid() AND is_active = true;\n                                                                                                                                                                    $function$\n",
+      "function_name": "mark_own_account_active"
+    },
+    {
+      "arguments": "p_date date",
+      "definition": "CREATE OR REPLACE FUNCTION public.next_worksheet_weekday(p_date date)\n RETURNS date\n LANGUAGE plpgsql\n IMMUTABLE\nAS $function$\nDECLARE\n  day_number INTEGER;\nBEGIN\n  day_number := EXTRACT(DOW FROM p_date);\n  IF day_number = 0 THEN\n    RETURN p_date + 1;\n  ELSIF day_number = 6 THEN\n    RETURN p_date + 2;\n  END IF;\n  RETURN p_date;\nEND;\n$function$\n",
+      "function_name": "next_worksheet_weekday"
+    },
+    {
+      "arguments": "",
+      "definition": "CREATE OR REPLACE FUNCTION public.rls_auto_enable()\n RETURNS event_trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog'\nAS $function$\nDECLARE\n  cmd record;\nBEGIN\n  FOR cmd IN\n    SELECT *\n    FROM pg_event_trigger_ddl_commands()\n    WHERE command_tag IN ('CREATE TABLE', 'CREATE TABLE AS', 'SELECT INTO')\n      AND object_type IN ('table','partitioned table')\n  LOOP\n     IF cmd.schema_name IS NOT NULL AND cmd.schema_name IN ('public') AND cmd.schema_name NOT IN ('pg_catalog','information_schema') AND cmd.schema_name NOT LIKE 'pg_toast%' AND cmd.schema_name NOT LIKE 'pg_temp%' THEN\n      BEGIN\n        EXECUTE format('alter table if exists %s enable row level security', cmd.object_identity);\n        RAISE LOG 'rls_auto_enable: enabled RLS on %', cmd.object_identity;\n      EXCEPTION\n        WHEN OTHERS THEN\n          RAISE LOG 'rls_auto_enable: failed to enable RLS on %', cmd.object_identity;\n      END;\n     ELSE\n        RAISE LOG 'rls_auto_enable: skip % (either system schema or not in enforced list: %.)', cmd.object_identity, cmd.schema_name;\n     END IF;\n  END LOOP;\nEND;\n$function$\n",
+      "function_name": "rls_auto_enable"
+    },
+    {
+      "arguments": "",
+      "definition": "CREATE OR REPLACE FUNCTION public.set_registration_updated_at()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  NEW.updated_at = NOW();\n  RETURN NEW;\nEND;\n$function$\n",
+      "function_name": "set_registration_updated_at"
+    },
+    {
+      "arguments": "",
+      "definition": "CREATE OR REPLACE FUNCTION public.set_updated_at()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  NEW.updated_at = NOW();\n  RETURN NEW;\nEND;\n$function$\n",
+      "function_name": "set_updated_at"
+    },
+    {
+      "arguments": "p_course_id uuid",
+      "definition": "CREATE OR REPLACE FUNCTION public.sync_course_worksheet_targets(p_course_id uuid)\n RETURNS integer\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\nDECLARE\n  active_plan_id UUID;\n  generated_count INTEGER := 0;\n  sess RECORD;\n  rule RECORD;\n  q_start INTEGER;\n  q_end INTEGER;\n  target_day DATE;\nBEGIN\n  SELECT id INTO active_plan_id\n  FROM public.master_worksheet_plans\n  WHERE is_active = true\n  ORDER BY created_at DESC\n  LIMIT 1;\n\n  IF active_plan_id IS NULL THEN\n    RETURN 0;\n  END IF;\n\n  UPDATE public.worksheet_daily_targets target\n  SET is_active = false\n  WHERE target.course_id = p_course_id\n    AND target.plan_id = active_plan_id\n    AND target.is_active = true\n    AND NOT EXISTS (\n      SELECT 1 FROM public.student_worksheet_logs log\n      WHERE log.target_id = target.id\n    );\n\n  FOR sess IN\n    SELECT id, course_id, session_number, session_date\n    FROM public.sessions\n    WHERE course_id = p_course_id\n      AND is_published = true\n    ORDER BY session_number\n  LOOP\n    FOR rule IN\n      SELECT *\n      FROM public.master_worksheet_session_rules\n      WHERE plan_id = active_plan_id\n        AND session_number = sess.session_number\n        AND is_active = true\n      ORDER BY section\n    LOOP\n      q_start := rule.start_question;\n      target_day := public.next_worksheet_weekday(sess.session_date::DATE);\n\n      WHILE q_start <= rule.end_question LOOP\n        q_end := LEAST(q_start + rule.daily_target_count - 1, rule.end_question);\n\n        INSERT INTO public.worksheet_daily_targets (\n          plan_id, course_id, session_id, master_rule_id, target_date, section,\n          question_start, question_end, target_count, range_label, is_active\n        )\n        VALUES (\n          active_plan_id, sess.course_id, sess.id, rule.id, target_day, rule.section,\n          q_start, q_end, q_end - q_start + 1, 'Q' || q_start || '-Q' || q_end, true\n        )\n        ON CONFLICT (course_id, session_id, section, target_date, question_start, question_end)\n        DO UPDATE SET\n          plan_id = EXCLUDED.plan_id,\n          master_rule_id = EXCLUDED.master_rule_id,\n          target_count = EXCLUDED.target_count,\n          range_label = EXCLUDED.range_label,\n          is_active = true;\n\n        generated_count := generated_count + 1;\n        q_start := q_end + 1;\n        target_day := public.next_worksheet_weekday(target_day + 1);\n      END LOOP;\n    END LOOP;\n  END LOOP;\n\n  RETURN generated_count;\nEND;\n$function$\n",
+      "function_name": "sync_course_worksheet_targets"
+    },
+    {
+      "arguments": "",
+      "definition": "CREATE OR REPLACE FUNCTION public.sync_universal_worksheet_targets()\n RETURNS integer\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\nDECLARE\n  course_record RECORD;\n  total_count INTEGER := 0;\nBEGIN\n  FOR course_record IN SELECT id FROM public.courses WHERE is_active = true LOOP\n    total_count := total_count + public.sync_course_worksheet_targets(course_record.id);\n  END LOOP;\n  RETURN total_count;\nEND;\n$function$\n",
+      "function_name": "sync_universal_worksheet_targets"
+    }
+  ],
+  "enum_types": [],
+  "constraints": [
+    {
+      "definition": "CHECK (capacity > 0)",
+      "table_name": "courses",
+      "constraint_name": "courses_capacity_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "courses",
+      "constraint_name": "courses_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "CHECK (price_amount >= 0)",
+      "table_name": "courses",
+      "constraint_name": "courses_price_amount_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE",
+      "table_name": "enrollments",
+      "constraint_name": "enrollments_course_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "enrollments",
+      "constraint_name": "enrollments_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "UNIQUE (user_id, course_id)",
+      "table_name": "enrollments",
+      "constraint_name": "enrollments_user_id_course_id_key",
+      "constraint_type": "u"
+    },
+    {
+      "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+      "table_name": "enrollments",
+      "constraint_name": "enrollments_user_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "FOREIGN KEY (master_session_id) REFERENCES master_sessions(id) ON DELETE CASCADE",
+      "table_name": "master_materials",
+      "constraint_name": "master_materials_master_session_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "master_materials",
+      "constraint_name": "master_materials_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "CHECK (type = ANY (ARRAY['pre_read'::text, 'class_material'::text, 'worksheet'::text, 'video'::text]))",
+      "table_name": "master_materials",
+      "constraint_name": "master_materials_type_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE",
+      "table_name": "master_practice_attempts",
+      "constraint_name": "master_practice_attempts_course_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "UNIQUE (course_id, session_id, user_id, master_question_id)",
+      "table_name": "master_practice_attempts",
+      "constraint_name": "master_practice_attempts_course_id_session_id_user_id_maste_key",
+      "constraint_type": "u"
+    },
+    {
+      "definition": "FOREIGN KEY (master_question_id) REFERENCES master_practice_questions(id) ON DELETE CASCADE",
+      "table_name": "master_practice_attempts",
+      "constraint_name": "master_practice_attempts_master_question_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "master_practice_attempts",
+      "constraint_name": "master_practice_attempts_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE",
+      "table_name": "master_practice_attempts",
+      "constraint_name": "master_practice_attempts_session_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+      "table_name": "master_practice_attempts",
+      "constraint_name": "master_practice_attempts_user_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "CHECK (difficulty = ANY (ARRAY['basic'::text, 'advanced'::text]))",
+      "table_name": "master_practice_questions",
+      "constraint_name": "master_practice_questions_difficulty_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "FOREIGN KEY (master_practice_set_id) REFERENCES master_practice_sets(id) ON DELETE CASCADE",
+      "table_name": "master_practice_questions",
+      "constraint_name": "master_practice_questions_master_practice_set_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "UNIQUE (master_practice_set_id, order_index)",
+      "table_name": "master_practice_questions",
+      "constraint_name": "master_practice_questions_master_practice_set_id_order_inde_key",
+      "constraint_type": "u"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "master_practice_questions",
+      "constraint_name": "master_practice_questions_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "FOREIGN KEY (master_session_id) REFERENCES master_sessions(id) ON DELETE CASCADE",
+      "table_name": "master_practice_sets",
+      "constraint_name": "master_practice_sets_master_session_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "UNIQUE (master_session_id)",
+      "table_name": "master_practice_sets",
+      "constraint_name": "master_practice_sets_master_session_id_key",
+      "constraint_type": "u"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "master_practice_sets",
+      "constraint_name": "master_practice_sets_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "master_sessions",
+      "constraint_name": "master_sessions_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "master_worksheet_plans",
+      "constraint_name": "master_worksheet_plans_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "CHECK (end_question >= start_question)",
+      "table_name": "master_worksheet_session_rules",
+      "constraint_name": "master_worksheet_session_rules_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "CHECK (daily_target_count > 0)",
+      "table_name": "master_worksheet_session_rules",
+      "constraint_name": "master_worksheet_session_rules_daily_target_count_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "FOREIGN KEY (master_session_id) REFERENCES master_sessions(id) ON DELETE CASCADE",
+      "table_name": "master_worksheet_session_rules",
+      "constraint_name": "master_worksheet_session_rules_master_session_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "master_worksheet_session_rules",
+      "constraint_name": "master_worksheet_session_rules_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "FOREIGN KEY (plan_id) REFERENCES master_worksheet_plans(id) ON DELETE CASCADE",
+      "table_name": "master_worksheet_session_rules",
+      "constraint_name": "master_worksheet_session_rules_plan_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "UNIQUE (plan_id, master_session_id)",
+      "table_name": "master_worksheet_session_rules",
+      "constraint_name": "master_worksheet_session_rules_plan_id_master_session_id_key",
+      "constraint_type": "u"
+    },
+    {
+      "definition": "CHECK (section = ANY (ARRAY['quant'::text, 'verbal'::text, 'di'::text]))",
+      "table_name": "master_worksheet_session_rules",
+      "constraint_name": "master_worksheet_session_rules_section_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "CHECK (start_question > 0)",
+      "table_name": "master_worksheet_session_rules",
+      "constraint_name": "master_worksheet_session_rules_start_question_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "materials",
+      "constraint_name": "materials_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE",
+      "table_name": "materials",
+      "constraint_name": "materials_session_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "CHECK (type = ANY (ARRAY['pre_read'::text, 'class_material'::text, 'worksheet'::text, 'video'::text]))",
+      "table_name": "materials",
+      "constraint_name": "materials_type_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "CHECK (amount >= 0)",
+      "table_name": "payments",
+      "constraint_name": "payments_amount_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "payments",
+      "constraint_name": "payments_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "UNIQUE (razorpay_order_id)",
+      "table_name": "payments",
+      "constraint_name": "payments_razorpay_order_id_key",
+      "constraint_type": "u"
+    },
+    {
+      "definition": "UNIQUE (razorpay_payment_id)",
+      "table_name": "payments",
+      "constraint_name": "payments_razorpay_payment_id_key",
+      "constraint_type": "u"
+    },
+    {
+      "definition": "FOREIGN KEY (registration_id) REFERENCES registrations(id) ON DELETE CASCADE",
+      "table_name": "payments",
+      "constraint_name": "payments_registration_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "CHECK (status = ANY (ARRAY['created'::text, 'paid'::text, 'failed'::text, 'refunded'::text]))",
+      "table_name": "payments",
+      "constraint_name": "payments_status_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "practice_attempts",
+      "constraint_name": "practice_attempts_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "FOREIGN KEY (question_id) REFERENCES practice_questions(id) ON DELETE CASCADE",
+      "table_name": "practice_attempts",
+      "constraint_name": "practice_attempts_question_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+      "table_name": "practice_attempts",
+      "constraint_name": "practice_attempts_user_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "UNIQUE (user_id, question_id)",
+      "table_name": "practice_attempts",
+      "constraint_name": "practice_attempts_user_id_question_id_key",
+      "constraint_type": "u"
+    },
+    {
+      "definition": "CHECK (difficulty = ANY (ARRAY['basic'::text, 'advanced'::text]))",
+      "table_name": "practice_questions",
+      "constraint_name": "practice_questions_difficulty_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "practice_questions",
+      "constraint_name": "practice_questions_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "FOREIGN KEY (practice_set_id) REFERENCES practice_sets(id) ON DELETE CASCADE",
+      "table_name": "practice_questions",
+      "constraint_name": "practice_questions_practice_set_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "practice_sets",
+      "constraint_name": "practice_sets_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE",
+      "table_name": "practice_sets",
+      "constraint_name": "practice_sets_session_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "UNIQUE (email)",
+      "table_name": "profiles",
+      "constraint_name": "profiles_email_key",
+      "constraint_type": "u"
+    },
+    {
+      "definition": "FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE",
+      "table_name": "profiles",
+      "constraint_name": "profiles_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "profiles",
+      "constraint_name": "profiles_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "CHECK (role = ANY (ARRAY['student'::text, 'admin'::text]))",
+      "table_name": "profiles",
+      "constraint_name": "profiles_role_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE",
+      "table_name": "registrations",
+      "constraint_name": "registrations_course_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "registrations",
+      "constraint_name": "registrations_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "CHECK (status = ANY (ARRAY['pending_payment'::text, 'paid'::text, 'failed'::text, 'expired'::text, 'cancelled'::text]))",
+      "table_name": "registrations",
+      "constraint_name": "registrations_status_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE",
+      "table_name": "sessions",
+      "constraint_name": "sessions_course_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "sessions",
+      "constraint_name": "sessions_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "CHECK (attempted_count >= 0)",
+      "table_name": "student_worksheet_logs",
+      "constraint_name": "student_worksheet_logs_attempted_count_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE",
+      "table_name": "student_worksheet_logs",
+      "constraint_name": "student_worksheet_logs_course_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "student_worksheet_logs",
+      "constraint_name": "student_worksheet_logs_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "CHECK (section = ANY (ARRAY['quant'::text, 'verbal'::text, 'di'::text]))",
+      "table_name": "student_worksheet_logs",
+      "constraint_name": "student_worksheet_logs_section_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "FOREIGN KEY (target_id) REFERENCES worksheet_daily_targets(id) ON DELETE CASCADE",
+      "table_name": "student_worksheet_logs",
+      "constraint_name": "student_worksheet_logs_target_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "UNIQUE (target_id, user_id)",
+      "table_name": "student_worksheet_logs",
+      "constraint_name": "student_worksheet_logs_target_id_user_id_key",
+      "constraint_type": "u"
+    },
+    {
+      "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+      "table_name": "student_worksheet_logs",
+      "constraint_name": "student_worksheet_logs_user_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "CHECK (question_end >= question_start)",
+      "table_name": "worksheet_daily_targets",
+      "constraint_name": "worksheet_daily_targets_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE",
+      "table_name": "worksheet_daily_targets",
+      "constraint_name": "worksheet_daily_targets_course_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "UNIQUE (course_id, session_id, section, target_date, question_start, question_end)",
+      "table_name": "worksheet_daily_targets",
+      "constraint_name": "worksheet_daily_targets_course_id_session_id_section_target_key",
+      "constraint_type": "u"
+    },
+    {
+      "definition": "FOREIGN KEY (master_rule_id) REFERENCES master_worksheet_session_rules(id) ON DELETE SET NULL",
+      "table_name": "worksheet_daily_targets",
+      "constraint_name": "worksheet_daily_targets_master_rule_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "worksheet_daily_targets",
+      "constraint_name": "worksheet_daily_targets_pkey",
+      "constraint_type": "p"
+    },
+    {
+      "definition": "FOREIGN KEY (plan_id) REFERENCES master_worksheet_plans(id) ON DELETE CASCADE",
+      "table_name": "worksheet_daily_targets",
+      "constraint_name": "worksheet_daily_targets_plan_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "CHECK (question_start > 0)",
+      "table_name": "worksheet_daily_targets",
+      "constraint_name": "worksheet_daily_targets_question_start_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "CHECK (section = ANY (ARRAY['quant'::text, 'verbal'::text, 'di'::text]))",
+      "table_name": "worksheet_daily_targets",
+      "constraint_name": "worksheet_daily_targets_section_check",
+      "constraint_type": "c"
+    },
+    {
+      "definition": "FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE",
+      "table_name": "worksheet_daily_targets",
+      "constraint_name": "worksheet_daily_targets_session_id_fkey",
+      "constraint_type": "f"
+    },
+    {
+      "definition": "CHECK (target_count > 0)",
+      "table_name": "worksheet_daily_targets",
+      "constraint_name": "worksheet_daily_targets_target_count_check",
+      "constraint_type": "c"
+    }
+  ],
+  "generated_at": "2026-07-31T05:01:03.382368+00:00"
+}

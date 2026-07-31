@@ -1,6 +1,6 @@
 # Phase 1 — Recovery and Audit
 
-Status: **Static audit and local recovery complete; live-environment verification pending**
+Status: **Production inventory reconciled; migration baseline and live verification pending**
 
 Audit baseline:
 
@@ -14,13 +14,14 @@ Audit baseline:
 - Production Supabase project identified: `owmlxsnzogfapotmjrqk`; it remains separate.
 - Production build passed on 31 July 2026; lint reported 47 errors and 10 warnings.
 - Staging inventory captured on 31 July 2026. It contains only Supabase-managed storage tables; the public LMS schema, policies, functions, triggers, and buckets are empty.
+- Production inventory captured on 31 July 2026. It contains 19 public LMS tables, 43 policies, 15 public functions, 5 application triggers, no storage buckets, and no cron table.
 
 ## Exit-gate status
 
 | Required output | Status | Evidence or remaining action |
 |---|---|---|
 | Feature inventory | Complete | Inventory below |
-| Database map | Provisional | Repository SQL and empty staging state mapped; production Supabase inventory is still required |
+| Database map | Provisional | Production objects and exact definitions are inventoried; an ordered migration baseline remains |
 | Authentication diagnosis | Static diagnosis complete | Staging magic-link and deactivation tests remain |
 | Validated estimate | Provisional | Finalise after live database and staging checks |
 
@@ -104,6 +105,21 @@ The repository is not a trustworthy migration history:
 - There is no ordering, migration ledger, rollback, or proof that every script was applied to the deployed project.
 
 Therefore, the live Supabase result from `supabase-inventory.sql` is the database authority for Phase 1.
+
+### Production reconciliation — 31 July 2026
+
+Evidence: [production Supabase inventory](evidence/production-supabase-inventory-2026-07-31.json) and [production schema definitions](evidence/production-schema-definitions-2026-07-31.json).
+
+- All 19 production public tables have RLS enabled; none force RLS.
+- The 19 tables overlap the repository schema. The repository-only `questions`, `question_sets`, and `set_questions` tables are not deployed.
+- Production adds `profiles.is_active`, `profiles.invited_at`, and `profiles.activated_at`, which are absent from repository SQL.
+- Production has five public functions absent from repository SQL: `can_access_course`, `is_active_portal_user`, `is_portal_admin`, `mark_own_account_active`, and `rls_auto_enable`.
+- Production policies are materially hardened beyond the repository snapshot for profile privacy, active-user checks, enrollment-based course access, sessions, and materials.
+- Production has no storage buckets and no cron table. Its database time zone is UTC.
+- The supplemental inventory captures 77 constraints, 40 indexes, all 15 function bodies, and all 5 trigger definitions. Production has no public views or enum types.
+- An ordered staging migration baseline must now be built from this production evidence.
+
+Do not apply `schema.sql` or the standalone `supabase_*.sql` files to staging. They would omit production-only account/RLS behaviour and add undeployed question-bank objects.
 
 ## Authentication and security diagnosis
 
