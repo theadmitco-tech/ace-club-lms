@@ -21,7 +21,7 @@ Audit baseline:
 | Required output | Status | Evidence or remaining action |
 |---|---|---|
 | Feature inventory | Complete | Inventory below |
-| Database map | Provisional | Production objects and exact definitions are inventoried; an ordered migration baseline remains |
+| Database map | Prepared | Production objects and exact definitions are inventoried; the ordered baseline awaits staging validation |
 | Authentication diagnosis | Static diagnosis complete | Staging magic-link and deactivation tests remain |
 | Validated estimate | Provisional | Finalise after live database and staging checks |
 
@@ -117,7 +117,8 @@ Evidence: [production Supabase inventory](evidence/production-supabase-inventory
 - Production policies are materially hardened beyond the repository snapshot for profile privacy, active-user checks, enrollment-based course access, sessions, and materials.
 - Production has no storage buckets and no cron table. Its database time zone is UTC.
 - The supplemental inventory captures 77 constraints, 40 indexes, all 15 function bodies, and all 5 trigger definitions. Production has no public views or enum types.
-- An ordered staging migration baseline must now be built from this production evidence.
+- The ordered baseline is [20260731051000_production_baseline.sql](../../supabase/migrations/20260731051000_production_baseline.sql). Static reconciliation confirms all 19 tables, 77 constraints, 40 indexes, 15 functions, 43 policies, and 5 triggers are represented.
+- The baseline is not approved for production and must pass against the empty staging project before the database-map gate is complete.
 
 Do not apply `schema.sql` or the standalone `supabase_*.sql` files to staging. They would omit production-only account/RLS behaviour and add undeployed question-bank objects.
 
