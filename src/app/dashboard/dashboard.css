@@ -760,7 +760,7 @@
 .schedule-header,
 .schedule-row {
   display: grid;
-  grid-template-columns: 42px minmax(220px, 1fr) 82px 124px 92px 92px 92px;
+  grid-template-columns: 42px minmax(220px, 1fr) 124px 92px 92px 92px;
   gap: var(--space-md);
   align-items: center;
 }
@@ -988,8 +988,7 @@
   }
 
   .schedule-date,
-  .material-cell,
-  .category-pill {
+  .material-cell {
     grid-column: 2;
   }
 

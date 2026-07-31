@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
 import { createClient } from '@/utils/supabase/client';
 import type { MasterWorksheetPlan, Material, Session, WorksheetDailyTarget } from '@/lib/types';
-import { DEFAULT_CURRICULUM, getCurriculumWorksheetSection } from '@/lib/curriculum';
+import { getCurriculumWorksheetSection } from '@/lib/curriculum';
 import { formatDate, formatRelativeDate } from '@/lib/utils';
 import {
   getSessionStatus,
@@ -81,11 +81,12 @@ function getMaterialColumnState(materials: Material[], session: Session, type: '
   };
 }
 
-function getSessionCategory(sessionNumber: number) {
-  const category = DEFAULT_CURRICULUM[sessionNumber - 1]?.category;
-  if (category === 'Quants') return 'Quant';
-  if (category === 'Data Insights') return 'DI';
-  return category || 'Class';
+function getSessionCategory(session: Session) {
+  if (session.class_type === 'QA') return 'Quant';
+  if (session.class_type === 'VA') return 'Verbal';
+  if (session.class_type === 'DI') return 'DI';
+  if (session.class_type === 'ORIENTATION') return 'Orientation';
+  return 'Class';
 }
 
 export default function DashboardPage() {
@@ -94,7 +95,6 @@ export default function DashboardPage() {
   const [sessionCards, setSessionCards] = useState<SessionCard[]>([]);
   const [hasEnrollment, setHasEnrollment] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
-  const [courseId, setCourseId] = useState<string | null>(null);
   const [worksheetPlan, setWorksheetPlan] = useState<MasterWorksheetPlan | null>(null);
   const [worksheetTargets, setWorksheetTargets] = useState<WorksheetTargetWithSession[]>([]);
   const [worksheetTargetAttempts, setWorksheetTargetAttempts] = useState<Record<string, WorksheetTargetAttempt>>({});
@@ -217,15 +217,15 @@ export default function DashboardPage() {
       // 1. Get user's enrollment
       const { data: enrollments } = await supabase
         .from('enrollments')
-        .select('course_id')
+        .select('course_id, enrolled_at')
         .eq('user_id', user.id)
+        .order('enrolled_at', { ascending: false })
         .limit(1);
 
       if (enrollments && enrollments.length > 0) {
         const courseId = enrollments[0].course_id;
 
         setHasEnrollment(true);
-        setCourseId(courseId);
 
         // 2. Get sessions and their materials
         const { data: sessionsData } = await supabase
@@ -358,9 +358,6 @@ export default function DashboardPage() {
     (sum, target) => sum + (worksheetTargetAttempts[target.id]?.attempted_count || 0),
     0
   );
-  const todayCompletionPercent = todayExpectedTotal > 0
-    ? Math.min(100, Math.round((todayAttemptedTotal / todayExpectedTotal) * 100))
-    : 0;
   const nextWorksheetTarget = todayWorksheetTargets.find((target) => (
     (worksheetTargetAttempts[target.id]?.attempted_count || 0) < target.target_count
   )) || todayWorksheetTargets[0] || eligibleWorksheetTargets.find((target) => target.target_date >= todayKey);
@@ -608,7 +605,7 @@ export default function DashboardPage() {
 
             <div className="session-rail" aria-label={`${completedCount} classes done and ${remainingCount} classes left`}>
               {sessionCards.map((card) => {
-                const category = getSessionCategory(card.session.session_number);
+                const category = getSessionCategory(card.session);
                 const isDone = new Date(card.session.session_date) < now;
                 const isCurrent = card.session.session_number === currentSessionNumber;
 
@@ -673,7 +670,6 @@ export default function DashboardPage() {
                 <div className="schedule-header" aria-hidden="true">
                   <span>#</span>
                   <span>Class</span>
-                  <span>Section</span>
                   <span>Date</span>
                   <span>Pre-read</span>
                   <span>Worksheet</span>
@@ -683,7 +679,6 @@ export default function DashboardPage() {
                   const unlockedCount = card.materials.filter((material) => isMaterialAvailable(material, card.session)).length;
                   const canOpen = card.status !== 'locked';
                   const isDone = new Date(card.session.session_date) < now;
-                  const category = getSessionCategory(card.session.session_number);
                   const preReadState = getMaterialColumnState(card.materials, card.session, 'pre_read');
                   const worksheetState = getMaterialColumnState(card.materials, card.session, 'worksheet');
 
@@ -699,9 +694,6 @@ export default function DashboardPage() {
                       <span className="schedule-number">{String(card.session.session_number).padStart(2, '0')}</span>
                       <span className="schedule-title">
                         <strong>{card.session.title}</strong>
-                      </span>
-                      <span className={`category-pill category-${category.toLowerCase().replace(' ', '-')}`}>
-                        {category}
                       </span>
                       <span className="schedule-date">
                         {formatDate(card.session.session_date)}
