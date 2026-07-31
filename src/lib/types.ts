@@ -25,6 +25,8 @@ export interface Course {
   currency?: string;
   registration_closes_at?: string | null;
   public_note?: string | null;
+  cohort_start_date?: string | null;
+  schedule_timezone?: string;
   created_at: string;
 }
 
@@ -34,6 +36,10 @@ export interface Session {
   title: string;
   session_number: number;
   session_date: string;
+  session_end_at?: string | null;
+  master_session_id?: string | null;
+  class_type?: string | null;
+  instructor?: string | null;
   is_published: boolean;
   created_at: string;
   materials?: Material[];
@@ -44,11 +50,13 @@ export type MaterialType = 'pre_read' | 'class_material' | 'worksheet' | 'video'
 export interface Material {
   id: string;
   session_id: string;
+  master_material_id?: string | null;
   type: MaterialType;
   title: string;
   file_url?: string;
   notion_url?: string;
   video_url?: string;
+  question_count?: number | null;
   available_from: string;
   created_at: string;
 }

@@ -16,7 +16,8 @@ Read:
 4. The [MVP acceptance criteria](../../instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.md).
 5. The relevant phase in the [product roadmap](../../instruction/Ace_Club_LMS_Product_Roadmap.md).
 6. The [documentation index](../README.md) and [coding rules](../development/coding-rules.md).
-7. Only the implementation files relevant to the immediate task.
+7. The [current code landscape and cleanup plan](../development/current-code-landscape-and-cleanup-plan.md), especially before Phase 3 or cleanup work.
+8. Only the implementation files relevant to the immediate task.
 
 Do not repeat completed recovery or audit work unless newer evidence invalidates it.
 
@@ -251,3 +252,45 @@ Phase 2 is accepted as complete because controlled Google-only authentication, p
 Phase 3 is **Align the master course**. Start from updated `origin/main` on a new feature branch. Read the Phase 3 roadmap and acceptance criteria, inventory the current course and material rows in staging, and obtain the approved revised fixed curriculum before changing data. The Phase 3 exit gate is one complete master course with approved titles, class types, DI–Ishan, VA–Tanya and QA–Unnati mappings, Notion pre-reads, PDF worksheets and worksheet question rows, with placeholders and duplicates removed.
 
 Do not reopen Phase 2 authentication or environment work unless a new failing probe contradicts this signed evidence. Continue to use the mandatory release preflight above for every deployment.
+
+---
+
+## Phase 3 handoff — Align the master course
+
+Date: 31 July 2026
+Status: **Signed off**
+
+### Completed implementation and verification
+
+- The approved revised curriculum is represented as 31 stable master timeline items.
+- DI maps to Ishan, VA to Tanya, and QA to Unnati; orientation, mocks, calls, breaks, and support events have no inherited teaching instructor.
+- Admins can attach multiple Notion pre-reads and multiple private PDF worksheets to a master item, with a manual positive question count per worksheet.
+- Worksheet question rows are generated from the entered count, and private files are delivered through an authenticated route using 60-second signed URLs.
+- The three Phase 3 migrations applied successfully to staging.
+- Admin Preview, the DI 1 master-content vertical slice, new-cohort inheritance, Student pre-read visibility, Student worksheet delivery, release locking, and signed-URL expiry passed.
+- DI 1 evidence recorded one pre-read, one worksheet, question count 20, one private PDF, and 20 generated question rows.
+- Targeted lint, TypeScript, and the production build pass.
+
+### Confirmed Phase 4 boundary
+
+Existing cohorts do not automatically receive master materials added after cohort creation. The staging `Aug test` batch continued showing its original pre-read after another was added to the master item. New cohort generation copies available master materials, but retroactive propagation is not implemented.
+
+The current batch generator also remains the legacy 16-session implementation and produces incorrect inferred metadata for some items. Phase 4 must generate cohorts from the full 31-item master timeline and decide whether existing cohorts receive later master-content additions automatically or through an explicit Admin action.
+
+### Release state and continuation
+
+- Branch: `codex/phase-3-master-course`.
+- Implementation commits: `4951494`, `e4d6268`, and `599804e`.
+- The branch is pushed and its Vercel Preview is connected to staging.
+- No Phase 3 migration has been applied to Production and the branch has not been merged into `main`.
+- On 31 July 2026, the Product Owner approved the 31-session curriculum and verified workflow, with remaining Notion links and worksheets to be populated later through Admin.
+- Production contains 16 legacy master sessions, 33 master materials, 10 master practice sets, 512 master questions, 32 student master attempts, one worksheet plan, 16 worksheet rules, and 94 worksheet targets.
+- The Product Owner approved archiving rather than physically deleting that legacy template. Phase 4 must hide it from current workflows while preserving linked history.
+
+### Phase 3 sign-off decision
+
+Phase 3 is accepted as complete because the revised structure, instructor mappings, multiple-material Admin workflow, question-row generation, private PDF delivery, release boundary, staging Student journey, build checks, Product Owner content decision, and Production legacy archival decision are complete.
+
+Production rollout is intentionally coordinated with Phase 4. Do not apply the current Phase 3 migrations to Production unchanged: they must preserve and archive legacy master records instead of remapping or deleting them. Phase 4 must also replace the 16-slot cohort generator with the 31-item timeline and define existing-cohort material propagation.
+
+Continue with one account-dependent task at a time and never paste credentials, OAuth codes, signed file URLs, or private student data into chat or documentation.
