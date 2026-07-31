@@ -21,13 +21,14 @@ See [ADR-0002](../decisions/adr-0002-cohort-schedule-and-material-sync.md) for s
 - Student availability reads the database-owned `available_from` timestamp.
 - TypeScript, targeted lint, and Production build pass locally.
 
-## Verification pending
+## Verification status
 
 - Phase 4 migration applied successfully to staging through the SQL Editor.
-- Generate two disposable cohorts with different Week 0 Fridays.
-- Verify all 31 dates, Friday/Saturday/Sunday times, Orientation duration, and release timestamps.
-- Verify Week 0 and direct-URL release behavior with staging Admin and Student identities.
-- Add a disposable master material, run explicit sync once and again, and verify additive/idempotent behavior.
+- Two disposable cohorts with different Week 0 Fridays generated and passed schedule verification.
+- All 31 dates, weekday start times, Orientation duration, and release timestamps passed.
+- Week 0 and direct-URL release behavior passed with staging Admin and Student identities.
+- Additive and idempotent explicit material sync passed with a disposable master material.
+- Disposable cohorts, copied materials, enrollment, and master probe were removed after verification.
 - Confirm archived legacy rows are absent from current Admin workflows while linked history remains intact.
 
 ## Exit gate
