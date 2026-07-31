@@ -1,0 +1,35 @@
+{
+  "date": "2026-07-31",
+  "environment": "staging",
+  "fixture": "Temporary synthetic Admin and two Student identities, one course enrollment, one session, and two materials; cleanup ran after the probe.",
+  "credentials_or_personal_data_recorded": false,
+  "initial_result": {
+    "passed": 11,
+    "failed": 1,
+    "checks": {
+      "anonymous_cannot_read_profiles": true,
+      "anonymous_cannot_read_enrollments": true,
+      "student_reads_only_own_profile": true,
+      "student_reads_only_own_enrollment": true,
+      "enrolled_student_reads_course": true,
+      "enrolled_student_reads_session": true,
+      "unenrolled_student_cannot_read_course": true,
+      "unenrolled_student_cannot_read_materials": true,
+      "second_student_reads_only_own_profile": true,
+      "admin_can_read_test_profiles": true,
+      "deactivated_student_loses_course_access": true,
+      "future_material_is_hidden": false
+    },
+    "release_failure": "The enrolled Student could read both the released and future material because the materials SELECT policy checked course access but not available_from."
+  },
+  "remediation": {
+    "migration": "20260731062700_enforce_material_release.sql",
+    "staging_application": "Applied successfully; Docker catalog-cache warning did not affect the remote migration",
+    "post_remediation_probe": {
+      "passed": 12,
+      "failed": 0,
+      "future_materials_created": 1,
+      "future_materials_visible_to_enrolled_student": 0
+    }
+  }
+}

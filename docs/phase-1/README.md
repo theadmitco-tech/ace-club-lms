@@ -17,6 +17,7 @@ Audit baseline:
 - Production inventory captured on 31 July 2026. It contains 19 public LMS tables, 43 policies, 15 public functions, 5 application triggers, no storage buckets, and no cron table.
 - Obsolete credential-bearing scratch scripts were removed. Lint is now 41 errors and 10 warnings; the product owner approved the scoped legacy deferral on 31 July 2026.
 - A protected Vercel Preview is deployed with staging Supabase. Production is live at `aceclub.theadmitco.com` with production Supabase and the privileged-route authorization containment.
+- Disposable staging privacy and release probes pass 12/12 after adding an authoritative `materials.available_from <= now()` RLS guard. Production migration is pending approval.
 
 ## Exit-gate status
 

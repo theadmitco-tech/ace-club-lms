@@ -17,7 +17,8 @@ Complete only the items that require account access. Do not paste secret values,
 - [x] Production database inventory captured and reconciled.
 - [x] Vercel Preview and Production Supabase URL, anon-key, and service-role mappings separated and configured without recording values.
 - [ ] Authentication test matrix passes. Magic-link verification was deferred by the product owner to the Phase 2 authentication redesign.
-- [ ] Release and privacy probes pass.
+- [x] Anonymous, cross-Student, enrollment, Admin-visibility, and deactivation privacy probes pass in staging.
+- [x] Release-boundary probe passes in staging after enforcing `materials.available_from <= now()` in RLS.
 
 ## 1. Deployment baseline
 
