@@ -258,7 +258,7 @@ Do not reopen Phase 2 authentication or environment work unless a new failing pr
 ## Phase 3 handoff — Align the master course
 
 Date: 31 July 2026
-Status: **Staging implementation verified; content population and Production release pending**
+Status: **Signed off**
 
 ### Completed implementation and verification
 
@@ -283,6 +283,14 @@ The current batch generator also remains the legacy 16-session implementation an
 - Implementation commits: `4951494`, `e4d6268`, and `599804e`.
 - The branch is pushed and its Vercel Preview is connected to staging.
 - No Phase 3 migration has been applied to Production and the branch has not been merged into `main`.
-- Remaining master materials may be populated later through the verified Admin workflow, but final content approval is still required by the documented Phase 3 exit gate.
+- On 31 July 2026, the Product Owner approved the 31-session curriculum and verified workflow, with remaining Notion links and worksheets to be populated later through Admin.
+- Production contains 16 legacy master sessions, 33 master materials, 10 master practice sets, 512 master questions, 32 student master attempts, one worksheet plan, 16 worksheet rules, and 94 worksheet targets.
+- The Product Owner approved archiving rather than physically deleting that legacy template. Phase 4 must hide it from current workflows while preserving linked history.
 
-Do not merge Phase 3 into `main` or apply Production migrations until the Production release order is reviewed. Continue with one account-dependent task at a time and never paste credentials, OAuth codes, signed file URLs, or private student data into chat or documentation.
+### Phase 3 sign-off decision
+
+Phase 3 is accepted as complete because the revised structure, instructor mappings, multiple-material Admin workflow, question-row generation, private PDF delivery, release boundary, staging Student journey, build checks, Product Owner content decision, and Production legacy archival decision are complete.
+
+Production rollout is intentionally coordinated with Phase 4. Do not apply the current Phase 3 migrations to Production unchanged: they must preserve and archive legacy master records instead of remapping or deleting them. Phase 4 must also replace the 16-slot cohort generator with the 31-item timeline and define existing-cohort material propagation.
+
+Continue with one account-dependent task at a time and never paste credentials, OAuth codes, signed file URLs, or private student data into chat or documentation.

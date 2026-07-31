@@ -1,6 +1,6 @@
 # Phase 3 — Align the Master Course
 
-Status: Staging implementation verified; content population and Production release pending
+Status: Signed off
 Owner: Product owner and Engineering
 Last updated: 31 July 2026
 
@@ -68,8 +68,14 @@ Cohorts are currently snapshots: adding a new master material after a cohort has
 
 The legacy cohort generator also still creates 16 sessions and infers some class metadata incorrectly. Replacing that generator with the 31-item master timeline is Phase 4 scope.
 
-## Remaining before Phase 3 sign-off
+## Production legacy-course decision
 
-- Populate or explicitly approve the remaining master-course content as it becomes available.
-- Record the final Product Owner content acceptance against the exit gate.
-- Apply the ordered migrations to Production only through the reviewed release process; no Phase 3 Production schema or data change has yet been authorized.
+The Production inventory found 16 legacy master sessions, 33 master materials, 10 master practice sets, 512 master questions, 32 student master attempts, one worksheet plan, 16 worksheet rules, and 94 generated worksheet targets. Physical deletion could remove student history or break live references.
+
+The Product Owner therefore approved archival: Phase 4 must preserve these rows for historical integrity while hiding the legacy template from current Admin and new-batch workflows. No Phase 3 Production row was changed.
+
+## Sign-off decision
+
+On 31 July 2026, the Product Owner approved the 31-session master curriculum and verified material workflow, and explicitly approved populating remaining Notion links and worksheets later through Admin. The existing-cohort propagation gap and legacy cohort generator remain Phase 4 scope.
+
+Phase 3 is signed off because the approved structure, mappings, Admin workflow, question generation, private delivery, release protection, staging vertical slice, build verification, content-population decision, and safe legacy archival decision are complete. Production rollout is deliberately coordinated with Phase 4 so live legacy student history is preserved.
