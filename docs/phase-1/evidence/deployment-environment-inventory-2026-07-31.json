@@ -1,0 +1,80 @@
+{
+  "date": "2026-07-31",
+  "repository": "theadmitco-tech/ace-club-lms",
+  "vercel_project": "theadmitco-techs-projects/ace-club-lms",
+  "deployments": {
+    "preview": {
+      "url": "https://ace-club-ato6ugfo0-theadmitco-techs-projects.vercel.app",
+      "status": "Ready",
+      "deployed_commit": "7bbe8fc500fc4e4ed1a00c20cf7d0575c4d46222",
+      "deployment_protection": "Vercel Authentication"
+    },
+    "production": [
+      {
+        "url": "https://ace-club-3yzglirk1-theadmitco-techs-projects.vercel.app",
+        "alias": "https://aceclub.theadmitco.com",
+        "status": "Ready",
+        "deployed_commit": "df3581f17a9ab11d9b019a339a85325efc773fd1"
+      },
+      {
+        "url": "https://ace-club-bbe16vpjf-theadmitco-techs-projects.vercel.app",
+        "alias": "https://aceclub.theadmitco.com",
+        "status": "Ready",
+        "deployed_commit": "506bf7dfbbf1c9fc2758e4487019cfd03f600fff"
+      },
+      {
+        "url": "https://ace-club-666tywuee-theadmitco-techs-projects.vercel.app",
+        "status": "Ready",
+        "age_at_inventory": "75 days"
+      },
+      {
+        "url": "https://ace-club-7fpa2lc99-theadmitco-techs-projects.vercel.app",
+        "status": "Ready",
+        "age_at_inventory": "75 days"
+      }
+    ]
+  },
+  "remote_environment_variable_names": {
+    "environments": [
+      "Preview",
+      "Production"
+    ],
+    "names": [
+      "NEXT_PUBLIC_SUPABASE_URL",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "NEXT_PUBLIC_SITE_URL",
+      "RAZORPAY_KEY_ID",
+      "RAZORPAY_KEY_SECRET",
+      "NEXT_PUBLIC_RAZORPAY_KEY_ID",
+      "RAZORPAY_WEBHOOK_SECRET"
+    ]
+  },
+  "supabase_environment_mapping": {
+    "verified_without_recording_values": true,
+    "method": "Environment-specific Vercel CLI updates sourced directly from the matching Supabase project API-key inventory",
+    "preview": {
+      "supabase_project_ref": "eyphkkginlgoaxflauog",
+      "NEXT_PUBLIC_SUPABASE_URL": "Configured",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "Configured",
+      "SUPABASE_SERVICE_ROLE_KEY": "Configured"
+    },
+    "production": {
+      "supabase_project_ref": "owmlxsnzogfapotmjrqk",
+      "NEXT_PUBLIC_SUPABASE_URL": "Configured",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "Configured",
+      "SUPABASE_SERVICE_ROLE_KEY": "Configured"
+    },
+    "deployment_required_for_changes_to_take_effect": {
+      "preview": false,
+      "production": false
+    }
+  },
+  "local_environment": {
+    "supabase_project_ref": "eyphkkginlgoaxflauog",
+    "site_url": "http://localhost:3000",
+    "service_role_present": false,
+    "vercel_oidc_token_present_in_ignored_env_local": true
+  },
+  "conclusion": "Local and the protected Vercel Preview deployment use staging Supabase. The Production deployment uses production Supabase and is live at aceclub.theadmitco.com with the corrected mapping and authorization containment. No secret values are recorded in this evidence."
+}

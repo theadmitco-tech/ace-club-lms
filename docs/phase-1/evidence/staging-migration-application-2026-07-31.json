@@ -1,0 +1,12 @@
+{
+  "date": "2026-07-31",
+  "target": {
+    "name": "ace-club-lms-staging",
+    "project_ref": "eyphkkginlgoaxflauog"
+  },
+  "command": "npx supabase@latest db push",
+  "migration": "20260731051000_production_baseline.sql",
+  "result": "Applied successfully",
+  "post_apply_warning": "The CLI could not cache the local pg-delta catalog because Docker Desktop is not installed. The remote migration completed.",
+  "production_changed": false
+}

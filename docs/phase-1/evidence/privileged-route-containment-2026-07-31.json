@@ -1,0 +1,41 @@
+{
+  "date": "2026-07-31",
+  "scope": [
+    "/api/admin/bulk-enroll",
+    "/api/admin/delete-user"
+  ],
+  "change": "Both routes now verify the Supabase session, active profile state, and admin role before creating or using a service-role client.",
+  "local_verification": {
+    "targeted_eslint": "Pass",
+    "production_build": "Pass",
+    "unauthenticated_bulk_enroll": {
+      "status": 401,
+      "response": "Authentication required"
+    },
+    "unauthenticated_delete_user": {
+      "status": 401,
+      "response": "Authentication required"
+    }
+  },
+  "deployment_status": {
+    "preview": "Deployed at commit 7bbe8fc500fc4e4ed1a00c20cf7d0575c4d46222 behind Vercel Authentication",
+    "production": "Latest deployment at commit df3581f17a9ab11d9b019a339a85325efc773fd1 is aliased to https://aceclub.theadmitco.com"
+  },
+  "preview_external_probe": {
+    "bulk_enroll_status": 401,
+    "delete_user_status": 401,
+    "response_source": "Vercel deployment protection; application handlers were not reached"
+  },
+  "production_external_probe": {
+    "homepage_status": 200,
+    "bulk_enroll_status": 401,
+    "bulk_enroll_response": "Authentication required",
+    "delete_user_status": 401,
+    "delete_user_response": "Authentication required",
+    "response_source": "Application route authorization"
+  },
+  "remaining_verification": [
+    "Authenticated non-admin receives 403",
+    "Active admin can perform the intended operation"
+  ]
+}

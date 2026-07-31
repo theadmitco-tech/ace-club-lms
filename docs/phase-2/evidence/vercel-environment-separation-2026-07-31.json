@@ -1,0 +1,33 @@
+{
+  "date": "2026-07-31",
+  "project": "ace-club-lms",
+  "production": {
+    "supabase_project_ref": "owmlxsnzogfapotmjrqk",
+    "site_url": "https://aceclub.theadmitco.com",
+    "environment_scope": "Production only",
+    "public_key": "Present",
+    "server_key": "Present"
+  },
+  "preview": {
+    "supabase_project_ref": "eyphkkginlgoaxflauog",
+    "site_url": "https://ace-club-lms-git-agent-phase-2-1acd97-theadmitco-techs-projects.vercel.app",
+    "environment_scope": "Preview only",
+    "public_key": "Present",
+    "server_key": "Present"
+  },
+  "initial_preview_probe": {
+    "result": "Fail",
+    "reason": "The existing deployment still contained its previous Production Supabase build-time values.",
+    "production_data_changed": "Not tested",
+    "action": "Create a new Preview deployment after correcting environment scopes."
+  },
+  "final_preview_probe": {
+    "result": "Pass",
+    "git_commit": "aa5a361",
+    "vercel_environment": "Preview",
+    "stable_url": "https://ace-club-lms-git-agent-phase-2-1acd97-theadmitco-techs-projects.vercel.app",
+    "supabase_project_ref_observed_during_oauth": "eyphkkginlgoaxflauog",
+    "google_sign_in_callback_result": "Pass"
+  },
+  "secrets_recorded": false
+}

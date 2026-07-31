@@ -1,0 +1,12 @@
+{
+  "date": "2026-07-31",
+  "supabase_project_ref": "eyphkkginlgoaxflauog",
+  "site_url": "http://localhost:3000",
+  "allowed_redirect_urls": [],
+  "email_provider_enabled": true,
+  "confirm_email_enabled": true,
+  "otp_or_magic_link_expiry": "Not shown in dashboard",
+  "magic_link_delivery_tested": false,
+  "production_identity_separation": "Separate Supabase projects",
+  "conclusion": "Staging is configured for localhost authentication only. Email confirmation is enabled, but delivery and the application authentication matrix remain unverified."
+}

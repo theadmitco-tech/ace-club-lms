@@ -1,0 +1,9 @@
+{
+  "date": "2026-07-31",
+  "supabase_project_ref": "eyphkkginlgoaxflauog",
+  "migration": "20260731110000_require_provisioned_portal_access.sql",
+  "application_method": "Supabase SQL Editor",
+  "result": "Success; no rows returned",
+  "production_applied": false,
+  "conclusion": "New staging OAuth users receive an inactive Student profile until an Admin explicitly provisions access."
+}

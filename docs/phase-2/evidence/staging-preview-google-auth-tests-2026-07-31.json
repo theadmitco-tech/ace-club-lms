@@ -1,0 +1,56 @@
+{
+  "date": "2026-07-31",
+  "environment": "Vercel Preview",
+  "supabase_project_ref": "eyphkkginlgoaxflauog",
+  "stable_preview_url": "https://ace-club-lms-git-agent-phase-2-1acd97-theadmitco-techs-projects.vercel.app",
+  "tests": {
+    "admin_google_sign_in": {
+      "result": "Pass",
+      "observed_destination": "/admin",
+      "refresh_preserved_session": true
+    },
+    "admin_role_boundary": {
+      "result": "Pass",
+      "attempted_path": "/dashboard",
+      "observed_destination": "/admin"
+    },
+    "admin_logout": {
+      "result": "Pass",
+      "attempted_path_after_logout": "/admin",
+      "observed_destination": "/login"
+    },
+    "student_google_sign_in": {
+      "result": "Pass",
+      "observed_destination": "/dashboard"
+    },
+    "student_role_boundary": {
+      "result": "Pass",
+      "attempted_path": "/admin",
+      "observed_destination": "/dashboard"
+    },
+    "student_logout": {
+      "result": "Pass",
+      "attempted_path_after_logout": "/dashboard",
+      "observed_destination": "/login"
+    },
+    "admin_deactivated_student": {
+      "result": "Pass",
+      "observed_destination": "/login/access-denied"
+    },
+    "admin_reactivated_student": {
+      "result": "Pass",
+      "observed_destination": "/dashboard"
+    },
+    "admin_provisioned_and_enrolled_student": {
+      "result": "Pass",
+      "method": "staging Preview Admin UI",
+      "profile_active": true,
+      "batch_enrollment_present": true,
+      "student_dashboard_access": true
+    },
+    "final_student_logout": {
+      "result": "Pass"
+    }
+  },
+  "secrets_or_private_identity_data_recorded": false
+}

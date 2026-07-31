@@ -8,8 +8,7 @@ import { createClient, hasSupabaseConfig } from '@/utils/supabase/client';
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (email: string) => Promise<{ success: boolean; error?: string }>;
-  loginWithPassword: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   toasts: Toast[];
   addToast: (type: Toast['type'], message: string) => void;
@@ -93,23 +92,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .eq('id', session.user.id)
       .single();
 
-    if (profile) {
+    if (profile?.is_active) {
       setUser(profile as User);
       return;
     }
 
     if (error) {
-      console.warn('Profile fetch failed; using auth metadata fallback.', error);
+      console.warn('Profile fetch failed.', error);
     }
 
-    // Fallback if profile trigger failed/delayed
-    setUser({
-      id: session.user.id,
-      email: session.user.email || '',
-      full_name: session.user.user_metadata?.full_name || 'Student',
-      role: 'student',
-      created_at: session.user.created_at
-    });
+    setUser(null);
   }, [supabase]);
 
   useEffect(() => {
@@ -171,36 +163,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [loadUserFromSession, supabase]);
 
-  const login = useCallback(async (email: string) => {
+  const loginWithGoogle = useCallback(async () => {
     if (!supabase) {
       return { success: false, error: 'Supabase is not configured.' };
     }
 
     setIsLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
       options: {
-        // Redirect back to dashboard after clicking magic link
-        emailRedirectTo: window.location.origin + '/dashboard',
+        redirectTo: `${window.location.origin}/auth/callback`,
       },
-    });
-
-    setIsLoading(false);
-    if (error) {
-      return { success: false, error: error.message };
-    }
-    return { success: true };
-  }, [supabase]);
-
-  const loginWithPassword = useCallback(async (email: string, password: string) => {
-    if (!supabase) {
-      return { success: false, error: 'Supabase is not configured.' };
-    }
-
-    setIsLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
     });
 
     setIsLoading(false);
@@ -229,7 +202,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return isSupabaseConfigured ? (
-    <AuthContext.Provider value={{ user, isLoading, login, loginWithPassword, logout, toasts, addToast, removeToast }}>
+    <AuthContext.Provider value={{ user, isLoading, loginWithGoogle, logout, toasts, addToast, removeToast }}>
       {children}
     </AuthContext.Provider>
   ) : (
