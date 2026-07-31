@@ -22,8 +22,8 @@ Complete only the items that require account access. Do not paste secret values,
 
 Record:
 
-- Staging URL:
-- Production URL:
+- Staging URL: Not deployed
+- Production URL: `https://ace-club-666tywuee-theadmitco-techs-projects.vercel.app` (latest listed production deployment)
 - Staging deployed commit SHA:
 - Production deployed commit SHA:
 - Are both deployments connected to the expected Git repository? Yes/No
@@ -32,11 +32,11 @@ For each environment, record only **Present**, **Missing**, or **Not applicable*
 
 | Variable | Local | Staging | Production |
 |---|---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` |  |  |  |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` |  |  |  |
-| `SUPABASE_SERVICE_ROLE_KEY` |  |  |  |
-| `NEXT_PUBLIC_SITE_URL` |  |  |  |
-| Razorpay variables |  |  |  |
+| `NEXT_PUBLIC_SUPABASE_URL` | Present (staging) | Present, value mapping pending | Present, value mapping pending |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Present (staging) | Present, value mapping pending | Present, value mapping pending |
+| `SUPABASE_SERVICE_ROLE_KEY` | Missing | Present | Present |
+| `NEXT_PUBLIC_SITE_URL` | Present (`localhost`) | Present, value pending | Present, value pending |
+| Razorpay variables | Missing | Present | Present |
 
 ## 2. Supabase inventory
 
