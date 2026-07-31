@@ -22,7 +22,7 @@ Audit baseline:
 | Required output | Status | Evidence or remaining action |
 |---|---|---|
 | Feature inventory | Complete | Inventory below |
-| Database map | Validation pending | Production objects and exact definitions are inventoried; the ordered baseline applied to staging and awaits inventory comparison |
+| Database map | Complete | Production-derived baseline applied to staging; post-apply inventory matches production object-for-object |
 | Authentication diagnosis | Static diagnosis complete | Staging magic-link and deactivation tests remain |
 | Validated estimate | Provisional | Finalise after live database and staging checks |
 
@@ -135,7 +135,7 @@ Evidence: [production Supabase inventory](evidence/production-supabase-inventory
 - The supplemental inventory captures 77 constraints, 40 indexes, all 15 function bodies, and all 5 trigger definitions. Production has no public views or enum types.
 - The ordered baseline is [20260731051000_production_baseline.sql](../../supabase/migrations/20260731051000_production_baseline.sql). Static reconciliation confirms all 19 tables, 77 constraints, 40 indexes, 15 functions, 43 policies, and 5 triggers are represented.
 - The baseline applied successfully to the empty staging project on 31 July 2026. The post-push Docker warning affected only local catalog caching.
-- A fresh staging inventory must match the baseline before the database-map gate is complete.
+- The [post-baseline staging inventory](evidence/staging-supabase-inventory-post-baseline-2026-07-31.json) matches production for tables, columns, foreign keys, policies, triggers, functions, extensions, storage buckets, cron presence, and database time zone.
 
 Do not apply `schema.sql` or the standalone `supabase_*.sql` files to staging. They would omit production-only account/RLS behaviour and add undeployed question-bank objects.
 

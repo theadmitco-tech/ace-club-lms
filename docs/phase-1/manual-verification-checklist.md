@@ -13,7 +13,7 @@ Complete only the items that require account access. Do not paste secret values,
 - [x] Production Supabase project identified and kept separate.
 - [x] Production build passes.
 - [x] Lint disposition approved — credential-bearing scratch scripts were removed; the remaining 41 errors and 10 warnings are scoped legacy deferrals and no new findings are permitted.
-- [x] Staging database inventory captured; public LMS schema is empty.
+- [x] Staging database baseline applied and post-apply inventory matches production.
 - [x] Production database inventory captured and reconciled.
 - [ ] Authentication test matrix passes.
 - [ ] Release and privacy probes pass.
