@@ -8,5 +8,15 @@
     "unauthenticated_request_status": 401,
     "unauthenticated_response": "Authentication required"
   },
-  "deployment_status": "Pending"
+  "deployment_status": {
+    "production_url": "https://ace-club-3yzglirk1-theadmitco-techs-projects.vercel.app",
+    "production_alias": "https://aceclub.theadmitco.com",
+    "deployed_commit": "df3581f17a9ab11d9b019a339a85325efc773fd1",
+    "status": "Ready"
+  },
+  "production_verification": {
+    "homepage_status": 200,
+    "unauthenticated_notion_status": 401,
+    "unauthenticated_notion_response": "Authentication required"
+  }
 }

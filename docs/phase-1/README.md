@@ -1,6 +1,6 @@
 # Phase 1 — Recovery and Audit
 
-Status: **Production inventory and staging baseline reconciled; live authentication verification pending**
+Status: **Complete — signed off with an explicit Phase 2 authentication exception**
 
 Audit baseline:
 
@@ -181,9 +181,9 @@ Do not apply `schema.sql` or the standalone `supabase_*.sql` files to staging. T
 | P1-10 | No automated test harness | Medium | Add focused auth/RLS/release/tracker tests as work proceeds |
 | P1-11 | Public registration/payment scope is not resolved | Medium | Product owner decides keep/separate/remove |
 
-## Provisional delivery estimate
+## Validated delivery estimate
 
-These ranges replace the original estimate until live verification provides contrary evidence.
+These ranges incorporate repository recovery, live database reconciliation, deployment verification, and disposable staging/Production privacy probes.
 
 | Phase | Provisional range | Main reason |
 |---|---:|---|
@@ -199,4 +199,8 @@ Planning range: approximately **6–8 engineering weeks plus 1–2 weeks of pilo
 
 ## Phase 1 completion decision
 
-The static audit and local recovery portions of Phase 1 are complete. The exit gate remains **conditional** until lint/build, live database inventories, staging authentication, release protection, and privacy probes pass. After those inputs are reconciled, this document can be marked complete without repeating the source audit.
+Phase 1 is **complete as of 31 July 2026**.
+
+The source audit, production-derived migration baseline, environment separation, build verification, deployment recovery, privileged-route containment, and database privacy/release probes are complete. Staging and Production pass the disposable 12-check RLS suite, and signed-out Production probes confirm the Admin and Notion endpoints reject access.
+
+The product owner approved one explicit exception: magic-link verification is not counted as passed. Login-method selection, Google OAuth recovery, the role-session matrix, and removal of legacy password/demo login UI move to Phase 2. The validated planning range remains **6–8 engineering weeks plus 1–2 weeks of pilot/stabilisation** for one full-stack engineer with explicit QA and product acceptance.

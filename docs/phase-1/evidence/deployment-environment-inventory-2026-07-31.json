@@ -11,6 +11,12 @@
     },
     "production": [
       {
+        "url": "https://ace-club-3yzglirk1-theadmitco-techs-projects.vercel.app",
+        "alias": "https://aceclub.theadmitco.com",
+        "status": "Ready",
+        "deployed_commit": "df3581f17a9ab11d9b019a339a85325efc773fd1"
+      },
+      {
         "url": "https://ace-club-bbe16vpjf-theadmitco-techs-projects.vercel.app",
         "alias": "https://aceclub.theadmitco.com",
         "status": "Ready",

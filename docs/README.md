@@ -9,7 +9,7 @@ This index routes readers to the smallest set of documents needed for a task. Pr
 ## Current phase
 
 - Phase 0.5: signed off in [Setup and Recovery Sign-off](../instruction/Phase_0.5_Setup_Recovery_Signoff.md).
-- Phase 1: active closeout.
+- Phase 1: complete with the documented Phase 2 authentication exception.
   - [Audit and status](phase-1/README.md)
   - [Manual verification checklist](phase-1/manual-verification-checklist.md)
   - [Read-only Supabase inventory query](phase-1/supabase-inventory.sql)

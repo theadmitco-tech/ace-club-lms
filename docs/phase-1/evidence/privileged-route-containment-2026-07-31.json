@@ -19,7 +19,7 @@
   },
   "deployment_status": {
     "preview": "Deployed at commit 7bbe8fc500fc4e4ed1a00c20cf7d0575c4d46222 behind Vercel Authentication",
-    "production": "Deployed at commit 506bf7dfbbf1c9fc2758e4487019cfd03f600fff and aliased to https://aceclub.theadmitco.com"
+    "production": "Latest deployment at commit df3581f17a9ab11d9b019a339a85325efc773fd1 is aliased to https://aceclub.theadmitco.com"
   },
   "preview_external_probe": {
     "bulk_enroll_status": 401,

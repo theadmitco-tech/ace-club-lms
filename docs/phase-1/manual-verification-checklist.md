@@ -16,11 +16,11 @@ Complete only the items that require account access. Do not paste secret values,
 - [x] Staging database baseline applied and post-apply inventory matches production.
 - [x] Production database inventory captured and reconciled.
 - [x] Vercel Preview and Production Supabase URL, anon-key, and service-role mappings separated and configured without recording values.
-- [ ] Authentication test matrix passes. Magic-link verification was deferred by the product owner to the Phase 2 authentication redesign.
+- [ ] Authentication test matrix passes. **Approved Phase 1 exception:** login-method selection and verification were deferred by the product owner to the Phase 2 authentication redesign.
 - [x] Anonymous, cross-Student, enrollment, Admin-visibility, and deactivation privacy probes pass in staging.
 - [x] Release-boundary probe passes in staging after enforcing `materials.available_from <= now()` in RLS.
 - [x] Production privacy/release probe passes 12/12 after the approved release-policy migration.
-- [ ] Authenticated/RLS-gated Notion proxy containment is verified locally; Production deployment pending.
+- [x] Authenticated/RLS-gated Notion proxy containment is deployed; signed-out Production probe returns `401`.
 
 ## 1. Deployment baseline
 
@@ -29,8 +29,8 @@ Record:
 - Staging URL: `https://ace-club-ato6ugfo0-theadmitco-techs-projects.vercel.app` (protected Preview)
 - Production URL: `https://aceclub.theadmitco.com`
 - Staging deployed commit SHA: `7bbe8fc500fc4e4ed1a00c20cf7d0575c4d46222`
-- Production deployed commit SHA: `506bf7dfbbf1c9fc2758e4487019cfd03f600fff`
-- Are both deployments connected to the expected Git repository? Yes/No
+- Production deployed commit SHA: `df3581f17a9ab11d9b019a339a85325efc773fd1`
+- Are both deployments connected to the expected Git repository? Yes
 
 For each environment, record only **Present**, **Missing**, or **Not applicable**:
 
@@ -39,7 +39,7 @@ For each environment, record only **Present**, **Missing**, or **Not applicable*
 | `NEXT_PUBLIC_SUPABASE_URL` | Present (staging) | Present (staging) | Present (production) |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Present (staging) | Present (staging) | Present (production) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Missing | Present (staging) | Present (production) |
-| `NEXT_PUBLIC_SITE_URL` | Present (`localhost`) | Present, value pending | Present, value pending |
+| `NEXT_PUBLIC_SITE_URL` | Present (`localhost`) | Present, value pending | Present (`aceclub.theadmitco.com`) |
 | Razorpay variables | Missing | Present | Present |
 
 ## 2. Supabase inventory
@@ -107,14 +107,14 @@ Use staging test data only.
 
 | Test | Result | Notes |
 |---|---|---|
-| Student A cannot read Student B's profile details beyond approved fields | Pass/Fail |  |
-| Student A cannot read Student B's enrollment/tracker rows | Pass/Fail |  |
-| Student cannot call admin enrolment endpoint successfully | Pass/Fail |  |
-| Student cannot call delete-user endpoint successfully | Pass/Fail |  |
-| Signed-out caller cannot call either admin endpoint | Pass/Fail |  |
-| Signed-out caller cannot fetch arbitrary Notion pages through the API | Pass/Fail |  |
-| Locked material cannot be fetched by direct URL | Pass/Fail |  |
-| Storage bucket serving worksheets is private | Pass/Fail |  |
+| Student A cannot read Student B's profile details beyond approved fields | Pass | Disposable staging and Production probes |
+| Student A cannot read Student B's enrollment/tracker rows | Pass | Enrollment isolation verified; tracker tables remain future scope |
+| Student cannot call admin enrolment endpoint successfully | Deferred | Positive role-session matrix moves with authentication redesign |
+| Student cannot call delete-user endpoint successfully | Deferred | Positive role-session matrix moves with authentication redesign |
+| Signed-out caller cannot call either admin endpoint | Pass | Production returns application `401` |
+| Signed-out caller cannot fetch arbitrary Notion pages through the API | Pass | Production returns application `401` |
+| Locked material cannot be fetched by direct URL | Pass | Staging and Production RLS probes |
+| Storage bucket serving worksheets is private | Not applicable | No storage buckets exist |
 
 Stop testing and record a failure if a probe could alter real production data. Do destructive and cross-user probes only in staging with disposable accounts.
 
