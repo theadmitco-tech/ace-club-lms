@@ -95,6 +95,7 @@ Last updated: 1 August 2026
 - [ ] New cohort generation copies the recording with the correct release timestamp.
 - [x] Explicit sync adds a new recording to an existing cohort once.
 - [x] Editing the master link updates linked cohort material without duplication.
+- [ ] Removing a master recording removes its linked cohort copies.
 - [x] Link propagation does not change `available_from`.
 
 ### Simplification and non-regression

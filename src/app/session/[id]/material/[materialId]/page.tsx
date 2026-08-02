@@ -82,7 +82,12 @@ export default async function MaterialViewerPage({
       <StudentHeader studentName={studentName} />
       <main className="student-main material-main">
         <div className="material-container">
-          <Link className="session-back-link" href={`/dashboard#session-${sessionId}`}>← Back to Timeline</Link>
+          <Link
+            className="session-back-link"
+            href={`/dashboard?openWeek=${timelineSession.week_number ?? 0}#session-${sessionId}`}
+          >
+            ← Back to Timeline
+          </Link>
           <header className="material-header">
             <span className="student-eyebrow">{material.type.replace('_', ' ')}</span>
             <h1>{material.title}</h1>

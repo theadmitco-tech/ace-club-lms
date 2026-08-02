@@ -20,6 +20,7 @@ import './dashboard.css';
 type DashboardSearchParams = Promise<{
   view?: string | string[];
   section?: string | string[];
+  openWeek?: string | string[];
 }>;
 
 const SECTIONS: AcademicSection[] = ['QA', 'VA', 'DI'];
@@ -51,6 +52,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
   const { studentName, timeline } = result;
   const requestedView = firstValue(query.view);
   const requestedSection = firstValue(query.section);
+  const requestedOpenWeekValue = firstValue(query.openWeek);
   const sectionCandidate = requestedSection ?? null;
   const selectedSection: AcademicSection = isAcademicSection(sectionCandidate)
     ? sectionCandidate
@@ -76,6 +78,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
   const timeZone = course.schedule_timezone || 'Asia/Kolkata';
   const currentWeek = getCurrentProgrammeWeek(course, generatedAt);
   const weekGroups = groupTimelineByWeek(sessions);
+  const requestedOpenWeek = requestedOpenWeekValue && /^\d+$/.test(requestedOpenWeekValue)
+    ? Number(requestedOpenWeekValue)
+    : null;
   const thisWeekSessions = sessions.filter((session) => session.week_number === currentWeek);
   const recommendedPractice = getRecommendedPractice(sessions, generatedAt);
   const preReadRecommendation = getPreReadRecommendation(
@@ -246,7 +251,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
                     key={weekNumber}
                     weekNumber={weekNumber}
                     itemCount={groupedSessions.length}
-                    initiallyOpen={weekNumber === currentWeek}
+                    initiallyOpen={weekNumber === currentWeek || weekNumber === requestedOpenWeek}
                   >
                     <div className="timeline-list">
                       {groupedSessions.map((session) => (

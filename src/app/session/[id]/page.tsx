@@ -54,7 +54,12 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
       <StudentHeader studentName={result.studentName} />
       <main className="student-main session-journey-main">
         <div className="session-journey-container">
-          <Link className="session-back-link" href="/dashboard">← Back to Timeline</Link>
+          <Link
+            className="session-back-link"
+            href={`/dashboard?openWeek=${session.week_number ?? 0}#session-${session.id}`}
+          >
+            ← Back to Timeline
+          </Link>
           <header className="session-journey-header">
             <div className="timeline-meta">
               <span className="timeline-type">{session.class_type ?? 'Programme'}</span>

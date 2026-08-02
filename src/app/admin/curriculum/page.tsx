@@ -200,6 +200,28 @@ export default function AdminCurriculumPage() {
     await fetchMasterData();
   };
 
+  const removeRecording = async (materialId: string) => {
+    setSavingMaterialId(materialId);
+    const { data, error } = await supabase.rpc('remove_master_recording', {
+      p_master_material_id: materialId,
+    });
+
+    if (error) {
+      console.error('Master recording removal failed:', error);
+      addToast('error', 'Unable to remove this recording from linked batches.');
+      setSavingMaterialId(null);
+      return;
+    }
+
+    const removed = Number((data as { linked_materials_removed?: number } | null)?.linked_materials_removed || 0);
+    addToast(
+      'success',
+      `Recording removed from the master course and ${removed} linked batch cop${removed === 1 ? 'y' : 'ies'}.`,
+    );
+    await fetchMasterData();
+    setSavingMaterialId(null);
+  };
+
   const uploadWorksheet = async (
     masterSessionId: string,
     material: MasterMaterial,
@@ -410,7 +432,13 @@ export default function AdminCurriculumPage() {
                         )}
                         <div className="master-material-actions">
                           {savingMaterialId === material.id && <span>Saving recording…</span>}
-                          <button className="btn btn-ghost btn-sm" onClick={() => void removeMaterial(material.id)}>Remove</button>
+                          <button
+                            className="btn btn-ghost btn-sm"
+                            disabled={savingMaterialId === material.id}
+                            onClick={() => void removeRecording(material.id)}
+                          >
+                            Remove
+                          </button>
                         </div>
                       </div>
                     ))}

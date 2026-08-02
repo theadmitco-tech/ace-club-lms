@@ -19,8 +19,14 @@ No credentials, private Student data or material URLs are recorded here.
 | Signed-out `/session/:id` probe | HTTP 307 to `/login`. |
 | Staging migration dry run | Only `20260802100000_add_student_timeline_and_recording_sync.sql` pending. |
 | Staging migration apply | Pass. |
-| Final staging migration ledger | Local and remote versions match through `20260802100000`. |
+| PR-review migration dry run and apply | Only `20260802180000_remove_master_recordings_from_cohorts.sql` was pending; apply passed. |
+| Anonymous recording-removal RPC probe | Denied with HTTP 401 and `Admin access required`. |
+| Final staging migration ledger | Local and remote versions match through `20260802180000`; final dry run is up to date. |
 | Inherited privacy/release boundary | Phase 4 staging and Production RLS suites pass 12/12, including anonymous, cross-student, enrollment, deactivation and future-material access; Phase 5 retains that material policy and server authorization boundary. |
+
+## PR review follow-up
+
+Review found that direct deletion of a master recording left already-synced cohort copies orphaned by the `on delete set null` foreign key. The follow-up uses one Admin-only database operation to delete linked copies before deleting the master recording. Review also made Timeline return links explicitly open the target week before applying the item anchor.
 
 ## Scoped lint disposition
 

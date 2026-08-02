@@ -14,7 +14,7 @@ Last updated: 2 August 2026
 - Journey-based curriculum-item pages with legacy auto-graded practice removed from the reachable Student interface.
 - Retryable Notion presentation, private PDF workspace and validated release-aware YouTube viewing.
 - Admin master YouTube recording creation, editing, removal and validation.
-- Explicit cohort material sync that adds missing master materials and propagates edited linked content without changing `available_from`.
+- Explicit cohort material sync that adds missing master materials and propagates edited linked content without changing `available_from`; removing a master recording also removes its linked cohort copies atomically.
 
 ## Database state
 
