@@ -27,6 +27,7 @@ No account identifiers, credentials, private Student data or material URLs are r
 - Recommended practice was absent in Week 2 when no released Week 1 worksheet was available, leaving no explanation for the empty weekly-practice state.
 - Admin material sync briefly showed its loading state but no completion message because toast state had no mounted notification viewport.
 - The pre-read viewer returned to an intermediate curriculum-item detail page instead of returning directly to the matching Timeline item.
+- Timeline/Browse by section and QA/VA/DI filter navigation scrolled the dashboard to the top instead of preserving the Student's reading position.
 
 The sign-out, recommendation, and notification viewport fixes were implemented and confirmed on refreshed Preview deployments on 2 August 2026.
 

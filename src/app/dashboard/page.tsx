@@ -194,13 +194,19 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
                 <h2 id="course-browser-title">Find a curriculum item</h2>
               </div>
               <nav className="view-switcher" aria-label="Course views">
-                <Link className={!isSectionView ? 'active' : ''} href="/dashboard" aria-current={!isSectionView ? 'page' : undefined}>
+                <Link
+                  className={!isSectionView ? 'active' : ''}
+                  href="/dashboard"
+                  aria-current={!isSectionView ? 'page' : undefined}
+                  scroll={false}
+                >
                   Timeline
                 </Link>
                 <Link
                   className={isSectionView ? 'active' : ''}
                   href={`/dashboard?view=section&section=${selectedSection}`}
                   aria-current={isSectionView ? 'page' : undefined}
+                  scroll={false}
                 >
                   Browse by section
                 </Link>
@@ -216,6 +222,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
                       href={`/dashboard?view=section&section=${section}`}
                       key={section}
                       aria-current={selectedSection === section ? 'page' : undefined}
+                      scroll={false}
                     >
                       {section}
                     </Link>
