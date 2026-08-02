@@ -8,7 +8,7 @@ Last updated: 2 August 2026
 
 Prepare a decision-complete Student experience before Phase 5 application work begins. The default Student journey is chronological through Timeline, with a secondary Browse by section view for `QA`, `VA`, and `DI` only.
 
-Implementation outcome: the Student experience and the Product Owner's subsequent batch-specific recording revision passed staging acceptance. [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is ready for review. The [Phase 5 status](README.md), [verification checklist](manual-verification-checklist.md), and [running handoff](../handoffs/ace-club-lms-running-handoff.md) contain the current delivery evidence and continuation boundary.
+Implementation outcome: the Student experience and the Product Owner's subsequent batch-specific recording revision passed staging acceptance. Phase 5 is signed off and [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is merged. The [Phase 5 status](README.md), [verification checklist](manual-verification-checklist.md), and [running handoff](../handoffs/ace-club-lms-running-handoff.md) contain the durable evidence and Phase 6 continuation boundary.
 
 ## Approved experience decisions
 

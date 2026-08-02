@@ -1,6 +1,6 @@
 # Phase 5 — Preparation and Delivery Verification Checklist
 
-Status: Phase 5 staging acceptance complete; Phase 6 tracker checks remain deferred
+Status: Phase 5 signed off; Phase 6 tracker checks remain deferred
 Owner: Product owner, Engineering, and QA  
 Last updated: 2 August 2026
 

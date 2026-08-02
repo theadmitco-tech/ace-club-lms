@@ -1,6 +1,6 @@
 # Phase 5 — Adapt the Student Experience
 
-Status: Phase 5 staging acceptance complete; PR #5 ready for review
+Status: Signed off; PR #5 merged
 Owner: Product owner and Engineering
 Last updated: 2 August 2026
 
@@ -36,6 +36,6 @@ See [automated verification evidence](evidence/automated-verification-2026-08-02
 
 ## Review and rollout boundary
 
-[PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is ready for review. It has not been merged, and Production remains untouched. Staging confirmed different links in two batches, batch-local editing, post-class release, and the absence of recording propagation during generation or Sync materials.
+[PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is the merged Phase 5 implementation. Production remains untouched. Staging confirmed different links in two batches, batch-local editing, post-class release, and the absence of recording propagation during generation or Sync materials.
 
 The only unchecked items in the shared verification checklist belong to Phase 6: the persistent Practice log, worksheet-specific question records, selected-question bulk updates, persistence, shared deep links, and partial-failure retry.

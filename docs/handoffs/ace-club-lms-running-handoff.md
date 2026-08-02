@@ -427,7 +427,7 @@ This historical start instruction is superseded for recordings by the later batc
 ## Phase 5 handoff — Adapt the Student experience
 
 Date: 2 August 2026
-Status: **Phase 5 staging acceptance complete — pull request ready for review**
+Status: **Signed off**
 
 ### Completed implementation
 
@@ -457,7 +457,8 @@ Status: **Phase 5 staging acceptance complete — pull request ready for review*
 - Branch: `codex/phase-5-student-experience`.
 - Pull request: [#5 — Build Phase 5 student course experience](https://github.com/theadmitco-tech/ace-club-lms/pull/5).
 - Original accepted implementation head before the recording-rule revision: `e401450`.
-- PR #5 is ready for review after complete staging acceptance. It has not been merged.
+- Product Owner signed off Phase 5 on 2 August 2026 after complete staging acceptance.
+- PR #5 is the merged Phase 5 implementation.
 - Production remains untouched. Reviewer approval, merge, and any Production rollout are separate decisions.
 - Repository-wide lint still reports 22 errors and 3 warnings in untouched legacy Admin worksheet/session editors, registration/payment routes, and helpers. Phase 5-touched files are clean; do not misreport the legacy lint baseline as resolved.
 
@@ -478,4 +479,4 @@ Staging passed two-batch link isolation, batch-local editing, invalid-link valid
 
 Phase 6 is **Simplify the tracker**. The only unchecked items in the shared Phase 5–6 checklist are intentionally deferred tracker behaviours: the persistent Practice log, worksheet-specific Student–worksheet–question records, Select all, bulk Done/review updates that never affect unselected questions, persistence, shared deep links, and partial-failure retry.
 
-Do not add a Log or Update log control until its real Phase 6 destination and persisted records exist. Every future entry point from Recommended practice, Timeline, Browse by section, and the central Practice log must address the same worksheet records without duplication. Begin Phase 6 only after the Phase 5 review/merge decision and from the then-current `origin/main`.
+Do not add a Log or Update log control until its real Phase 6 destination and persisted records exist. Every future entry point from Recommended practice, Timeline, Browse by section, and the central Practice log must address the same worksheet records without duplication. Begin Phase 6 from updated `origin/main` on a new feature branch.
