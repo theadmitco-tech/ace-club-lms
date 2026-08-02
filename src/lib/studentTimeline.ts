@@ -108,6 +108,16 @@ export function getCurrentTimelineItem(sessions: StudentTimelineSession[], gener
   )) ?? sessions.at(-1) ?? null;
 }
 
+export function getTimelineEmphasisLabel(session: StudentTimelineSession, generatedAt: string) {
+  const now = new Date(generatedAt).getTime();
+  const start = new Date(session.session_date).getTime();
+  const end = new Date(session.session_end_at ?? session.session_date).getTime();
+
+  if (now >= start && now < end) return 'Happening now';
+  if (now < start) return 'Next item';
+  return 'Latest item';
+}
+
 export function getPriorWeekPractice(
   sessions: StudentTimelineSession[],
   currentWeek: number,
@@ -180,7 +190,7 @@ export function getMaterialAvailabilityCopy(
 
 export function getMaterialActionLabel(type: TimelineMaterialType) {
   if (type === 'pre_read') return 'Pre-read';
-  if (type === 'video') return 'Video';
+  if (type === 'video') return 'Recording';
   if (type === 'worksheet') return 'Worksheet';
   return 'Class material';
 }

@@ -10,6 +10,8 @@ No account identifiers, credentials, private Student data or material URLs are r
 - The authenticated dashboard displayed This week and Timeline and showed programme position Week 2.
 - The corrected Week 2 dashboard displayed Recommended practice above This week with a clear empty state when no released Week 1 worksheet existed.
 - Student Sign out redirected to `/login` and protected dashboard access remained blocked afterward.
+- In programme Week 2, Week 2 started open, Week 0 started collapsed, and Week 0 remained manually expandable.
+- Browse by section displayed the QA, VA and DI curriculum views. Review identified that the generic “Current item” label was misleading and that the four-step journey strip duplicated the compact resource row; both were revised for the next Preview.
 
 ## Defects found
 
@@ -18,7 +20,7 @@ No account identifiers, credentials, private Student data or material URLs are r
 
 Both fixes were implemented and confirmed on the refreshed Preview deployment on 2 August 2026.
 
-- The first Week 0 default-collapse implementation still appeared open because the browser preserved native disclosure state. The timeline was changed to an explicitly controlled week disclosure and awaits confirmation on the next Preview.
+- The first Week 0 default-collapse implementation still appeared open because the browser preserved native disclosure state. The explicitly controlled replacement passed on the next Preview.
 
 ## Still open
 

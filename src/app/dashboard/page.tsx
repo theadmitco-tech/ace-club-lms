@@ -12,6 +12,7 @@ import {
   getMaterialAvailabilityCopy,
   getPreReadRecommendation,
   getPriorWeekPractice,
+  getTimelineEmphasisLabel,
   groupTimelineByWeek,
   isAcademicSection,
   type AcademicSection,
@@ -227,7 +228,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
                   <p className="result-count">{sectionSessions.length} {selectedSection} curriculum items in course order</p>
                   {sectionSessions.map((session) => (
                     <TimelineItem
-                      isCurrent={session.id === currentItem?.id}
+                      emphasisLabel={session.id === currentItem?.id ? getTimelineEmphasisLabel(session, generatedAt) : undefined}
                       key={session.id}
                       session={session}
                       timeZone={timeZone}
@@ -247,7 +248,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
                     <div className="timeline-list">
                       {groupedSessions.map((session) => (
                         <TimelineItem
-                          isCurrent={session.id === currentItem?.id}
+                          emphasisLabel={session.id === currentItem?.id ? getTimelineEmphasisLabel(session, generatedAt) : undefined}
                           key={session.id}
                           session={session}
                           timeZone={timeZone}

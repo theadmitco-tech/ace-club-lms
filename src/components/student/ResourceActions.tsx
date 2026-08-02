@@ -16,14 +16,18 @@ export function ResourceActions({
   sessionId,
   materials,
   timeZone,
+  includeClassMaterial = false,
 }: {
   sessionId: string;
   materials: StudentTimelineMaterial[];
   timeZone: string;
+  includeClassMaterial?: boolean;
 }) {
-  const orderedMaterials = [...materials].sort((left, right) => (
-    MATERIAL_ORDER.indexOf(left.type) - MATERIAL_ORDER.indexOf(right.type)
-  ));
+  const orderedMaterials = materials
+    .filter((material) => includeClassMaterial || material.type !== 'class_material')
+    .sort((left, right) => (
+      MATERIAL_ORDER.indexOf(left.type) - MATERIAL_ORDER.indexOf(right.type)
+    ));
 
   if (orderedMaterials.length === 0) return null;
 

@@ -42,7 +42,7 @@ The working decisions are:
 - Provide two views of the same course content: **Timeline** for chronological progress and **Browse by section** for QA, VA, and DI retrieval.
 - Group the timeline by programme week.
 - Open only the current programme week by default while allowing the Student to collapse it. Week 0 starts open during Week 0 and collapsed after the programme advances; keep every other week available through expansion.
-- Highlight the current curriculum item instead of adding a large “next action” hero.
+- Highlight the nearest relevant curriculum item instead of adding a large “next action” hero. Label it “Happening now,” “Next item,” or “Latest item” according to its timestamps rather than calling every emphasized item “Current item.”
 - Use a **This week** callout instead of a “Today’s task” callout.
 - Recommend the DI pre-read on Thursday, the VA pre-read on Friday, and the QA pre-read on Saturday using the programme timezone.
 - Show **Recommended practice** throughout the current week for every released prior-week worksheet, alongside any day-specific pre-read recommendation.

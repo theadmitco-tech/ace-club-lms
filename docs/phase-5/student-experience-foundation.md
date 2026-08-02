@@ -18,7 +18,7 @@ Prepare a decision-complete Student experience before Phase 5 application work b
 - Timeline remains the default and groups the 31 fixed curriculum items by week.
 - Only the current programme week opens by default. Week 0 starts open during Week 0 and starts collapsed after the programme advances; every week remains expandable and collapsible.
 - Browse by section contains exactly `QA`, `VA`, and `DI`; there are no topic tags or topic taxonomy.
-- Pre-read, class details, optional recording, worksheet, and tracker appear in journey order when applicable.
+- Curriculum-item detail keeps pre-read, class details, optional recording, worksheet, and tracker in journey order. Timeline and Browse by section use only the compact released-resource row plus release text for configured locked resources.
 - Admin-managed YouTube recordings reuse the existing `video` material model and release after class.
 - Legacy rankings, correctness, accuracy, daily targets, and auto-graded practice leave the reachable Student interface.
 - Manual tracker states and summaries remain Phase 6–7 scope.
@@ -57,7 +57,7 @@ Prepare a decision-complete Student experience before Phase 5 application work b
 ### Adapt
 
 - Dashboard into This week, Timeline, and Browse by section.
-- Compact Pre-read, Video, and Worksheet actions on academic items in both navigation views; Log appears only after the Phase 6 tracker destination exists.
+- Compact Pre-read, Recording, and Worksheet actions on academic items in both navigation views; Log appears only after the Phase 6 tracker destination exists.
 - Session detail into a journey instead of legacy feature tabs.
 - Recording display into validated, release-aware YouTube resources.
 - Loading, missing-content, and failure messages.

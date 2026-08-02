@@ -121,7 +121,12 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
                 <h2>Event details</h2>
                 <p>This item does not add academic steps unless the programme team configures a resource.</p>
               </div>
-              <ResourceActions sessionId={session.id} materials={session.materials} timeZone={timeZone} />
+              <ResourceActions
+                includeClassMaterial
+                sessionId={session.id}
+                materials={session.materials}
+                timeZone={timeZone}
+              />
             </section>
           )}
         </div>
