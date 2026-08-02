@@ -1,14 +1,16 @@
 # Ace Club LMS — Current Code Landscape and Cleanup Plan
 
-Status: Draft
+Status: Historical audit with an active cleanup register
 Owner: Engineering
-Last updated: 31 July 2026
+Last updated: 2 August 2026
 
 ## Purpose and boundary
 
 This document maps the repository after the Phase 2 sign-off, records cleanup candidates, and proposes how to integrate only necessary cleanup into Phase 3 and Phase 8 without weakening already verified behaviour.
 
 This is an assessment, not cleanup authorization. No candidate in this document is approved for implementation or deletion merely because it is listed here. Phase 3 must not begin until the Product Owner supplies the approved revised curriculum and the team confirms the correct Git baseline.
+
+Current update: the start-gate language and audit counts below are preserved as the 31 July snapshot. Phases 3–5 are signed off; [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is the merged Phase 5 implementation. Repository-wide lint is now 22 errors and 3 warnings, all outside Phase 5-touched files. The remaining cleanup register is not authorized for implementation merely by this status update.
 
 Product scope remains controlled by the [MVP acceptance criteria](../../instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.md), the [roadmap](../../instruction/Ace_Club_LMS_Product_Roadmap.md), and the [running handoff](../handoffs/ace-club-lms-running-handoff.md).
 
@@ -171,13 +173,10 @@ Phase 8 launch cleanliness does not require destructive database cleanup. It req
 - Retain the current Production deployment as the rollback application until the new staging vertical slice passes.
 - A Vercel `Ready` state is insufficient; preserve the signed runtime probes and manual Google journey.
 
-## Decisions still required before implementation
+## Decision disposition after Phase 5
 
-1. The approved revised curriculum artifact and whether Week 0 is a class row, a distinct master unit, or an immediately released material group.
-2. The canonical class-type vocabulary that maps DI, VA, and QA to instructors.
-3. Whether worksheet “question rows” need only number/order for the manual tracker or also prompt content; answers and correctness remain outside MVP tracking.
-4. The approved source and storage model for worksheet PDFs.
-5. Whether public registration and Razorpay remain a supported launch surface or are separate from this LMS release.
-6. The retention period for legacy practice attempts, worksheet logs, and payment records before any physical cleanup.
+1. Resolved in Phases 3–4: the revised 31-item curriculum, Week 0 model, canonical class types, instructor mapping, worksheet question rows, and private PDF storage/release model are implemented and signed off.
+2. Still open for a later launch/cleanup decision: whether public registration and Razorpay remain a supported launch surface or are separate from this LMS release.
+3. Still open before physical cleanup: the retention period for legacy practice attempts, worksheet logs, and payment records.
 
-Until these decisions and the start gate are complete, the safest action is documentation and read-only inventory—not Phase 3 implementation or cleanup.
+Continue to treat cleanup as separately reviewed work. Phase 6 may reuse or migrate tracker data structures where safe, but it does not authorize deletion of legacy data or broad lint cleanup.

@@ -61,5 +61,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unable to open material.' }, { status: 500 });
   }
 
+  if (request.headers.get('accept')?.includes('application/json')) {
+    return NextResponse.json(
+      { signedUrl: data.signedUrl },
+      { headers: { 'Cache-Control': 'private, no-store' } },
+    );
+  }
+
   return NextResponse.redirect(data.signedUrl);
 }

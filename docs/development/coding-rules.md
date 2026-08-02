@@ -6,11 +6,12 @@ Update this document when an architectural or workflow decision changes. It supp
 
 Use this priority:
 
-1. `instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.docx`
-2. `instruction/Ace_Club_LMS_Product_Roadmap.docx`
-3. `AGENTS.md`
-4. This document
-5. Existing implementation
+1. `instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.md`
+2. `instruction/Ace_Club_LMS_Product_Roadmap.md`
+3. `docs/handoffs/ace-club-lms-running-handoff.md`
+4. `AGENTS.md`
+5. This document
+6. Existing implementation
 
 When code conflicts with the acceptance criteria, the acceptance criteria win.
 

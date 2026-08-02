@@ -186,7 +186,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
     if (!supabase) return;
 
-    await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
   }, [supabase]);
 
   const addToast = useCallback((type: Toast['type'], message: string) => {
@@ -204,6 +205,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return isSupabaseConfigured ? (
     <AuthContext.Provider value={{ user, isLoading, loginWithGoogle, logout, toasts, addToast, removeToast }}>
       {children}
+      <div className="toast-container" aria-label="Notifications" aria-live="polite">
+        {toasts.map((toast) => (
+          <div
+            className={`toast toast-${toast.type}`}
+            key={toast.id}
+            role={toast.type === 'error' ? 'alert' : 'status'}
+          >
+            <span className="toast-message">{toast.message}</span>
+            <button
+              className="toast-dismiss"
+              type="button"
+              onClick={() => removeToast(toast.id)}
+              aria-label="Dismiss notification"
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
     </AuthContext.Provider>
   ) : (
     <SupabaseSetupRequired />

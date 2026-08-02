@@ -519,6 +519,30 @@ input, textarea, select {
   min-width: 300px;
 }
 
+.toast-message {
+  flex: 1;
+}
+
+.toast-dismiss {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.2rem;
+}
+
+.toast-dismiss:hover,
+.toast-dismiss:focus-visible {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
 .toast-success {
   border-left: 3px solid var(--success);
 }
@@ -529,6 +553,10 @@ input, textarea, select {
 
 .toast-info {
   border-left: 3px solid var(--accent-primary);
+}
+
+.toast-warning {
+  border-left: 3px solid var(--warning);
 }
 
 /* ============================================

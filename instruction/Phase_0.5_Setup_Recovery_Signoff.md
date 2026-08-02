@@ -18,8 +18,8 @@ Read in this order:
 1. `AGENTS.md` for repository and Next.js operating constraints.
 2. `instruction/README.md` for the authority register and reading path.
 3. This Phase 0.5 sign-off for the current checkpoint and non-regression rules.
-4. `instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.docx` for binding product behaviour.
-5. `instruction/Ace_Club_LMS_Product_Roadmap.docx` for phase boundaries, order, and exit gates.
+4. `instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.md` for binding product behaviour.
+5. `instruction/Ace_Club_LMS_Product_Roadmap.md` for phase boundaries, order, and exit gates.
 6. `docs/README.md` for the repository documentation map.
 7. `docs/development/coding-rules.md` for implementation and verification rules.
 8. `docs/phase-1/README.md` and `docs/phase-1/manual-verification-checklist.md` for current audit status.

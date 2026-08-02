@@ -268,10 +268,17 @@ export default function AdminCoursesPage() {
 
     if (error) {
       console.error('Master material sync failed:', error);
-      addToast('error', 'Failed to sync new master materials.');
+      addToast('error', 'Failed to sync master materials. Retry this batch.');
     } else {
-      const count = Number((data as { materials_added?: number } | null)?.materials_added || 0);
-      addToast('success', count > 0 ? `Added ${count} new master materials.` : 'Batch already has all master materials.');
+      const result = data as { materials_added?: number; materials_updated?: number } | null;
+      const added = Number(result?.materials_added || 0);
+      const updated = Number(result?.materials_updated || 0);
+      addToast(
+        'success',
+        added || updated
+          ? `Synced master materials: ${added} added, ${updated} updated.`
+          : 'Batch materials are already up to date.',
+      );
     }
     setSyncingCourseId(null);
   };
@@ -601,7 +608,7 @@ export default function AdminCoursesPage() {
                             className="btn btn-ghost btn-sm"
                             onClick={() => handleSyncMasterMaterials(course.id)}
                             disabled={syncingCourseId === course.id || totalSessions !== 31}
-                            title={totalSessions === 31 ? 'Add master materials that are missing from this batch' : 'Only Phase 4 cohorts can be synced'}
+                            title={totalSessions === 31 ? 'Add missing materials and update linked master content' : 'Only Phase 4 cohorts can be synced'}
                           >
                             {syncingCourseId === course.id ? 'Syncing…' : 'Sync materials'}
                           </button>

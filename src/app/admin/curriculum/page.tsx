@@ -98,8 +98,11 @@ export default function AdminCurriculumPage() {
       console.error('Master material update failed:', error);
       addToast('error', 'Unable to save this master material.');
       await fetchMasterData();
+      setSavingMaterialId(null);
+      return false;
     }
     setSavingMaterialId(null);
+    return true;
   };
 
   const addMaterial = async (session: MasterSession, type: MasterMaterial['type']) => {
@@ -182,7 +185,7 @@ export default function AdminCurriculumPage() {
         <div>
           <h1 className="admin-page-title">Master Course Content</h1>
           <p className="admin-page-subtitle">
-            Add reusable Notion pre-reads and PDF worksheets once. New cohorts inherit them automatically.
+            Add reusable Notion pre-reads and PDF worksheets. Manage each batch&apos;s YouTube links under Recordings.
           </p>
         </div>
       </div>
@@ -306,6 +309,7 @@ export default function AdminCurriculumPage() {
                       </div>
                     ))}
                   </div>
+
                 </div>
               </section>
             );

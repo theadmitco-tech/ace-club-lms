@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-Last updated: 31 July 2026
+Last updated: 1 August 2026
 
 ## 1. Objectives
 
@@ -21,7 +21,6 @@ Documentation must:
 instruction/
   README.md                         Authority register and reading paths
   *.md                              Binding product requirements/roadmaps
-  *.docx                            Retained source artifacts
 
 docs/
   README.md                         Documentation router
@@ -45,7 +44,6 @@ Do not move grandfathered feature guides merely for visual consistency. Move fil
 |---|---|---|
 | Product requirement | `instruction/*.md` | Binding; product-owner approval required |
 | Roadmap | `instruction/*.md` | Binding phase definitions and gates |
-| Source artifact | `instruction/*.docx` | Retain for provenance; do not maintain as a second active copy |
 | Running handoff | `docs/handoffs/` | Append signed phase sections; latest section is current |
 | Signed checkpoint | `instruction/` or `docs/phase-N/` | Preserve accepted facts; amend transparently |
 | Living rule/guide | `docs/development/`, `docs/setup/`, or `docs/governance/` | Update in place as the current method changes |
@@ -64,9 +62,9 @@ For new files:
 - Use `phase-N` for approved roadmap phases.
 - Use dated evidence: `production-supabase-inventory-2026-07-31.json`.
 - Use decision records: `adr-0001-private-worksheet-storage.md`.
-- Keep extensions accurate: `.md`, `.sql`, `.json`, `.csv`, `.docx`.
+- Keep extensions accurate: `.md`, `.sql`, `.json`, `.csv`.
 
-Existing DOCX filenames and committed stable paths are retained as source artifacts. Their Markdown conversions are the active repository copies.
+The MVP acceptance criteria and product roadmap use Markdown only. Do not maintain binary duplicates of these product authorities.
 
 Do not introduce Phase 1.5 or another phase label without a documented, approved scope and exit gate.
 

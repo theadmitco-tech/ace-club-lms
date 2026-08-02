@@ -261,7 +261,7 @@
 
 .master-content-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
   gap: var(--space-xl);
 }
 
@@ -311,6 +311,18 @@
   margin: 0;
   color: var(--text-tertiary);
   font-size: var(--font-size-xs);
+}
+
+.master-content-error {
+  margin: 0;
+  color: var(--error);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+}
+
+.master-recording-draft {
+  border-style: dashed;
+  background: var(--bg-tertiary);
 }
 
 .master-file-ready {
