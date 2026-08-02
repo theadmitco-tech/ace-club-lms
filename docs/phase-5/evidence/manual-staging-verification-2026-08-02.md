@@ -15,14 +15,20 @@ No account identifiers, credentials, private Student data or material URLs are r
 - Recommended practice and Timeline/Browse by section opened the same DI worksheet, and the worksheet destination displayed the matching released PDF.
 - Admin successfully saved a titled valid YouTube recording on a master curriculum item.
 - Admin rejected a non-YouTube recording URL with the message “Enter a valid YouTube or youtu.be link,” while preserving the valid recording.
+- Explicit material sync propagated the master recording to the existing staging cohort. After the master link was edited, a second explicit sync updated the linked Student recording without creating another Student action.
+- A privately shared YouTube recording opened for the invited Test Student, remained unavailable to a signed-out viewer, and appeared as only one Student recording action.
+- On the notification-fix Preview, a no-change material sync displayed “Batch materials are already up to date,” and the Student retained one recording action.
+- A recording added to a future academic item propagated to the existing cohort but appeared to the Student only as non-clickable “Available after class” text.
+- Student review confirmed that rank, percentile, accuracy, correctness, daily targets, streak, and auto-graded practice are absent from the reachable Student interface.
 
 ## Defects found
 
 - Student Sign out cleared the session but did not redirect away from the dashboard.
 - Recommended practice was absent in Week 2 when no released Week 1 worksheet was available, leaving no explanation for the empty weekly-practice state.
 - Admin material sync briefly showed its loading state but no completion message because toast state had no mounted notification viewport.
+- The pre-read viewer returned to an intermediate curriculum-item detail page instead of returning directly to the matching Timeline item.
 
-The sign-out and recommendation fixes were implemented and confirmed on the refreshed Preview deployment on 2 August 2026. The notification viewport fix awaits confirmation.
+The sign-out, recommendation, and notification viewport fixes were implemented and confirmed on refreshed Preview deployments on 2 August 2026.
 
 - The first Week 0 default-collapse implementation still appeared open because the browser preserved native disclosure state. The explicitly controlled replacement passed on the next Preview.
 

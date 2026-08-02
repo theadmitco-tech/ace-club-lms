@@ -81,7 +81,7 @@ Last updated: 1 August 2026
 - [ ] Week 0 configured content is immediately available.
 - [ ] A later pre-read remains unavailable until seven days before class.
 - [ ] A worksheet remains unavailable until class end.
-- [ ] A recording remains unavailable until class end.
+- [x] A recording remains unavailable until class end.
 - [ ] Direct URLs remain denied before release.
 - [ ] Notion failure shows retry and leaves the rest of the journey usable.
 - [ ] PDF failure shows an actionable error.
@@ -93,13 +93,13 @@ Last updated: 1 August 2026
 - [x] Admin adds and titles a valid YouTube recording on a master curriculum item.
 - [x] Invalid and non-YouTube links are rejected.
 - [ ] New cohort generation copies the recording with the correct release timestamp.
-- [ ] Explicit sync adds a new recording to an existing cohort once.
-- [ ] Editing the master link updates linked cohort material without duplication.
+- [x] Explicit sync adds a new recording to an existing cohort once.
+- [x] Editing the master link updates linked cohort material without duplication.
 - [ ] Link propagation does not change `available_from`.
 
 ### Simplification and non-regression
 
-- [ ] Rank, percentile, accuracy, correctness, daily targets, and auto-graded practice are absent from the Student UI.
+- [x] Rank, percentile, accuracy, correctness, daily targets, and auto-graded practice are absent from the Student UI.
 - [ ] The UI does not claim manual tracker progress before Phase 6 data exists.
 - [ ] Google authentication, role routing, logout, enrollment, and deactivation remain passing.
 - [ ] Cross-student privacy and RLS remain passing.
