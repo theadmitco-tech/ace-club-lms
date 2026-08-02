@@ -16,7 +16,7 @@ Example:
 
 This plan defines the preparation checkpoint before Phase 5 engineering. It does not authorize application code, database, migration, staging, or Production changes.
 
-Phase 5 subsequently passed its original staging acceptance. On 2 August 2026, the Product Owner revised recordings to be batch-specific rather than master-inherited, reopening the Phase 5 recording gate. Current evidence and the Phase 6 continuation boundary are in the [Phase 5 status](README.md), [verification checklist](manual-verification-checklist.md), and [running handoff](../handoffs/ace-club-lms-running-handoff.md).
+Phase 5 subsequently passed its original staging acceptance. On 2 August 2026, the Product Owner revised recordings to be batch-specific rather than master-inherited; that revision also passed staging acceptance. Current evidence and the Phase 6 continuation boundary are in the [Phase 5 status](README.md), [verification checklist](manual-verification-checklist.md), and [running handoff](../handoffs/ace-club-lms-running-handoff.md).
 
 > **Product Owner annotation — overall direction**  
 > 

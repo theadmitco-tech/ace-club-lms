@@ -1,6 +1,6 @@
 # Phase 5 — Preparation and Delivery Verification Checklist
 
-Status: Phase 5 recording gate reopened; Phase 6 tracker checks remain deferred
+Status: Phase 5 staging acceptance complete; Phase 6 tracker checks remain deferred
 Owner: Product owner, Engineering, and QA  
 Last updated: 2 August 2026
 
@@ -91,12 +91,12 @@ Last updated: 2 August 2026
 ### Admin recordings
 
 - [x] Admin adds and titles a valid YouTube recording on a batch session.
-- [ ] Invalid and non-YouTube links are rejected.
-- [ ] The recording receives the selected batch session's end timestamp and remains locked before it.
+- [x] Invalid and non-YouTube links are rejected.
+- [x] The recording receives the selected batch session's end timestamp and remains locked before it.
 - [x] The same curriculum session can use different recording links in two batches.
-- [ ] Editing or removing one batch recording does not change another batch.
-- [ ] New cohort generation does not copy a recording.
-- [ ] Sync materials adds or updates reusable content without adding or changing recordings.
+- [x] Editing or removing one batch recording does not change another batch.
+- [x] New cohort generation does not copy a recording.
+- [x] Sync materials adds or updates reusable content without adding or changing recordings.
 
 ### Simplification and non-regression
 

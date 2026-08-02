@@ -1,6 +1,6 @@
 # Phase 5 — Adapt the Student Experience
 
-Status: Batch-specific recording revision in progress; PR #5 draft
+Status: Phase 5 staging acceptance complete; PR #5 ready for review
 Owner: Product owner and Engineering
 Last updated: 2 August 2026
 
@@ -18,7 +18,7 @@ Last updated: 2 August 2026
 
 ## Database state
 
-Phase 5 migrations are applied and reconciled on the linked staging project through `20260802230000_make_recordings_batch_specific.sql`. The revision preserves existing cohort recordings while detaching them from master links, excludes videos from generation/sync, and adds Admin-only batch-recording operations.
+Phase 5 migrations are applied and reconciled on the linked staging project through `20260802235900_cascade_master_material_removals.sql`. The revision isolates recordings by batch, excludes videos from generation/sync, removes legacy cross-batch copies, and ensures deleting reusable Master Base content also removes its linked batch copies.
 
 The timeline RPC requires an active Student profile and uses the caller's latest enrollment. It exposes configured material identity, title, type and release time for Student presentation, but never exposes content URLs. Existing RLS and material routes remain responsible for released content and direct-URL denial.
 
@@ -29,13 +29,13 @@ The timeline RPC requires an active Student profile and uses the caller's latest
 - Guarded production build: pass on Next.js 16.2.4.
 - Signed-out local probes: `/dashboard` and `/session/:id` redirect to `/login`.
 - Repository-wide lint: improved from the signed 40-error baseline to 22 errors and 3 warnings; remaining findings are in untouched legacy Admin worksheet/session editors and public registration/payment code.
-- Original manual staging Student and Admin journeys: pass; batch-isolation revision checks pending.
+- Manual staging Student and Admin journeys, including the batch-isolation revision: pass.
 - Vercel checks for the accepted branch head: pass.
 
 See [automated verification evidence](evidence/automated-verification-2026-08-02.md), [manual staging evidence](evidence/manual-staging-verification-2026-08-02.md), and the [manual verification checklist](manual-verification-checklist.md).
 
 ## Review and rollout boundary
 
-[PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is back in draft for the batch-specific recording revision. It has not been merged, and Production remains untouched. Staging must confirm different links in two batches, batch-local edit/removal, post-class release, and the absence of recording propagation during generation or Sync materials.
+[PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is ready for review. It has not been merged, and Production remains untouched. Staging confirmed different links in two batches, batch-local editing, post-class release, and the absence of recording propagation during generation or Sync materials.
 
 The only unchecked items in the shared verification checklist belong to Phase 6: the persistent Practice log, worksheet-specific question records, selected-question bulk updates, persistence, shared deep links, and partial-failure retry.

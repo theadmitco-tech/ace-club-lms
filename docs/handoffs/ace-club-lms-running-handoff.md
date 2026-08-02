@@ -427,7 +427,7 @@ This historical start instruction is superseded for recordings by the later batc
 ## Phase 5 handoff — Adapt the Student experience
 
 Date: 2 August 2026
-Status: **Batch-specific recording revision in progress — pull request draft**
+Status: **Phase 5 staging acceptance complete — pull request ready for review**
 
 ### Completed implementation
 
@@ -448,8 +448,8 @@ Status: **Batch-specific recording revision in progress — pull request draft**
 - The complete Phase 5 manual record is in [manual staging verification](../phase-5/evidence/manual-staging-verification-2026-08-02.md), and the acceptance state is in the [Phase 5 checklist](../phase-5/manual-verification-checklist.md).
 - Product Owner staging checks passed for Timeline and QA/VA/DI browsing, rotating recommendations, material destinations and release states, Week 0 behaviour, sign-out, notification feedback, scroll preservation, return navigation, private YouTube viewing, and recoverable Notion/PDF failures.
 - The original master-recording propagation tests passed but were superseded by the Product Owner's later batch-specific recording decision; they remain historical evidence only.
-- Review fixed return navigation into collapsed weeks and the former master-recording removal path. The new recording migration preserves existing cohort recordings while detaching and isolating them by batch.
-- Staging is applied and reconciled through `20260802230000_make_recordings_batch_specific.sql`; revised manual recording checks remain pending. Production has not received Phase 5 migrations or application code.
+- Review fixed return navigation into collapsed weeks and the former master-recording removal path. The batch-specific revision removed legacy cross-batch recording copies and isolated all new recordings on their selected batch sessions.
+- Staging is applied and reconciled through `20260802235900_cascade_master_material_removals.sql`. Two-batch recording isolation, local editing, validation, post-class release, new-cohort exclusion, Sync materials exclusion, and orphaned-master-material cleanup all passed. Production has not received Phase 5 migrations or application code.
 - `npx tsc --noEmit`, targeted ESLint for Phase 5-touched files, deterministic recommendation/release assertions, and the guarded Next.js 16.2.4 Production build pass. Vercel Preview checks pass.
 
 ### Pull request and release boundary
@@ -457,7 +457,7 @@ Status: **Batch-specific recording revision in progress — pull request draft**
 - Branch: `codex/phase-5-student-experience`.
 - Pull request: [#5 — Build Phase 5 student course experience](https://github.com/theadmitco-tech/ace-club-lms/pull/5).
 - Original accepted implementation head before the recording-rule revision: `e401450`.
-- PR #5 is back in draft while batch-specific recording behavior is implemented and verified. It has not been merged.
+- PR #5 is ready for review after complete staging acceptance. It has not been merged.
 - Production remains untouched. Reviewer approval, merge, and any Production rollout are separate decisions.
 - Repository-wide lint still reports 22 errors and 3 warnings in untouched legacy Admin worksheet/session editors, registration/payment routes, and helpers. Phase 5-touched files are clean; do not misreport the legacy lint baseline as resolved.
 
@@ -469,10 +469,10 @@ On 2 August 2026, the Product Owner clarified that every batch uses a different 
 - Adding, editing, or removing a recording in one batch must not change another batch.
 - New cohort generation does not copy recordings.
 - Sync materials continues to add or update reusable pre-reads and worksheets but never recordings.
-- Existing cohort recordings are preserved during migration and detached from master-material links.
+- Legacy master-derived cross-batch copies are cleaned up; new recordings are created only on the selected batch session.
 - The database owns the recording release timestamp and forces it to the selected batch session's end.
 
-Before returning PR #5 to review, staging must pass two-batch link isolation, batch-local edit/removal, invalid-link validation, post-class release, new-cohort non-inheritance, and Sync materials non-propagation.
+Staging passed two-batch link isolation, batch-local editing, invalid-link validation, post-class release, new-cohort non-inheritance, and Sync materials non-propagation.
 
 ### Phase 6 continuation point
 

@@ -8,7 +8,7 @@ Last updated: 2 August 2026
 
 *A retain–repair–adapt–complete plan for the partially built Ace Club LMS*
 
-Current delivery state: Phases 1–4 are signed off. Phase 5 staging acceptance is reopened for the approved batch-specific recording revision, and [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is back in draft. It is not merged or deployed to Production. Phase 6 remains next after Phase 5 closes.
+Current delivery state: Phases 1–4 are signed off and Phase 5 staging acceptance is complete, including the approved batch-specific recording revision. [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is ready for review; it is not merged or deployed to Production. Phase 6 remains next after the Phase 5 review/merge decision.
 
 | **Product** | Ace Club Learning Management System |
 | --- | --- |

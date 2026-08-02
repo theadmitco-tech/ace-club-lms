@@ -4,7 +4,7 @@ Environment: Vercel Preview connected to staging Supabase project `eyphkkginlgoa
 
 No account identifiers, credentials, private Student data or material URLs are recorded here.
 
-> **Recording-rule revision:** The master-recording inheritance and synchronization checks below accurately preserve the behavior tested earlier on 2 August, but that product rule was subsequently superseded. Migration `20260802230000_make_recordings_batch_specific.sql` is applied; revised batch-isolation manual verification remains pending.
+> **Recording-rule revision:** The master-recording inheritance and synchronization checks below accurately preserve the behavior tested earlier on 2 August, but that product rule was subsequently superseded. The revised batch-specific model and follow-up cleanup migrations passed staging verification.
 
 ## Batch-specific recording revision
 
@@ -12,7 +12,12 @@ No account identifiers, credentials, private Student data or material URLs are r
 - Master Base no longer exposes recording management; it retains reusable pre-reads and worksheets only.
 - Cross-batch review exposed detached copies of recordings inherited under the superseded Master Base rule. After cleanup migration `20260802234500_remove_cross_batch_legacy_recording_copies.sql`, Admin confirmed the newly added recording appeared in only its selected batch.
 - Admin added a different recording to the matching curriculum session in a second batch and confirmed that each batch displayed its own link and title.
-- Student batch-switch review exposed two stale worksheet actions whose Master Base rows had already been removed. The prior `ON DELETE SET NULL` behavior left cohort copies orphaned; cleanup and cascade migration `20260802235900_cascade_master_material_removals.sql` was prepared for staging retest.
+- Student batch-switch review exposed two stale worksheet actions whose Master Base rows had already been removed. After cleanup and cascade migration `20260802235900_cascade_master_material_removals.sql`, Student retest confirmed the orphaned actions were gone.
+- After assignment to the second batch, its recording appeared on that batch's dated session and remained non-clickable until the displayed class-end release boundary.
+- Admin edited one batch's recording title and confirmed the matching recording in the other batch remained unchanged.
+- Admin attempted to save a non-YouTube URL; validation rejected it and retained the existing batch recording.
+- Admin ran Sync materials for a batch and confirmed its recording remained unchanged with no duplicate recording created.
+- A newly generated disposable staging cohort contained no inherited recordings; every session exposed only Add recording until configured for that batch.
 
 ## Verified
 
@@ -61,9 +66,9 @@ The material-viewer back navigation and dashboard filter scroll-preservation fix
 
 - The first Week 0 default-collapse implementation still appeared open because the browser preserved native disclosure state. The explicitly controlled replacement passed on the next Preview.
 
-## Still open
+## Phase 5 acceptance
 
-Section browsing, timeline expansion, material states and destinations, direct-URL denial, Admin recording management and explicit cohort synchronization remain to be verified one focused scenario at a time.
+All Phase 5 staging scenarios are complete. The only unchecked shared-checklist items are the intentionally deferred Phase 6 tracker behaviours.
 
 ## Product-rule revision
 

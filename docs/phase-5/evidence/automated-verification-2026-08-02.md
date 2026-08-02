@@ -4,7 +4,7 @@ Environment: local application using staging public configuration; linked databa
 
 No credentials, private Student data or material URLs are recorded here.
 
-> **Recording-rule revision:** The master-recording review evidence below is historical. The Product Owner subsequently replaced propagation with batch isolation; migration `20260802230000_make_recordings_batch_specific.sql` is applied and revised manual staging results remain pending.
+> **Recording-rule revision:** The master-recording review evidence below is historical. The Product Owner subsequently replaced propagation with batch isolation; the revised implementation and cleanup migrations are applied and manual staging acceptance is complete.
 
 ## Results
 
@@ -26,7 +26,10 @@ No credentials, private Student data or material URLs are recorded here.
 | Final staging migration ledger | Local and remote versions match through `20260802180000`; final dry run is up to date. |
 | Batch-recording migration dry run and apply | Only `20260802230000_make_recordings_batch_specific.sql` was pending; apply passed. |
 | Anonymous batch-recording RPC probe | Denied with HTTP 401 and `Admin access required`. |
-| Revised final staging migration ledger | Local and remote versions match through `20260802230000`; final dry run is up to date. |
+| Batch-recording migration ledger checkpoint | Local and remote versions matched through `20260802230000`. |
+| Legacy recording-copy cleanup | Only `20260802234500_remove_cross_batch_legacy_recording_copies.sql` was pending; apply passed. |
+| Orphaned master-material cleanup | Only `20260802235900_cascade_master_material_removals.sql` was pending; apply passed. |
+| Final staging migration ledger | Local and remote versions match through `20260802235900`; final dry run reports no pending migrations. |
 | Inherited privacy/release boundary | Phase 4 staging and Production RLS suites pass 12/12, including anonymous, cross-student, enrollment, deactivation and future-material access; Phase 5 retains that material policy and server authorization boundary. |
 
 ## PR review follow-up
@@ -39,4 +42,4 @@ Repository-wide `npm run lint` reports 22 errors and 3 warnings, reduced from th
 
 ## Manual evidence
 
-Authenticated staging Student and Admin evidence is recorded separately. Core visual, keyboard, Google-session, enrollment/access-state, Notion-content and private-PDF scenarios have passed. The superseded recording-propagation results remain historical; batch-isolation checks and Phase 6 tracker behaviours are not claimed by this automated record.
+Authenticated staging Student and Admin evidence is recorded separately. Core visual, keyboard, Google-session, enrollment/access-state, Notion-content, private-PDF, and batch-recording isolation scenarios have passed. The superseded recording-propagation results remain historical; Phase 6 tracker behaviours are not claimed by this automated record.
