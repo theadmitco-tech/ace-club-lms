@@ -1,6 +1,6 @@
 # Phase 5 — Student Experience Foundation Plan
 
-Status: Approved preparation record — Phase 5 staging acceptance complete
+Status: Approved preparation record — revised for batch-specific recordings
 Owner: Product owner and Engineering  
 Created: 31 July 2026  
 Last updated: 2 August 2026
@@ -16,7 +16,7 @@ Example:
 
 This plan defines the preparation checkpoint before Phase 5 engineering. It does not authorize application code, database, migration, staging, or Production changes.
 
-Phase 5 was subsequently implemented and accepted on staging. Current evidence and the Phase 6 continuation boundary are in the [Phase 5 status](README.md), [verification checklist](manual-verification-checklist.md), and [running handoff](../handoffs/ace-club-lms-running-handoff.md). The plan below remains the approved pre-implementation decision record.
+Phase 5 subsequently passed its original staging acceptance. On 2 August 2026, the Product Owner revised recordings to be batch-specific rather than master-inherited, reopening the Phase 5 recording gate. Current evidence and the Phase 6 continuation boundary are in the [Phase 5 status](README.md), [verification checklist](manual-verification-checklist.md), and [running handoff](../handoffs/ace-club-lms-running-handoff.md).
 
 > **Product Owner annotation — overall direction**  
 > 
@@ -54,7 +54,7 @@ The working decisions are:
 - Use variants of one timeline grammar for teaching classes, orientation, mocks, breaks, calls, and support events.
 - Remove legacy rankings, correctness, accuracy, daily-target analytics, and auto-graded practice from the reachable Student interface during Phase 5.
 - Retain the manual-effort information required for Phases 6–7: `Done`, `Come back for review`, `Not updated`, optional time, optional comments, last update, and completion calculated only from `Done` entries.
-- Allow Admins to add, edit, and remove titled YouTube recording links on master curriculum items; make released recordings available in the Student journey after class.
+- Allow Admins to add, edit, and remove titled YouTube recording links on individual batch sessions; make released recordings available in that batch's Student journey after class.
 - Treat the Phase 5 foundation and launch interface as desktop-first; the authoritative acceptance criteria now defer mobile optimisation while retaining keyboard and text-zoom requirements.
 - Preserve historical data unless a separate reviewed cleanup explicitly authorizes deletion.
 
@@ -86,7 +86,7 @@ The MVP Student destinations will be:
 2. **Curriculum item detail** — pre-read, class information, worksheet, and tracker in journey order, omitting steps that do not apply.
 3. **Pre-read reader** — authenticated embedded Notion content with a retryable failure state.
 4. **Worksheet workspace** — authenticated PDF delivery and the Phase 6 tracker, side by side on desktop.
-5. **Recording viewer** — a released YouTube recording embedded or opened from the curriculum-item journey using an Admin-managed master link.
+5. **Recording viewer** — a released YouTube recording embedded or opened from the curriculum-item journey using that batch session's Admin-managed link.
 
 The supported Phase 5 experience will not create separate Student destinations for rankings, accuracy, advanced analytics, question-bank practice, or automated grading.
 
@@ -347,11 +347,11 @@ These rules must be approved before Phase 5 implementation and carried through P
 ### 3.7 YouTube recording management
 
 - Reuse the existing `video` material type and `video_url`; do not create a parallel recording model.
-- Let an Admin add, rename, edit, and remove one or more YouTube recording links on a master curriculum item.
+- Let an Admin add, rename, edit, and remove one or more YouTube recording links on an individual batch session.
 - Accept supported `youtube.com` and `youtu.be` URLs only; reject malformed or non-YouTube iframe sources with an actionable validation message.
 - Release recordings after the scheduled class end, matching the existing database-owned material release rule.
-- Copy recordings to new cohorts through the existing cohort generator.
-- Extend the explicit Admin material sync so newly added recordings and edited master links propagate to linked cohort materials by `master_material_id` without changing their release timestamp.
+- Do not copy recordings through cohort generation or explicit master-material sync.
+- Keep pre-reads and worksheets reusable while ensuring a recording add, edit, or removal affects only its selected batch.
 - Preserve direct-URL release protection and render only a validated YouTube embed or safe external YouTube link.
 - Document that LMS release protection can hide a YouTube URL until release but cannot prevent access after a public or unlisted YouTube URL has been obtained or shared.
 - Record saving, saved, validation-error, and retry states when an Admin edits a link.
@@ -380,7 +380,7 @@ The prototype and later Phase 5 implementation must cover:
 5. A Student with current preparation and an older unfinished worksheet after Phase 6 tracker data exists.
 6. A Student watching a valid YouTube recording after class.
 7. A recording before class, with access denied and availability information shown.
-8. An Admin adding a recording to the master item and explicitly syncing it to an existing cohort.
+8. An Admin adding different recordings to the same curriculum session in two batches without cross-batch changes.
 9. An Admin editing a recording link and the linked cohort receiving the new URL without a changed release timestamp or duplicate material.
 10. An invalid or unsupported recording URL with an actionable Admin validation error.
 11. A curriculum item with no associated pre-read, recording, or worksheet.
@@ -515,10 +515,10 @@ Phase 5 implementation will be accepted only when all of the following pass in s
 
 ### YouTube recording administration
 
-- An Admin can add, title, edit, and remove supported YouTube recording links on a master curriculum item.
+- An Admin can add, title, edit, and remove supported YouTube recording links on an individual batch session.
 - Invalid or unsupported URLs produce an actionable validation error and are not embedded.
-- New cohorts inherit master recordings with post-class release timestamps.
-- Explicit sync adds new recordings and propagates edited links to existing linked cohort materials without duplicates or release-time changes.
+- New cohorts do not inherit recordings; each recording is added to its batch session and receives that session's post-class release timestamp.
+- Explicit master-material sync neither adds nor edits recordings.
 - A released recording renders through a validated YouTube embed or safe YouTube link.
 
 ### MVP simplification and quality

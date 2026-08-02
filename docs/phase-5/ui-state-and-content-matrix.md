@@ -1,6 +1,6 @@
 # Phase 5 — UI State and Content Matrix
 
-Status: Implemented and accepted on staging for Phase 5
+Status: Batch-specific recording revision awaiting staging verification
 Owner: Product owner and Engineering  
 Last updated: 2 August 2026
 
@@ -92,10 +92,11 @@ Recommended practice uses class end and the next same-section class start as its
 | Blank new link | YouTube link is required | Do not save. |
 | Unsupported URL | Enter a valid YouTube or youtu.be link | Do not save or embed. |
 | Saving | Saving recording… | Disable duplicate submission. |
-| Saved | Recording saved | Master item reflects the title and link. |
+| Batch selected | Show that batch's ordered sessions | Never mix recording links from another batch. |
+| Saved | Recording saved | Only the selected batch session reflects the title and link. |
 | Save failed | Recording couldn't be saved | Preserve input and offer retry. |
-| Sync added | Recording added to linked cohort items | Do not duplicate existing materials. |
-| Sync updated | Recording link updated for linked cohort items | Preserve each material's release timestamp. |
+| Another batch has the same curriculum item | Keep its recording independent | Do not copy edits or removals across batches. |
+| Generate or Sync materials | Copy reusable pre-reads and worksheets only | Never add or update recordings. |
 
 ## Phase 6 placeholders
 

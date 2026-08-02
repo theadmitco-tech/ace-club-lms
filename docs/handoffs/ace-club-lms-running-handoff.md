@@ -420,12 +420,14 @@ Before writing Phase 5 application code:
 
 > Continue Ace Club LMS from this signed Pre–Phase 5 foundation checkpoint. Read every item under Required reading before Phase 5 implementation. Phase 5 application work is now authorized. Preserve the 31-item schedule and database-owned release boundaries. Do not reintroduce daily worksheet targets, topic taxonomy, rankings, correctness, accuracy, or auto-graded practice. Include master YouTube-link management and propagation in Phase 5. Show worksheet access in Phase 5 without a dead Log control; keep the central Practice log, worksheet tracker persistence and bulk-selected status changes in Phase 6. Use repository and terminal checks only unless the Product Owner explicitly authorizes another tool, and assign one account-dependent manual task at a time.
 
+This historical start instruction is superseded for recordings by the later batch-specific Product Owner revision in the active Phase 5 section.
+
 ---
 
 ## Phase 5 handoff — Adapt the Student experience
 
 Date: 2 August 2026
-Status: **Staging acceptance complete — pull request ready for review**
+Status: **Batch-specific recording revision in progress — pull request draft**
 
 ### Completed implementation
 
@@ -437,27 +439,40 @@ Status: **Staging acceptance complete — pull request ready for review**
 - Curriculum-item and material destinations preserve the preparation, class, recording, and worksheet journey. Timeline/section switching preserves scroll position.
 - Student sign-out redirects to login and reports failures. Global Admin/Student operation notifications are mounted and dismissible.
 - Notion and protected PDF viewers provide explicit loading, failure, retry, and recovery states. Private PDF access continues through short-lived authenticated signed URLs.
-- Admins can add, title, edit, validate, remove, and synchronize master YouTube recordings. New cohorts inherit recordings; explicit existing-cohort sync remains additive/idempotent and updates linked recording metadata without changing `available_from`.
-- Removing a master recording atomically removes its linked cohort copies so Students do not retain stale access.
+- Admins manage titled, validated YouTube recordings on individual batch sessions. Each recording is batch-owned and releases at that session's end.
+- New cohort generation and Sync materials continue to copy reusable pre-reads and worksheets but exclude recordings.
 - Rank, percentile, correctness, accuracy, streak, daily targets, and auto-graded practice are absent from the reachable Student experience.
 
 ### Staging verification and review fixes
 
 - The complete Phase 5 manual record is in [manual staging verification](../phase-5/evidence/manual-staging-verification-2026-08-02.md), and the acceptance state is in the [Phase 5 checklist](../phase-5/manual-verification-checklist.md).
-- Product Owner staging checks passed for Timeline and QA/VA/DI browsing, rotating recommendations, material destinations and release states, Week 0 behaviour, sign-out, notification feedback, scroll preservation, return navigation, recording validation and propagation, private YouTube viewing, and recoverable Notion/PDF failures.
-- New-cohort recording inheritance, existing-cohort add/edit synchronization, and linked-copy removal passed on staging without changing release timestamps.
-- Review found and fixed two release-path defects: master-recording removal previously left linked cohort copies, and return navigation could target a card inside an unrendered collapsed week.
-- Staging migrations are applied and reconciled through `20260802180000_remove_master_recordings_from_cohorts.sql`. Production has not received Phase 5 migrations or application code.
+- Product Owner staging checks passed for Timeline and QA/VA/DI browsing, rotating recommendations, material destinations and release states, Week 0 behaviour, sign-out, notification feedback, scroll preservation, return navigation, private YouTube viewing, and recoverable Notion/PDF failures.
+- The original master-recording propagation tests passed but were superseded by the Product Owner's later batch-specific recording decision; they remain historical evidence only.
+- Review fixed return navigation into collapsed weeks and the former master-recording removal path. The new recording migration preserves existing cohort recordings while detaching and isolating them by batch.
+- Staging is applied and reconciled through `20260802230000_make_recordings_batch_specific.sql`; revised manual recording checks remain pending. Production has not received Phase 5 migrations or application code.
 - `npx tsc --noEmit`, targeted ESLint for Phase 5-touched files, deterministic recommendation/release assertions, and the guarded Next.js 16.2.4 Production build pass. Vercel Preview checks pass.
 
 ### Pull request and release boundary
 
 - Branch: `codex/phase-5-student-experience`.
 - Pull request: [#5 — Build Phase 5 student course experience](https://github.com/theadmitco-tech/ace-club-lms/pull/5).
-- Accepted implementation head before this handoff-only update: `e401450`.
-- PR #5 is ready for review, clean, and mergeable. It has not been merged.
+- Original accepted implementation head before the recording-rule revision: `e401450`.
+- PR #5 is back in draft while batch-specific recording behavior is implemented and verified. It has not been merged.
 - Production remains untouched. Reviewer approval, merge, and any Production rollout are separate decisions.
 - Repository-wide lint still reports 22 errors and 3 warnings in untouched legacy Admin worksheet/session editors, registration/payment routes, and helpers. Phase 5-touched files are clean; do not misreport the legacy lint baseline as resolved.
+
+### Post-acceptance Product Owner revision — recordings
+
+On 2 August 2026, the Product Owner clarified that every batch uses a different YouTube recording for the same curriculum session. This supersedes the earlier master-recording inheritance and propagation decision without changing pre-read or worksheet reuse.
+
+- Recordings are stored and managed on individual batch sessions.
+- Adding, editing, or removing a recording in one batch must not change another batch.
+- New cohort generation does not copy recordings.
+- Sync materials continues to add or update reusable pre-reads and worksheets but never recordings.
+- Existing cohort recordings are preserved during migration and detached from master-material links.
+- The database owns the recording release timestamp and forces it to the selected batch session's end.
+
+Before returning PR #5 to review, staging must pass two-batch link isolation, batch-local edit/removal, invalid-link validation, post-class release, new-cohort non-inheritance, and Sync materials non-propagation.
 
 ### Phase 6 continuation point
 

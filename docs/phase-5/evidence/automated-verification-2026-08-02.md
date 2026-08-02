@@ -4,6 +4,8 @@ Environment: local application using staging public configuration; linked databa
 
 No credentials, private Student data or material URLs are recorded here.
 
+> **Recording-rule revision:** The master-recording review evidence below is historical. The Product Owner subsequently replaced propagation with batch isolation; migration `20260802230000_make_recordings_batch_specific.sql` is applied and revised manual staging results remain pending.
+
 ## Results
 
 | Check | Result |
@@ -14,7 +16,7 @@ No credentials, private Student data or material URLs are recorded here.
 | Focused Student timeline/timezone and YouTube URL assertions | Pass. |
 | Thursday DI, Friday VA, Saturday QA and Sunday no-pre-read recommendation assertions | Pass in `Asia/Kolkata`. |
 | Per-section worksheet recommendation boundary assertions | Pass before class end, between same-section classes, during the next class and after the next class. |
-| `npm run build` | Pass; Next.js 16.2.4 compiled, type-checked and generated 28 routes. |
+| `npm run build` | Pass; Next.js 16.2.4 compiled, type-checked and generated 29 routes, including `/admin/recordings`. |
 | Signed-out `/dashboard` probe | HTTP 307 to `/login`. |
 | Signed-out `/session/:id` probe | HTTP 307 to `/login`. |
 | Staging migration dry run | Only `20260802100000_add_student_timeline_and_recording_sync.sql` pending. |
@@ -22,6 +24,9 @@ No credentials, private Student data or material URLs are recorded here.
 | PR-review migration dry run and apply | Only `20260802180000_remove_master_recordings_from_cohorts.sql` was pending; apply passed. |
 | Anonymous recording-removal RPC probe | Denied with HTTP 401 and `Admin access required`. |
 | Final staging migration ledger | Local and remote versions match through `20260802180000`; final dry run is up to date. |
+| Batch-recording migration dry run and apply | Only `20260802230000_make_recordings_batch_specific.sql` was pending; apply passed. |
+| Anonymous batch-recording RPC probe | Denied with HTTP 401 and `Admin access required`. |
+| Revised final staging migration ledger | Local and remote versions match through `20260802230000`; final dry run is up to date. |
 | Inherited privacy/release boundary | Phase 4 staging and Production RLS suites pass 12/12, including anonymous, cross-student, enrollment, deactivation and future-material access; Phase 5 retains that material policy and server authorization boundary. |
 
 ## PR review follow-up
@@ -34,4 +39,4 @@ Repository-wide `npm run lint` reports 22 errors and 3 warnings, reduced from th
 
 ## Manual evidence
 
-Authenticated staging Student and Admin evidence is recorded separately. Core visual, keyboard, Google-session, enrollment/access-state, Notion-content, private-PDF and recording-sync scenarios have passed. Remaining unchecked checklist entries are time-bound release/failure scenarios, new-cohort recording propagation, cross-student RLS, and Phase 6 tracker behaviours; none are claimed by this automated record.
+Authenticated staging Student and Admin evidence is recorded separately. Core visual, keyboard, Google-session, enrollment/access-state, Notion-content and private-PDF scenarios have passed. The superseded recording-propagation results remain historical; batch-isolation checks and Phase 6 tracker behaviours are not claimed by this automated record.

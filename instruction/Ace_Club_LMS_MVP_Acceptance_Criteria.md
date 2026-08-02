@@ -15,7 +15,7 @@ Last updated: 2 August 2026
 
 > **Scope decision:** The MVP uses Google Sign-In with controlled, pre-provisioned accounts, a fixed curriculum with approved QA/VA/DI labels, embedded Notion pre-reads, automatically released PDF worksheets, Admin-managed YouTube recordings, weekly worksheet recommendations, QA/VA/DI browsing, and a manual spreadsheet-style question tracker. The launch interface targets current desktop browsers and keyboard navigation; mobile optimisation is deferred.
 
-> **Delivery status:** Phases 1–4 are signed off. Phase 5 satisfies its staging acceptance and [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is ready for review; it is not merged or deployed to Production. Tracker criteria in sections 8–9 remain Phase 6–7 work and the full launch list in section 12 is not yet complete.
+> **Delivery status:** Phases 1–4 are signed off. Phase 5 staging acceptance is reopened for the approved batch-specific recording revision, and [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is back in draft; it is not merged or deployed to Production. Tracker criteria in sections 8–9 remain Phase 6–7 work and the full launch list in section 12 is not yet complete.
 
 ## 1. Product roles and boundaries
 | **Role** | **Purpose** | **MVP access** |
@@ -70,7 +70,7 @@ Last updated: 2 August 2026
 **When:** The schedule is generated.
 **Then:** DI displays Ishan, VA displays Tanya and QA displays Unnati.
 ### **AC-COURSE-04 — Reuse master content**
-**Given:** Notion pre-reads, PDF worksheets or YouTube recordings are configured on the master course.
+**Given:** Notion pre-reads or PDF worksheets are configured on the master course.
 **When:** A new cohort is created.
 **Then:** The cohort inherits those materials without duplicate uploads.
 ### **AC-COURSE-05 — Use approved academic labels**
@@ -151,18 +151,18 @@ Last updated: 2 August 2026
 **When:** The student opens the dashboard during the current week.
 **Then:** Each released worksheet appears once under Recommended practice as a whole weekly task; the MVP does not divide it into daily question ranges.
 ## 7. YouTube recordings
-### **AC-VIDEO-01 — Manage master recordings**
-**Given:** An Admin is editing a master curriculum item.
+### **AC-VIDEO-01 — Manage batch recordings**
+**Given:** An Admin is editing a session in one batch.
 **When:** They add, title, edit or remove a supported YouTube or youtu.be link.
-**Then:** The master recording saves with actionable validation and no uploaded-video or arbitrary-iframe requirement.
+**Then:** The recording saves only for that batch session with actionable validation and no uploaded-video or arbitrary-iframe requirement.
 ### **AC-VIDEO-02 — Release recordings after class**
 **Given:** A curriculum item has a configured YouTube recording.
 **When:** Its scheduled class end time is reached.
 **Then:** The recording becomes available automatically; before that boundary, interface and direct material access remain denied.
-### **AC-VIDEO-03 — Inherit and synchronize recordings**
-**Given:** A master recording is added or its link is edited.
-**When:** A new cohort is generated or an Admin explicitly synchronizes an existing cohort.
-**Then:** New recordings are added and edited links propagate through `master_material_id` without duplicates or changes to the cohort material release timestamp.
+### **AC-VIDEO-03 — Isolate recordings by batch**
+**Given:** Two batches contain the same curriculum session.
+**When:** An Admin adds, edits or removes the recording in one batch, creates another batch, or synchronizes reusable master materials.
+**Then:** No recording is copied to or changed in another batch; pre-reads and worksheets continue to inherit and synchronize normally.
 ## 8. Student question tracker
 | **Field** | **Rule** |
 | --- | --- |

@@ -8,7 +8,7 @@ Last updated: 2 August 2026
 
 *A retain–repair–adapt–complete plan for the partially built Ace Club LMS*
 
-Current delivery state: Phases 1–4 are signed off. Phase 5 staging acceptance is complete and [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is ready for review, but it is not merged or deployed to Production. Phase 6 is the next unimplemented phase.
+Current delivery state: Phases 1–4 are signed off. Phase 5 staging acceptance is reopened for the approved batch-specific recording revision, and [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is back in draft. It is not merged or deployed to Production. Phase 6 remains next after Phase 5 closes.
 
 | **Product** | Ace Club Learning Management System |
 | --- | --- |
@@ -33,7 +33,7 @@ Current delivery state: Phases 1–4 are signed off. Phase 5 staging acceptance 
 - Simplified spreadsheet-style tracker
 - Admin visibility into student-entered tracker data
 - Weekly worksheet recommendations, QA/VA/DI browsing and compact material access
-- Master YouTube recording management and cohort-link propagation
+- Batch-specific YouTube recording management and isolation
 > **Planning range:** Allow approximately 5–7 engineering weeks plus 1–2 weeks for pilot and stabilisation. Re-estimate after the source code and database audit.
 
 ## 2. Delivery phases
@@ -86,12 +86,12 @@ Current delivery state: Phases 1–4 are signed off. Phase 5 staging acceptance 
 - Add Browse by section for QA, VA and DI only; keep non-academic events in Timeline.
 - Place pre-read, class, recording, worksheet and tracker in journey order.
 - Add compact Pre-read, Recording and Worksheet access to Timeline and section items; prepare the shared action placement for Phase 6 Log access without exposing a dead control.
-- Allow Admins to add, title, edit and remove validated master YouTube links.
-- Copy recordings to new cohorts and propagate added or edited links to existing cohorts through explicit sync without duplicates or release-time changes.
+- Allow Admins to add, title, edit and remove validated YouTube links on each batch session.
+- Keep recordings batch-specific: cohort generation and reusable-material sync copy pre-reads and worksheets but never recordings.
 - Show Available now, Upcoming, Available after class and error states.
 - Reuse existing Notion and PDF components where viable.
 - Remove rank, correctness, accuracy, daily-target analytics and auto-graded practice from the reachable Student experience while preserving historical data.
-**Exit gate:** A Student understands this week's preparation and recommended practice, browses the same course by Timeline or QA/VA/DI, reaches configured materials directly, and remains blocked from unreleased content; Admin-managed YouTube recordings validate, inherit, synchronize and release correctly.
+**Exit gate:** A Student understands this week's preparation and recommended practice, browses the same course by Timeline or QA/VA/DI, reaches configured materials directly, and remains blocked from unreleased content; Admin-managed YouTube recordings validate, remain isolated to their batch and release correctly.
 ### Phase 6 — Simplify the tracker
 **Duration:** 5–8 working days
 - Reuse or migrate the existing progress tables where safe.
@@ -126,7 +126,7 @@ Current delivery state: Phases 1–4 are signed off. Phase 5 staging acceptance 
 1. Make one cohort schedule and release sequence work end to end.
 1. Complete Week 0, one later pre-read and one worksheet journey.
 1. Complete Recommended practice, This week and QA/VA/DI browsing for one current week.
-1. Add and synchronize one YouTube recording through the master-content workflow.
+1. Add a different YouTube recording to the same curriculum session in two batches and verify isolation.
 1. Adapt the tracker for one worksheet and expose it to an Admin.
 1. Generalise the proven vertical slice across the curriculum.
 1. Pilot with real first-time users before launch.
@@ -187,7 +187,7 @@ Current delivery state: Phases 1–4 are signed off. Phase 5 staging acceptance 
 | Supabase fetch failure | Repair environment and network configuration before recreating users |
 | Curriculum changes late | Freeze the revised master curriculum before bulk import |
 | Weekly practice becomes a daily quota system | Recommend whole released worksheets for the week; do not generate daily question ranges |
-| Edited recording links drift across cohorts | Link cohort materials by master material, synchronize explicitly and preserve release timestamps |
+| A recording leaks or propagates across batches | Store recordings on cohort sessions only; exclude videos from master generation and material sync |
 | Notion access changes | Validate page permissions and add observable rendering errors |
 | Release-time errors | Store one programme time zone and test exact boundary conditions |
 | Tracker data leakage | Use row-level security plus cross-student automated tests |

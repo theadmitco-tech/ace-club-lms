@@ -1,6 +1,6 @@
 # Phase 5 — Preparation and Delivery Verification Checklist
 
-Status: Phase 5 staging acceptance complete; unchecked items are deferred Phase 6 tracker checks
+Status: Phase 5 recording gate reopened; Phase 6 tracker checks remain deferred
 Owner: Product owner, Engineering, and QA  
 Last updated: 2 August 2026
 
@@ -14,7 +14,7 @@ Last updated: 2 August 2026
 - [x] This week replaces “Today’s task.”
 - [x] Thursday DI, Friday VA, and Saturday QA recommendation rules are documented.
 - [x] Rotating per-section worksheet recommendations and direct log-access rules are documented without daily quotas.
-- [x] YouTube recording scope and propagation requirements are documented.
+- [x] YouTube recording scope and batch-isolation requirements are documented.
 - [x] Phase 5 delivery exit criteria are written before implementation.
 - [x] Mobile optimisation is formally deferred in the authoritative MVP acceptance criteria; desktop, keyboard, and text-zoom support remain required.
 - [x] Desktop prototype direction is reviewed and approved by the Product Owner.
@@ -90,13 +90,13 @@ Last updated: 2 August 2026
 
 ### Admin recordings
 
-- [x] Admin adds and titles a valid YouTube recording on a master curriculum item.
-- [x] Invalid and non-YouTube links are rejected.
-- [x] New cohort generation copies the recording with the correct release timestamp.
-- [x] Explicit sync adds a new recording to an existing cohort once.
-- [x] Editing the master link updates linked cohort material without duplication.
-- [x] Removing a master recording removes its linked cohort copies.
-- [x] Link propagation does not change `available_from`.
+- [ ] Admin adds and titles a valid YouTube recording on a batch session.
+- [ ] Invalid and non-YouTube links are rejected.
+- [ ] The recording receives the selected batch session's end timestamp and remains locked before it.
+- [ ] The same curriculum session can use different recording links in two batches.
+- [ ] Editing or removing one batch recording does not change another batch.
+- [ ] New cohort generation does not copy a recording.
+- [ ] Sync materials adds or updates reusable content without adding or changing recordings.
 
 ### Simplification and non-regression
 

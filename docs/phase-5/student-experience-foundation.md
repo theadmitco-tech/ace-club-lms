@@ -1,6 +1,6 @@
 # Phase 5 — Student Experience Foundation
 
-Status: Approved preparation record — Phase 5 staging acceptance complete
+Status: Approved preparation record — revised for batch-specific recordings
 Owner: Product owner and Engineering  
 Last updated: 2 August 2026
 
@@ -8,7 +8,7 @@ Last updated: 2 August 2026
 
 Prepare a decision-complete Student experience before Phase 5 application work begins. The default Student journey is chronological through Timeline, with a secondary Browse by section view for `QA`, `VA`, and `DI` only.
 
-Implementation outcome: the approved experience is implemented and accepted on staging in [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5). The [Phase 5 status](README.md), [verification checklist](manual-verification-checklist.md), and [running handoff](../handoffs/ace-club-lms-running-handoff.md) contain the current delivery evidence and continuation boundary.
+Implementation outcome: the Student experience passed its original staging acceptance, then the Product Owner revised recordings to be batch-specific. [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is back in draft until that revision passes. The [Phase 5 status](README.md), [verification checklist](manual-verification-checklist.md), and [running handoff](../handoffs/ace-club-lms-running-handoff.md) contain the current delivery evidence and continuation boundary.
 
 ## Approved experience decisions
 
@@ -21,7 +21,7 @@ Implementation outcome: the approved experience is implemented and accepted on s
 - Only the current programme week opens by default. Week 0 starts open during Week 0 and starts collapsed after the programme advances; every week remains expandable and collapsible.
 - Browse by section contains exactly `QA`, `VA`, and `DI`; there are no topic tags or topic taxonomy.
 - Curriculum-item detail keeps pre-read, class details, optional recording, worksheet, and tracker in journey order. Timeline and Browse by section use only the compact released-resource row plus release text for configured locked resources.
-- Admin-managed YouTube recordings reuse the existing `video` material model and release after class.
+- Admin-managed YouTube recordings use batch-session `video` materials and release after that batch session ends; they are never inherited or synchronized from master content.
 - Legacy rankings, correctness, accuracy, daily targets, and auto-graded practice leave the reachable Student interface.
 - Manual tracker states and summaries remain Phase 6–7 scope.
 - The preparation prototype is desktop-only; the active acceptance criteria now formally defer mobile optimisation while retaining desktop, keyboard, and text-zoom support.
@@ -37,8 +37,9 @@ Implementation outcome: the approved experience is implemented and accepted on s
 | Notion material reader | Loads authenticated Notion content but uses generic loading/error language. | Adapt | Preserve containment while adding explicit retry and support states. |
 | Worksheet delivery | Private PDF delivery and signed URLs are already implemented. | Retain | Link the released PDF into the journey; Phase 6 adds the manual tracker workspace. |
 | Student recording | Existing session UI can embed the first `video` material after release. | Adapt | Support validated recording lists and journey placement without bypassing release rules. |
-| Master curriculum Admin | Supports multiple Notion pre-reads and private PDF worksheets. | Extend | Add titled YouTube link management to the master curriculum workflow. |
-| Cohort material sync | Adds missing master materials idempotently but does not propagate edited links. | Extend | Propagate edited master `video_url` values by `master_material_id` without changing `available_from`. |
+| Master curriculum Admin | Supports multiple Notion pre-reads and private PDF worksheets. | Retain | Keep recordings out of reusable master content. |
+| Batch recordings Admin | Session materials already support a `video` type. | Adapt | Add validated titled YouTube management for each batch session with database-owned post-class release. |
+| Cohort material sync | Adds missing master materials idempotently. | Retain | Continue synchronizing reusable pre-reads and worksheets; explicitly exclude recordings. |
 | Curriculum classification | Cohort sessions carry `class_type`; master sessions carry `QA`, `VA`, `DI`, and non-academic event types. | Retain | Browse by section can use authoritative class type; no new topic model is required. |
 | Non-academic events | Orientation, mocks, breaks, and support calls are part of the 31-item timeline. | Adapt | Use shared event-card variants and exclude them from section browsing. |
 | Loading and empty states | Several routes use indefinite spinners or generic empty messages. | Replace | Every request resolves to success, empty, or actionable failure. |
@@ -54,7 +55,7 @@ Implementation outcome: the approved experience is implemented and accepted on s
 - Database-owned `available_from`, session start, and session end timestamps.
 - Week 0, seven-day pre-read, and post-class worksheet release rules.
 - Authenticated Notion access, private PDF delivery, RLS, and direct-URL protection.
-- Stable master-session links and explicit cohort material sync.
+- Stable master-session links and explicit pre-read/worksheet cohort material sync.
 
 ### Adapt
 
@@ -63,7 +64,7 @@ Implementation outcome: the approved experience is implemented and accepted on s
 - Session detail into a journey instead of legacy feature tabs.
 - Recording display into validated, release-aware YouTube resources.
 - Loading, missing-content, and failure messages.
-- Master curriculum Admin to manage YouTube links.
+- Batch recordings Admin to manage YouTube links independently for each cohort session.
 
 ### Remove from the reachable Student interface
 

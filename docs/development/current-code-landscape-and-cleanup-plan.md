@@ -10,7 +10,7 @@ This document maps the repository after the Phase 2 sign-off, records cleanup ca
 
 This is an assessment, not cleanup authorization. No candidate in this document is approved for implementation or deletion merely because it is listed here. Phase 3 must not begin until the Product Owner supplies the approved revised curriculum and the team confirms the correct Git baseline.
 
-Current update: the start-gate language and audit counts below are preserved as the 31 July snapshot. Phases 3–4 are signed off, and Phase 5 has completed staging acceptance in [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5). Repository-wide lint is now 22 errors and 3 warnings, all outside Phase 5-touched files. The remaining cleanup register is not authorized for implementation merely by this status update.
+Current update: the start-gate language and audit counts below are preserved as the 31 July snapshot. Phases 3–4 are signed off, and Phase 5 [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is back in draft for a batch-specific recording revision. Repository-wide lint is now 22 errors and 3 warnings, all outside Phase 5-touched files. The remaining cleanup register is not authorized for implementation merely by this status update.
 
 Product scope remains controlled by the [MVP acceptance criteria](../../instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.md), the [roadmap](../../instruction/Ace_Club_LMS_Product_Roadmap.md), and the [running handoff](../handoffs/ace-club-lms-running-handoff.md).
 

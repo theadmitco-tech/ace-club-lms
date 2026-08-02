@@ -76,4 +76,4 @@ For each timeline item that has course content, Phase 3 still needs:
 - the approved positive question count entered for each worksheet;
 - confirmation that the item has no such content when intentionally empty.
 
-Phase 5 added optional titled YouTube recording links to master items without changing this curriculum sequence. Its staging acceptance and review state are recorded in the [running handoff](../handoffs/ace-club-lms-running-handoff.md).
+Phase 5 adds optional titled YouTube recording links to each batch session without changing this master curriculum sequence. Pre-reads and worksheets remain reusable master content; recordings are batch-specific. The current review state is recorded in the [running handoff](../handoffs/ace-club-lms-running-handoff.md).

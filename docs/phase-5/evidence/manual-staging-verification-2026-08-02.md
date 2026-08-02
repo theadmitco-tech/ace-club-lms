@@ -4,6 +4,8 @@ Environment: Vercel Preview connected to staging Supabase project `eyphkkginlgoa
 
 No account identifiers, credentials, private Student data or material URLs are recorded here.
 
+> **Recording-rule revision:** The master-recording inheritance and synchronization checks below accurately preserve the behavior tested earlier on 2 August, but that product rule was subsequently superseded. Migration `20260802230000_make_recordings_batch_specific.sql` is applied; revised batch-isolation manual verification remains pending.
+
 ## Verified
 
 - A controlled staging Test Student completed Google Sign-In and reached the Phase 5 dashboard.
