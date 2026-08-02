@@ -240,7 +240,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
                   <details
                     className="week-group"
                     key={weekNumber}
-                    open={weekNumber === 0 || weekNumber === currentWeek}
+                    open={weekNumber === currentWeek}
                   >
                     <summary>
                       <span>Week {weekNumber}</span>

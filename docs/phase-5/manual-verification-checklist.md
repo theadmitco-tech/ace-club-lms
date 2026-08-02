@@ -27,7 +27,7 @@ Last updated: 1 August 2026
 - [ ] This week is visually clear without becoming an oversized hero.
 - [ ] Recommended practice appears above This week.
 - [ ] Timeline is selected by default.
-- [ ] Week 0 and current week start open and can be collapsed.
+- [ ] Only the current programme week starts open and can be collapsed; Week 0 starts collapsed after the programme advances.
 - [ ] Other weeks can be expanded.
 - [ ] Browse by section exposes exactly QA, VA, and DI.
 - [ ] Section results remain in course order and show week and availability.

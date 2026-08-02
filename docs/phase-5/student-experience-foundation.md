@@ -16,7 +16,7 @@ Prepare a decision-complete Student experience before Phase 5 application work b
 - Recommended practice appears above This week.
 - Recommended practice provides Open worksheet immediately. Phase 6 adds Update log on each worksheet row and a central Practice log overview.
 - Timeline remains the default and groups the 31 fixed curriculum items by week.
-- Week 0 and the current week open by default but can be collapsed.
+- Only the current programme week opens by default. Week 0 starts open during Week 0 and starts collapsed after the programme advances; every week remains expandable and collapsible.
 - Browse by section contains exactly `QA`, `VA`, and `DI`; there are no topic tags or topic taxonomy.
 - Pre-read, class details, optional recording, worksheet, and tracker appear in journey order when applicable.
 - Admin-managed YouTube recordings reuse the existing `video` material model and release after class.

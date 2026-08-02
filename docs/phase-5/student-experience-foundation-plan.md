@@ -41,7 +41,7 @@ The working decisions are:
 - Use one Student home containing the complete course timeline.
 - Provide two views of the same course content: **Timeline** for chronological progress and **Browse by section** for QA, VA, and DI retrieval.
 - Group the timeline by programme week.
-- Open Week 0 and the current week by default while allowing the Student to collapse either one; keep other weeks available through expansion.
+- Open only the current programme week by default while allowing the Student to collapse it. Week 0 starts open during Week 0 and collapsed after the programme advances; keep every other week available through expansion.
 - Highlight the current curriculum item instead of adding a large “next action” hero.
 - Use a **This week** callout instead of a “Today’s task” callout.
 - Recommend the DI pre-read on Thursday, the VA pre-read on Friday, and the QA pre-read on Saturday using the programme timezone.
@@ -57,7 +57,7 @@ The working decisions are:
 - Preserve historical data unless a separate reviewed cleanup explicitly authorizes deletion.
 
 > **Product Owner annotation — agreed direction**  
-> Incorporated on 31 July 2026. Week 0 and the current week remain collapsible; actions are presented without primary/secondary labels; legacy automated analytics are separated from required manual-effort summaries.
+> Incorporated on 31 July 2026. Revised on 2 August 2026: only the current programme week starts open; Week 0 starts collapsed after the programme advances. Actions are presented without primary/secondary labels; legacy automated analytics are separated from required manual-effort summaries.
 
 ---
 
@@ -206,7 +206,7 @@ Codex will produce an interactive prototype for review containing:
 - A Recommended practice group for whole released prior-week worksheets, with Open worksheet and Update log actions.
 - Compact resource rows inside Timeline and Browse by section items for Pre-read, Video, Worksheet, and Log.
 - A worksheet/log workspace demonstrating selection, bulk Done, review exceptions, saving, saved, and retry states.
-- Week-grouped expand and collapse behaviour, including collapse controls for Week 0 and the current week.
+- Week-grouped expand and collapse behaviour, with only the current programme week open by default.
 - Highlighted current curriculum item.
 - Pre-read, class, optional recording, worksheet, and tracker steps in journey order.
 - A competing-work scenario with two equal actions.
@@ -491,7 +491,7 @@ Phase 5 implementation will be accepted only when all of the following pass in s
 
 - The Student home uses a This week callout and does not display “Today’s task.”
 - Timeline remains the default view and presents all 31 curriculum items in chronological week order.
-- Week 0 and the current week open by default but remain collapsible; other weeks can be expanded.
+- Only the current programme week opens by default and remains collapsible; Week 0 and every other week can be expanded.
 - Browse by section offers exactly QA, VA, and DI and lists the correct curriculum items in course order.
 - Timeline and Browse by section open the same underlying curriculum items and materials without duplicated content.
 - Mocks, orientation, breaks, calls, and support events appear in Timeline but not in QA, VA, or DI results.

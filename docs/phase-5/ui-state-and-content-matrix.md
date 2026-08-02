@@ -10,7 +10,8 @@ Last updated: 1 August 2026
 | --- | --- | --- |
 | Student arrives | Timeline selected | Show This week followed by week-grouped curriculum. |
 | Student arrives with prior-week practice | Timeline selected | Show Recommended practice above This week. |
-| Week 0 | Open by default | Student may collapse it. |
+| Week 0 during programme Week 0 | Open by default | Student may collapse it. |
+| Week 0 after programme Week 0 | Collapsed by default | Student may expand it. |
 | Current week | Open by default | Student may collapse it. |
 | Past or future week | Collapsed by default | Student may expand it. |
 | Browse by section | `QA`, `VA`, `DI` only | List matching curriculum items in course order. |
