@@ -16,11 +16,9 @@ const EVENT_LABELS: Record<string, string> = {
 export function TimelineItem({
   session,
   timeZone,
-  emphasisLabel,
 }: {
   session: StudentTimelineSession;
   timeZone: string;
-  emphasisLabel?: string;
 }) {
   const sectionLabel = session.class_type && (
     isAcademicSection(session.class_type)
@@ -29,7 +27,7 @@ export function TimelineItem({
   );
 
   return (
-    <article className={`timeline-item${emphasisLabel ? ' is-current' : ''}`} id={`session-${session.id}`}>
+    <article className="timeline-item" id={`session-${session.id}`}>
       <div className="timeline-marker" aria-hidden="true" />
       <div className="timeline-card">
         <div className="timeline-card-heading">
@@ -37,7 +35,6 @@ export function TimelineItem({
             <div className="timeline-meta">
               {sectionLabel && <span className="timeline-type">{sectionLabel}</span>}
               <span>{formatProgrammeDateTime(session.session_date, timeZone)}</span>
-              {emphasisLabel && <span className="current-label">{emphasisLabel}</span>}
             </div>
             <h3>{session.title}</h3>
             {session.instructor && <p>With {session.instructor}</p>}

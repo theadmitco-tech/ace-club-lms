@@ -8,11 +8,9 @@ import { loadStudentTimeline } from '@/lib/server/studentTimeline';
 import {
   formatProgrammeDateTime,
   getCurrentProgrammeWeek,
-  getCurrentTimelineItem,
   getMaterialAvailabilityCopy,
   getPreReadRecommendation,
   getPriorWeekPractice,
-  getTimelineEmphasisLabel,
   groupTimelineByWeek,
   isAcademicSection,
   type AcademicSection,
@@ -77,7 +75,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
   const { course, generated_at: generatedAt, sessions } = timeline;
   const timeZone = course.schedule_timezone || 'Asia/Kolkata';
   const currentWeek = getCurrentProgrammeWeek(course, generatedAt);
-  const currentItem = getCurrentTimelineItem(sessions, generatedAt);
   const weekGroups = groupTimelineByWeek(sessions);
   const thisWeekSessions = sessions.filter((session) => session.week_number === currentWeek);
   const recommendedPractice = getPriorWeekPractice(sessions, currentWeek);
@@ -228,7 +225,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
                   <p className="result-count">{sectionSessions.length} {selectedSection} curriculum items in course order</p>
                   {sectionSessions.map((session) => (
                     <TimelineItem
-                      emphasisLabel={session.id === currentItem?.id ? getTimelineEmphasisLabel(session, generatedAt) : undefined}
                       key={session.id}
                       session={session}
                       timeZone={timeZone}
@@ -248,7 +244,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
                     <div className="timeline-list">
                       {groupedSessions.map((session) => (
                         <TimelineItem
-                          emphasisLabel={session.id === currentItem?.id ? getTimelineEmphasisLabel(session, generatedAt) : undefined}
                           key={session.id}
                           session={session}
                           timeZone={timeZone}

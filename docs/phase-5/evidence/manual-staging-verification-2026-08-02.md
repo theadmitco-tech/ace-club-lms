@@ -11,7 +11,7 @@ No account identifiers, credentials, private Student data or material URLs are r
 - The corrected Week 2 dashboard displayed Recommended practice above This week with a clear empty state when no released Week 1 worksheet existed.
 - Student Sign out redirected to `/login` and protected dashboard access remained blocked afterward.
 - In programme Week 2, Week 2 started open, Week 0 started collapsed, and Week 0 remained manually expandable.
-- Browse by section displayed the QA, VA and DI curriculum views. Review identified that the generic “Current item” label was misleading and that the four-step journey strip duplicated the compact resource row; both were revised for the next Preview.
+- Browse by section displayed the QA, VA and DI curriculum views. Review removed both the Timeline item-emphasis rule and the duplicated four-step journey strip; cards now rely on course order, dates, and compact resource states.
 
 ## Defects found
 

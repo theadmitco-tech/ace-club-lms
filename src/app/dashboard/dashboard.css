@@ -479,21 +479,11 @@
   box-shadow: 0 0 0 1px var(--border-secondary);
 }
 
-.timeline-item.is-current .timeline-marker {
-  background: #d79a2b;
-  box-shadow: 0 0 0 4px rgba(215, 154, 43, 0.16);
-}
-
 .timeline-card {
   padding: 18px;
   border: 1px solid var(--border-primary);
   border-radius: 14px;
   background: white;
-}
-
-.timeline-item.is-current .timeline-card {
-  border-color: rgba(215, 154, 43, 0.48);
-  box-shadow: 0 8px 24px rgba(215, 154, 43, 0.1);
 }
 
 .timeline-card-heading h3 {
@@ -518,18 +508,12 @@
   font-size: 0.7rem;
 }
 
-.timeline-type,
-.current-label {
+.timeline-type {
   padding: 3px 7px;
   border-radius: 99px;
   background: var(--bg-tertiary);
   color: var(--accent-primary);
   font-weight: 850;
-}
-
-.current-label {
-  background: #fff0cd;
-  color: #74500f;
 }
 
 .text-link {

@@ -42,13 +42,13 @@ The working decisions are:
 - Provide two views of the same course content: **Timeline** for chronological progress and **Browse by section** for QA, VA, and DI retrieval.
 - Group the timeline by programme week.
 - Open only the current programme week by default while allowing the Student to collapse it. Week 0 starts open during Week 0 and collapsed after the programme advances; keep every other week available through expansion.
-- Highlight the nearest relevant curriculum item instead of adding a large “next action” hero. Label it “Happening now,” “Next item,” or “Latest item” according to its timestamps rather than calling every emphasized item “Current item.”
+- Do not label or visually emphasize a Timeline item as current, next, or latest; This week already communicates programme position.
 - Use a **This week** callout instead of a “Today’s task” callout.
 - Recommend the DI pre-read on Thursday, the VA pre-read on Friday, and the QA pre-read on Saturday using the programme timezone.
 - Show **Recommended practice** throughout the current week for every released prior-week worksheet, alongside any day-specific pre-read recommendation.
 - Place Recommended practice above This week so the recurring weekday work is visible first.
 - Give each recommended worksheet direct **Open worksheet** and **Update log** actions; Phase 5 reserves the placement and Phase 6 activates the manual log destination.
-- Present the useful actions for the highlighted item without forcing primary and secondary labels. When current preparation and older unfinished work compete, show both at equal prominence.
+- Present useful actions directly on each applicable item without forcing primary and secondary labels.
 - Use variants of one timeline grammar for teaching classes, orientation, mocks, breaks, calls, and support events.
 - Remove legacy rankings, correctness, accuracy, daily-target analytics, and auto-graded practice from the reachable Student interface during Phase 5.
 - Retain the manual-effort information required for Phases 6–7: `Done`, `Come back for review`, `Not updated`, optional time, optional comments, last update, and completion calculated only from `Done` entries.
@@ -80,7 +80,7 @@ The working decisions are:
 
 The MVP Student destinations will be:
 
-1. **Student home** — current curriculum item, available actions, concise course position, and week-grouped timeline.
+1. **Student home** — available actions, concise course position, and week-grouped timeline.
 2. **Curriculum item detail** — pre-read, class information, worksheet, and tracker in journey order, omitting steps that do not apply.
 3. **Pre-read reader** — authenticated embedded Notion content with a retryable failure state.
 4. **Worksheet workspace** — authenticated PDF delivery and the Phase 6 tracker, side by side on desktop.
@@ -98,17 +98,9 @@ Both views open the same curriculum-item, pre-read, recording, worksheet, and tr
 > **Product Owner annotation — information architecture**  
 > Incorporated on 31 July 2026. Mobile presentation is removed from this preparation checkpoint and recorded as a formal scope exception requiring acceptance-criteria reconciliation.
 
-### 2.3 Define the current-item and action rules
+### 2.3 Define the resource-action rules
 
-The interface will satisfy “show the next action” by emphasizing the current timeline item rather than displaying a separate hero. Within that item, actions are grouped by purpose—read, watch, download, log, or review—without assigning artificial primary and secondary labels.
-
-Current-item selection:
-
-1. Use Week 0 while its immediately available preparation is the active entry point.
-2. Otherwise emphasize the nearest curriculum item whose scheduled class has not ended.
-3. After the final class, emphasize the latest item containing an available worksheet or tracker action.
-4. Before Phase 6, do not label work as “unfinished,” “in progress,” or “continue” unless persisted data supports that claim.
-5. After Phase 6 introduces persisted tracker state, show the current preparation action and the most recent unfinished worksheet at equal prominence when both apply.
+Timeline items expose applicable released resources directly. They do not receive current, next, or latest labels. Before Phase 6, do not label work as “unfinished,” “in progress,” or “continue” unless persisted data supports that claim.
 
 Weekly callout rules:
 
@@ -139,7 +131,7 @@ Action labels must describe the real outcome, for example:
 - Review entries
 - Retry pre-read
 
-> **Product Owner annotation — current item and actions**  
+> **Product Owner annotation — resource actions**
 > 
 
 ### 2.4 Define one canonical UI state model
@@ -182,7 +174,6 @@ Phase 5 engineering should consume a server-composed Student timeline view model
 The documented contract will contain:
 
 - Course identity and programme timezone.
-- Current curriculum item identifier.
 - Ordered week groups derived from linked master-curriculum metadata.
 - The curriculum item's approved section identifier: `QA`, `VA`, `DI`, or no academic section.
 - Ordered timeline items with class title, type, instructor, start, and end.
@@ -207,7 +198,6 @@ Codex will produce an interactive prototype for review containing:
 - Compact resource rows inside Timeline and Browse by section items for Pre-read, Video, Worksheet, and Log.
 - A worksheet/log workspace demonstrating selection, bulk Done, review exceptions, saving, saved, and retry states.
 - Week-grouped expand and collapse behaviour, with only the current programme week open by default.
-- Highlighted current curriculum item.
 - Pre-read, class, optional recording, worksheet, and tracker steps in journey order.
 - A competing-work scenario with two equal actions.
 - Regular teaching, orientation, mock, break, call, and support-event variants.
@@ -452,7 +442,7 @@ The supporting Phase 5 documentation should ultimately be organized as:
 
 The preparation checkpoint passes only when:
 
-- A first-time Student can identify the current curriculum item and available actions in the prototype.
+- A first-time Student can identify their programme week and available actions in the prototype.
 - Week 0, current, past, and future weeks are understandable without showing 31 fully expanded cards.
 - A Student can switch between Timeline and Browse by section and reach the same curriculum content without duplication.
 - QA, VA, and DI results contain the correct curriculum items in course order; non-academic events remain Timeline-only.

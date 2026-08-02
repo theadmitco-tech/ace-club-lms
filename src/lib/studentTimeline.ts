@@ -95,29 +95,6 @@ export function isAcademicSection(value: string | null): value is AcademicSectio
   return value === 'QA' || value === 'VA' || value === 'DI';
 }
 
-export function getCurrentTimelineItem(sessions: StudentTimelineSession[], generatedAt: string) {
-  const now = new Date(generatedAt).getTime();
-  const upcoming = sessions.find((session) => {
-    const end = session.session_end_at ?? session.session_date;
-    return new Date(end).getTime() >= now;
-  });
-  if (upcoming) return upcoming;
-
-  return [...sessions].reverse().find((session) => (
-    session.materials.some((material) => material.type === 'worksheet' && material.is_available)
-  )) ?? sessions.at(-1) ?? null;
-}
-
-export function getTimelineEmphasisLabel(session: StudentTimelineSession, generatedAt: string) {
-  const now = new Date(generatedAt).getTime();
-  const start = new Date(session.session_date).getTime();
-  const end = new Date(session.session_end_at ?? session.session_date).getTime();
-
-  if (now >= start && now < end) return 'Happening now';
-  if (now < start) return 'Next item';
-  return 'Latest item';
-}
-
 export function getPriorWeekPractice(
   sessions: StudentTimelineSession[],
   currentWeek: number,
