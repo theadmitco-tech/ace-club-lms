@@ -92,7 +92,7 @@ Last updated: 1 August 2026
 
 - [x] Admin adds and titles a valid YouTube recording on a master curriculum item.
 - [x] Invalid and non-YouTube links are rejected.
-- [ ] New cohort generation copies the recording with the correct release timestamp.
+- [x] New cohort generation copies the recording with the correct release timestamp.
 - [x] Explicit sync adds a new recording to an existing cohort once.
 - [x] Editing the master link updates linked cohort material without duplication.
 - [x] Removing a master recording removes its linked cohort copies.
