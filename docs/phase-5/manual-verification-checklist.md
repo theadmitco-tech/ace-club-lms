@@ -51,7 +51,7 @@ Last updated: 1 August 2026
 
 ### Student navigation
 
-- [ ] The signed-in Student reaches This week and Timeline.
+- [x] The signed-in Student reaches This week and Timeline.
 - [ ] All 31 curriculum items appear in chronological week order.
 - [ ] QA browsing returns only QA items in course order.
 - [ ] VA browsing returns only VA items in course order.

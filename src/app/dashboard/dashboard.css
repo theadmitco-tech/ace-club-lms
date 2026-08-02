@@ -102,6 +102,11 @@
   color: var(--accent-primary);
 }
 
+.student-sign-out:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .student-main {
   padding: 42px 0 72px;
 }
@@ -236,6 +241,20 @@
   margin-top: 19px;
   display: grid;
   gap: 10px;
+}
+
+.practice-empty {
+  margin-top: 19px;
+  padding: 16px;
+  border: 1px dashed rgba(215, 154, 43, 0.38);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.practice-empty p {
+  margin: 5px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
 }
 
 .practice-row,

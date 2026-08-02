@@ -105,7 +105,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
             </div>
           </header>
 
-          {recommendedPractice.length > 0 && (
+          {currentWeek > 0 && (
             <section className="practice-callout" aria-labelledby="recommended-practice-title">
               <div className="callout-heading">
                 <div>
@@ -114,19 +114,26 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
                 </div>
                 <p>Work through each released worksheet from Week {currentWeek - 1} during this week.</p>
               </div>
-              <div className="practice-list">
-                {recommendedPractice.map(({ session, material }) => (
-                  <div className="practice-row" key={material.id}>
-                    <div>
-                      <span>{session.class_type ?? 'Course'} · Week {session.week_number}</span>
-                      <strong>{material.title}</strong>
+              {recommendedPractice.length > 0 ? (
+                <div className="practice-list">
+                  {recommendedPractice.map(({ session, material }) => (
+                    <div className="practice-row" key={material.id}>
+                      <div>
+                        <span>{session.class_type ?? 'Course'} · Week {session.week_number}</span>
+                        <strong>{material.title}</strong>
+                      </div>
+                      <Link className="student-button" href={`/session/${session.id}/material/${material.id}`}>
+                        Open worksheet
+                      </Link>
                     </div>
-                    <Link className="student-button" href={`/session/${session.id}/material/${material.id}`}>
-                      Open worksheet
-                    </Link>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="practice-empty">
+                  <strong>No released Week {currentWeek - 1} worksheets yet</strong>
+                  <p>When a prior-week worksheet is released, it will remain here as a whole weekly task.</p>
+                </div>
+              )}
             </section>
           )}
 
