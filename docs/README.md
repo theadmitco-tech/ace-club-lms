@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Engineering
-Last updated: 1 August 2026
+Last updated: 2 August 2026
 
 This index routes readers to the smallest set of documents needed for a task. Product authority remains in [`instruction/`](../instruction/README.md).
 
@@ -23,7 +23,7 @@ Current continuation state: [Ace Club LMS Running Handoff](handoffs/ace-club-lms
 - Phase 3: signed off — align the fixed master course.
   - [Status and exit gate](phase-3/README.md)
   - [Approved revised course structure](phase-3/revised-course-structure.md)
-- Phase 4: active — cohorts and release automation.
+- Phase 4: signed off — cohorts and release automation.
   - [Status and exit gate](phase-4/README.md)
   - [Manual verification checklist](phase-4/manual-verification-checklist.md)
   - [Schedule and material-sync decision](decisions/adr-0002-cohort-schedule-and-material-sync.md)
@@ -32,8 +32,9 @@ Current continuation state: [Ace Club LMS Running Handoff](handoffs/ace-club-lms
   - [Decision summary](phase-5/student-experience-foundation.md)
   - [UI state and content matrix](phase-5/ui-state-and-content-matrix.md)
   - [Preparation and delivery verification checklist](phase-5/manual-verification-checklist.md)
-- Phase 5: implementation in progress — automated checks pass; manual staging acceptance remains open.
+- Phase 5: staging acceptance complete — [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is ready for review; merge and Production rollout remain separate decisions.
   - [Implementation status](phase-5/README.md)
+- Phase 6: not started — persistent Practice log and worksheet question tracking are next after the Phase 5 review/merge decision.
 
 There is no approved Phase 1.5.
 

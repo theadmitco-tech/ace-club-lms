@@ -2,9 +2,11 @@
 
 Status: Active
 Owner: Product owner
-Last updated: 1 August 2026
+Last updated: 2 August 2026
 
 This folder contains the documents that define product intent, scope, phase boundaries, acceptance, and signed checkpoints. Read this register before starting product or engineering work.
+
+Current delivery state: Phase 5 staging acceptance is complete and [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is ready for review. Phase 6 remains the next unimplemented product phase; Production has not received Phase 5.
 
 ## Authority order
 

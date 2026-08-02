@@ -1,9 +1,9 @@
 # Phase 5 — Student Experience Foundation Plan
 
-Status: Approved — ready for Phase 5 implementation  
+Status: Approved preparation record — Phase 5 staging acceptance complete
 Owner: Product owner and Engineering  
 Created: 31 July 2026  
-Last updated: 1 August 2026
+Last updated: 2 August 2026
 
 ## How to annotate this plan
 
@@ -15,6 +15,8 @@ Example:
 > Approved, but change the button label to “Open pre-read.”
 
 This plan defines the preparation checkpoint before Phase 5 engineering. It does not authorize application code, database, migration, staging, or Production changes.
+
+Phase 5 was subsequently implemented and accepted on staging. Current evidence and the Phase 6 continuation boundary are in the [Phase 5 status](README.md), [verification checklist](manual-verification-checklist.md), and [running handoff](../handoffs/ace-club-lms-running-handoff.md). The plan below remains the approved pre-implementation decision record.
 
 > **Product Owner annotation — overall direction**  
 > 
@@ -116,7 +118,7 @@ Weekly callout rules:
 10. Show the active released worksheet for each section as one whole task under **Recommended practice**; do not divide it into daily question ranges.
 11. Keep no more than one worksheet each for DI, VA, and QA in the group. Remove a worksheet from recommendations when the next same-section class begins, without removing it from Timeline or Browse by section.
 12. Recommended practice provides **Open worksheet** immediately and **Update log** once the Phase 6 manual tracker route exists.
-13. On Thursday and Friday, the pre-read recommendation and Recommended practice are both visible; neither replaces the other.
+13. On Thursday, Friday and Saturday, the pre-read recommendation and Recommended practice are both visible; neither replaces the other.
 14. Recommended practice renders immediately above This week on the Student home.
 
 Action labels must describe the real outcome, for example:
@@ -195,7 +197,7 @@ Codex will produce an interactive prototype for review containing:
 - Timeline and Browse by section view controls.
 - A This week callout with Thursday DI, Friday VA, and Saturday QA recommendation states.
 - A Recommended practice group with a rotating maximum of one whole released worksheet each for DI, VA, and QA, with Open worksheet and Update log actions.
-- Compact resource rows inside Timeline and Browse by section items for Pre-read, Video, Worksheet, and Log.
+- Compact resource rows inside Timeline and Browse by section items for Pre-read, Recording, Worksheet, and Log.
 - A worksheet/log workspace demonstrating selection, bulk Done, review exceptions, saving, saved, and retry states.
 - Week-grouped expand and collapse behaviour, with only the current programme week open by default.
 - Pre-read, class, optional recording, worksheet, and tracker steps in journey order.
@@ -246,7 +248,7 @@ Before Phase 6 data and routes exist, Phase 5 may reserve this placement in the 
 Each academic curriculum item in Timeline and Browse by section includes one compact resource row in journey order:
 
 ```text
-Pre-read | Video | Worksheet | Log
+Pre-read | Recording | Worksheet | Log
 ```
 
 - Available resources render as short labeled buttons.
@@ -395,9 +397,9 @@ The prototype and later Phase 5 implementation must cover:
 22. Recommend the DI pre-read on Thursday, VA pre-read on Friday, and QA pre-read on Saturday in `Asia/Kolkata`.
 23. Confirm day-based recommendation changes do not alter database release timestamps or direct-URL protection.
 24. Recommend each section's latest released worksheet from class end until the next same-section class begins, with a maximum of three tasks.
-25. On Thursday and Friday, show both the pre-read recommendation and Recommended practice.
+25. On Thursday, Friday and Saturday, show both the pre-read recommendation and Recommended practice.
 26. Open worksheet reaches the released PDF; Update log reaches the matching worksheet tracker after Phase 6.
-27. Timeline and Browse by section expose compact Pre-read, Video, Worksheet, and Log resource rows without icon-only or broken controls.
+27. Timeline and Browse by section expose compact Pre-read, Recording, Worksheet, and Log resource rows without icon-only or broken controls.
 28. A Student selects questions and marks the selection Done or Come back for review with one bulk action.
 29. Bulk actions never change unselected questions.
 
@@ -492,7 +494,7 @@ Phase 5 implementation will be accepted only when all of the following pass in s
 - Friday recommends the released pre-read for Saturday's VA class.
 - Saturday recommends the released pre-read for Sunday's QA class.
 - Recommended practice rotates whole released worksheets by section without daily targets or question ranges.
-- Thursday and Friday show both the applicable pre-read recommendation and Recommended practice.
+- Thursday, Friday and Saturday show both the applicable pre-read recommendation and Recommended practice.
 - Recommendation-day and practice-target selection use the course timezone, currently `Asia/Kolkata`.
 - Outside the day-specific pre-read pattern, the callout presents the week's available actions and scheduled practice without inventing another preparation recommendation.
 - Week 0 and exceptional weeks show their real scheduled events rather than a nonexistent DI/VA/QA recommendation.
@@ -504,7 +506,7 @@ Phase 5 implementation will be accepted only when all of the following pass in s
 - Timeline and Browse by section provide compact direct buttons for each configured resource without requiring a separate class-detail detour.
 - Class information shows approved title or bundle label, date, time, class type, and instructor.
 - Materials clearly show Available now, Upcoming, Available after class, Not configured, and actionable failure states.
-- Week 0 materials remain immediately available according to the signed release rules.
+- Week 0 pre-reads remain immediately available; Week 0 worksheets and recordings retain their item-end release according to the signed rules.
 - Later pre-reads remain released seven days before class; the weekly recommendation only changes when they are emphasized.
 - Worksheets and YouTube recordings remain unavailable until the class end timestamp.
 - Locked materials remain denied through direct URLs.

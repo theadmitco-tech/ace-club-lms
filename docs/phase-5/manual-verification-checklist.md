@@ -1,8 +1,8 @@
 # Phase 5 — Preparation and Delivery Verification Checklist
 
-Status: Preparation gate complete; Phase 5–6 delivery checks remain open  
+Status: Phase 5 staging acceptance complete; unchecked items are deferred Phase 6 tracker checks
 Owner: Product owner, Engineering, and QA  
-Last updated: 1 August 2026
+Last updated: 2 August 2026
 
 ## A. Preparation gate before engineering
 
@@ -39,7 +39,7 @@ Last updated: 1 August 2026
 - [x] A worksheet leaves Recommended practice when the next class in its section begins but remains accessible in Timeline and Browse by section.
 - [x] Thursday, Friday, and Saturday show pre-read and practice recommendations together.
 - [x] Each practice row exposes Open worksheet; Update log appears only after Phase 6 tracking exists.
-- [x] Timeline and Browse by section expose compact Pre-read, Video and Worksheet actions; Log appears only when its tracker destination exists.
+- [x] Timeline and Browse by section expose compact Pre-read, Recording and Worksheet actions; Log appears only when its tracker destination exists.
 - [x] Available resources are buttons; unavailable resources show release text; unconfigured resources do not create broken controls.
 - [ ] Quick log supports Select all, Mark selected Done, and Mark selected for review.
 - [ ] Quick log never changes unselected questions.

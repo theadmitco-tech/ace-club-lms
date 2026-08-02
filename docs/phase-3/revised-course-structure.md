@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner
-Last updated: 1 August 2026
+Last updated: 2 August 2026
 
 ## Approved source
 
@@ -76,4 +76,4 @@ For each timeline item that has course content, Phase 3 still needs:
 - the approved positive question count entered for each worksheet;
 - confirmation that the item has no such content when intentionally empty.
 
-Phase 5 adds optional titled YouTube recording links to master items without changing this curriculum sequence.
+Phase 5 added optional titled YouTube recording links to master items without changing this curriculum sequence. Its staging acceptance and review state are recorded in the [running handoff](../handoffs/ace-club-lms-running-handoff.md).

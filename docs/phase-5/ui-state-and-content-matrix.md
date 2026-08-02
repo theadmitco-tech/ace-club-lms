@@ -1,8 +1,10 @@
 # Phase 5 — UI State and Content Matrix
 
-Status: Approved for Phase 5 implementation  
+Status: Implemented and accepted on staging for Phase 5
 Owner: Product owner and Engineering  
-Last updated: 1 August 2026
+Last updated: 2 August 2026
+
+Implementation note: Phase 5 states in this matrix passed staging acceptance. Rows under Phase 6 placeholders, manual-log access points and quick-log states remain the binding design for the next phase, not claims about the current interface.
 
 ## Navigation states
 
@@ -121,7 +123,7 @@ All entry points address the same Student–worksheet–question records. Naviga
 | Resource | Available | Unavailable | Not configured |
 | --- | --- | --- | --- |
 | Pre-read | `Pre-read` button | Availability text | Omit from compact row |
-| Video | `Video` button | Available after class | Omit from compact row |
+| Recording | `Recording` button | Available after class | Omit from compact row |
 | Worksheet | `Worksheet` button | Available after class | Omit from compact row |
 | Log | `Log` button | Available with worksheet/tracker | Omit until tracker exists |
 

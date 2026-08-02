@@ -1,12 +1,14 @@
 # Phase 5 — Student Experience Foundation
 
-Status: Preparation complete — ready for Phase 5  
+Status: Approved preparation record — Phase 5 staging acceptance complete
 Owner: Product owner and Engineering  
-Last updated: 1 August 2026
+Last updated: 2 August 2026
 
 ## Objective
 
 Prepare a decision-complete Student experience before Phase 5 application work begins. The default Student journey is chronological through Timeline, with a secondary Browse by section view for `QA`, `VA`, and `DI` only.
+
+Implementation outcome: the approved experience is implemented and accepted on staging in [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5). The [Phase 5 status](README.md), [verification checklist](manual-verification-checklist.md), and [running handoff](../handoffs/ace-club-lms-running-handoff.md) contain the current delivery evidence and continuation boundary.
 
 ## Approved experience decisions
 
@@ -24,7 +26,7 @@ Prepare a decision-complete Student experience before Phase 5 application work b
 - Manual tracker states and summaries remain Phase 6–7 scope.
 - The preparation prototype is desktop-only; the active acceptance criteria now formally defer mobile optimisation while retaining desktop, keyboard, and text-zoom support.
 
-## Current-state interface inventory
+## Pre-implementation interface inventory
 
 | Surface | Current behaviour | Decision | Phase 5 preparation consequence |
 | --- | --- | --- | --- |
@@ -40,7 +42,7 @@ Prepare a decision-complete Student experience before Phase 5 application work b
 | Curriculum classification | Cohort sessions carry `class_type`; master sessions carry `QA`, `VA`, `DI`, and non-academic event types. | Retain | Browse by section can use authoritative class type; no new topic model is required. |
 | Non-academic events | Orientation, mocks, breaks, and support calls are part of the 31-item timeline. | Adapt | Use shared event-card variants and exclude them from section browsing. |
 | Loading and empty states | Several routes use indefinite spinners or generic empty messages. | Replace | Every request resolves to success, empty, or actionable failure. |
-| Mobile | Active acceptance criteria require mobile, while the annotated preparation plan excludes it. | Unresolved | Reconcile the authoritative acceptance criteria before the preparation gate can close. |
+| Mobile | The launch interface is desktop-first. | Defer | Mobile optimisation is formally deferred by the active acceptance criteria; desktop keyboard and text-zoom support remain required. |
 
 ## Retain, adapt, remove, and defer
 
@@ -108,7 +110,7 @@ Bulk actions never affect unselected questions and must preserve one independent
 
 Phase 6 also adds a persistent **Practice log** entry in Student navigation. It opens an overview of released worksheets grouped by course week. Each worksheet shows its saved Done total, review count, and last update, and opens the same worksheet-specific log reached from Recommended practice, Timeline, or Browse by section.
 
-## Remaining preparation work
+## Preparation completion record
 
 - [x] Record the product hierarchy and navigation decisions.
 - [x] Inventory the current Student surfaces.

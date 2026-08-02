@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner
-Last updated: 1 August 2026
+Last updated: 2 August 2026
 
 **PRODUCT REQUIREMENTS**
 
@@ -14,6 +14,8 @@ Last updated: 1 August 2026
 | **Date** | 1 August 2026 |
 
 > **Scope decision:** The MVP uses Google Sign-In with controlled, pre-provisioned accounts, a fixed curriculum with approved QA/VA/DI labels, embedded Notion pre-reads, automatically released PDF worksheets, Admin-managed YouTube recordings, weekly worksheet recommendations, QA/VA/DI browsing, and a manual spreadsheet-style question tracker. The launch interface targets current desktop browsers and keyboard navigation; mobile optimisation is deferred.
+
+> **Delivery status:** Phases 1–4 are signed off. Phase 5 satisfies its staging acceptance and [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is ready for review; it is not merged or deployed to Production. Tracker criteria in sections 8–9 remain Phase 6–7 work and the full launch list in section 12 is not yet complete.
 
 ## 1. Product roles and boundaries
 | **Role** | **Purpose** | **MVP access** |
@@ -81,9 +83,9 @@ Last updated: 1 August 2026
 | Recommended practice | Prior-week released worksheets recommended as whole weekly tasks, with Open worksheet immediately and Update log after Phase 6 tracking exists |
 | This week | Current programme events and preparation; Thursday recommends DI pre-read, Friday VA pre-read and Saturday QA pre-read |
 | Dashboard navigation | Timeline by week and Browse by section for QA, VA and DI only |
-| Week 0 card | Immediately available preparation content at the top of the timeline |
+| Week 0 card | Immediately available Week 0 pre-read preparation at the top of the timeline; worksheets and recordings retain their item-end release |
 | Class card | Pre-read → class information → recording when present → worksheet → tracker |
-| Resource row | Compact Pre-read, Video and Worksheet access; Log appears only when the Phase 6 tracker destination exists |
+| Resource row | Compact Pre-read, Recording and Worksheet access; Log appears only when the Phase 6 tracker destination exists |
 | Worksheet page | Released PDF access in Phase 5; worksheet-specific spreadsheet-style log in Phase 6 |
 
 ### **AC-UI-01 — Show weekly guidance**
@@ -105,7 +107,7 @@ Last updated: 1 August 2026
 ### **AC-UI-05 — Access resources from course views**
 **Given:** A curriculum item has configured materials.
 **When:** It appears in Timeline or Browse by section.
-**Then:** A compact resource row provides direct Pre-read, Video and Worksheet access when available; Log appears only after its Phase 6 tracker destination exists, unreleased resources show availability information, and unconfigured resources do not create broken controls.
+**Then:** A compact resource row provides direct Pre-read, Recording and Worksheet access when available; Log appears only after its Phase 6 tracker destination exists, unreleased resources show availability information, and unconfigured resources do not create broken controls.
 ### **AC-UI-06 — Recommend class preparation**
 **Given:** The current programme week contains Friday DI, Saturday VA and Sunday QA classes.
 **When:** This week is viewed in the programme timezone.
@@ -260,7 +262,7 @@ Last updated: 1 August 2026
 1. A pre-provisioned Admin signs in with the approved Google account.
 1. The Admin creates a cohort and adds first-time students.
 1. Pre-provisioned Students use Google Sign-In and reach their own dashboards.
-1. Week 0 is immediately available and renders correctly.
+1. Week 0 pre-reads are immediately available and render correctly; Week 0 worksheets and recordings retain their item-end release.
 1. A later pre-read opens exactly seven days before its class.
 1. A worksheet opens automatically after its class.
 1. Recommended practice shows prior-week released worksheets as whole weekly tasks.

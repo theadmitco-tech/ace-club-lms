@@ -2,11 +2,13 @@
 
 Status: Active
 Owner: Product owner
-Last updated: 1 August 2026
+Last updated: 2 August 2026
 
 **DELIVERY ROADMAP**
 
 *A retain–repair–adapt–complete plan for the partially built Ace Club LMS*
+
+Current delivery state: Phases 1–4 are signed off. Phase 5 staging acceptance is complete and [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is ready for review, but it is not merged or deployed to Production. Phase 6 is the next unimplemented phase.
 
 | **Product** | Ace Club Learning Management System |
 | --- | --- |
@@ -83,7 +85,7 @@ Last updated: 1 August 2026
 - Build a chronological Timeline with Week 0 and curriculum-derived class cards.
 - Add Browse by section for QA, VA and DI only; keep non-academic events in Timeline.
 - Place pre-read, class, recording, worksheet and tracker in journey order.
-- Add compact Pre-read, Video and Worksheet access to Timeline and section items; prepare the shared action placement for Phase 6 Log access without exposing a dead control.
+- Add compact Pre-read, Recording and Worksheet access to Timeline and section items; prepare the shared action placement for Phase 6 Log access without exposing a dead control.
 - Allow Admins to add, title, edit and remove validated master YouTube links.
 - Copy recordings to new cohorts and propagate added or edited links to existing cohorts through explicit sync without duplicates or release-time changes.
 - Show Available now, Upcoming, Available after class and error states.
