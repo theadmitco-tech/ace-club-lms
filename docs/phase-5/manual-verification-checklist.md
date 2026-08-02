@@ -93,7 +93,7 @@ Last updated: 2 August 2026
 - [x] Admin adds and titles a valid YouTube recording on a batch session.
 - [ ] Invalid and non-YouTube links are rejected.
 - [ ] The recording receives the selected batch session's end timestamp and remains locked before it.
-- [ ] The same curriculum session can use different recording links in two batches.
+- [x] The same curriculum session can use different recording links in two batches.
 - [ ] Editing or removing one batch recording does not change another batch.
 - [ ] New cohort generation does not copy a recording.
 - [ ] Sync materials adds or updates reusable content without adding or changing recordings.

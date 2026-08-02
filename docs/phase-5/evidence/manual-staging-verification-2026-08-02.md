@@ -10,7 +10,9 @@ No account identifiers, credentials, private Student data or material URLs are r
 
 - Admin added a titled valid YouTube link from the new Recordings area for one batch session, and the recording appeared for the Student enrolled in that batch.
 - Master Base no longer exposes recording management; it retains reusable pre-reads and worksheets only.
-- Cross-batch review exposed detached copies of recordings inherited under the superseded Master Base rule. A cleanup migration was prepared; batch-isolation retest is pending.
+- Cross-batch review exposed detached copies of recordings inherited under the superseded Master Base rule. After cleanup migration `20260802234500_remove_cross_batch_legacy_recording_copies.sql`, Admin confirmed the newly added recording appeared in only its selected batch.
+- Admin added a different recording to the matching curriculum session in a second batch and confirmed that each batch displayed its own link and title.
+- Student batch-switch review exposed two stale worksheet actions whose Master Base rows had already been removed. The prior `ON DELETE SET NULL` behavior left cohort copies orphaned; cleanup and cascade migration `20260802235900_cascade_master_material_removals.sql` was prepared for staging retest.
 
 ## Verified
 
