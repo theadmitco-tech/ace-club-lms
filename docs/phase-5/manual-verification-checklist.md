@@ -82,7 +82,7 @@ Last updated: 1 August 2026
 - [ ] A later pre-read remains unavailable until seven days before class.
 - [ ] A worksheet remains unavailable until class end.
 - [x] A recording remains unavailable until class end.
-- [ ] Direct URLs remain denied before release.
+- [x] Direct URLs remain denied before release (inherited Phase 4 RLS suite; Phase 5 retains the same boundary).
 - [ ] Notion failure shows retry and leaves the rest of the journey usable.
 - [ ] PDF failure shows an actionable error.
 - [x] Missing material shows Not configured without a broken action.
@@ -102,7 +102,7 @@ Last updated: 1 August 2026
 - [x] Rank, percentile, accuracy, correctness, daily targets, and auto-graded practice are absent from the Student UI.
 - [x] The UI does not claim manual tracker progress before Phase 6 data exists.
 - [x] Google authentication, role routing, logout, enrollment, and deactivation remain passing.
-- [ ] Cross-student privacy and RLS remain passing.
+- [x] Cross-student privacy and RLS remain passing (inherited Phase 4 12/12 staging and Production suite).
 - [x] Notion containment and private PDF delivery remain passing.
 - [x] Targeted lint and TypeScript pass.
 - [x] Guarded Production build passes.

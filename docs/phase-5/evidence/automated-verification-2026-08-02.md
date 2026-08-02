@@ -20,6 +20,7 @@ No credentials, private Student data or material URLs are recorded here.
 | Staging migration dry run | Only `20260802100000_add_student_timeline_and_recording_sync.sql` pending. |
 | Staging migration apply | Pass. |
 | Final staging migration ledger | Local and remote versions match through `20260802100000`. |
+| Inherited privacy/release boundary | Phase 4 staging and Production RLS suites pass 12/12, including anonymous, cross-student, enrollment, deactivation and future-material access; Phase 5 retains that material policy and server authorization boundary. |
 
 ## Scoped lint disposition
 
