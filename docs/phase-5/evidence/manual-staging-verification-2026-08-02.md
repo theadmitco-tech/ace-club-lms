@@ -34,6 +34,7 @@ No account identifiers, credentials, private Student data or material URLs are r
 - A configured pre-read more than seven days before its class appeared to the Student as unavailable with its future release timing and no clickable action.
 - After a temporary future worksheet was configured and synchronized, the Student Timeline showed it as available only after class with no premature open action.
 - The Week 0 diagnostic worksheet also remained locked until its item ended, consistent with the signed rule that only Week 0 pre-reads release immediately; Phase 4 already verified that immediate pre-read boundary.
+- Blocking the authenticated Notion request produced the actionable pre-read error state; Retry remained available, navigation remained usable, and unblocking followed by Retry restored the content.
 
 ## Defects found
 

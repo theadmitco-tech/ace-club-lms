@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { NotionReader } from '@/components/student/NotionReader';
+import { PdfViewer } from '@/components/student/PdfViewer';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { extractNotionPageId } from '@/lib/notion';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
@@ -127,10 +128,7 @@ export default async function MaterialViewerPage({
             )}
 
             {(material.type === 'worksheet' || material.type === 'class_material') && material.file_url && (
-              <div className="file-workspace">
-                <iframe src={material.file_url} title={material.title} />
-                <a className="student-button" href={material.file_url} target="_blank" rel="noreferrer">Open or download PDF</a>
-              </div>
+              <PdfViewer fileUrl={material.file_url} title={material.title} />
             )}
 
             {(material.type === 'worksheet' || material.type === 'class_material') && !material.file_url && (

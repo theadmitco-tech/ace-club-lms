@@ -83,7 +83,7 @@ Last updated: 1 August 2026
 - [x] A worksheet remains unavailable until class end.
 - [x] A recording remains unavailable until class end.
 - [x] Direct URLs remain denied before release (inherited Phase 4 RLS suite; Phase 5 retains the same boundary).
-- [ ] Notion failure shows retry and leaves the rest of the journey usable.
+- [x] Notion failure shows retry and leaves the rest of the journey usable.
 - [ ] PDF failure shows an actionable error.
 - [x] Missing material shows Not configured without a broken action.
 - [x] Empty enrollment and empty curriculum states explain what to do next.
