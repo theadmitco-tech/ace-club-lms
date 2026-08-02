@@ -31,6 +31,9 @@ No account identifiers, credentials, private Student data or material URLs are r
 - Product Owner visual sign-off confirmed that Recommended practice sits clearly above a compact This week callout and that academic, orientation, mock, break, and support Timeline variants are understandable.
 - PR review follow-up passed on staging: removing the test master recording removed its linked Student action, and Back to Timeline from a non-current item opened the target week with the item visible.
 - A newly generated disposable staging cohort inherited its master recording with the correct post-class release timestamp.
+- A configured pre-read more than seven days before its class appeared to the Student as unavailable with its future release timing and no clickable action.
+- After a temporary future worksheet was configured and synchronized, the Student Timeline showed it as available only after class with no premature open action.
+- The Week 0 diagnostic worksheet also remained locked until its item ended, consistent with the signed rule that only Week 0 pre-reads release immediately; Phase 4 already verified that immediate pre-read boundary.
 
 ## Defects found
 

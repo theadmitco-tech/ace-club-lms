@@ -78,9 +78,9 @@ Last updated: 1 August 2026
 
 ### Materials and failures
 
-- [ ] Week 0 configured content is immediately available.
-- [ ] A later pre-read remains unavailable until seven days before class.
-- [ ] A worksheet remains unavailable until class end.
+- [x] Week 0 configured pre-reads are immediately available; Week 0 worksheets retain their item-end release (inherited Phase 4 verification).
+- [x] A later pre-read remains unavailable until seven days before class.
+- [x] A worksheet remains unavailable until class end.
 - [x] A recording remains unavailable until class end.
 - [x] Direct URLs remain denied before release (inherited Phase 4 RLS suite; Phase 5 retains the same boundary).
 - [ ] Notion failure shows retry and leaves the rest of the journey usable.
