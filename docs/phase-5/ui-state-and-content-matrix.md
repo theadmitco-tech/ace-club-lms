@@ -9,7 +9,7 @@ Last updated: 1 August 2026
 | Context | Display | Behaviour |
 | --- | --- | --- |
 | Student arrives | Timeline selected | Show This week followed by week-grouped curriculum. |
-| Student arrives with prior-week practice | Timeline selected | Show Recommended practice above This week. |
+| Student arrives with an active section worksheet | Timeline selected | Show Recommended practice above This week. |
 | Week 0 during programme Week 0 | Open by default | Student may collapse it. |
 | Week 0 after programme Week 0 | Collapsed by default | Student may expand it. |
 | Current week | Open by default | Student may collapse it. |
@@ -35,15 +35,17 @@ The Recommended label affects emphasis only. It does not alter release state or 
 
 | Condition | Display | Actions |
 | --- | --- | --- |
-| One released prior-week worksheet | Recommended practice with the whole worksheet as one weekly task | Open worksheet; add Update log when Phase 6 tracking exists |
-| Several released prior-week worksheets | Show one Recommended practice section; list each whole worksheet once as its own task row | Open worksheet on every row; add Update log to that row when Phase 6 tracking exists |
+| A section class has ended and its next same-section class has not begun | Recommend that class's released worksheet as one whole task | Open worksheet; add Update log when Phase 6 tracking exists |
+| DI, VA, and QA each have an active worksheet window | Show one Recommended practice section with at most one worksheet per section | Open worksheet on every row; add Update log to that row when Phase 6 tracking exists |
+| The next class in a section begins | Remove the preceding worksheet from Recommended practice only | Keep it available in Timeline and Browse by section |
+| The final class in a section ends | Keep its released worksheet recommended because there is no later same-section class | Open worksheet |
 | Thursday, Friday, or Saturday with a pre-read recommendation | Show preparation recommendation and Recommended practice together | Keep both usable |
-| Any day in the current week | Keep the same weekly worksheet tasks visible | Do not invent a daily quota or question range |
+| Any day | Derive the active worksheet independently for DI, VA, and QA | Do not invent a daily quota or question range |
 | Worksheet released but Phase 6 tracker not active | Show Open worksheet only | Do not render a disabled or broken Update log control |
 | Tracker active | Show whole-worksheet manual status summary | Update log deep-links to worksheet |
 | Worksheet has no tracker destination | Do not expose a broken control | Keep the released worksheet accessible normally |
 
-Recommended practice uses prior-week worksheet release state only. It must not restore daily targets, rank, accuracy, correctness, class comparison, streak, or automated grading.
+Recommended practice uses class end and the next same-section class start as its display window. This affects only recommendation placement; released worksheets remain available elsewhere. It must not restore daily targets, rank, accuracy, correctness, class comparison, streak, or automated grading.
 
 ## Material states
 

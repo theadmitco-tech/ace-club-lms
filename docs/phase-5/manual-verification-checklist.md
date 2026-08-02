@@ -13,7 +13,7 @@ Last updated: 1 August 2026
 - [x] Topic tags and topic taxonomy are excluded.
 - [x] This week replaces “Today’s task.”
 - [x] Thursday DI, Friday VA, and Saturday QA recommendation rules are documented.
-- [x] Whole prior-week worksheet practice and direct log-access rules are documented without daily quotas.
+- [x] Rotating per-section worksheet recommendations and direct log-access rules are documented without daily quotas.
 - [x] YouTube recording scope and propagation requirements are documented.
 - [x] Phase 5 delivery exit criteria are written before implementation.
 - [x] Mobile optimisation is formally deferred in the authoritative MVP acceptance criteria; desktop, keyboard, and text-zoom support remain required.
@@ -35,7 +35,8 @@ Last updated: 1 August 2026
 - [ ] Thursday state recommends DI pre-read.
 - [ ] Friday state recommends VA pre-read.
 - [ ] Saturday state recommends QA pre-read.
-- [ ] Recommended practice shows whole prior-week released worksheets throughout the current week.
+- [ ] Recommended practice shows at most one active released worksheet each for DI, VA, and QA.
+- [ ] A worksheet leaves Recommended practice when the next class in its section begins but remains accessible in Timeline and Browse by section.
 - [ ] Thursday, Friday, and Saturday show pre-read and practice recommendations together.
 - [ ] Each practice row exposes Open worksheet; Update log appears only after Phase 6 tracking exists.
 - [ ] Timeline and Browse by section expose compact Pre-read, Video and Worksheet actions; Log appears only when its tracker destination exists.
@@ -64,8 +65,8 @@ Last updated: 1 August 2026
 - [ ] Friday recommends the Saturday VA pre-read.
 - [ ] Saturday recommends the Sunday QA pre-read.
 - [ ] Other days show weekly actions without a forced recommendation.
-- [ ] The current week loads each applicable released prior-week worksheet as one whole weekly task.
-- [ ] Multiple worksheets remain distinguishable inside one Recommended practice group.
+- [ ] Each section worksheet enters Recommended practice after its class ends and remains until the next same-section class begins.
+- [ ] The final released worksheet in each section remains recommended when no later same-section class exists.
 - [ ] Open worksheet reaches the matching released PDF.
 - [ ] After Phase 6 activation, Update log reaches the matching worksheet tracker.
 - [ ] Update log from This week and Timeline reaches the same worksheet records and does not create duplicates.

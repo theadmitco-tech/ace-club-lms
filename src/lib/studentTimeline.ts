@@ -95,17 +95,37 @@ export function isAcademicSection(value: string | null): value is AcademicSectio
   return value === 'QA' || value === 'VA' || value === 'DI';
 }
 
-export function getPriorWeekPractice(
+export function getRecommendedPractice(
   sessions: StudentTimelineSession[],
-  currentWeek: number,
+  generatedAt: string,
 ) {
-  if (currentWeek <= 0) return [];
+  const now = new Date(generatedAt).getTime();
+  const sections: AcademicSection[] = ['DI', 'VA', 'QA'];
 
-  return sessions
-    .filter((session) => session.week_number === currentWeek - 1)
-    .flatMap((session) => session.materials
-      .filter((material) => material.type === 'worksheet' && material.is_available)
-      .map((material) => ({ session, material })));
+  return sections.flatMap((section) => {
+    const sectionSessions = sessions
+      .filter((session) => session.class_type === section)
+      .sort((left, right) => (
+        new Date(left.session_date).getTime() - new Date(right.session_date).getTime()
+      ));
+
+    const activeSession = sectionSessions.find((session, index) => {
+      const sessionEnd = new Date(session.session_end_at ?? session.session_date).getTime();
+      const nextSession = sectionSessions[index + 1];
+      const nextSessionStart = nextSession
+        ? new Date(nextSession.session_date).getTime()
+        : Number.POSITIVE_INFINITY;
+
+      return sessionEnd <= now && now < nextSessionStart;
+    });
+    if (!activeSession) return [];
+
+    const worksheet = activeSession.materials.find((material) => (
+      material.type === 'worksheet' && material.is_available
+    ));
+
+    return worksheet ? [{ session: activeSession, material: worksheet }] : [];
+  });
 }
 
 export function getPreReadRecommendation(

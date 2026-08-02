@@ -45,7 +45,7 @@ The working decisions are:
 - Do not label or visually emphasize a Timeline item as current, next, or latest; This week already communicates programme position.
 - Use a **This week** callout instead of a “Today’s task” callout.
 - Recommend the DI pre-read on Thursday, the VA pre-read on Friday, and the QA pre-read on Saturday using the programme timezone.
-- Show **Recommended practice** throughout the current week for every released prior-week worksheet, alongside any day-specific pre-read recommendation.
+- Show **Recommended practice** for at most one released worksheet each from DI, VA, and QA, from class end until the next same-section class begins.
 - Place Recommended practice above This week so the recurring weekday work is visible first.
 - Give each recommended worksheet direct **Open worksheet** and **Update log** actions; Phase 5 reserves the placement and Phase 6 activates the manual log destination.
 - Present useful actions directly on each applicable item without forcing primary and secondary labels.
@@ -113,8 +113,8 @@ Weekly callout rules:
 7. A recommendation changes emphasis only; it does not alter release time, authorization, or access.
 8. Outside Thursday–Saturday, show the week's available actions without inventing a recommended task.
 9. Week 0 and exceptional weeks show their actual mocks, calls, orientation, breaks, or support events instead of applying the DI/VA/QA pattern.
-10. Show each released prior-week worksheet as one whole weekly task under **Recommended practice**; do not divide it into daily question ranges.
-11. When several prior-week worksheets apply, keep them within one Recommended practice group and show each worksheet separately.
+10. Show the active released worksheet for each section as one whole task under **Recommended practice**; do not divide it into daily question ranges.
+11. Keep no more than one worksheet each for DI, VA, and QA in the group. Remove a worksheet from recommendations when the next same-section class begins, without removing it from Timeline or Browse by section.
 12. Recommended practice provides **Open worksheet** immediately and **Update log** once the Phase 6 manual tracker route exists.
 13. On Thursday and Friday, the pre-read recommendation and Recommended practice are both visible; neither replaces the other.
 14. Recommended practice renders immediately above This week on the Student home.
@@ -194,7 +194,7 @@ Codex will produce an interactive prototype for review containing:
 - A desktop Student-home presentation.
 - Timeline and Browse by section view controls.
 - A This week callout with Thursday DI, Friday VA, and Saturday QA recommendation states.
-- A Recommended practice group for whole released prior-week worksheets, with Open worksheet and Update log actions.
+- A Recommended practice group with a rotating maximum of one whole released worksheet each for DI, VA, and QA, with Open worksheet and Update log actions.
 - Compact resource rows inside Timeline and Browse by section items for Pre-read, Video, Worksheet, and Log.
 - A worksheet/log workspace demonstrating selection, bulk Done, review exceptions, saving, saved, and retry states.
 - Week-grouped expand and collapse behaviour, with only the current programme week open by default.
@@ -394,7 +394,7 @@ The prototype and later Phase 5 implementation must cover:
 21. Show the This week callout without a “Today’s task” label.
 22. Recommend the DI pre-read on Thursday, VA pre-read on Friday, and QA pre-read on Saturday in `Asia/Kolkata`.
 23. Confirm day-based recommendation changes do not alter database release timestamps or direct-URL protection.
-24. Show each released prior-week worksheet as one weekly Recommended practice task throughout the current week.
+24. Recommend each section's latest released worksheet from class end until the next same-section class begins, with a maximum of three tasks.
 25. On Thursday and Friday, show both the pre-read recommendation and Recommended practice.
 26. Open worksheet reaches the released PDF; Update log reaches the matching worksheet tracker after Phase 6.
 27. Timeline and Browse by section expose compact Pre-read, Video, Worksheet, and Log resource rows without icon-only or broken controls.
@@ -447,7 +447,7 @@ The preparation checkpoint passes only when:
 - A Student can switch between Timeline and Browse by section and reach the same curriculum content without duplication.
 - QA, VA, and DI results contain the correct curriculum items in course order; non-academic events remain Timeline-only.
 - The This week callout recommends DI on Thursday, VA on Friday, and QA on Saturday in the programme timezone.
-- Recommended practice shows every applicable released prior-week worksheet as a whole weekly task.
+- Recommended practice shows at most one applicable released worksheet each for DI, VA, and QA as a whole task.
 - Recommended practice appears above This week.
 - Each Recommended practice item offers Open worksheet and, after Phase 6 activation, Update log for the matching tracker.
 - Available, upcoming, after-class, not-configured, loading, empty, and failed states are distinct and understandable.
@@ -491,7 +491,7 @@ Phase 5 implementation will be accepted only when all of the following pass in s
 - Thursday recommends the released pre-read for Friday's DI class.
 - Friday recommends the released pre-read for Saturday's VA class.
 - Saturday recommends the released pre-read for Sunday's QA class.
-- Recommended practice shows released prior-week worksheets as whole weekly tasks without daily targets or question ranges.
+- Recommended practice rotates whole released worksheets by section without daily targets or question ranges.
 - Thursday and Friday show both the applicable pre-read recommendation and Recommended practice.
 - Recommendation-day and practice-target selection use the course timezone, currently `Asia/Kolkata`.
 - Outside the day-specific pre-read pattern, the callout presents the week's available actions and scheduled practice without inventing another preparation recommendation.

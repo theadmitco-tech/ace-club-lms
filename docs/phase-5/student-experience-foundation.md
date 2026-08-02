@@ -12,7 +12,7 @@ Prepare a decision-complete Student experience before Phase 5 application work b
 
 - The dashboard callout is **This week**, not “Today’s task.”
 - Thursday recommends the DI pre-read, Friday recommends the VA pre-read, and Saturday recommends the QA pre-read in `Asia/Kolkata`.
-- Recommended practice shows every released prior-week worksheet as a whole weekly task throughout the current week.
+- Recommended practice shows at most one released worksheet each for DI, VA, and QA: from that class's end until the next class in the same section begins.
 - Recommended practice appears above This week.
 - Recommended practice provides Open worksheet immediately. Phase 6 adds Update log on each worksheet row and a central Practice log overview.
 - Timeline remains the default and groups the 31 fixed curriculum items by week.
@@ -93,12 +93,12 @@ The callout contains the current programme week's events and available actions. 
 
 The recommendation is derived in `Asia/Kolkata`. It never changes `available_from`, hides another released material, or grants access to locked content. Week 0 and exceptional weeks use their actual scheduled events.
 
-The dashboard includes a **Recommended practice** group sourced from released prior-week worksheets. Each worksheet is one whole weekly task with two adjacent actions:
+The dashboard includes a **Recommended practice** group sourced independently from DI, VA, and QA. A released worksheet enters the group when its class ends and leaves when the next class in that section begins. The final worksheet in a section remains because no later same-section class exists. Each worksheet is one whole task with two adjacent actions:
 
 - **Open worksheet** — opens the authenticated released PDF.
 - **Update log** — opens the matching worksheet tracker once Phase 6 activates manual tracking.
 
-If several prior-week worksheets apply, they appear as separate rows inside the same Recommended practice group. Practice remains visible alongside Thursday DI, Friday VA, and Saturday QA pre-read recommendations.
+At most one worksheet per section appears, so the group contains no more than three rows. Rotation affects Recommended practice only; every released worksheet remains accessible in Timeline and Browse by section. Practice remains visible alongside Thursday DI, Friday VA, and Saturday QA pre-read recommendations.
 
 ## Quick-log experience
 

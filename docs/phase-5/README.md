@@ -7,7 +7,7 @@ Last updated: 2 August 2026
 ## Implemented vertical slice
 
 - Server-composed Student timeline data with locked-material metadata and no locked URLs.
-- Recommended practice for released prior-week worksheets as whole weekly tasks.
+- Recommended practice with a rotating maximum of one released worksheet each for DI, VA, and QA.
 - This week guidance with Thursday DI, Friday VA and Saturday QA pre-read emphasis in the programme timezone.
 - A 31-item week-grouped Timeline plus QA, VA and DI section browsing over the same curriculum records.
 - Compact released Pre-read, Video and Worksheet access with explicit upcoming, after-class and not-configured states.

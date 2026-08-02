@@ -25,3 +25,7 @@ Both fixes were implemented and confirmed on the refreshed Preview deployment on
 ## Still open
 
 Section browsing, timeline expansion, material states and destinations, direct-URL denial, Admin recording management and explicit cohort synchronization remain to be verified one focused scenario at a time.
+
+## Product-rule revision
+
+The initial prior-week recommendation behavior recorded above was superseded after review. Recommended practice now rotates independently for DI, VA, and QA: a released worksheet appears after its class ends and leaves when the next same-section class begins. This display rule does not remove released worksheets from Timeline or Browse by section and awaits manual Preview confirmation.

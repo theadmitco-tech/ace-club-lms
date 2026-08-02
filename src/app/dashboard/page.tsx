@@ -10,7 +10,7 @@ import {
   getCurrentProgrammeWeek,
   getMaterialAvailabilityCopy,
   getPreReadRecommendation,
-  getPriorWeekPractice,
+  getRecommendedPractice,
   groupTimelineByWeek,
   isAcademicSection,
   type AcademicSection,
@@ -77,7 +77,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
   const currentWeek = getCurrentProgrammeWeek(course, generatedAt);
   const weekGroups = groupTimelineByWeek(sessions);
   const thisWeekSessions = sessions.filter((session) => session.week_number === currentWeek);
-  const recommendedPractice = getPriorWeekPractice(sessions, currentWeek);
+  const recommendedPractice = getRecommendedPractice(sessions, generatedAt);
   const preReadRecommendation = getPreReadRecommendation(
     sessions,
     currentWeek,
@@ -111,7 +111,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
                   <span className="student-eyebrow">Weekly task</span>
                   <h2 id="recommended-practice-title">Recommended practice</h2>
                 </div>
-                <p>Work through each released worksheet from Week {currentWeek - 1} during this week.</p>
+                <p>Complete each section&apos;s latest worksheet before its next class begins.</p>
               </div>
               {recommendedPractice.length > 0 ? (
                 <div className="practice-list">
@@ -129,8 +129,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
                 </div>
               ) : (
                 <div className="practice-empty">
-                  <strong>No released Week {currentWeek - 1} worksheets yet</strong>
-                  <p>When a prior-week worksheet is released, it will remain here as a whole weekly task.</p>
+                  <strong>No worksheets are currently recommended</strong>
+                  <p>A section&apos;s worksheet appears here after class and leaves when that section&apos;s next class begins.</p>
                 </div>
               )}
             </section>
