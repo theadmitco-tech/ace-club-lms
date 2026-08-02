@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-Last updated: 1 August 2026
+Last updated: 2 August 2026
 
 This is the current cross-phase continuity document. Append a signed section when a phase closes; preserve earlier sections as historical snapshots instead of rewriting them to match later state.
 
@@ -419,3 +419,48 @@ Before writing Phase 5 application code:
 ### Resume instruction
 
 > Continue Ace Club LMS from this signed Pre–Phase 5 foundation checkpoint. Read every item under Required reading before Phase 5 implementation. Phase 5 application work is now authorized. Preserve the 31-item schedule and database-owned release boundaries. Do not reintroduce daily worksheet targets, topic taxonomy, rankings, correctness, accuracy, or auto-graded practice. Include master YouTube-link management and propagation in Phase 5. Show worksheet access in Phase 5 without a dead Log control; keep the central Practice log, worksheet tracker persistence and bulk-selected status changes in Phase 6. Use repository and terminal checks only unless the Product Owner explicitly authorizes another tool, and assign one account-dependent manual task at a time.
+
+---
+
+## Phase 5 handoff — Adapt the Student experience
+
+Date: 2 August 2026
+Status: **Staging acceptance complete — pull request ready for review**
+
+### Completed implementation
+
+- The Student dashboard now presents Recommended practice above This week, followed by a chronological 31-item Timeline grouped by programme week.
+- Timeline is the default view. Browse by section exposes exactly QA, VA, and DI in curriculum order; non-academic events remain Timeline-only.
+- Recommended practice independently rotates a maximum of one released worksheet each for DI, VA, and QA. A worksheet enters after its class ends, leaves when the next same-section class begins, and remains available in Timeline and section browsing.
+- Timeline and section cards expose compact Pre-read, Recording, and Worksheet actions only when configured. Locked resources show release timing, and missing resources do not create broken controls.
+- Week 0 uses controlled disclosure state: it opens during programme Week 0, starts collapsed after advancement, and remains expandable. Past or future material return links open their target week and focus the matching Timeline card.
+- Curriculum-item and material destinations preserve the preparation, class, recording, and worksheet journey. Timeline/section switching preserves scroll position.
+- Student sign-out redirects to login and reports failures. Global Admin/Student operation notifications are mounted and dismissible.
+- Notion and protected PDF viewers provide explicit loading, failure, retry, and recovery states. Private PDF access continues through short-lived authenticated signed URLs.
+- Admins can add, title, edit, validate, remove, and synchronize master YouTube recordings. New cohorts inherit recordings; explicit existing-cohort sync remains additive/idempotent and updates linked recording metadata without changing `available_from`.
+- Removing a master recording atomically removes its linked cohort copies so Students do not retain stale access.
+- Rank, percentile, correctness, accuracy, streak, daily targets, and auto-graded practice are absent from the reachable Student experience.
+
+### Staging verification and review fixes
+
+- The complete Phase 5 manual record is in [manual staging verification](../phase-5/evidence/manual-staging-verification-2026-08-02.md), and the acceptance state is in the [Phase 5 checklist](../phase-5/manual-verification-checklist.md).
+- Product Owner staging checks passed for Timeline and QA/VA/DI browsing, rotating recommendations, material destinations and release states, Week 0 behaviour, sign-out, notification feedback, scroll preservation, return navigation, recording validation and propagation, private YouTube viewing, and recoverable Notion/PDF failures.
+- New-cohort recording inheritance, existing-cohort add/edit synchronization, and linked-copy removal passed on staging without changing release timestamps.
+- Review found and fixed two release-path defects: master-recording removal previously left linked cohort copies, and return navigation could target a card inside an unrendered collapsed week.
+- Staging migrations are applied and reconciled through `20260802180000_remove_master_recordings_from_cohorts.sql`. Production has not received Phase 5 migrations or application code.
+- `npx tsc --noEmit`, targeted ESLint for Phase 5-touched files, deterministic recommendation/release assertions, and the guarded Next.js 16.2.4 Production build pass. Vercel Preview checks pass.
+
+### Pull request and release boundary
+
+- Branch: `codex/phase-5-student-experience`.
+- Pull request: [#5 — Build Phase 5 student course experience](https://github.com/theadmitco-tech/ace-club-lms/pull/5).
+- Accepted implementation head before this handoff-only update: `e401450`.
+- PR #5 is ready for review, clean, and mergeable. It has not been merged.
+- Production remains untouched. Reviewer approval, merge, and any Production rollout are separate decisions.
+- Repository-wide lint still reports 22 errors and 3 warnings in untouched legacy Admin worksheet/session editors, registration/payment routes, and helpers. Phase 5-touched files are clean; do not misreport the legacy lint baseline as resolved.
+
+### Phase 6 continuation point
+
+Phase 6 is **Simplify the tracker**. The only unchecked items in the shared Phase 5–6 checklist are intentionally deferred tracker behaviours: the persistent Practice log, worksheet-specific Student–worksheet–question records, Select all, bulk Done/review updates that never affect unselected questions, persistence, shared deep links, and partial-failure retry.
+
+Do not add a Log or Update log control until its real Phase 6 destination and persisted records exist. Every future entry point from Recommended practice, Timeline, Browse by section, and the central Practice log must address the same worksheet records without duplication. Begin Phase 6 only after the Phase 5 review/merge decision and from the then-current `origin/main`.
