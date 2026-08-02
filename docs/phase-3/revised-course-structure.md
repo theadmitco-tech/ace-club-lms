@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner
-Last updated: 31 July 2026
+Last updated: 1 August 2026
 
 ## Approved source
 
@@ -29,7 +29,7 @@ The Product Owner supplied this fixed course structure on 31 July 2026:
 - Orientation, mocks, support calls, and breaks use distinct event types with no inferred instructor.
 - Each non-empty week/day cell gets a stable key in the form `wNN-weekday-slug`.
 - Repeated mock sessions expand to separate Week 10, 12, 14, and 16 rows.
-- Titles remain exactly as supplied; display-name changes require Product Owner approval.
+- The Product Owner approved detailed QA/VA/DI academic labels on 1 August 2026. Stable curriculum keys, sequence, week, day, type and instructor remain unchanged.
 
 ## Normalized sequence
 
@@ -39,26 +39,26 @@ The Product Owner supplied this fixed course structure on 31 July 2026:
 | 2 | `w00-sat-individual-calls-to-analyse` | 0 | Saturday | Individual calls to analyse | SUPPORT | — |
 | 3 | `w00-sun-individual-calls-to-analyse` | 0 | Sunday | Individual calls to analyse | SUPPORT | — |
 | 4 | `w01-fri-orientation-1hr` | 1 | Friday | Orientation - 1hr | ORIENTATION | — |
-| 5 | `w01-sat-verbal-1` | 1 | Saturday | Verbal 1 | VA | Tanya |
-| 6 | `w01-sun-quant-1` | 1 | Sunday | Quant 1 | QA | Unnati |
-| 7 | `w02-fri-di-1` | 2 | Friday | DI 1 | DI | Ishan |
-| 8 | `w02-sat-verbal-2` | 2 | Saturday | Verbal 2 | VA | Tanya |
-| 9 | `w02-sun-quant-2` | 2 | Sunday | Quant 2 | QA | Unnati |
-| 10 | `w03-fri-di-2` | 3 | Friday | DI 2 | DI | Ishan |
-| 11 | `w03-sat-verbal-3` | 3 | Saturday | Verbal 3 | VA | Tanya |
-| 12 | `w03-sun-quant-3` | 3 | Sunday | Quant 3 | QA | Unnati |
+| 5 | `w01-sat-verbal-1` | 1 | Saturday | VA 1: RC Intro + CR Inferences | VA | Tanya |
+| 6 | `w01-sun-quant-1` | 1 | Sunday | QA 1: Fractions + Percentages + Ratios & Mixtures + SI/CI | QA | Unnati |
+| 7 | `w02-fri-di-1` | 2 | Friday | DI 1: DS + GI | DI | Ishan |
+| 8 | `w02-sat-verbal-2` | 2 | Saturday | VA 2: RC Mind-Mapping + CR Finding the Assumptions | VA | Tanya |
+| 9 | `w02-sun-quant-2` | 2 | Sunday | QA 2: Pipes & Cisterns + Work & Time + Speed, Time, Distance | QA | Unnati |
+| 10 | `w03-fri-di-2` | 3 | Friday | DI 2: DS + TA | DI | Ishan |
+| 11 | `w03-sat-verbal-3` | 3 | Saturday | VA 3: RC Primary Purpose + CR Strengthen/Weaken the Conclusion | VA | Tanya |
+| 12 | `w03-sun-quant-3` | 3 | Sunday | QA 3: Probability + Permutation & Combination | QA | Unnati |
 | 13 | `w04-fri-break` | 4 | Friday | Break | BREAK | — |
 | 14 | `w04-sat-mock-2` | 4 | Saturday | Mock 2 | MOCK | — |
 | 15 | `w04-sun-group-call-how-to-analyse-mocks` | 4 | Sunday | Group call: How to analyse mocks + individual calls over the week | SUPPORT | — |
-| 16 | `w05-fri-di-3` | 5 | Friday | DI 3 | DI | Ishan |
-| 17 | `w05-sat-verbal-4` | 5 | Saturday | Verbal 4 | VA | Tanya |
-| 18 | `w05-sun-quant-4` | 5 | Sunday | Quant 4 | QA | Unnati |
-| 19 | `w06-fri-di-4` | 6 | Friday | DI 4 | DI | Ishan |
-| 20 | `w06-sat-verbal-5` | 6 | Saturday | Verbal 5 | VA | Tanya |
-| 21 | `w06-sun-quant-5` | 6 | Sunday | Quant 5 | QA | Unnati |
-| 22 | `w07-fri-di-5` | 7 | Friday | DI 5 | DI | Ishan |
-| 23 | `w07-sat-verbal-6` | 7 | Saturday | Verbal 6 | VA | Tanya |
-| 24 | `w07-sun-quant-6` | 7 | Sunday | Quant 6 | QA | Unnati |
+| 16 | `w05-fri-di-3` | 5 | Friday | DI 3: MSR + TPA | DI | Ishan |
+| 17 | `w05-sat-verbal-4` | 5 | Saturday | VA 4: RC Point of View + CR Evaluate the Conclusion | VA | Tanya |
+| 18 | `w05-sun-quant-4` | 5 | Sunday | QA 4: Polynomials + Functions + Equations + Inequalities | QA | Unnati |
+| 19 | `w06-fri-di-4` | 6 | Friday | DI 4: MSR + TPA (Non-Math) | DI | Ishan |
+| 20 | `w06-sat-verbal-5` | 6 | Saturday | VA 5: RC Inference Qs + CR Complete the Argument | VA | Tanya |
+| 21 | `w06-sun-quant-5` | 6 | Sunday | QA 5: Number Properties + Multiples & Factors + Powers & Roots + Exponents | QA | Unnati |
+| 22 | `w07-fri-di-5` | 7 | Friday | DI 5: Mix bag | DI | Ishan |
+| 23 | `w07-sat-verbal-6` | 7 | Saturday | VA 6: RC Function & Role Qs + CR Paradoxes + Boldface | VA | Tanya |
+| 24 | `w07-sun-quant-6` | 7 | Sunday | QA 6: Averages + Descriptive Stats + Set Theory + Progressions | QA | Unnati |
 | 25 | `w08-fri-break` | 8 | Friday | Break | BREAK | — |
 | 26 | `w08-sat-mock-3` | 8 | Saturday | Mock 3 | MOCK | — |
 | 27 | `w08-sun-individual-calls-over-week` | 8 | Sunday | Individual calls over the week | SUPPORT | — |
@@ -75,3 +75,5 @@ For each timeline item that has course content, Phase 3 still needs:
 - one or more worksheet PDFs uploaded by an Admin;
 - the approved positive question count entered for each worksheet;
 - confirmation that the item has no such content when intentionally empty.
+
+Phase 5 adds optional titled YouTube recording links to master items without changing this curriculum sequence.

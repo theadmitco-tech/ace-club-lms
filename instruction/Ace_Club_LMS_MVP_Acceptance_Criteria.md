@@ -2,8 +2,7 @@
 
 Status: Active
 Owner: Product owner
-Last updated: 31 July 2026
-Source artifact: [MVP Acceptance Criteria DOCX](Ace_Club_LMS_MVP_Acceptance_Criteria.docx)
+Last updated: 1 August 2026
 
 **PRODUCT REQUIREMENTS**
 
@@ -12,9 +11,9 @@ Source artifact: [MVP Acceptance Criteria DOCX](Ace_Club_LMS_MVP_Acceptance_Crit
 | **Product** | Ace Club Learning Management System |
 | --- | --- |
 | **Version** | MVP — current agreed scope |
-| **Date** | 30 July 2026 |
+| **Date** | 1 August 2026 |
 
-> **Scope decision:** The MVP uses Google Sign-In with controlled, pre-provisioned accounts, a fixed curriculum, embedded Notion pre-reads, automatically released PDF worksheets, and a manual spreadsheet-style question tracker.
+> **Scope decision:** The MVP uses Google Sign-In with controlled, pre-provisioned accounts, a fixed curriculum with approved QA/VA/DI labels, embedded Notion pre-reads, automatically released PDF worksheets, Admin-managed YouTube recordings, weekly worksheet recommendations, QA/VA/DI browsing, and a manual spreadsheet-style question tracker. The launch interface targets current desktop browsers and keyboard navigation; mobile optimisation is deferred.
 
 ## 1. Product roles and boundaries
 | **Role** | **Purpose** | **MVP access** |
@@ -69,21 +68,28 @@ Source artifact: [MVP Acceptance Criteria DOCX](Ace_Club_LMS_MVP_Acceptance_Crit
 **When:** The schedule is generated.
 **Then:** DI displays Ishan, VA displays Tanya and QA displays Unnati.
 ### **AC-COURSE-04 — Reuse master content**
-**Given:** Notion pre-reads and PDF worksheets are configured on the master course.
+**Given:** Notion pre-reads, PDF worksheets or YouTube recordings are configured on the master course.
 **When:** A new cohort is created.
 **Then:** The cohort inherits those materials without duplicate uploads.
+### **AC-COURSE-05 — Use approved academic labels**
+**Given:** A QA, VA or DI master class exists.
+**When:** It appears in Timeline, Browse by section, Admin or Student material views.
+**Then:** It uses the approved detailed class label recorded in the revised curriculum; the interface does not infer labels from titles or introduce topic taxonomy.
 ## 4. Student dashboard and course timeline
 | **Placement** | **What appears there** |
 | --- | --- |
-| Dashboard | Continue your course, next class and a concise progress summary |
+| Recommended practice | Prior-week released worksheets recommended as whole weekly tasks, with Open worksheet immediately and Update log after Phase 6 tracking exists |
+| This week | Current programme events and preparation; Thursday recommends DI pre-read, Friday VA pre-read and Saturday QA pre-read |
+| Dashboard navigation | Timeline by week and Browse by section for QA, VA and DI only |
 | Week 0 card | Immediately available preparation content at the top of the timeline |
-| Class card | Pre-read → class information → worksheet → tracker |
-| Worksheet page | PDF and spreadsheet-style tracker; side by side on desktop or tabs on mobile |
+| Class card | Pre-read → class information → recording when present → worksheet → tracker |
+| Resource row | Compact Pre-read, Video and Worksheet access; Log appears only when the Phase 6 tracker destination exists |
+| Worksheet page | Released PDF access in Phase 5; worksheet-specific spreadsheet-style log in Phase 6 |
 
-### **AC-UI-01 — Show the next action**
+### **AC-UI-01 — Show weekly guidance**
 **Given:** A student has course access.
 **When:** The dashboard loads.
-**Then:** The most relevant action is displayed: start Week 0, open a pre-read, view an upcoming class, open a worksheet or continue tracking.
+**Then:** Recommended practice appears above This week; prior-week released worksheets are shown as whole weekly tasks without daily quotas or question ranges, and current preparation remains visible.
 ### **AC-UI-02 — Display material states**
 **Given:** A class has associated content.
 **When:** The student views the timeline.
@@ -92,6 +98,18 @@ Source artifact: [MVP Acceptance Criteria DOCX](Ace_Club_LMS_MVP_Acceptance_Crit
 **Given:** A material has not reached its release time.
 **When:** The student attempts to open it from the interface or a direct URL.
 **Then:** Access is denied and the scheduled availability information is shown.
+### **AC-UI-04 — Browse by section**
+**Given:** The fixed curriculum contains academic and non-academic items.
+**When:** A student opens Browse by section.
+**Then:** Exactly QA, VA and DI are offered; each lists its curriculum items in course order, while mocks, orientation, breaks and support events remain Timeline-only.
+### **AC-UI-05 — Access resources from course views**
+**Given:** A curriculum item has configured materials.
+**When:** It appears in Timeline or Browse by section.
+**Then:** A compact resource row provides direct Pre-read, Video and Worksheet access when available; Log appears only after its Phase 6 tracker destination exists, unreleased resources show availability information, and unconfigured resources do not create broken controls.
+### **AC-UI-06 — Recommend class preparation**
+**Given:** The current programme week contains Friday DI, Saturday VA and Sunday QA classes.
+**When:** This week is viewed in the programme timezone.
+**Then:** Thursday recommends the DI pre-read, Friday recommends the VA pre-read and Saturday recommends the QA pre-read; this emphasis does not change release timestamps or authorization.
 ## 5. Notion pre-reads
 ### **AC-READ-01 — Render Week 0 immediately**
 **Given:** A student receives course access.
@@ -126,7 +144,24 @@ Source artifact: [MVP Acceptance Criteria DOCX](Ace_Club_LMS_MVP_Acceptance_Crit
 **Given:** The worksheet and question rows exist in master-course data.
 **When:** A cohort inherits the worksheet.
 **Then:** The PDF and its question structure cannot be edited from the cohort or student portal.
-## 7. Student question tracker
+### **AC-WS-04 — Recommend prior-week worksheets**
+**Given:** One or more worksheets from the prior programme week have been released.
+**When:** The student opens the dashboard during the current week.
+**Then:** Each released worksheet appears once under Recommended practice as a whole weekly task; the MVP does not divide it into daily question ranges.
+## 7. YouTube recordings
+### **AC-VIDEO-01 — Manage master recordings**
+**Given:** An Admin is editing a master curriculum item.
+**When:** They add, title, edit or remove a supported YouTube or youtu.be link.
+**Then:** The master recording saves with actionable validation and no uploaded-video or arbitrary-iframe requirement.
+### **AC-VIDEO-02 — Release recordings after class**
+**Given:** A curriculum item has a configured YouTube recording.
+**When:** Its scheduled class end time is reached.
+**Then:** The recording becomes available automatically; before that boundary, interface and direct material access remain denied.
+### **AC-VIDEO-03 — Inherit and synchronize recordings**
+**Given:** A master recording is added or its link is edited.
+**When:** A new cohort is generated or an Admin explicitly synchronizes an existing cohort.
+**Then:** New recordings are added and edited links propagate through `master_material_id` without duplicates or changes to the cohort material release timestamp.
+## 8. Student question tracker
 | **Field** | **Rule** |
 | --- | --- |
 | Question | Pre-seeded from master-course worksheet data |
@@ -135,6 +170,10 @@ Source artifact: [MVP Acceptance Criteria DOCX](Ace_Club_LMS_MVP_Acceptance_Crit
 | Comment | Optional free-text reflection |
 | Last updated | Automatically recorded |
 
+### **AC-TRACK-00 — Find worksheet logs**
+**Given:** A student has one or more released worksheets.
+**When:** They open Practice log from Student navigation.
+**Then:** They see released worksheets grouped by course week with saved Done totals, review counts and last-update information; opening an item reaches the same worksheet-specific records used by Update log links elsewhere.
 ### **AC-TRACK-01 — Create independent tracker records**
 **Given:** A student receives course access.
 **When:** The course data is provisioned.
@@ -167,7 +206,19 @@ Source artifact: [MVP Acceptance Criteria DOCX](Ace_Club_LMS_MVP_Acceptance_Crit
 **Given:** A student changes status, time or comment.
 **When:** The input loses focus or the save trigger runs.
 **Then:** The interface confirms the save and the data remains after reopening the portal.
-## 8. Admin progress visibility
+### **AC-TRACK-09 — Bulk-update selected questions**
+**Given:** A student is viewing a worksheet log.
+**When:** They select one or more question numbers and choose Mark selected Done or Mark selected for review.
+**Then:** Only the selected questions receive the chosen status, each independent record persists, and existing statuses remain replaceable.
+### **AC-TRACK-10 — Reach the same log directly**
+**Given:** A worksheet and tracker records are available.
+**When:** The student chooses Update log from Recommended practice, Timeline or Browse by section.
+**Then:** Each entry point opens the same worksheet log and Student–worksheet–question records without duplication.
+### **AC-TRACK-11 — Retry bulk changes safely**
+**Given:** A bulk status update partially fails.
+**When:** The save result returns.
+**Then:** The interface identifies unsaved questions, preserves successful updates and retries only failed records.
+## 9. Admin progress visibility
 ### **AC-ADMIN-01 — View cohort progress**
 **Given:** An admin opens a cohort.
 **When:** The progress view loads.
@@ -184,16 +235,16 @@ Source artifact: [MVP Acceptance Criteria DOCX](Ace_Club_LMS_MVP_Acceptance_Crit
 **Given:** Multiple students belong to a cohort.
 **When:** A student or admin opens tracker data.
 **Then:** Students can access only their own records; authorised admins can access students in their permitted scope.
-## 9. Quality, security and operational requirements
+## 10. Quality, security and operational requirements
 - All authentication and portal traffic uses HTTPS.
 - Supabase row-level security enforces Student and Admin permissions.
 - Service-role credentials never appear in browser code.
 - Test accounts and Quick Access controls never appear in production.
 - Release rules use the programme’s agreed time zone.
 - Tracker changes produce clear saving, saved and retry states.
-- The portal supports current desktop and mobile browsers and keyboard navigation.
+- The launch portal supports current desktop browsers, common laptop and desktop widths, text zoom and keyboard navigation; mobile optimisation is deferred.
 - Notion, PDF, email and tracker failures produce actionable messages rather than indefinite loading.
-## 10. MVP exclusions
+## 11. MVP exclusions
 - Super Admin product role and dashboard
 - Course-structure editor
 - Notion class-dashboard links
@@ -201,16 +252,20 @@ Source artifact: [MVP Acceptance Criteria DOCX](Ace_Club_LMS_MVP_Acceptance_Crit
 - Question editing inside the portal
 - Incorrect-answer classifications and automated grading
 - Daily practice totals outside worksheets
+- Daily worksheet quotas and daily question-range recommendations
 - Advanced trends, alerts, filters and CSV exports
 - Instructor replies to student comments
 - Legacy student migration
-## 11. MVP launch acceptance
+## 12. MVP launch acceptance
 1. A pre-provisioned Admin signs in with the approved Google account.
 1. The Admin creates a cohort and adds first-time students.
 1. Pre-provisioned Students use Google Sign-In and reach their own dashboards.
 1. Week 0 is immediately available and renders correctly.
 1. A later pre-read opens exactly seven days before its class.
 1. A worksheet opens automatically after its class.
-1. A student updates status, time and comments in the tracker.
+1. Recommended practice shows prior-week released worksheets as whole weekly tasks.
+1. Timeline and QA/VA/DI browsing reach the same released materials.
+1. An Admin manages a YouTube recording and it releases after class without duplicate cohort materials.
+1. A student bulk-updates selected questions, then updates optional time and comments in the same worksheet log.
 1. An Admin sees the same saved tracker information.
 1. Role, privacy and direct-URL release protections pass testing.

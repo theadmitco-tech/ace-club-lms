@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner
-Last updated: 31 July 2026
+Last updated: 1 August 2026
 
 This folder contains the documents that define product intent, scope, phase boundaries, acceptance, and signed checkpoints. Read this register before starting product or engineering work.
 
@@ -24,8 +24,6 @@ Code is evidence of the current implementation, not authority for product scope.
 |---|---|---|---|---|
 | `Ace_Club_LMS_MVP_Acceptance_Criteria.md` | Product requirements | Active | Defines required MVP behaviour and exclusions | Change only with product-owner approval |
 | `Ace_Club_LMS_Product_Roadmap.md` | Delivery roadmap | Active | Defines phases, order, dependencies, and gates | Change only with product-owner approval |
-| `Ace_Club_LMS_MVP_Acceptance_Criteria.docx` | Source artifact | Retained | Original Word source used for the Markdown conversion | Preserve for provenance; Markdown is the active repository copy |
-| `Ace_Club_LMS_Product_Roadmap.docx` | Source artifact | Retained | Original Word source used for the Markdown conversion | Preserve for provenance; Markdown is the active repository copy |
 | `Phase_0.5_Setup_Recovery_Signoff.md` | Historical signed checkpoint | Signed off | Preserves the immutable Phase 0.5 state | Do not rewrite accepted history |
 | `docs/handoffs/ace-club-lms-running-handoff.md` | Running cross-phase handoff | Active | Preserves signed phase sections and the latest continuation state | Append a new signed section at each phase close |
 
@@ -53,6 +51,6 @@ Use the roadmap exit gate and acceptance criteria. Store the signed result under
 - `instruction/` contains authoritative product intent and immutable source artifacts.
 - `docs/handoffs/` contains the active running handoff with preserved signed phase sections.
 - `docs/` otherwise contains implementation guidance, setup, decisions, active phase records, and evidence.
-- Markdown is the active repository format for product instructions. Retained DOCX files preserve provenance and should not be edited independently.
+- Markdown is the sole repository format for the MVP acceptance criteria and product roadmap. Do not create parallel Word copies that can drift from product authority.
 - Do not store secrets, credentials, private student data, or live magic links in either folder.
 - Follow [document conventions](../docs/governance/document-conventions.md) for new files.

@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Engineering
-Last updated: 31 July 2026
+Last updated: 1 August 2026
 
 This index routes readers to the smallest set of documents needed for a task. Product authority remains in [`instruction/`](../instruction/README.md).
 
@@ -27,6 +27,12 @@ Current continuation state: [Ace Club LMS Running Handoff](handoffs/ace-club-lms
   - [Status and exit gate](phase-4/README.md)
   - [Manual verification checklist](phase-4/manual-verification-checklist.md)
   - [Schedule and material-sync decision](decisions/adr-0002-cohort-schedule-and-material-sync.md)
+- Pre–Phase 5 foundation checkpoint: signed off on 1 August 2026.
+  - [Student experience foundation plan](phase-5/student-experience-foundation-plan.md)
+  - [Decision summary](phase-5/student-experience-foundation.md)
+  - [UI state and content matrix](phase-5/ui-state-and-content-matrix.md)
+  - [Preparation and delivery verification checklist](phase-5/manual-verification-checklist.md)
+- Phase 5: ready to begin — adapt the Student experience from the signed foundation checkpoint.
 
 There is no approved Phase 1.5.
 

@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-Last updated: 31 July 2026
+Last updated: 1 August 2026
 
 This is the current cross-phase continuity document. Append a signed section when a phase closes; preserve earlier sections as historical snapshots instead of rewriting them to match later state.
 
@@ -15,11 +15,14 @@ Read:
 3. This running handoff, starting with the latest signed section.
 4. The [MVP acceptance criteria](../../instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.md).
 5. The relevant phase in the [product roadmap](../../instruction/Ace_Club_LMS_Product_Roadmap.md).
-6. The [documentation index](../README.md) and [coding rules](../development/coding-rules.md).
-7. The [current code landscape and cleanup plan](../development/current-code-landscape-and-cleanup-plan.md), especially before Phase 3 or cleanup work.
-8. Only the implementation files relevant to the immediate task.
+6. For Phase 5, the [foundation plan](../phase-5/student-experience-foundation-plan.md), [decision summary](../phase-5/student-experience-foundation.md), [UI state and content matrix](../phase-5/ui-state-and-content-matrix.md), and [verification checklist](../phase-5/manual-verification-checklist.md).
+7. The [approved revised course structure](../phase-3/revised-course-structure.md), without reconstructing curriculum labels from screenshots or title parsing.
+8. The [documentation index](../README.md) and [coding rules](../development/coding-rules.md).
+9. The relevant Next.js 16 guides under `node_modules/next/dist/docs/` before writing or changing Next.js code.
+10. The [current code landscape and cleanup plan](../development/current-code-landscape-and-cleanup-plan.md) only when the task touches legacy cleanup or an area it maps.
+11. Only the implementation files relevant to the immediate task.
 
-Do not repeat completed recovery or audit work unless newer evidence invalidates it.
+Do not repeat completed recovery, audit, scheduling, release, or foundation work unless newer evidence invalidates it. The latest signed section and its linked product files are the durable replacement for chat history.
 
 ---
 
@@ -294,3 +297,125 @@ Phase 3 is accepted as complete because the revised structure, instructor mappin
 Production rollout is intentionally coordinated with Phase 4. Do not apply the current Phase 3 migrations to Production unchanged: they must preserve and archive legacy master records instead of remapping or deleting them. Phase 4 must also replace the 16-slot cohort generator with the 31-item timeline and define existing-cohort material propagation.
 
 Continue with one account-dependent task at a time and never paste credentials, OAuth codes, signed file URLs, or private student data into chat or documentation.
+
+---
+
+## Phase 4 handoff — Cohorts and release automation
+
+Date: 31 July 2026
+
+Status: **Signed off**
+
+### Completed implementation and verification
+
+- New cohorts generate all 31 approved timeline items from a Week 0 Friday in one database transaction.
+- Friday items start at 8:00 PM IST; Saturday and Sunday items start at 10:00 AM IST. Orientation lasts one hour and other items use the approved two-hour default.
+- Week 0 pre-reads release immediately, later pre-reads release exactly seven days before their item, and worksheets release at item end.
+- New cohorts inherit current master materials and worksheet counts. Existing Phase 4 cohorts receive later additions through an explicit, additive, idempotent Admin sync.
+- Student availability uses database-owned release timestamps, locked Notion and worksheet direct URLs remain denied, and the obsolete inferred Section column is removed.
+- Two disposable staging cohorts with different start dates each generated 31 correct sessions with zero date, time, duration, material-link, release, or question-count errors.
+- Production preserved 16 linked legacy master sessions as archived history and added 31 current `mvp-2026` sessions. Existing batches remained readable while current Admin workflows show only the 31 approved items.
+- Pull request #4 merged at `579f468`. The guarded Production deployment, HTTP probes, Production Admin Google journey, logout, and migration-ledger reconciliation passed.
+
+### Phase 4 sign-off decision
+
+Phase 4 is accepted because cohort generation, programme time-zone rules, all required material releases, direct-URL protection, master inheritance, explicit synchronization, legacy preservation, staging verification, Production rollout, and operational migration records pass.
+
+### Phase 5 continuation point
+
+Phase 5 is **Adapt the Student experience**. Start from updated `origin/main` on a new feature branch. Retain the 31-item schedule and database-owned release boundaries. Adapt the dashboard to show the next relevant action and a chronological Week 0 timeline with pre-read, class, worksheet, and tracker order plus Available now, Upcoming, Available after class, empty, and actionable error states.
+
+Do not reopen Phase 4 scheduling, legacy archival, or release enforcement unless a new failing probe contradicts this signed evidence. Remaining master Notion links and worksheets may be populated through Admin as approved in Phase 3.
+
+---
+
+## Pre–Phase 5 foundation checkpoint — Student experience preparation
+
+Date: 1 August 2026
+
+Status: **Signed off — Phase 5 implementation may begin**
+
+### Product decisions now locked
+
+- Recommended practice appears above This week.
+- Each released prior-week worksheet is one whole weekly task visible throughout the current week; there are no daily worksheet quotas or question ranges.
+- This week recommends the DI pre-read on Thursday, VA pre-read on Friday, and QA pre-read on Saturday in `Asia/Kolkata` without changing material release rules.
+- Timeline is the default course view. Browse by section contains exactly QA, VA, and DI; there are no topic tags or topic taxonomy.
+- Phase 5 academic items expose compact Pre-read, Video, and Worksheet actions when those destinations exist. Do not show a disabled or broken Log action.
+- Phase 6 adds a persistent Practice log overview grouped by course week plus direct Update log links from Recommended practice, Timeline, and Browse by section. Every entry point opens the same worksheet-specific records.
+- The Phase 6 worksheet log allows Select all, Mark selected Done, and Mark selected for review; unselected questions are never changed by a bulk action. Optional time and comments remain available.
+- Admin-managed YouTube recordings, post-class release, new-cohort inheritance, and explicit existing-cohort synchronization are Phase 5 scope.
+- The launch interface is desktop-first. Mobile optimisation is deferred; keyboard navigation, text zoom, and common laptop/desktop widths remain required.
+
+### Authoritative curriculum labels
+
+- The approved QA/VA/DI labels are recorded in the [revised course structure](../phase-3/revised-course-structure.md).
+- The ordered migration [20260801090000_refine_academic_curriculum_titles.sql](../../supabase/migrations/20260801090000_refine_academic_curriculum_titles.sql) updates only active `mvp-2026` master titles by stable curriculum key; sequence, schedule, instructor, release, and historical rows remain unchanged.
+- The migration was applied successfully in staging on 1 August 2026; its built-in assertion confirmed all 17 approved rows. It has not been applied to Production as part of preparation.
+
+### Required reading before Phase 5 implementation
+
+Phase 5 must read these links before changing application code:
+
+1. [MVP acceptance criteria](../../instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.md), especially sections 3–8 and 12.
+2. [Product roadmap](../../instruction/Ace_Club_LMS_Product_Roadmap.md), especially the Pre–Phase 5 checkpoint and Phases 5–6.
+3. [Student experience foundation plan](../phase-5/student-experience-foundation-plan.md).
+4. [Decision summary](../phase-5/student-experience-foundation.md).
+5. [UI state and content matrix](../phase-5/ui-state-and-content-matrix.md).
+6. [Preparation and delivery verification checklist](../phase-5/manual-verification-checklist.md).
+7. [Approved revised course structure](../phase-3/revised-course-structure.md).
+8. [Living coding rules](../development/coding-rules.md), plus the relevant Next.js 16 guides under `node_modules/next/dist/docs/` before writing code.
+
+The reviewed clickable desktop prototype is stored locally at `/Users/tanishagarg/.codex/visualizations/2026/07/31/019fb91b-ccea-7a61-b0ef-bdf67899be49/weekly-student-dashboard.html`. It is a behaviour reference, not product authority; the linked acceptance criteria and state matrix control if they differ.
+
+### Durable record of the preparation chat
+
+The Phase 5 task does not need the original chat or source screenshots. Every approved decision and preparation artifact from that discussion is preserved here:
+
+| Chat outcome | Durable repository record |
+| --- | --- |
+| MVP scope, weekly guidance, QA/VA/DI browsing, material access, desktop-first scope, and tracker behaviour | [MVP acceptance criteria](../../instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.md) |
+| Pre–Phase 5 gate, Phase 5 implementation scope, YouTube propagation, and Phase 6 Practice log/tracker scope | [Product roadmap](../../instruction/Ace_Club_LMS_Product_Roadmap.md) |
+| Annotated UX preparation plan and locked delivery exit criteria | [Student experience foundation plan](../phase-5/student-experience-foundation-plan.md) |
+| Consolidated product and engineering decisions | [Decision summary](../phase-5/student-experience-foundation.md) |
+| Recommended practice, This week, Timeline, section browsing, material, failure, and Phase 6 log states | [UI state and content matrix](../phase-5/ui-state-and-content-matrix.md) |
+| Preparation gate plus Phase 5–6 manual acceptance scenarios | [Preparation and delivery verification checklist](../phase-5/manual-verification-checklist.md) |
+| Approved timetable-derived QA/VA/DI class labels, including the five DI labels | [Revised course structure](../phase-3/revised-course-structure.md) |
+| Staging-safe update of all 17 academic titles by stable curriculum key | [Ordered title migration](../../supabase/migrations/20260801090000_refine_academic_curriculum_titles.sql) |
+| Reviewed interaction direction, including whole-worksheet recommendation rows and future selected-question bulk logging | Local [weekly Student dashboard prototype](/Users/tanishagarg/.codex/visualizations/2026/07/31/019fb91b-ccea-7a61-b0ef-bdf67899be49/weekly-student-dashboard.html) |
+
+The timetable screenshots and WhatsApp images were source references only. Their approved content is now authoritative in the revised course structure and title migration; temporary image paths are not continuation dependencies.
+
+### Phase boundary and manual-work status
+
+- Phase 5 implements the Student experience, weekly recommendation logic, Timeline, QA/VA/DI browsing, compact released-material access, YouTube Admin management and cohort propagation, and removal of legacy Student analytics.
+- Phase 5 shows Open worksheet but no non-functional Log control.
+- Phase 6 implements the persistent Practice log overview, worksheet-specific question logs, selected-question bulk status changes, optional time/comments, persistence, retry, and privacy behaviour.
+- There are no remaining Product Owner preparation tasks before Phase 5.
+- The title migration passed in staging. Do not apply it to Production merely as preparation; Production rollout requires the normal reviewed release path.
+- If later work needs an account-dependent manual action, assign only one small task at a time. Use repository and terminal checks by default; do not control Chrome or the computer unless the Product Owner explicitly changes that instruction.
+
+### Git state before Phase 5 code
+
+At this checkpoint, the preparation documents and title migration are still uncommitted in the working tree on `codex/phase-4-signoff`. The checked local `origin/main` reference is Phase 4 merge commit `579f468`; local `main` is stale.
+
+Before writing Phase 5 application code:
+
+1. Preserve every current preparation change; do not discard or overwrite the dirty working tree.
+2. Move the approved preparation work onto a dedicated `codex/phase-5-*` branch based on `origin/main`.
+3. Commit the preparation checkpoint separately from Phase 5 application code so its scope and approval remain reviewable.
+4. Read the relevant Next.js 16 documentation required by `AGENTS.md`, then begin implementation.
+
+### Exit criteria before Phase 5 starts
+
+- [x] MVP acceptance criteria and roadmap reflect the approved Student experience, weekly practice, section browsing, YouTube, tracker, and desktop-first scope.
+- [x] The MVP acceptance criteria and product roadmap are maintained in Markdown only; parallel Word copies and synchronization tooling are removed.
+- [x] Detailed QA/VA/DI labels are documented and an ordered migration exists.
+- [x] Foundation plan, decision summary, state matrix, verification checklist, and approved prototype direction are aligned.
+- [x] Phase 5 and Phase 6 exit criteria are defined before implementation.
+- [x] Apply the title migration to staging; its built-in assertion confirmed all 17 academic rows by stable curriculum key on 1 August 2026.
+- [x] Product Owner approved the final state/content matrix and Engineering readiness was recorded on 1 August 2026.
+
+### Resume instruction
+
+> Continue Ace Club LMS from this signed Pre–Phase 5 foundation checkpoint. Read every item under Required reading before Phase 5 implementation. Phase 5 application work is now authorized. Preserve the 31-item schedule and database-owned release boundaries. Do not reintroduce daily worksheet targets, topic taxonomy, rankings, correctness, accuracy, or auto-graded practice. Include master YouTube-link management and propagation in Phase 5. Show worksheet access in Phase 5 without a dead Log control; keep the central Practice log, worksheet tracker persistence and bulk-selected status changes in Phase 6. Use repository and terminal checks only unless the Product Owner explicitly authorizes another tool, and assign one account-dependent manual task at a time.
