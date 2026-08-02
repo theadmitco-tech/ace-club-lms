@@ -29,6 +29,7 @@ No account identifiers, credentials, private Student data or material URLs are r
 - Prior staging verification confirmed that removing the Test Student's enrollment shows the guided no-course state and restoring enrollment returns the dashboard.
 - Deactivating the Test Student denied dashboard access without exposing course data; reactivation restored Google sign-in and the enrolled dashboard.
 - Product Owner visual sign-off confirmed that Recommended practice sits clearly above a compact This week callout and that academic, orientation, mock, break, and support Timeline variants are understandable.
+- PR review follow-up passed on staging: removing the test master recording removed its linked Student action, and Back to Timeline from a non-current item opened the target week with the item visible.
 
 ## Defects found
 
