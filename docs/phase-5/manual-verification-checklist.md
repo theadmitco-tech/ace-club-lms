@@ -57,7 +57,7 @@ Last updated: 1 August 2026
 - [ ] QA browsing returns only QA items in course order.
 - [ ] VA browsing returns only VA items in course order.
 - [ ] DI browsing returns only DI items in course order.
-- [ ] Timeline and section results open the same underlying curriculum item.
+- [x] Timeline and section results open the same underlying curriculum item.
 
 ### Weekly recommendations
 
@@ -67,7 +67,7 @@ Last updated: 1 August 2026
 - [ ] Other days show weekly actions without a forced recommendation.
 - [ ] Each section worksheet enters Recommended practice after its class ends and remains until the next same-section class begins.
 - [ ] The final released worksheet in each section remains recommended when no later same-section class exists.
-- [ ] Open worksheet reaches the matching released PDF.
+- [x] Open worksheet reaches the matching released PDF.
 - [ ] After Phase 6 activation, Update log reaches the matching worksheet tracker.
 - [ ] Update log from This week and Timeline reaches the same worksheet records and does not create duplicates.
 - [ ] The worksheet workspace keeps the selected PDF and log context together.
@@ -90,8 +90,8 @@ Last updated: 1 August 2026
 
 ### Admin recordings
 
-- [ ] Admin adds and titles a valid YouTube recording on a master curriculum item.
-- [ ] Invalid and non-YouTube links are rejected.
+- [x] Admin adds and titles a valid YouTube recording on a master curriculum item.
+- [x] Invalid and non-YouTube links are rejected.
 - [ ] New cohort generation copies the recording with the correct release timestamp.
 - [ ] Explicit sync adds a new recording to an existing cohort once.
 - [ ] Editing the master link updates linked cohort material without duplication.
