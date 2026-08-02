@@ -6,6 +6,12 @@ No account identifiers, credentials, private Student data or material URLs are r
 
 > **Recording-rule revision:** The master-recording inheritance and synchronization checks below accurately preserve the behavior tested earlier on 2 August, but that product rule was subsequently superseded. Migration `20260802230000_make_recordings_batch_specific.sql` is applied; revised batch-isolation manual verification remains pending.
 
+## Batch-specific recording revision
+
+- Admin added a titled valid YouTube link from the new Recordings area for one batch session, and the recording appeared for the Student enrolled in that batch.
+- Master Base no longer exposes recording management; it retains reusable pre-reads and worksheets only.
+- Cross-batch review exposed detached copies of recordings inherited under the superseded Master Base rule. A cleanup migration was prepared; batch-isolation retest is pending.
+
 ## Verified
 
 - A controlled staging Test Student completed Google Sign-In and reached the Phase 5 dashboard.

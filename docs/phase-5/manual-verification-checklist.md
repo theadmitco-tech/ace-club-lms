@@ -90,7 +90,7 @@ Last updated: 2 August 2026
 
 ### Admin recordings
 
-- [ ] Admin adds and titles a valid YouTube recording on a batch session.
+- [x] Admin adds and titles a valid YouTube recording on a batch session.
 - [ ] Invalid and non-YouTube links are rejected.
 - [ ] The recording receives the selected batch session's end timestamp and remains locked before it.
 - [ ] The same curriculum session can use different recording links in two batches.

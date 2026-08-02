@@ -9,6 +9,7 @@ import { createClient } from '@/utils/supabase/client';
 type CourseOption = {
   id: string;
   name: string;
+  cohort_start_date: string | null;
 };
 
 type Recording = {
@@ -162,7 +163,7 @@ export default function AdminRecordingsPage() {
     const loadCourses = async () => {
       const { data, error } = await supabase
         .from('courses')
-        .select('id, name')
+        .select('id, name, cohort_start_date')
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -265,7 +266,9 @@ export default function AdminRecordingsPage() {
           onChange={(event) => setSelectedCourseId(event.target.value)}
         >
           {courses.map((course) => (
-            <option key={course.id} value={course.id}>{course.name}</option>
+            <option key={course.id} value={course.id}>
+              {course.name}{course.cohort_start_date ? ` — starts ${course.cohort_start_date}` : ''}
+            </option>
           ))}
         </select>
       </div>
