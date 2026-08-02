@@ -411,24 +411,24 @@
   border-top: 1px solid var(--border-primary);
 }
 
-.week-group > summary {
+.week-group-toggle {
+  width: 100%;
   min-height: 66px;
   padding: 0 24px;
   display: flex;
   align-items: center;
   gap: 12px;
-  list-style: none;
+  border: 0;
+  background: transparent;
   cursor: pointer;
   color: var(--accent-primary);
+  font: inherit;
   font-weight: 850;
+  text-align: left;
 }
 
-.week-group > summary::-webkit-details-marker {
-  display: none;
-}
-
-.week-group > summary::before {
-  content: '+';
+.week-toggle-icon {
+  flex: 0 0 auto;
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -438,11 +438,7 @@
   font-size: 1rem;
 }
 
-.week-group[open] > summary::before {
-  content: '−';
-}
-
-.week-group > summary small {
+.week-group-toggle small {
   margin-left: auto;
   color: var(--text-tertiary);
   font-weight: 650;
@@ -720,7 +716,7 @@
 .student-sign-out:focus-visible,
 .view-switcher a:focus-visible,
 .section-switcher a:focus-visible,
-.week-group > summary:focus-visible,
+.week-group-toggle:focus-visible,
 .student-brand:focus-visible {
   outline: 3px solid #e3a631;
   outline-offset: 3px;

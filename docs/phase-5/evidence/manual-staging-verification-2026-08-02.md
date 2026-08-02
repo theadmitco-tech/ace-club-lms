@@ -18,6 +18,8 @@ No account identifiers, credentials, private Student data or material URLs are r
 
 Both fixes were implemented and confirmed on the refreshed Preview deployment on 2 August 2026.
 
+- The first Week 0 default-collapse implementation still appeared open because the browser preserved native disclosure state. The timeline was changed to an explicitly controlled week disclosure and awaits confirmation on the next Preview.
+
 ## Still open
 
 Section browsing, timeline expansion, material states and destinations, direct-URL denial, Admin recording management and explicit cohort synchronization remain to be verified one focused scenario at a time.

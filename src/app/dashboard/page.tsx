@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ResourceActions } from '@/components/student/ResourceActions';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { TimelineItem } from '@/components/student/TimelineItem';
+import { WeekDisclosure } from '@/components/student/WeekDisclosure';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { loadStudentTimeline } from '@/lib/server/studentTimeline';
 import {
@@ -237,15 +238,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
             ) : sessions.length > 0 ? (
               <div className="week-groups">
                 {weekGroups.map(({ weekNumber, sessions: groupedSessions }) => (
-                  <details
-                    className="week-group"
+                  <WeekDisclosure
                     key={weekNumber}
-                    open={weekNumber === currentWeek}
+                    weekNumber={weekNumber}
+                    itemCount={groupedSessions.length}
+                    initiallyOpen={weekNumber === currentWeek}
                   >
-                    <summary>
-                      <span>Week {weekNumber}</span>
-                      <small>{groupedSessions.length} item{groupedSessions.length === 1 ? '' : 's'}</small>
-                    </summary>
                     <div className="timeline-list">
                       {groupedSessions.map((session) => (
                         <TimelineItem
@@ -256,7 +254,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
                         />
                       ))}
                     </div>
-                  </details>
+                  </WeekDisclosure>
                 ))}
               </div>
             ) : (
