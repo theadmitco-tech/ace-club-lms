@@ -44,7 +44,7 @@ Last updated: 1 August 2026
 - [ ] Quick log supports Select all, Mark selected Done, and Mark selected for review.
 - [ ] Quick log never changes unselected questions.
 - [x] Week 0 and exceptional-week states do not invent recommendations.
-- [ ] Available, Upcoming, Available after class, Not configured, and failed states are understandable.
+- [x] Available, Upcoming, Available after class, Not configured, and failed states are understandable.
 - [x] QA, VA, DI, orientation, mock, break, and support variants are understandable.
 - [x] Keyboard order, focus, text zoom, and non-colour status communication pass.
 
@@ -84,7 +84,7 @@ Last updated: 1 August 2026
 - [x] A recording remains unavailable until class end.
 - [x] Direct URLs remain denied before release (inherited Phase 4 RLS suite; Phase 5 retains the same boundary).
 - [x] Notion failure shows retry and leaves the rest of the journey usable.
-- [ ] PDF failure shows an actionable error.
+- [x] PDF failure shows an actionable error.
 - [x] Missing material shows Not configured without a broken action.
 - [x] Empty enrollment and empty curriculum states explain what to do next.
 

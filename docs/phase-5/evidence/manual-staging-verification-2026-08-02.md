@@ -35,6 +35,7 @@ No account identifiers, credentials, private Student data or material URLs are r
 - After a temporary future worksheet was configured and synchronized, the Student Timeline showed it as available only after class with no premature open action.
 - The Week 0 diagnostic worksheet also remained locked until its item ended, consistent with the signed rule that only Week 0 pre-reads release immediately; Phase 4 already verified that immediate pre-read boundary.
 - Blocking the authenticated Notion request produced the actionable pre-read error state; Retry remained available, navigation remained usable, and unblocking followed by Retry restored the content.
+- Blocking the protected PDF request on the refreshed Preview produced “We couldn’t open this PDF” with Retry PDF; removing the block and retrying restored the worksheet.
 
 ## Defects found
 
