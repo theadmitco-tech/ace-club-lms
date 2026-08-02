@@ -3,14 +3,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 import { getMaterialTypeIcon } from '@/lib/utils';
+import { isSupportedYoutubeUrl } from '@/lib/youtube';
 import { createClient } from '@/utils/supabase/client';
 
 type MasterMaterial = {
   id: string;
-  type: 'pre_read' | 'worksheet';
+  type: 'pre_read' | 'worksheet' | 'video';
   title: string;
   notion_url: string | null;
   file_url: string | null;
+  video_url: string | null;
   question_count: number | null;
   created_at: string;
 };
@@ -28,12 +30,19 @@ type UploadResponse = {
   fileReference?: string;
 };
 
+type RecordingDraft = {
+  title: string;
+  videoUrl: string;
+};
+
 export default function AdminCurriculumPage() {
   const supabase = useMemo(() => createClient(), []);
   const { addToast } = useAuth();
   const [sessions, setSessions] = useState<MasterSession[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [savingMaterialId, setSavingMaterialId] = useState<string | null>(null);
+  const [recordingDrafts, setRecordingDrafts] = useState<Record<string, RecordingDraft>>({});
+  const [recordingErrors, setRecordingErrors] = useState<Record<string, string>>({});
 
   const fetchMasterData = useCallback(async () => {
     setIsLoading(true);
@@ -49,6 +58,7 @@ export default function AdminCurriculumPage() {
           title,
           notion_url,
           file_url,
+          video_url,
           question_count,
           created_at
         )
@@ -98,8 +108,11 @@ export default function AdminCurriculumPage() {
       console.error('Master material update failed:', error);
       addToast('error', 'Unable to save this master material.');
       await fetchMasterData();
+      setSavingMaterialId(null);
+      return false;
     }
     setSavingMaterialId(null);
+    return true;
   };
 
   const addMaterial = async (session: MasterSession, type: MasterMaterial['type']) => {
@@ -121,6 +134,58 @@ export default function AdminCurriculumPage() {
 
     addToast('success', `${label} added to the master course.`);
     await fetchMasterData();
+  };
+
+  const addRecording = async (session: MasterSession) => {
+    const draft = recordingDrafts[session.id] ?? { title: '', videoUrl: '' };
+    const title = draft.title.trim();
+    const videoUrl = draft.videoUrl.trim();
+
+    if (!title) {
+      setRecordingErrors((current) => ({ ...current, [session.id]: 'Enter a recording title.' }));
+      return;
+    }
+    if (!isSupportedYoutubeUrl(videoUrl)) {
+      setRecordingErrors((current) => ({ ...current, [session.id]: 'Enter a valid YouTube or youtu.be link.' }));
+      return;
+    }
+
+    setSavingMaterialId(`new-video-${session.id}`);
+    setRecordingErrors((current) => ({ ...current, [session.id]: '' }));
+    const { error } = await supabase.from('master_materials').insert({
+      master_session_id: session.id,
+      type: 'video',
+      title,
+      video_url: videoUrl,
+    });
+
+    if (error) {
+      console.error('Master recording creation failed:', error);
+      setRecordingErrors((current) => ({ ...current, [session.id]: 'Recording could not be saved. Keep the link and retry.' }));
+      addToast('error', 'Unable to save this recording.');
+    } else {
+      setRecordingDrafts((current) => ({ ...current, [session.id]: { title: '', videoUrl: '' } }));
+      addToast('success', 'Recording saved to the master course.');
+      await fetchMasterData();
+    }
+    setSavingMaterialId(null);
+  };
+
+  const persistRecording = async (material: MasterMaterial) => {
+    const title = material.title.trim();
+    const videoUrl = material.video_url?.trim() ?? '';
+    if (!title) {
+      setRecordingErrors((current) => ({ ...current, [material.id]: 'Enter a recording title.' }));
+      return;
+    }
+    if (!isSupportedYoutubeUrl(videoUrl)) {
+      setRecordingErrors((current) => ({ ...current, [material.id]: 'Enter a valid YouTube or youtu.be link.' }));
+      return;
+    }
+
+    setRecordingErrors((current) => ({ ...current, [material.id]: '' }));
+    const saved = await persistMaterial(material.id, { title, video_url: videoUrl });
+    if (saved) addToast('success', 'Recording saved. Sync the batch to propagate this link.');
   };
 
   const removeMaterial = async (materialId: string) => {
@@ -182,7 +247,7 @@ export default function AdminCurriculumPage() {
         <div>
           <h1 className="admin-page-title">Master Course Content</h1>
           <p className="admin-page-subtitle">
-            Add reusable Notion pre-reads and PDF worksheets once. New cohorts inherit them automatically.
+            Add reusable Notion pre-reads, PDF worksheets and YouTube recordings. New cohorts inherit them automatically.
           </p>
         </div>
       </div>
@@ -197,6 +262,8 @@ export default function AdminCurriculumPage() {
           {sessions.map((session) => {
             const preReads = session.master_materials.filter((material) => material.type === 'pre_read');
             const worksheets = session.master_materials.filter((material) => material.type === 'worksheet');
+            const recordings = session.master_materials.filter((material) => material.type === 'video');
+            const recordingDraft = recordingDrafts[session.id] ?? { title: '', videoUrl: '' };
 
             return (
               <section className="admin-card master-session-card" key={session.id}>
@@ -305,6 +372,91 @@ export default function AdminCurriculumPage() {
                         </div>
                       </div>
                     ))}
+                  </div>
+
+                  <div>
+                    <div className="master-content-heading">
+                      <h3>{getMaterialTypeIcon('video')} YouTube recordings</h3>
+                    </div>
+                    {recordings.length === 0 && <p className="master-content-empty">No recordings added.</p>}
+                    {recordings.map((material) => (
+                      <div className="master-material-card" key={material.id}>
+                        <label>
+                          Name
+                          <input
+                            className="form-input"
+                            value={material.title}
+                            onChange={(event) => updateLocalMaterial(material.id, { title: event.target.value })}
+                            onBlur={() => void persistRecording(material)}
+                          />
+                        </label>
+                        <label>
+                          YouTube link
+                          <input
+                            className="form-input"
+                            type="url"
+                            placeholder="https://www.youtube.com/watch?v=..."
+                            value={material.video_url ?? ''}
+                            aria-invalid={Boolean(recordingErrors[material.id])}
+                            aria-describedby={recordingErrors[material.id] ? `recording-error-${material.id}` : undefined}
+                            onChange={(event) => updateLocalMaterial(material.id, { video_url: event.target.value })}
+                            onBlur={() => void persistRecording(material)}
+                          />
+                        </label>
+                        {recordingErrors[material.id] && (
+                          <p className="master-content-error" id={`recording-error-${material.id}`} role="alert">
+                            {recordingErrors[material.id]}
+                          </p>
+                        )}
+                        <div className="master-material-actions">
+                          {savingMaterialId === material.id && <span>Saving recording…</span>}
+                          <button className="btn btn-ghost btn-sm" onClick={() => void removeMaterial(material.id)}>Remove</button>
+                        </div>
+                      </div>
+                    ))}
+
+                    <div className="master-material-card master-recording-draft">
+                      <strong>Add recording</strong>
+                      <label>
+                        Name
+                        <input
+                          className="form-input"
+                          placeholder={`Recording — ${session.title}`}
+                          value={recordingDraft.title}
+                          onChange={(event) => setRecordingDrafts((current) => ({
+                            ...current,
+                            [session.id]: { ...recordingDraft, title: event.target.value },
+                          }))}
+                        />
+                      </label>
+                      <label>
+                        YouTube link
+                        <input
+                          className="form-input"
+                          type="url"
+                          placeholder="https://youtu.be/..."
+                          value={recordingDraft.videoUrl}
+                          aria-invalid={Boolean(recordingErrors[session.id])}
+                          aria-describedby={recordingErrors[session.id] ? `recording-error-${session.id}` : undefined}
+                          onChange={(event) => setRecordingDrafts((current) => ({
+                            ...current,
+                            [session.id]: { ...recordingDraft, videoUrl: event.target.value },
+                          }))}
+                        />
+                      </label>
+                      {recordingErrors[session.id] && (
+                        <p className="master-content-error" id={`recording-error-${session.id}`} role="alert">
+                          {recordingErrors[session.id]}
+                        </p>
+                      )}
+                      <button
+                        className="btn btn-secondary btn-sm"
+                        disabled={savingMaterialId === `new-video-${session.id}`}
+                        onClick={() => void addRecording(session)}
+                      >
+                        {savingMaterialId === `new-video-${session.id}` ? 'Saving recording…' : '+ Add recording'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </section>

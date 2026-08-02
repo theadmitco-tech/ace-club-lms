@@ -103,6 +103,6 @@ Last updated: 1 August 2026
 - [ ] Google authentication, role routing, logout, enrollment, and deactivation remain passing.
 - [ ] Cross-student privacy and RLS remain passing.
 - [ ] Notion containment and private PDF delivery remain passing.
-- [ ] Targeted lint and TypeScript pass.
-- [ ] Guarded Production build passes.
+- [x] Targeted lint and TypeScript pass.
+- [x] Guarded Production build passes.
 - [ ] Staging evidence is recorded before Production rollout.

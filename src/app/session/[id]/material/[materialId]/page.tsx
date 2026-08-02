@@ -1,203 +1,142 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import { NotionRenderer } from 'react-notion-x';
-import type { ExtendedRecordMap } from 'notion-types';
-import { extractNotionPageId } from '@/lib/notion';
-import { createClient } from '@/utils/supabase/client';
-import type { Material, Session } from '@/lib/types';
 import Link from 'next/link';
+import { NotionReader } from '@/components/student/NotionReader';
+import { StudentHeader } from '@/components/student/StudentHeader';
+import { extractNotionPageId } from '@/lib/notion';
+import { requirePortalRole } from '@/lib/server/portalAuthorization';
+import { loadStudentTimeline } from '@/lib/server/studentTimeline';
+import { getMaterialAvailabilityCopy } from '@/lib/studentTimeline';
+import type { Material } from '@/lib/types';
+import { getYoutubeEmbedUrl } from '@/lib/youtube';
+import { createClient } from '@/utils/supabase/server';
+import '../../../../dashboard/dashboard.css';
+import './material.css';
 
-// Core styles are required
-import 'react-notion-x/src/styles.css';
-// Collection and code styles (optional but recommended)
-import 'prismjs/themes/prism-tomorrow.css';
-import 'katex/dist/katex.min.css';
+export default async function MaterialViewerPage({
+  params,
+}: {
+  params: Promise<{ id: string; materialId: string }>;
+}) {
+  const [{ id: sessionId, materialId }, identity] = await Promise.all([
+    params,
+    requirePortalRole('student'),
+  ]);
+  const supabase = await createClient();
+  const [timelineResult, { data: materialData, error: materialError }] = await Promise.all([
+    loadStudentTimeline(identity.id),
+    supabase
+      .from('materials')
+      .select('*')
+      .eq('id', materialId)
+      .eq('session_id', sessionId)
+      .maybeSingle(),
+  ]);
 
-export default function MaterialViewerPage() {
-  const { id: sessionId, materialId } = useParams();
-  const supabase = createClient();
-  
-  const [material, setMaterial] = useState<Material | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [recordMap, setRecordMap] = useState<ExtendedRecordMap | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const studentName = timelineResult.studentName;
+  const timeline = timelineResult.status === 'ready' ? timelineResult.timeline : null;
+  const timelineSession = timeline?.sessions.find((session) => session.id === sessionId);
+  const timelineMaterial = timelineSession?.materials.find((material) => material.id === materialId);
+  const timeZone = timeline?.course?.schedule_timezone ?? 'Asia/Kolkata';
+  const material = materialData as Material | null;
 
-  useEffect(() => {
-    async function loadContent() {
-      try {
-        const [
-          { data: mat, error: matError },
-          { data: sess, error: sessError }
-        ] = await Promise.all([
-          supabase.from('materials').select('*').eq('id', materialId).single(),
-          supabase.from('sessions').select('*').eq('id', sessionId).single()
-        ]);
-        
-        if (matError || !mat || sessError || !sess) {
-          setError('Material or Session not found');
-          setLoading(false);
-          return;
-        }
-
-        setMaterial(mat);
-        setSession(sess);
-
-        if (mat.type === 'pre_read' && mat.notion_url) {
-          const pageId = extractNotionPageId(mat.notion_url);
-          if (pageId) {
-            const response = await fetch(`/api/notion?pageId=${pageId}`);
-            if (response.ok) {
-              const data = await response.json();
-              setRecordMap(data);
-            } else {
-              setError('Could not load Notion content. Make sure the page is public.');
-            }
-          } else {
-            setError('Invalid Notion URL');
-          }
-        }
-      } catch (err) {
-        console.error(err);
-        setError('An unexpected error occurred');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (sessionId && materialId) {
-      loadContent();
-    }
-  }, [materialId, sessionId]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  if (loading) {
+  if (!material && timelineMaterial && !timelineMaterial.is_available) {
     return (
-      <div className="viewer-loading">
-        <div className="spinner" />
-        <p>Fetching content...</p>
+      <div className="student-page">
+        <StudentHeader studentName={studentName} />
+        <main className="student-main material-main">
+          <section className="student-state">
+            <span className="state-kicker">Upcoming material</span>
+            <h1>{timelineMaterial.title}</h1>
+            <p>{getMaterialAvailabilityCopy(timelineMaterial, timeZone)}. Access remains protected until that release time.</p>
+            <Link className="student-button" href={`/session/${sessionId}`}>Return to curriculum item</Link>
+          </section>
+        </main>
       </div>
     );
   }
 
-  if (error) {
+  if (materialError || !material || !timelineSession) {
+    if (materialError) console.error('Released material load failed:', materialError);
     return (
-      <div className="viewer-error">
-        <h1>Oops!</h1>
-        <p>{error}</p>
-        <Link href={`/session/${sessionId}`} className="btn btn-primary">Back to Session</Link>
+      <div className="student-page">
+        <StudentHeader studentName={studentName} />
+        <main className="student-main material-main">
+          <section className="student-state student-state-error" role="alert">
+            <h1>We couldn&apos;t open this material</h1>
+            <p>It may not belong to your course or may not be released yet. Return to the curriculum item for current availability.</p>
+            <Link className="student-button" href={`/session/${sessionId}`}>Return to curriculum item</Link>
+          </section>
+        </main>
       </div>
     );
   }
+
+  const notionPageId = material.type === 'pre_read' && material.notion_url
+    ? extractNotionPageId(material.notion_url)
+    : null;
+  const youtubeEmbedUrl = material.type === 'video' && material.video_url
+    ? getYoutubeEmbedUrl(material.video_url)
+    : null;
 
   return (
-    <div className="material-viewer">
-      <header className="viewer-header">
-        <div className="viewer-header-inner">
-          <Link href={`/session/${sessionId}`} className="back-link">
-            ← Back to {session?.title || 'Session'}
-          </Link>
-          <div className="viewer-info">
-            <span className="material-type-tag">{material?.type.replace('_', ' ')}</span>
-            <h1 className="viewer-title">{material?.title}</h1>
-          </div>
-        </div>
-      </header>
+    <div className="student-page">
+      <StudentHeader studentName={studentName} />
+      <main className="student-main material-main">
+        <div className="material-container">
+          <Link className="session-back-link" href={`/session/${sessionId}`}>← Back to {timelineSession.title}</Link>
+          <header className="material-header">
+            <span className="student-eyebrow">{material.type.replace('_', ' ')}</span>
+            <h1>{material.title}</h1>
+            <p>Available now</p>
+          </header>
 
-      <main className="viewer-content">
-        <div className="notion-container">
-          {recordMap ? (
-            <NotionRenderer 
-              recordMap={recordMap} 
-              fullPage={false} 
-              darkMode={false}
-              className="custom-notion"
-            />
-          ) : (
-            <div className="file-viewer-fallback">
-              <p>This material is a {material?.type.replace('_', ' ')}.</p>
-              {material?.file_url && (
-                <a href={material.file_url} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
-                  Open File
-                </a>
-              )}
-            </div>
-          )}
+          <section className="material-content">
+            {material.type === 'pre_read' && notionPageId && <NotionReader pageId={notionPageId} />}
+
+            {material.type === 'pre_read' && !notionPageId && (
+              <div className="material-status material-status-error" role="alert">
+                <strong>This pre-read is not configured correctly</strong>
+                <p>Contact the programme team and name this curriculum item so they can repair the Notion link.</p>
+              </div>
+            )}
+
+            {material.type === 'video' && youtubeEmbedUrl && (
+              <div className="recording-viewer">
+                <div className="video-frame">
+                  <iframe
+                    src={youtubeEmbedUrl}
+                    title={material.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+                <a className="student-button" href={material.video_url} target="_blank" rel="noreferrer">Open on YouTube</a>
+                <p>A public or unlisted YouTube link can be shared after release. The LMS cannot revoke copies of that link.</p>
+              </div>
+            )}
+
+            {material.type === 'video' && !youtubeEmbedUrl && (
+              <div className="material-status material-status-error" role="alert">
+                <strong>This recording link is not supported</strong>
+                <p>The programme team needs to replace it with a valid YouTube or youtu.be link.</p>
+              </div>
+            )}
+
+            {(material.type === 'worksheet' || material.type === 'class_material') && material.file_url && (
+              <div className="file-workspace">
+                <iframe src={material.file_url} title={material.title} />
+                <a className="student-button" href={material.file_url} target="_blank" rel="noreferrer">Open or download PDF</a>
+              </div>
+            )}
+
+            {(material.type === 'worksheet' || material.type === 'class_material') && !material.file_url && (
+              <div className="material-status material-status-error" role="alert">
+                <strong>The file could not be opened</strong>
+                <p>Retry from the curriculum item. If the problem continues, contact the programme team.</p>
+              </div>
+            )}
+          </section>
         </div>
       </main>
-
-      <style jsx global>{`
-        .material-viewer {
-          min-height: 100vh;
-          background: var(--bg-primary);
-          color: var(--text-primary);
-        }
-        .viewer-header {
-          background: var(--bg-secondary);
-          border-bottom: 1px solid var(--border-primary);
-          padding: 20px 0;
-          position: sticky;
-          top: 0;
-          z-index: 100;
-        }
-        .viewer-header-inner {
-          max-width: 900px;
-          margin: 0 auto;
-          padding: 0 24px;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-        .back-link {
-          color: var(--accent-primary);
-          font-size: 14px;
-          text-decoration: none;
-          font-weight: 500;
-        }
-        .viewer-info {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-        .material-type-tag {
-          font-size: 10px;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          color: var(--text-tertiary);
-          font-weight: 700;
-        }
-        .viewer-title {
-          font-size: 24px;
-          font-weight: 800;
-          margin: 0;
-        }
-        .viewer-content {
-          max-width: 900px;
-          margin: 0 auto;
-          padding: 40px 24px;
-        }
-        .notion-container {
-          background: #ffffff;
-          border: 1px solid var(--border-primary);
-          border-radius: 16px;
-          padding: 20px;
-        }
-        .viewer-loading, .viewer-error {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          height: 100vh;
-          gap: 16px;
-        }
-        
-        .notion-page {
-          padding: 0 !important;
-          width: 100% !important;
-        }
-        .notion-header { display: none !important; }
-      `}</style>
     </div>
   );
 }

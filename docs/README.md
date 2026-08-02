@@ -32,7 +32,8 @@ Current continuation state: [Ace Club LMS Running Handoff](handoffs/ace-club-lms
   - [Decision summary](phase-5/student-experience-foundation.md)
   - [UI state and content matrix](phase-5/ui-state-and-content-matrix.md)
   - [Preparation and delivery verification checklist](phase-5/manual-verification-checklist.md)
-- Phase 5: ready to begin — adapt the Student experience from the signed foundation checkpoint.
+- Phase 5: implementation in progress — automated checks pass; manual staging acceptance remains open.
+  - [Implementation status](phase-5/README.md)
 
 There is no approved Phase 1.5.
 
