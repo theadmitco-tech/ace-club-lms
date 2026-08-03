@@ -1,8 +1,8 @@
 # Phase 5 — Preparation and Delivery Verification Checklist
 
-Status: Phase 5 signed off; Phase 6 tracker checks remain deferred
+Status: Complete — Phase 5 signed off and shared Phase 6 tracker checks passed
 Owner: Product owner, Engineering, and QA  
-Last updated: 2 August 2026
+Last updated: 3 August 2026
 
 ## A. Preparation gate before engineering
 
@@ -38,11 +38,11 @@ Last updated: 2 August 2026
 - [x] Recommended practice shows at most one active released worksheet each for DI, VA, and QA.
 - [x] A worksheet leaves Recommended practice when the next class in its section begins but remains accessible in Timeline and Browse by section.
 - [x] Thursday, Friday, and Saturday show pre-read and practice recommendations together.
-- [x] Each practice row exposes Open worksheet; Update log appears only after Phase 6 tracking exists.
+- [x] Each eligible released practice row exposes Open worksheet and Update log; the earlier Phase 5-only state correctly omitted Update log before tracking existed.
 - [x] Timeline and Browse by section expose compact Pre-read, Recording and Worksheet actions; Log appears only when its tracker destination exists.
 - [x] Available resources are buttons; unavailable resources show release text; unconfigured resources do not create broken controls.
-- [ ] Quick log supports Select all, Mark selected Done, and Mark selected for review.
-- [ ] Quick log never changes unselected questions.
+- [x] Quick log supports Select all, Mark selected Done, and Mark selected for review (Phase 6 staging acceptance, 3 August 2026).
+- [x] Quick log never changes unselected questions (Phase 6 selected-only bulk probe and refresh, 3 August 2026).
 - [x] Week 0 and exceptional-week states do not invent recommendations.
 - [x] Available, Upcoming, Available after class, Not configured, and failed states are understandable.
 - [x] QA, VA, DI, orientation, mock, break, and support variants are understandable.
@@ -68,11 +68,11 @@ Last updated: 2 August 2026
 - [x] Each section worksheet enters Recommended practice after its class ends and remains until the next same-section class begins.
 - [x] The final released worksheet in each section remains recommended when no later same-section class exists.
 - [x] Open worksheet reaches the matching released PDF.
-- [ ] After Phase 6 activation, Update log reaches the matching worksheet tracker.
-- [ ] Update log from This week and Timeline reaches the same worksheet records and does not create duplicates.
-- [ ] The worksheet workspace keeps the selected PDF and log context together.
-- [ ] Bulk and individual log changes persist after refresh.
-- [ ] Partial bulk-save failure identifies failed questions and retries only those questions.
+- [x] After Phase 6 activation, Update log reaches the matching worksheet tracker; the conditional Recommended practice state was verified when current staging had no eligible recommendation.
+- [x] Update log from course views reaches the same canonical worksheet records and creates no duplicates; Timeline and curriculum-item links passed positively, while the current section/recommendation data correctly exposed no eligible link.
+- [x] The worksheet workspace keeps the selected PDF and log context together.
+- [x] Bulk and individual log changes persist after refresh.
+- [x] Partial bulk-save failure identifies failed questions and retries only those questions.
 - [x] Recommended practice does not expose rank, accuracy, correctness, streak, or class comparison.
 - [x] Recommendation changes do not modify release timestamps or material visibility.
 

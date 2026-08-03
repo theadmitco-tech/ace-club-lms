@@ -1,10 +1,10 @@
 # Phase 5 — UI State and Content Matrix
 
-Status: Approved and staging-verified for Phase 5
+Status: Implemented and verified through Phase 6
 Owner: Product owner and Engineering  
 Last updated: 3 August 2026
 
-Implementation note: Phase 5 states in this matrix passed staging acceptance. Rows under Phase 6 placeholders, manual-log access points and quick-log states remain the binding design for the next phase, not claims about the current interface.
+Implementation note: Phase 5 states passed staging and Production acceptance. The former Phase 6 placeholders, manual-log access points and quick-log states were implemented, accepted in staging, and deployed to Production on 3 August 2026. Conditional Recommended practice and Browse by section links remain absent when no eligible released worksheet exists.
 
 ## Navigation states
 
@@ -37,8 +37,8 @@ The Recommended label affects emphasis only. It does not alter release state or 
 
 | Condition | Display | Actions |
 | --- | --- | --- |
-| A section class has ended and its next same-section class has not begun | Recommend that class's released worksheet as one whole task | Open worksheet; add Update log when Phase 6 tracking exists |
-| DI, VA, and QA each have an active worksheet window | Show one Recommended practice section with at most one worksheet per section | Open worksheet on every row; add Update log to that row when Phase 6 tracking exists |
+| A section class has ended and its next same-section class has not begun | Recommend that class's released worksheet as one whole task | Open worksheet and Update log |
+| DI, VA, and QA each have an active worksheet window | Show one Recommended practice section with at most one worksheet per section | Open worksheet and Update log on every eligible row |
 | The next class in a section begins | Remove the preceding worksheet from Recommended practice only | Keep it available in Timeline and Browse by section |
 | The final class in a section ends | Keep its released worksheet recommended because there is no later same-section class | Open worksheet |
 | Thursday, Friday, or Saturday with a pre-read recommendation | Show preparation recommendation and Recommended practice together | Keep both usable |
@@ -98,14 +98,14 @@ Recommended practice uses class end and the next same-section class start as its
 | Another batch has the same curriculum item | Keep its recording independent | Do not copy edits or removals across batches. |
 | Generate or Sync materials | Copy reusable pre-reads and worksheets only | Never add or update recordings. |
 
-## Phase 6 placeholders
+## Implemented Phase 6 tracker states
 
-- Do not display “Continue tracking,” “In progress,” “Completed,” or “unfinished” until persisted manual tracker data supports the state.
-- A worksheet may be opened in Phase 5 without implying tracker progress.
-- Keep room for Update log in the shared worksheet-action component, but do not render it until the manual tracker destination and records exist.
-- Update log should deep-link to the selected worksheet rather than returning to a generic tracker landing page.
-- Phase 6 introduces `Done`, `Come back for review`, `Not updated`, optional time, optional comment, saving, saved, and retry states.
-- Phase 6 also introduces a central **Practice log** overview so Students can find every released worksheet log without navigating through the course timeline.
+- Display tracker progress only when persisted manual tracker data supports the state.
+- Opening a worksheet does not imply tracker progress.
+- Render Update log only when the released manual tracker destination and records exist.
+- Update log deep-links to the selected worksheet rather than returning to a generic tracker landing page.
+- The tracker provides `Done`, `Come back for review`, `Not updated`, optional time, optional comment, saving, saved, and retry states.
+- The central **Practice log** overview lets Students find every released worksheet log without navigating through the course timeline.
 
 ## Manual-log access points
 

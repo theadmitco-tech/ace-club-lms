@@ -15,12 +15,13 @@ Read:
 3. This running handoff, starting with the latest signed section.
 4. The [MVP acceptance criteria](../../instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.md).
 5. The relevant phase in the [product roadmap](../../instruction/Ace_Club_LMS_Product_Roadmap.md).
-6. For Phase 5, the [foundation plan](../phase-5/student-experience-foundation-plan.md), [decision summary](../phase-5/student-experience-foundation.md), [UI state and content matrix](../phase-5/ui-state-and-content-matrix.md), and [verification checklist](../phase-5/manual-verification-checklist.md).
-7. The [approved revised course structure](../phase-3/revised-course-structure.md), without reconstructing curriculum labels from screenshots or title parsing.
-8. The [documentation index](../README.md) and [coding rules](../development/coding-rules.md).
-9. The relevant Next.js 16 guides under `node_modules/next/dist/docs/` before writing or changing Next.js code.
-10. The [current code landscape and cleanup plan](../development/current-code-landscape-and-cleanup-plan.md) only when the task touches legacy cleanup or an area it maps.
-11. Only the implementation files relevant to the immediate task.
+6. For historical Phase 5 interaction decisions, the [foundation plan](../phase-5/student-experience-foundation-plan.md), [decision summary](../phase-5/student-experience-foundation.md), [UI state and content matrix](../phase-5/ui-state-and-content-matrix.md), and [shared Phase 5–6 verification checklist](../phase-5/manual-verification-checklist.md).
+7. For the shipped Student tracker and the Phase 7 data boundary, the [Phase 6 status](../phase-6/README.md), [Phase 6 checklist](../phase-6/manual-verification-checklist.md), [staging evidence](../phase-6/evidence/manual-staging-verification-2026-08-03.md), and [Production rollout evidence](../phase-6/evidence/production-rollout-2026-08-03.md).
+8. The [approved revised course structure](../phase-3/revised-course-structure.md), without reconstructing curriculum labels from screenshots or title parsing.
+9. The [documentation index](../README.md) and [coding rules](../development/coding-rules.md).
+10. The relevant Next.js 16 guides under `node_modules/next/dist/docs/` before writing or changing Next.js code.
+11. The [current code landscape and cleanup plan](../development/current-code-landscape-and-cleanup-plan.md) only when the task touches legacy cleanup or an area it maps.
+12. Only the implementation files relevant to the immediate task.
 
 Do not repeat completed recovery, audit, scheduling, release, or foundation work unless newer evidence invalidates it. The latest signed section and its linked product files are the durable replacement for chat history.
 
@@ -480,3 +481,106 @@ Staging passed two-batch link isolation, batch-local editing, invalid-link valid
 Phase 6 is **Simplify the tracker**. The only unchecked items in the shared Phase 5–6 checklist are intentionally deferred tracker behaviours: the persistent Practice log, worksheet-specific Student–worksheet–question records, Select all, bulk Done/review updates that never affect unselected questions, persistence, shared deep links, and partial-failure retry.
 
 Do not add a Log or Update log control until its real Phase 6 destination and persisted records exist. Every future entry point from Recommended practice, Timeline, Browse by section, and the central Practice log must address the same worksheet records without duplication. Begin Phase 6 from updated `origin/main` on a new feature branch.
+
+---
+
+## Phase 6 handoff — Simplify the tracker
+
+Date: 3 August 2026
+Status: **Signed off and deployed to Production**
+
+### Outcome
+
+Phase 6 is complete. Students now have a persistent, manual, release-aware Practice log backed by independent Student–course–session–worksheet–question records. [PR #7](https://github.com/theadmitco-tech/ace-club-lms/pull/7) merged the implementation to `main` at merge commit `13aeb9e`; Vercel deployed that commit to Production and both Student and Admin smoke tests passed.
+
+Authoritative Phase 6 records:
+
+- [Phase 6 implementation status and boundary](../phase-6/README.md)
+- [Manual verification checklist](../phase-6/manual-verification-checklist.md)
+- [Automated verification evidence](../phase-6/evidence/automated-verification-2026-08-03.md)
+- [Staging migration evidence](../phase-6/evidence/staging-migration-application-2026-08-03.md)
+- [Manual staging acceptance evidence](../phase-6/evidence/manual-staging-verification-2026-08-03.md)
+- [Production rollout evidence](../phase-6/evidence/production-rollout-2026-08-03.md)
+
+### Product decisions and delivered Student experience
+
+- Student navigation contains persistent `Course` and `Practice log` destinations.
+- The Product Owner revised the Practice log overview from programme-week groups to curriculum section/event-type groups. `QA`, `VA`, and `DI` are ordered first; other worksheet-bearing types such as `MOCK` remain visible in separate groups. Programme week remains visible on every worksheet row.
+- Each released worksheet row shows Done, Come back for review, Not updated, and last-update information and opens the canonical worksheet workspace.
+- Recommended practice, Timeline, Browse by section, curriculum-item detail, and Practice log all resolve to the same material route and persisted records. Conditional Log or Update log controls appear only when the worksheet is released and tracker records exist.
+- The canonical desktop workspace places the protected PDF and manual question log together. At common desktop and laptop widths, the tracker has sufficient width for Status, Time, and Comment without page-level horizontal scrolling; at the 200%-zoom equivalent it stacks and contains table overflow locally.
+- Each question supports exactly one Student-selected status: `Done` or `Come back for review`. `Not updated` is a system-owned null state, not a third selectable value.
+- Optional time uses validated `mm:ss`; optional comments save on blur. Individual changes autosave with explicit saving, saved, and actionable retry feedback.
+- Select all and selected-question bulk actions support Mark selected Done and Mark selected for review. Confirmation names the count and target status, unselected questions remain unchanged, successful records stay saved during a partial failure, failed question numbers remain selected, and Retry failed only resubmits failed records.
+- Rank, accuracy, correctness, streaks, daily targets, automated grading, and other legacy analytics remain absent from the reachable Student tracker.
+
+### Database and authorization implementation
+
+- Ordered migration `20260803120000_add_student_practice_log.sql` creates `public.student_question_logs` with a unique identity across `user_id`, `course_id`, `session_id`, `material_id`, and `master_question_id`.
+- Enrollment, copied-worksheet, and master-question triggers provision missing tracker rows idempotently. Existing eligible enrollments are backfilled by the migration.
+- The database prevents tracker identity changes, prevents returning an existing status to Not updated, validates non-negative time and bounded comments, and owns `updated_at`.
+- `get_student_practice_log`, `get_student_worksheet_log`, and `update_student_question_log` provide the released Student surfaces. The Student timeline RPC was extended to expose canonical tracker availability without bypassing material release.
+- RLS permits an active enrolled Student to read and update only their own released tracker rows. Signed-out, cross-student, deactivated, unenrolled, and unreleased access is denied.
+- Authorised Admins may read Student tracker rows for Phase 7, but do not become Student owners and do not receive Student write access.
+- Privileged provisioning functions are not executable by ordinary callers; only the three authenticated tracker RPCs receive their intended execution grants.
+- The tracker deliberately does not reuse legacy answer, correctness, attempt, daily-target, or worksheet-plan models.
+
+### Staging application and acceptance
+
+- The migration applied successfully to staging Supabase `eyphkkginlgoaxflauog`; the SQL Editor returned `Success. No rows returned`.
+- Provisioning probes passed for existing coverage, new enrollment, copied worksheets, new questions, and duplicate protection.
+- Privacy probes passed for cross-student read/write denial, signed-out denial, deactivated-Student denial, release boundaries, and Admin read-without-ownership behavior.
+- A staging audit found 20 expected rows for the exercised released worksheet, zero missing rows, zero duplicate identity groups, and zero Admin-owned rows.
+- The Product Owner verified overview grouping, totals, last updated, canonical navigation, individual status replacement, time/comment persistence, selected-only bulk updates, Select all, invalid-duration recovery, partial-failure identification, failed-only retry, refresh persistence, sign-out containment, and the final wider desktop layout.
+- Browser verification confirmed the same records through the canonical course links, no page/table overflow at a 1280px laptop width, stacked behavior at a 640px CSS viewport, no final console errors, and visible keyboard focus. The Select all focus fix at `9f2c641` produces a solid 3px gold outline with 2px offset.
+- Current staging data contained no eligible Recommended practice worksheet and no released QA/VA/DI worksheet for positive clicks. Their conditional absent states and shared-route implementation contract passed; Timeline and curriculum-item canonical links passed positively. Do not misreport unavailable data paths as failed behavior.
+
+### Quality state
+
+- `npx tsc --noEmit`: pass.
+- Targeted ESLint for every Phase 6-touched TypeScript file: pass with zero findings.
+- Guarded Next.js 16.2.4 Production build: pass.
+- `git diff --check`: pass.
+- Repository-wide lint remains at the signed Phase 5 baseline of 22 errors and 3 warnings in untouched legacy Admin worksheet/session editors, registration/payment code, the public home page, and legacy helpers. Phase 6 did not introduce new lint findings. Do not report this baseline as resolved.
+
+### Production rollout
+
+- Production Supabase is `owmlxsnzogfapotmjrqk`; the Production application is [aceclub.theadmitco.com](https://aceclub.theadmitco.com).
+- Preflight confirmed no existing Phase 6 table, one enrollment, 12 linked worksheets, and `master_worksheet_questions` as the question source.
+- The ordered migration applied successfully and returned `Success. No rows returned`.
+- Post-migration validation found RLS enabled and all three tracker RPCs present. Expected, actual, missing, and duplicate tracker-row counts were all zero. Zero is correct because Production currently has no eligible enrolled worksheet-question combination.
+- Vercel reported the `main` deployment for merge commit `13aeb9e` Ready in Production.
+- Student smoke testing passed Dashboard, Course/Practice log navigation, the deliberate `No released worksheets yet` state, and Return to course.
+- Admin smoke testing passed the Admin dashboard and existing Students/courses/sessions; direct Admin access to `/practice` redirected to `/admin`.
+- The final Production database check remained at zero total tracker rows, zero Admin-owned tracker rows, and zero duplicate identity groups. Smoke testing created or modified no Production tracker data.
+
+### Git, documentation, and local recovery state
+
+- Implementation branch: `codex/phase-6-practice-log`.
+- Merged pull request: [#7 — Codex/phase 6 practice log](https://github.com/theadmitco-tech/ace-club-lms/pull/7).
+- Accepted feature head: `83fc250`; Production merge commit: `13aeb9e`.
+- Production-rollout documentation branch: `codex/phase-6-production-rollout`. Its README checkpoint is `a67e8f0`; the evidence/handoff update is prepared after that checkpoint and must be pushed and merged before starting Phase 7.
+- A recoverable local Git stash named `preserve unexpected local Phase 6 migration truncation` contains an unrelated accidental blanking of the Phase 6 migration from the former feature branch. It is intentionally excluded from rollout documentation. Do not apply or drop that stash without reviewing it with the Product Owner; the committed migration on `main` remains intact.
+
+### Phase 6 sign-off decision
+
+Phase 6 is accepted because the manual Student tracker, release-aware provisioning, ownership and RLS boundaries, canonical entry points, individual and selected-only bulk persistence, optional time/comments, autosave, partial-failure recovery, keyboard and desktop behavior, staging evidence, Production migration, Production deployment, authenticated smoke tests, and post-smoke database checks all pass.
+
+### Phase 7 continuation point
+
+Phase 7 is **Adapt admin progress**. After the Production-rollout documentation branch is merged, start from updated `origin/main` on a new `codex/phase-7-*` branch.
+
+1. Reuse `student_question_logs` and its authorised Admin read boundary; do not create a parallel tracker or transfer ownership to Admins.
+2. Adapt existing Admin cohort/student-detail surfaces to show per-worksheet Done, Come back for review, Not updated, and last-update totals.
+3. Allow authorised Admin inspection of question number, Student-entered status, optional time, comment, and last update.
+4. Calculate completion only as Done divided by total worksheet questions. Review is not complete; Not updated remains system-owned.
+5. Keep Admin access read-only unless product authority explicitly changes. Preserve cross-student privacy, enrollment scope, release rules, and the Student write boundary.
+6. Remove advanced V2 analytics from the MVP Admin progress interface rather than rebuilding rank, accuracy, correctness, daily targets, trends, alerts, filters, or CSV exports.
+7. Reuse the Phase 6 RPC/table contract where viable and add only the minimum Admin query surface required by `AC-ADMIN-01` through `AC-ADMIN-04`.
+8. Verify Admin totals against the same Student records, question-level inspection, role denial, deactivation and cross-student privacy, empty Production-like data, targeted lint, TypeScript, guarded build, and common desktop/keyboard states.
+
+Do not reopen Phase 6 tracker design, Student ownership, section-based grouping, or persistence unless new evidence contradicts this signed record. Do not seed Production tracker data merely to make Phase 7 screens non-empty; use staging fixtures and rollback-only probes for positive coverage.
+
+### Resume instruction
+
+> Continue Ace Club LMS from the signed Phase 6 handoff in `docs/handoffs/ace-club-lms-running-handoff.md`. Read `AGENTS.md`, the instruction register, the MVP acceptance criteria, the Phase 7 roadmap section, the Phase 6 status/checklist/evidence, the documentation index, and coding rules. Confirm the Phase 6 Production-rollout documentation PR is merged, fetch updated `origin/main`, and create a new `codex/phase-7-*` branch. Preserve `student_question_logs`, Student ownership, release-aware RLS, the three Phase 6 tracker RPCs, section-based Practice log grouping, and the signed 22-error/3-warning untouched lint baseline. Build read-only Admin progress from the same Student records, optimize for tokens, and give one account-dependent task at a time.
