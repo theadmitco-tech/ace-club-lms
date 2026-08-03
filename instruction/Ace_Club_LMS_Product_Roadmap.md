@@ -114,6 +114,7 @@ Current delivery state: Phases 1–6 are signed off and deployed to Production. 
 - Calculate completion only from manual Done entries.
 - Remove advanced V2 analytics from the MVP interface.
 **Exit gate:** Admin totals match the student tracker and privacy tests pass.
+**Completion record:** Passed 34/34 staging acceptance and Production rollout on 3 August 2026. Read-only Admin cohort totals and question inspection use the canonical Student tracker rows; authorization, release, inactive-history, empty-state, keyboard, responsive, role-routing and ownership checks passed. Advanced V2 analytics remain absent from the reachable MVP interface.
 ### Phase 8 — Pilot, launch and stabilise
 **Duration:** 1–2 weeks
 - Pilot with one Test Admin, one Test Student and five to ten first-time students.
