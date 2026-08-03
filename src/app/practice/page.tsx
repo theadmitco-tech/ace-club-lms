@@ -33,12 +33,14 @@ export default async function PracticeLogPage() {
   }
 
   const { course, worksheets } = result.data;
+  const sectionOrder = ['QA', 'VA', 'DI'];
   const groups = worksheets.reduce((map, worksheet) => {
-    const group = map.get(worksheet.week_number) ?? [];
+    const section = worksheet.section ?? 'Other';
+    const group = map.get(section) ?? [];
     group.push(worksheet);
-    map.set(worksheet.week_number, group);
+    map.set(section, group);
     return map;
-  }, new Map<number, typeof worksheets>());
+  }, new Map<string, typeof worksheets>());
 
   return (
     <div className="student-page">
@@ -49,7 +51,7 @@ export default async function PracticeLogPage() {
             <div>
               <span className="student-eyebrow">{course?.name ?? 'Your course'}</span>
               <h1>Practice log</h1>
-              <p>Review every released worksheet and continue the same manual log from any course view.</p>
+              <p>Review released worksheets by section and continue the same manual log from any course view.</p>
             </div>
             <Link className="student-button student-button-secondary" href="/dashboard">Return to course</Link>
           </header>
@@ -66,17 +68,24 @@ export default async function PracticeLogPage() {
             </section>
           ) : (
             <div className="practice-week-groups">
-              {Array.from(groups.entries()).sort(([left], [right]) => left - right).map(([weekNumber, items]) => (
-                <section className="practice-week-group" key={weekNumber} aria-labelledby={`practice-week-${weekNumber}`}>
+              {Array.from(groups.entries()).sort(([left], [right]) => {
+                const leftIndex = sectionOrder.indexOf(left);
+                const rightIndex = sectionOrder.indexOf(right);
+                if (leftIndex === -1 && rightIndex === -1) return left.localeCompare(right);
+                if (leftIndex === -1) return 1;
+                if (rightIndex === -1) return -1;
+                return leftIndex - rightIndex;
+              }).map(([section, items]) => (
+                <section className="practice-week-group" key={section} aria-labelledby={`practice-section-${section}`}>
                   <div className="practice-week-heading">
-                    <h2 id={`practice-week-${weekNumber}`}>Week {weekNumber}</h2>
+                    <h2 id={`practice-section-${section}`}>{section}</h2>
                     <span>{items.length} worksheet{items.length === 1 ? '' : 's'}</span>
                   </div>
                   <div className="practice-overview-list">
                     {items.map((worksheet) => (
                       <article className="practice-overview-card" key={worksheet.material_id}>
                         <div className="practice-overview-copy">
-                          <span>{worksheet.section ?? 'Course'} · {worksheet.session_title}</span>
+                          <span>Week {worksheet.week_number} · {worksheet.session_title}</span>
                           <h3>{worksheet.title}</h3>
                           <small>
                             {worksheet.last_updated

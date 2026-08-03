@@ -2,7 +2,7 @@
 
 Status: Approved and staging-verified for Phase 5
 Owner: Product owner and Engineering  
-Last updated: 2 August 2026
+Last updated: 3 August 2026
 
 Implementation note: Phase 5 states in this matrix passed staging acceptance. Rows under Phase 6 placeholders, manual-log access points and quick-log states remain the binding design for the next phase, not claims about the current interface.
 
@@ -111,7 +111,7 @@ Recommended practice uses class end and the next same-section class start as its
 
 | Entry point | Update log destination |
 | --- | --- |
-| Student navigation → Practice log | Overview of released worksheets, grouped by course week, with saved totals and review counts |
+| Student navigation → Practice log | Overview of released worksheets, grouped by QA, VA and DI, with programme week on each row plus saved totals and review counts |
 | This week → Recommended practice | Matching worksheet workspace with its question list focused |
 | Timeline → released worksheet | Matching worksheet workspace with the log panel focused |
 | Browse by section → released worksheet | Matching worksheet workspace with the log panel focused |

@@ -97,7 +97,7 @@ Current delivery state: Phases 1–5 are signed off and deployed to Production. 
 - Reuse or migrate the existing progress tables where safe.
 - Create student–worksheet–question records.
 - Support Done and Come back for review only.
-- Add a persistent Practice log overview grouped by course week, with saved Done totals, review counts and last-update information.
+- Add a persistent Practice log overview grouped by QA, VA and DI, with programme week retained on each worksheet row alongside saved Done totals, review counts and last-update information.
 - Provide direct Update log access from Recommended practice, Timeline and Browse by section.
 - Allow Students to select question numbers and bulk Mark selected Done or Mark selected for review.
 - Add optional time and comment fields.

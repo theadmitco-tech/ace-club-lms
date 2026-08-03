@@ -175,7 +175,7 @@ Last updated: 3 August 2026
 ### **AC-TRACK-00 — Find worksheet logs**
 **Given:** A student has one or more released worksheets.
 **When:** They open Practice log from Student navigation.
-**Then:** They see released worksheets grouped by course week with saved Done totals, review counts and last-update information; opening an item reaches the same worksheet-specific records used by Update log links elsewhere.
+**Then:** They see released worksheets grouped by QA, VA and DI, with the programme week retained on each worksheet row alongside saved Done totals, review counts and last-update information; opening an item reaches the same worksheet-specific records used by Update log links elsewhere.
 ### **AC-TRACK-01 — Create independent tracker records**
 **Given:** A student receives course access.
 **When:** The course data is provisioned.

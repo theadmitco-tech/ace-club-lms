@@ -20,7 +20,7 @@ Last updated: 3 August 2026
 
 - [ ] Student navigation exposes Practice log.
 - [ ] Only released worksheets with fixed question rows appear.
-- [ ] Worksheets are grouped by programme week and stay in course order.
+- [ ] Worksheets are grouped by QA, VA and DI; each row retains its programme week and stays in course order.
 - [ ] Done, review and Not updated totals match the worksheet rows.
 - [ ] Last updated is absent for untouched worksheets and changes after a real Student update.
 - [ ] Opening an overview item reaches its released PDF and matching question log.

@@ -8,7 +8,7 @@ Last updated: 3 August 2026
 
 Phase 6 implements the Student-facing manual tracker defined by `AC-TRACK-00` through `AC-TRACK-11`:
 
-- one persistent Practice log overview grouped by programme week;
+- one persistent Practice log overview grouped by QA, VA and DI, with programme week retained on every worksheet row;
 - one canonical released-worksheet workspace reached from every Log or Update log entry point;
 - independent Student–course–session–worksheet–question records;
 - `Done`, `Come back for review`, and system-owned `Not updated` states;
@@ -19,6 +19,8 @@ Phase 6 implements the Student-facing manual tracker defined by `AC-TRACK-00` th
 - release-aware, student-owned database access.
 
 Phase 7 Admin progress screens are not part of this implementation. The new records are readable by authorised Admins under RLS so Phase 7 can build its views without changing Student data ownership.
+
+On 3 August 2026, the Product Owner revised the overview from course-week groups to stable QA, VA and DI groups because Students retrieve practice by academic section. Week information remains visible per worksheet. This approved revision supersedes the earlier Phase 5 handoff wording without changing the canonical worksheet records or release rules. Practice log remains a persistent primary Student navigation item beside Course; contextual Log and Update log actions remain beside released worksheets.
 
 ## Implementation boundary
 

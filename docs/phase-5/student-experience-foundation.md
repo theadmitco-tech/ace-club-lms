@@ -2,7 +2,7 @@
 
 Status: Approved preparation record — revised for batch-specific recordings
 Owner: Product owner and Engineering  
-Last updated: 2 August 2026
+Last updated: 3 August 2026
 
 ## Objective
 
@@ -109,7 +109,7 @@ Update log opens the full worksheet question list. The Student selects one or mo
 
 Bulk actions never affect unselected questions and must preserve one independent record per Student, worksheet, and question.
 
-Phase 6 also adds a persistent **Practice log** entry in Student navigation. It opens an overview of released worksheets grouped by course week. Each worksheet shows its saved Done total, review count, and last update, and opens the same worksheet-specific log reached from Recommended practice, Timeline, or Browse by section.
+Phase 6 also adds a persistent **Practice log** entry in Student navigation. Following the Product Owner revision on 3 August 2026, it opens an overview of released worksheets grouped by QA, VA and DI, with programme week retained on each row. Each worksheet shows its saved Done total, review count, and last update, and opens the same worksheet-specific log reached from Recommended practice, Timeline, or Browse by section.
 
 ## Preparation completion record
 
