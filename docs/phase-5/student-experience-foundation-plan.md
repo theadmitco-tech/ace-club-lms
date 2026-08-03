@@ -3,7 +3,7 @@
 Status: Approved preparation record — revised for batch-specific recordings
 Owner: Product owner and Engineering  
 Created: 31 July 2026  
-Last updated: 2 August 2026
+Last updated: 3 August 2026
 
 ## How to annotate this plan
 
@@ -16,7 +16,7 @@ Example:
 
 This plan defines the preparation checkpoint before Phase 5 engineering. It does not authorize application code, database, migration, staging, or Production changes.
 
-Phase 5 subsequently passed its original staging acceptance. On 2 August 2026, the Product Owner revised recordings to be batch-specific rather than master-inherited; that revision also passed staging acceptance. Current evidence and the Phase 6 continuation boundary are in the [Phase 5 status](README.md), [verification checklist](manual-verification-checklist.md), and [running handoff](../handoffs/ace-club-lms-running-handoff.md).
+Phase 5 subsequently passed its original staging acceptance. On 2 August 2026, the Product Owner revised recordings to be batch-specific rather than master-inherited; that revision also passed staging acceptance. Phase 6 then implemented and deployed the manual tracker specified by this historical plan. Current evidence and the Phase 7 continuation boundary are in the [Phase 6 status](../phase-6/README.md), [Phase 6 checklist](../phase-6/manual-verification-checklist.md), [Production evidence](../phase-6/evidence/production-rollout-2026-08-03.md), and [running handoff](../handoffs/ace-club-lms-running-handoff.md). Future-tense Phase 6 wording below is preserved as the approved pre-implementation design record.
 
 > **Product Owner annotation — overall direction**  
 > 

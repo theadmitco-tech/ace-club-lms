@@ -8,7 +8,7 @@ Last updated: 3 August 2026
 
 *A retain–repair–adapt–complete plan for the partially built Ace Club LMS*
 
-Current delivery state: Phases 1–5 are signed off and deployed to Production. [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is the merged Phase 5 implementation. Phase 6 is next.
+Current delivery state: Phases 1–6 are signed off and deployed to Production. [PR #7](https://github.com/theadmitco-tech/ace-club-lms/pull/7) is the merged Phase 6 implementation. Phase 7 — Adapt admin progress — is next.
 
 | **Product** | Ace Club Learning Management System |
 | --- | --- |
@@ -104,6 +104,8 @@ Current delivery state: Phases 1–5 are signed off and deployed to Production. 
 - Add autosave, saved state, partial-failure identification and failed-record retry behaviour.
 - Ensure student-level data isolation.
 **Exit gate:** The spreadsheet-style tracker persists individual and bulk-selected manual input without duplicate records or data leakage, and every log entry point opens the same worksheet records.
+
+**Completion record:** Passed staging acceptance and Production rollout on 3 August 2026. The shipped overview is grouped by curriculum section/event type following the approved Product Owner revision; programme week remains visible on each worksheet row. Student ownership, release boundaries, canonical entry points, individual and selected-only bulk persistence, partial-failure retry, keyboard focus, text zoom, and desktop layouts passed. Phase 7 may read this data through the existing authorised Admin RLS boundary but must not change Student ownership.
 ### Phase 7 — Adapt admin progress
 **Duration:** 3–5 working days
 - Reuse existing admin and student-detail components.

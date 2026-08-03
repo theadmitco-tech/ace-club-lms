@@ -1,6 +1,6 @@
 # Phase 5 — Student Experience Foundation
 
-Status: Approved preparation record — revised for batch-specific recordings
+Status: Approved preparation record — Phase 5 and Phase 6 outcomes recorded
 Owner: Product owner and Engineering  
 Last updated: 3 August 2026
 
@@ -8,7 +8,7 @@ Last updated: 3 August 2026
 
 Prepare a decision-complete Student experience before Phase 5 application work begins. The default Student journey is chronological through Timeline, with a secondary Browse by section view for `QA`, `VA`, and `DI` only.
 
-Implementation outcome: the Student experience and the Product Owner's subsequent batch-specific recording revision passed staging acceptance. Phase 5 is signed off and [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is merged. The [Phase 5 status](README.md), [verification checklist](manual-verification-checklist.md), and [running handoff](../handoffs/ace-club-lms-running-handoff.md) contain the durable evidence and Phase 6 continuation boundary.
+Implementation outcome: the Student experience and the Product Owner's subsequent batch-specific recording revision passed staging acceptance in Phase 5. The manual tracker described here passed Phase 6 staging and Production acceptance on 3 August 2026; [PR #7](https://github.com/theadmitco-tech/ace-club-lms/pull/7) is merged. The [Phase 6 status](../phase-6/README.md), [verification checklist](../phase-6/manual-verification-checklist.md), [Production evidence](../phase-6/evidence/production-rollout-2026-08-03.md), and [running handoff](../handoffs/ace-club-lms-running-handoff.md) are the current continuation records.
 
 ## Approved experience decisions
 
@@ -16,14 +16,14 @@ Implementation outcome: the Student experience and the Product Owner's subsequen
 - Thursday recommends the DI pre-read, Friday recommends the VA pre-read, and Saturday recommends the QA pre-read in `Asia/Kolkata`.
 - Recommended practice shows at most one released worksheet each for DI, VA, and QA: from that class's end until the next class in the same section begins.
 - Recommended practice appears above This week.
-- Recommended practice provides Open worksheet immediately. Phase 6 adds Update log on each worksheet row and a central Practice log overview.
+- Recommended practice provides Open worksheet immediately and Update log for each eligible released worksheet; Student navigation provides the central Practice log overview.
 - Timeline remains the default and groups the 31 fixed curriculum items by week.
 - Only the current programme week opens by default. Week 0 starts open during Week 0 and starts collapsed after the programme advances; every week remains expandable and collapsible.
 - Browse by section contains exactly `QA`, `VA`, and `DI`; there are no topic tags or topic taxonomy.
 - Curriculum-item detail keeps pre-read, class details, optional recording, worksheet, and tracker in journey order. Timeline and Browse by section use only the compact released-resource row plus release text for configured locked resources.
 - Admin-managed YouTube recordings use batch-session `video` materials and release after that batch session ends; they are never inherited or synchronized from master content.
 - Legacy rankings, correctness, accuracy, daily targets, and auto-graded practice leave the reachable Student interface.
-- Manual tracker states and summaries remain Phase 6–7 scope.
+- Manual Student tracker states and summaries are complete; Admin progress adaptation remains Phase 7 scope.
 - The preparation prototype is desktop-only; the active acceptance criteria now formally defer mobile optimisation while retaining desktop, keyboard, and text-zoom support.
 
 ## Pre-implementation interface inventory
@@ -35,7 +35,7 @@ Implementation outcome: the Student experience and the Product Owner's subsequen
 | Dashboard availability | Uses `materials.available_from` and session timestamps. | Retain | Presentation may recommend an item but must not recalculate its release or authorization. |
 | Session page | Uses Pre-reads, Practice, Recording, and Class Material tabs and includes legacy auto-graded practice. | Replace | Present one journey order and remove auto-graded practice from the Student path. |
 | Notion material reader | Loads authenticated Notion content but uses generic loading/error language. | Adapt | Preserve containment while adding explicit retry and support states. |
-| Worksheet delivery | Private PDF delivery and signed URLs are already implemented. | Retain | Link the released PDF into the journey; Phase 6 adds the manual tracker workspace. |
+| Worksheet delivery | Private PDF delivery and signed URLs are already implemented. | Retain | Link the released PDF and manual tracker in one canonical worksheet workspace. |
 | Student recording | Existing session UI can embed the first `video` material after release. | Adapt | Support validated recording lists and journey placement without bypassing release rules. |
 | Master curriculum Admin | Supports multiple Notion pre-reads and private PDF worksheets. | Retain | Keep recordings out of reusable master content. |
 | Batch recordings Admin | Session materials already support a `video` type. | Adapt | Add validated titled YouTube management for each batch session with database-owned post-class release. |
@@ -60,7 +60,7 @@ Implementation outcome: the Student experience and the Product Owner's subsequen
 ### Adapt
 
 - Dashboard into This week, Timeline, and Browse by section.
-- Compact Pre-read, Recording, and Worksheet actions on academic items in both navigation views; Log appears only after the Phase 6 tracker destination exists.
+- Compact Pre-read, Recording, and Worksheet actions on academic items in both navigation views; Log appears only when the released tracker destination exists.
 - Session detail into a journey instead of legacy feature tabs.
 - Recording display into validated, release-aware YouTube resources.
 - Loading, missing-content, and failure messages.
@@ -78,7 +78,7 @@ Historical data is preserved until a separate retention and cleanup decision.
 
 ### Defer
 
-- Manual question tracker persistence, autosave, comments, time, and completion to Phase 6.
+- Admin manual-progress totals and question inspection to Phase 7; Student tracker persistence, autosave, comments, and time are complete.
 - Admin manual-progress totals and question inspection to Phase 7.
 - Physical removal of legacy tables and functions to a later reviewed cleanup.
 - Question-level topic metadata; it is not required for QA/VA/DI section browsing.
@@ -99,7 +99,7 @@ The recommendation is derived in `Asia/Kolkata`. It never changes `available_fro
 The dashboard includes a **Recommended practice** group sourced independently from DI, VA, and QA. A released worksheet enters the group when its class ends and leaves when the next class in that section begins. The final worksheet in a section remains because no later same-section class exists. Each worksheet is one whole task with two adjacent actions:
 
 - **Open worksheet** — opens the authenticated released PDF.
-- **Update log** — opens the matching worksheet tracker once Phase 6 activates manual tracking.
+- **Update log** — opens the matching released worksheet tracker.
 
 At most one worksheet per section appears, so the group contains no more than three rows. Rotation affects Recommended practice only; every released worksheet remains accessible in Timeline and Browse by section. Practice remains visible alongside Thursday DI, Friday VA, and Saturday QA pre-read recommendations.
 
