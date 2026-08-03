@@ -44,7 +44,7 @@ The worksheet material route is the canonical workspace. The released PDF and qu
 - Production deployment: merge commit `13aeb9e` reached Ready on `main`.
 - Production Student and Admin smoke tests: pass; post-smoke tracker, Admin-owned and duplicate row counts remain 0.
 
-The immutable local check summary is in [automated verification evidence](evidence/automated-verification-2026-08-03.md).
+The immutable records are in [automated verification evidence](evidence/automated-verification-2026-08-03.md), [manual staging evidence](evidence/manual-staging-verification-2026-08-03.md), and [Production rollout evidence](evidence/production-rollout-2026-08-03.md).
 
 Repository-wide lint retains the signed Phase 5 legacy baseline outside the Phase 6 files and must not be reported as resolved unless the full command passes.
 
