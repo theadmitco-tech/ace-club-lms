@@ -90,6 +90,13 @@
   background: var(--accent-gradient);
 }
 
+.sidebar-nav-item:focus-visible,
+.admin-sidebar-toggle:focus-visible,
+.admin-layout .btn:focus-visible {
+  outline: 3px solid #e3a631;
+  outline-offset: 2px;
+}
+
 .sidebar-nav-icon {
   font-size: var(--font-size-base);
 }
