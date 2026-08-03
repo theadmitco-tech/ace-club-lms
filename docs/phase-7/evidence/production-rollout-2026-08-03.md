@@ -1,6 +1,6 @@
 # Phase 7 Production Rollout — 3 August 2026
 
-Status: Active — migration applied; application promotion pending
+Status: Passed
 
 Environment: `https://aceclub.theadmitco.com` connected to Production Supabase project `owmlxsnzogfapotmjrqk`.
 
@@ -18,9 +18,28 @@ No credentials, private Student data, material URLs or database connection strin
 - Supabase returned `Success. No rows returned`.
 - The ordered migration is transactional and changes functions/grants only; it does not seed or mutate tracker data.
 
-## Pending
+## Application promotion
 
-- Merge PR #9 and confirm the `main` deployment reaches Ready in Production.
-- Probe `/` and `/login` over live HTTP.
-- Complete authenticated Admin and Student role-routing smoke tests.
-- Confirm Production tracker ownership/row counts remain unchanged.
+- [PR #9](https://github.com/theadmitco-tech/ace-club-lms/pull/9) merged to `main` at merge commit `8a96a45`.
+- Vercel reported the corresponding Production deployment complete.
+- Live HTTP probes returned 200 for `/` and `/login`.
+
+## Authenticated smoke tests
+
+- A Production Student opened Practice log successfully.
+- Direct Student access to `/admin/progress` redirected to the Student dashboard.
+- After logout, `/practice` redirected to login.
+- A Production Admin opened `/admin/progress` successfully.
+- Existing Admin dashboard, Batches and Users routes remained operational.
+- Direct Admin access to `/practice` redirected to Admin.
+
+## Post-smoke database check
+
+- Total tracker rows: 0.
+- Admin-owned tracker rows: 0.
+
+Zero rows remains the expected Production state. No tracker data was seeded or modified for Phase 7 verification.
+
+## Result
+
+Phase 7 Production rollout passed. Phase 8 — Pilot, launch and stabilise — is next.

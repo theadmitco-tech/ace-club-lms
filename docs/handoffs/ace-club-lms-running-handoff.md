@@ -584,3 +584,34 @@ Do not reopen Phase 6 tracker design, Student ownership, section-based grouping,
 ### Resume instruction
 
 > Continue Ace Club LMS from the signed Phase 6 handoff in `docs/handoffs/ace-club-lms-running-handoff.md`. Read `AGENTS.md`, the instruction register, the MVP acceptance criteria, the Phase 7 roadmap section, the Phase 6 status/checklist/evidence, the documentation index, and coding rules. Confirm the Phase 6 Production-rollout documentation PR is merged, fetch updated `origin/main`, and create a new `codex/phase-7-*` branch. Preserve `student_question_logs`, Student ownership, release-aware RLS, the three Phase 6 tracker RPCs, section-based Practice log grouping, and the signed 22-error/3-warning untouched lint baseline. Build read-only Admin progress from the same Student records, optimize for tokens, and give one account-dependent task at a time.
+
+## Phase 7 — Adapt Admin Progress
+
+### Current status
+
+Phase 7 is complete. Read-only Admin progress now uses the Phase 6 Student-owned tracker records for cohort totals and question-level inspection. [PR #9](https://github.com/theadmitco-tech/ace-club-lms/pull/9) merged at `8a96a45`; the migration, Vercel Production deployment, live HTTP probes, authenticated Student/Admin smoke tests and post-smoke ownership check passed.
+
+### Accepted implementation
+
+- `/admin/progress` lists batches; the batch view shows every enrolled Student against released eligible worksheets with Done, Come back for review, Not updated, completion and last update.
+- Admin question inspection exposes the canonical question number, Student-selected status, optional time, comment and last update without write controls or ownership transfer.
+- `get_admin_course_practice_progress` and `get_admin_student_worksheet_progress` are authenticated Admin-only read RPCs with enrollment, publication and release boundaries.
+- Dashboard, Batches and Users reach the same progress surface. `/admin/worksheets` redirects to `/admin/progress`.
+- Rank, correctness, accuracy, daily targets, on-track/behind analytics, trends, alerts, filters and CSV exports are absent from the reachable Admin progress interface.
+- Student, signed-out, mismatch, inactive-history, empty-data, keyboard, text-zoom, responsive and read-only boundaries passed. The Product Owner accepted all 34 staging checks.
+- Production remains at zero tracker rows and zero Admin-owned tracker rows; no data was seeded for positive coverage.
+
+### Phase 8 continuation point
+
+Phase 8 is **Pilot, launch and stabilise**. Begin from updated `origin/main` after the Phase 7 rollout-documentation PR is merged.
+
+1. Pilot with one Test Admin, one Test Student and five to ten first-time Students.
+2. Exercise Week 0, scheduled pre-read, class, released worksheet, matching Student/Admin progress, permissions, time-zone and supported desktop-browser behavior.
+3. Bring repository-wide lint from the signed 22-error/3-warning legacy baseline to zero without suppressing findings.
+4. Correct broken scripts, unsafe setup guidance and stale documentation; retire only launch-interface paths proven unreachable.
+5. Preserve historical data until retention, backup and rollback decisions authorize physical deletion.
+6. Fix critical/high defects, launch the first live cohort and monitor key failures.
+
+### Resume instruction
+
+> Continue Ace Club LMS from the signed Phase 7 handoff in `docs/handoffs/ace-club-lms-running-handoff.md`. Read `AGENTS.md`, the instruction register, the MVP acceptance criteria, the Phase 8 roadmap section, the Phase 7 status/checklist/staging/Production evidence, the documentation index, the cleanup plan and coding rules. Confirm the Phase 7 rollout-documentation PR is merged, fetch updated `origin/main`, and create a new `codex/phase-8-*` branch. Preserve the signed Phase 1–7 authentication, curriculum, schedule/release, Student tracker and Admin read-only boundaries. Start with the pilot/launch gate and the explicit Phase 8 cleanup register; do not perform destructive data cleanup without a separately reviewed retention and rollback decision.

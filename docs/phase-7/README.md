@@ -1,6 +1,6 @@
 # Phase 7 — Adapt Admin Progress
 
-Status: Staging accepted — Production migration applied; deployment pending
+Status: Complete — Production rollout verified on 3 August 2026
 Owner: Product owner and Engineering
 Last updated: 3 August 2026
 
@@ -50,7 +50,7 @@ The Product Owner accepted the verified cohort totals and read-only question-lev
 
 ## Production rollout
 
-The Product Owner applied the Phase 7 migration to Production on 3 August 2026; Supabase returned `Success. No rows returned`. Application promotion and authenticated Production smoke testing remain pending. The rollout record is in [Production rollout evidence](evidence/production-rollout-2026-08-03.md).
+The Product Owner applied the Phase 7 migration to Production on 3 August 2026; Supabase returned `Success. No rows returned`. [PR #9](https://github.com/theadmitco-tech/ace-club-lms/pull/9) merged at `8a96a45`, Vercel deployed that commit successfully, live HTTP probes passed, authenticated Student/Admin smoke tests passed and tracker ownership remained 0 total/0 Admin-owned rows. The immutable record is in [Production rollout evidence](evidence/production-rollout-2026-08-03.md).
 
 ## Exit gate
 
