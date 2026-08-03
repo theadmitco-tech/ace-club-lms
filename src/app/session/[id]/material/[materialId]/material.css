@@ -14,7 +14,7 @@
 }
 
 .material-container {
-  width: min(1040px, calc(100% - 48px));
+  width: min(1440px, calc(100% - 48px));
   margin: 0 auto;
 }
 
@@ -116,7 +116,7 @@
 
 .worksheet-workspace-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(440px, 0.92fr);
+  grid-template-columns: minmax(420px, 0.85fr) minmax(620px, 1.15fr);
   gap: 22px;
   align-items: start;
 }
@@ -260,17 +260,42 @@
 
 .worksheet-log-table {
   width: 100%;
-  min-width: 760px;
+  min-width: 620px;
   border-collapse: collapse;
   font-size: 0.74rem;
 }
 
 .worksheet-log-table th,
 .worksheet-log-table td {
-  padding: 10px 8px;
+  padding: 10px 6px;
   border-bottom: 1px solid var(--border-primary);
   text-align: left;
   vertical-align: top;
+}
+
+.worksheet-log-table th:nth-child(1),
+.worksheet-log-table td:nth-child(1) {
+  width: 32px;
+}
+
+.worksheet-log-table th:nth-child(2),
+.worksheet-log-table td:nth-child(2) {
+  width: 52px;
+}
+
+.worksheet-log-table th:nth-child(3),
+.worksheet-log-table td:nth-child(3) {
+  width: 150px;
+}
+
+.worksheet-log-table th:nth-child(4),
+.worksheet-log-table td:nth-child(4) {
+  width: 105px;
+}
+
+.worksheet-log-table th:nth-child(6),
+.worksheet-log-table td:nth-child(6) {
+  width: 96px;
 }
 
 .worksheet-log-table thead th {
@@ -335,12 +360,12 @@
 }
 
 .tracker-time-input {
-  min-width: 78px;
+  min-width: 72px;
   padding: 7px;
 }
 
 .worksheet-log-table textarea {
-  min-width: 160px;
+  min-width: 120px;
   padding: 7px;
   resize: vertical;
 }
@@ -371,7 +396,7 @@
   padding: 22px;
 }
 
-@media (max-width: 1080px) {
+@media (max-width: 1180px) {
   .worksheet-workspace-grid {
     grid-template-columns: 1fr;
   }

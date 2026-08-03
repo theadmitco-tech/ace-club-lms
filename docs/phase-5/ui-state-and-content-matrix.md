@@ -111,7 +111,7 @@ Recommended practice uses class end and the next same-section class start as its
 
 | Entry point | Update log destination |
 | --- | --- |
-| Student navigation → Practice log | Overview of released worksheets, grouped by QA, VA and DI, with programme week on each row plus saved totals and review counts |
+| Student navigation → Practice log | Overview grouped by curriculum section/type, with QA, VA and DI first, other worksheet-bearing types separate, and programme week on each row plus saved totals and review counts |
 | This week → Recommended practice | Matching worksheet workspace with its question list focused |
 | Timeline → released worksheet | Matching worksheet workspace with the log panel focused |
 | Browse by section → released worksheet | Matching worksheet workspace with the log panel focused |

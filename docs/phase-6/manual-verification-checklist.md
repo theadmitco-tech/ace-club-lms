@@ -18,12 +18,12 @@ Last updated: 3 August 2026
 
 ## Practice log overview
 
-- [ ] Student navigation exposes Practice log.
-- [ ] Only released worksheets with fixed question rows appear.
-- [ ] Worksheets are grouped by QA, VA and DI; each row retains its programme week and stays in course order.
-- [ ] Done, review and Not updated totals match the worksheet rows.
+- [x] Student navigation exposes Practice log.
+- [x] Only released worksheets with fixed question rows appear (Week 0 empty state and past-cohort released MOCK worksheet verified).
+- [x] Worksheets are grouped by curriculum section/type with QA, VA and DI first; other worksheet-bearing types are separate, and each row retains its programme week.
+- [x] Done, review and Not updated totals match the worksheet rows.
 - [ ] Last updated is absent for untouched worksheets and changes after a real Student update.
-- [ ] Opening an overview item reaches its released PDF and matching question log.
+- [x] Opening an overview item reaches its released PDF and matching question log.
 
 ## Canonical entry points
 
@@ -36,20 +36,20 @@ Last updated: 3 August 2026
 ## Individual tracking
 
 - [ ] Untouched rows show Not updated and do not present it as a selectable third status.
-- [ ] Done saves and persists after refresh.
-- [ ] Come back for review saves, is visually distinct and persists after refresh.
-- [ ] Choosing the other status replaces the previous status.
+- [x] Done saves and persists after refresh.
+- [x] Come back for review saves, is visually distinct and persists after refresh.
+- [x] Choosing the other status replaces the previous status; overview totals changed from 15 Done / 5 review to 16 Done / 4 review after refresh.
 - [ ] A blank optional time and comment do not block saving.
-- [ ] Valid `mm:ss` time saves; invalid input remains visible with actionable feedback.
-- [ ] A comment saves on blur, persists and remains private.
+- [ ] Valid `mm:ss` time saves and persists; invalid input remains visible with actionable feedback. (Valid persistence passed; invalid feedback pending.)
+- [x] A comment saves on blur and persists. Cross-student privacy remains a separate pending database probe.
 - [ ] Saving, Saved and Retry states are understandable without relying only on colour.
 
 ## Bulk tracking and recovery
 
 - [ ] Select all selects every visible question and can be cleared.
 - [ ] Mark selected Done changes only selected questions.
-- [ ] Mark selected for review changes only selected questions.
-- [ ] Bulk confirmation states the exact number and target status.
+- [x] Mark selected for review changes only selected questions.
+- [x] Bulk confirmation states the exact number and target status.
 - [ ] Successful records remain saved when a subset fails.
 - [ ] Failed question numbers remain selected and identifiable.
 - [ ] Retry failed only does not resubmit successful or unselected records.
