@@ -34,7 +34,9 @@ Current continuation state: [Ace Club LMS Running Handoff](handoffs/ace-club-lms
   - [Preparation and delivery verification checklist](phase-5/manual-verification-checklist.md)
 - Phase 5: signed off and deployed to Production, including batch-specific recordings — [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is merged.
   - [Implementation status](phase-5/README.md)
-- Phase 6: not started — persistent Practice log and worksheet question tracking are next from updated `origin/main`.
+- Phase 6: implementation in progress on `codex/phase-6-practice-log`.
+  - [Status and implementation boundary](phase-6/README.md)
+  - [Manual verification checklist](phase-6/manual-verification-checklist.md)
 
 There is no approved Phase 1.5.
 

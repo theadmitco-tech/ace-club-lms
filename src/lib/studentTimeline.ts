@@ -7,6 +7,7 @@ export type StudentTimelineMaterial = {
   title: string;
   available_from: string;
   is_available: boolean;
+  tracker_available: boolean;
 };
 
 export type StudentTimelineSession = {

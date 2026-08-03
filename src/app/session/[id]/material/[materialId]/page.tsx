@@ -2,8 +2,10 @@ import Link from 'next/link';
 import { NotionReader } from '@/components/student/NotionReader';
 import { PdfViewer } from '@/components/student/PdfViewer';
 import { StudentHeader } from '@/components/student/StudentHeader';
+import { WorksheetLog } from '@/components/student/WorksheetLog';
 import { extractNotionPageId } from '@/lib/notion';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
+import { loadStudentWorksheetLog } from '@/lib/server/studentPractice';
 import { loadStudentTimeline } from '@/lib/server/studentTimeline';
 import { getMaterialAvailabilityCopy } from '@/lib/studentTimeline';
 import type { Material } from '@/lib/types';
@@ -77,6 +79,10 @@ export default async function MaterialViewerPage({
   const youtubeEmbedUrl = material.type === 'video' && material.video_url
     ? getYoutubeEmbedUrl(material.video_url)
     : null;
+  const trackerAvailable = material.type === 'worksheet' && Boolean(timelineMaterial?.tracker_available);
+  const worksheetLogResult = trackerAvailable
+    ? await loadStudentWorksheetLog(material.id)
+    : null;
 
   return (
     <div className="student-page">
@@ -127,7 +133,36 @@ export default async function MaterialViewerPage({
               </div>
             )}
 
-            {(material.type === 'worksheet' || material.type === 'class_material') && material.file_url && (
+            {material.type === 'class_material' && material.file_url && (
+              <PdfViewer fileUrl={material.file_url} title={material.title} />
+            )}
+
+            {material.type === 'worksheet' && material.file_url && trackerAvailable && (
+              <div className="worksheet-workspace-grid">
+                <div className="worksheet-pdf-panel">
+                  <PdfViewer fileUrl={material.file_url} title={material.title} />
+                </div>
+                {worksheetLogResult?.status === 'ready' ? (
+                  <WorksheetLog worksheet={worksheetLogResult.data} />
+                ) : (
+                  <section className="worksheet-log worksheet-log-error" id="worksheet-log" role="alert">
+                    <span className="student-eyebrow">Manual tracker</span>
+                    <h2>We couldn&apos;t load this worksheet log</h2>
+                    <p>
+                      {worksheetLogResult?.message ?? 'The tracker is not available for this worksheet yet.'}
+                    </p>
+                    <Link
+                      className="student-button"
+                      href={`/session/${sessionId}/material/${materialId}?focus=log#worksheet-log`}
+                    >
+                      Retry log
+                    </Link>
+                  </section>
+                )}
+              </div>
+            )}
+
+            {material.type === 'worksheet' && material.file_url && !trackerAvailable && (
               <PdfViewer fileUrl={material.file_url} title={material.title} />
             )}
 

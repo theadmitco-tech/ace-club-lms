@@ -32,6 +32,27 @@
   align-items: center;
 }
 
+.student-navigation {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.student-navigation a {
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.student-navigation a:hover,
+.student-navigation a:focus-visible {
+  background: var(--bg-tertiary);
+  color: var(--accent-primary);
+}
+
 .student-brand {
   gap: 10px;
   color: var(--accent-primary);
@@ -317,6 +338,19 @@
 .student-button-light {
   background: white;
   color: var(--accent-primary);
+}
+
+.student-button-secondary {
+  border: 1px solid var(--border-accent);
+  background: white;
+  color: var(--accent-primary);
+}
+
+.practice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .recommendation-row {

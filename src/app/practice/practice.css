@@ -1,0 +1,123 @@
+.practice-overview-container {
+  width: min(1080px, calc(100% - 48px));
+  margin: 0 auto;
+}
+
+.practice-overview-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.practice-overview-header h1 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 4vw, 3.1rem);
+  letter-spacing: -0.035em;
+}
+
+.practice-overview-header p {
+  max-width: 650px;
+  margin: 10px 0 0;
+  color: var(--text-secondary);
+}
+
+.practice-week-groups {
+  display: grid;
+  gap: 20px;
+}
+
+.practice-week-group {
+  overflow: hidden;
+  border: 1px solid var(--border-primary);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow-sm);
+}
+
+.practice-week-heading {
+  padding: 17px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-primary);
+  background: var(--bg-tertiary);
+}
+
+.practice-week-heading h2 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+}
+
+.practice-week-heading span {
+  color: var(--text-tertiary);
+  font-size: 0.75rem;
+  font-weight: 750;
+}
+
+.practice-overview-list {
+  display: grid;
+}
+
+.practice-overview-card {
+  padding: 18px 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 24px;
+}
+
+.practice-overview-card + .practice-overview-card {
+  border-top: 1px solid var(--border-primary);
+}
+
+.practice-overview-copy span,
+.practice-overview-copy small {
+  color: var(--text-tertiary);
+  font-size: 0.72rem;
+}
+
+.practice-overview-copy h3 {
+  margin: 4px 0;
+  font-size: 1rem;
+}
+
+.practice-overview-totals {
+  display: flex;
+  gap: 14px;
+}
+
+.practice-overview-totals span {
+  display: grid;
+  gap: 2px;
+  color: var(--text-tertiary);
+  font-size: 0.68rem;
+  text-align: center;
+}
+
+.practice-overview-totals strong {
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+@media (max-width: 800px) {
+  .practice-overview-header,
+  .practice-overview-card {
+    align-items: flex-start;
+  }
+
+  .practice-overview-header {
+    flex-direction: column;
+  }
+
+  .practice-overview-card {
+    grid-template-columns: 1fr;
+  }
+
+  .practice-overview-totals {
+    justify-content: flex-start;
+  }
+}
