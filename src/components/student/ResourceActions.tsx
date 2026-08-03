@@ -33,8 +33,17 @@ export function ResourceActions({
 
   return (
     <div className="resource-actions" aria-label="Course resources">
-      {orderedMaterials.map((material) => (
-        material.is_available ? (
+      {orderedMaterials.flatMap((material) => {
+        if (!material.is_available) {
+          return [(
+            <span className="resource-unavailable" key={material.id}>
+              <strong>{getMaterialActionLabel(material.type)}</strong>
+              <small>{getMaterialAvailabilityCopy(material, timeZone)}</small>
+            </span>
+          )];
+        }
+
+        const actions = [(
           <Link
             className="resource-action"
             href={`/session/${sessionId}/material/${material.id}`}
@@ -42,13 +51,22 @@ export function ResourceActions({
           >
             {getMaterialActionLabel(material.type)}
           </Link>
-        ) : (
-          <span className="resource-unavailable" key={material.id}>
-            <strong>{getMaterialActionLabel(material.type)}</strong>
-            <small>{getMaterialAvailabilityCopy(material, timeZone)}</small>
-          </span>
-        )
-      ))}
+        )];
+
+        if (material.type === 'worksheet' && material.tracker_available) {
+          actions.push(
+            <Link
+              className="resource-action resource-action-log"
+              href={`/session/${sessionId}/material/${material.id}?focus=log#worksheet-log`}
+              key={`${material.id}-log`}
+            >
+              Log
+            </Link>,
+          );
+        }
+
+        return actions;
+      })}
     </div>
   );
 }

@@ -126,9 +126,19 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
                         <span>{session.class_type ?? 'Course'} · Week {session.week_number}</span>
                         <strong>{material.title}</strong>
                       </div>
-                      <Link className="student-button" href={`/session/${session.id}/material/${material.id}`}>
-                        Open worksheet
-                      </Link>
+                      <div className="practice-actions">
+                        <Link className="student-button" href={`/session/${session.id}/material/${material.id}`}>
+                          Open worksheet
+                        </Link>
+                        {material.tracker_available && (
+                          <Link
+                            className="student-button student-button-secondary"
+                            href={`/session/${session.id}/material/${material.id}?focus=log#worksheet-log`}
+                          >
+                            Update log
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>

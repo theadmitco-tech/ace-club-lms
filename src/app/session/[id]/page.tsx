@@ -14,7 +14,7 @@ import '../../dashboard/dashboard.css';
 import './session.css';
 
 const JOURNEY_STEPS: Array<{
-  type: StudentTimelineMaterial['type'] | 'class';
+  type: StudentTimelineMaterial['type'] | 'class' | 'tracker';
   label: string;
   description: string;
 }> = [
@@ -22,6 +22,7 @@ const JOURNEY_STEPS: Array<{
   { type: 'class', label: 'Class', description: 'Attend the scheduled class' },
   { type: 'video', label: 'Recording', description: 'Review after class' },
   { type: 'worksheet', label: 'Worksheet', description: 'Practise after class' },
+  { type: 'tracker', label: 'Tracker', description: 'Record your manual progress' },
 ];
 
 export default async function SessionPage({ params }: { params: Promise<{ id: string }> }) {
@@ -76,12 +77,14 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
             <section className="journey-panel" aria-labelledby="journey-title">
               <div className="journey-panel-heading">
                 <span className="student-eyebrow">Learning sequence</span>
-                <h2 id="journey-title">Prepare → Attend class → Practise</h2>
+                <h2 id="journey-title">Prepare → Attend class → Practise → Track progress</h2>
               </div>
               <ol className="journey-step-list">
                 {JOURNEY_STEPS.map((step, index) => {
                   const materials = step.type === 'class'
                     ? []
+                    : step.type === 'tracker'
+                      ? session.materials.filter((material) => material.type === 'worksheet' && material.tracker_available)
                     : session.materials.filter((material) => material.type === step.type);
                   return (
                     <li className="journey-step" key={step.type}>
@@ -104,8 +107,19 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
                                 <small>{getMaterialAvailabilityCopy(material, timeZone)}</small>
                               </div>
                               {material.is_available && (
-                                <Link className="student-button" href={`/session/${session.id}/material/${material.id}`}>
-                                  {step.type === 'pre_read' ? 'Open pre-read' : step.type === 'video' ? 'Watch recording' : 'Open worksheet'}
+                                <Link
+                                  className="student-button"
+                                  href={step.type === 'tracker'
+                                    ? `/session/${session.id}/material/${material.id}?focus=log#worksheet-log`
+                                    : `/session/${session.id}/material/${material.id}`}
+                                >
+                                  {step.type === 'pre_read'
+                                    ? 'Open pre-read'
+                                    : step.type === 'video'
+                                      ? 'Watch recording'
+                                      : step.type === 'tracker'
+                                        ? 'Update log'
+                                        : 'Open worksheet'}
                                 </Link>
                               )}
                             </div>

@@ -2,6 +2,17 @@
   padding-top: 28px;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .material-container {
   width: min(1040px, calc(100% - 48px));
   margin: 0 auto;
@@ -101,6 +112,269 @@
 
 .custom-notion.notion {
   width: 100%;
+}
+
+.worksheet-workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(440px, 0.92fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.worksheet-pdf-panel {
+  min-width: 0;
+}
+
+.worksheet-log {
+  min-width: 0;
+  scroll-margin-top: 92px;
+  border: 1px solid var(--border-primary);
+  border-radius: 14px;
+  background: #fbfdfc;
+}
+
+.worksheet-log-heading {
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.worksheet-log-heading h2,
+.worksheet-log-error h2 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+}
+
+.worksheet-log-heading p,
+.worksheet-log-error p {
+  margin: 6px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+.worksheet-log-totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.worksheet-log-totals span {
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+}
+
+.worksheet-bulk-bar {
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-primary);
+  background: white;
+}
+
+.worksheet-bulk-bar > span,
+.select-all-control {
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.select-all-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.worksheet-bulk-bar button,
+.bulk-confirmation button,
+.bulk-result button,
+.question-status-controls button,
+.save-state button {
+  padding: 6px 8px;
+  border: 1px solid var(--border-secondary);
+  border-radius: 7px;
+  background: white;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.worksheet-bulk-bar button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.question-status-controls button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.worksheet-bulk-bar button:focus-visible,
+.bulk-confirmation button:focus-visible,
+.bulk-result button:focus-visible,
+.question-status-controls button:focus-visible,
+.save-state button:focus-visible,
+.tracker-time-input:focus-visible,
+.worksheet-log-table textarea:focus-visible,
+.worksheet-log-table input[type='checkbox']:focus-visible {
+  outline: 3px solid #e3a631;
+  outline-offset: 2px;
+}
+
+.worksheet-bulk-bar .bulk-clear {
+  border-color: transparent;
+}
+
+.bulk-confirmation,
+.bulk-result {
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-primary);
+  background: #fff8e8;
+  font-size: 0.74rem;
+}
+
+.bulk-result {
+  background: #eef8f4;
+}
+
+.bulk-result-error {
+  background: #fff2f0;
+  color: #8f3025;
+}
+
+.worksheet-log-table-wrap {
+  overflow: auto;
+}
+
+.worksheet-log-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  font-size: 0.74rem;
+}
+
+.worksheet-log-table th,
+.worksheet-log-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border-primary);
+  text-align: left;
+  vertical-align: top;
+}
+
+.worksheet-log-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f3f7f5;
+  color: var(--text-secondary);
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.worksheet-log-table tr.question-selected {
+  background: #fff9ea;
+}
+
+.question-status-controls {
+  display: flex;
+  gap: 5px;
+}
+
+.question-status-controls button.active.status-done {
+  border-color: #187459;
+  background: #eaf7f1;
+  color: #105743;
+}
+
+.question-status-controls button.active.status-review {
+  border-color: #c68518;
+  background: #fff4dc;
+  color: #7c510d;
+}
+
+.question-status-copy {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.65rem;
+  font-weight: 750;
+}
+
+.status-done {
+  color: #105743;
+}
+
+.status-review {
+  color: #7c510d;
+}
+
+.status-untouched {
+  color: var(--text-tertiary);
+}
+
+.tracker-time-input,
+.worksheet-log-table textarea {
+  width: 100%;
+  border: 1px solid var(--border-secondary);
+  border-radius: 7px;
+  background: white;
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.tracker-time-input {
+  min-width: 78px;
+  padding: 7px;
+}
+
+.worksheet-log-table textarea {
+  min-width: 160px;
+  padding: 7px;
+  resize: vertical;
+}
+
+.save-state {
+  color: var(--text-tertiary);
+  font-size: 0.66rem;
+}
+
+.save-state-saving {
+  color: #7c510d;
+}
+
+.save-state-saved {
+  color: #105743;
+}
+
+.save-state-error {
+  color: #8f3025;
+}
+
+.save-state-error span {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.worksheet-log-error {
+  padding: 22px;
+}
+
+@media (max-width: 1080px) {
+  .worksheet-workspace-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .notion-page {
