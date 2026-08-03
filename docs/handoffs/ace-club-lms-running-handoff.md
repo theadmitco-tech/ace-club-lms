@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-Last updated: 2 August 2026
+Last updated: 3 August 2026
 
 This is the current cross-phase continuity document. Append a signed section when a phase closes; preserve earlier sections as historical snapshots instead of rewriting them to match later state.
 
@@ -449,7 +449,7 @@ Status: **Signed off**
 - Product Owner staging checks passed for Timeline and QA/VA/DI browsing, rotating recommendations, material destinations and release states, Week 0 behaviour, sign-out, notification feedback, scroll preservation, return navigation, private YouTube viewing, and recoverable Notion/PDF failures.
 - The original master-recording propagation tests passed but were superseded by the Product Owner's later batch-specific recording decision; they remain historical evidence only.
 - Review fixed return navigation into collapsed weeks and the former master-recording removal path. The batch-specific revision removed legacy cross-batch recording copies and isolated all new recordings on their selected batch sessions.
-- Staging is applied and reconciled through `20260802235900_cascade_master_material_removals.sql`. Two-batch recording isolation, local editing, validation, post-class release, new-cohort exclusion, Sync materials exclusion, and orphaned-master-material cleanup all passed. Production has not received Phase 5 migrations or application code.
+- Staging and Production are applied and reconciled through `20260802235900_cascade_master_material_removals.sql`. Two-batch recording isolation, local editing, validation, post-class release, new-cohort exclusion, Sync materials exclusion, and orphaned-master-material cleanup all passed.
 - `npx tsc --noEmit`, targeted ESLint for Phase 5-touched files, deterministic recommendation/release assertions, and the guarded Next.js 16.2.4 Production build pass. Vercel Preview checks pass.
 
 ### Pull request and release boundary
@@ -459,7 +459,7 @@ Status: **Signed off**
 - Original accepted implementation head before the recording-rule revision: `e401450`.
 - Product Owner signed off Phase 5 on 2 August 2026 after complete staging acceptance.
 - PR #5 is the merged Phase 5 implementation.
-- Production remains untouched. Reviewer approval, merge, and any Production rollout are separate decisions.
+- Production rollout passed on 3 August 2026. Because the Free Supabase project had no managed backup or PITR, restricted migration `20260801085900_snapshot_phase5_rollout_state.sql` captured the affected tables and database definitions before mutation. The complete record is in [Production rollout evidence](../phase-5/evidence/production-rollout-2026-08-03.md).
 - Repository-wide lint still reports 22 errors and 3 warnings in untouched legacy Admin worksheet/session editors, registration/payment routes, and helpers. Phase 5-touched files are clean; do not misreport the legacy lint baseline as resolved.
 
 ### Post-acceptance Product Owner revision — recordings

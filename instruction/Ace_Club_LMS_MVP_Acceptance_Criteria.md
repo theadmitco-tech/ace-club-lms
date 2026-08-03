@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner
-Last updated: 2 August 2026
+Last updated: 3 August 2026
 
 **PRODUCT REQUIREMENTS**
 
@@ -15,7 +15,7 @@ Last updated: 2 August 2026
 
 > **Scope decision:** The MVP uses Google Sign-In with controlled, pre-provisioned accounts, a fixed curriculum with approved QA/VA/DI labels, embedded Notion pre-reads, automatically released PDF worksheets, Admin-managed YouTube recordings, weekly worksheet recommendations, QA/VA/DI browsing, and a manual spreadsheet-style question tracker. The launch interface targets current desktop browsers and keyboard navigation; mobile optimisation is deferred.
 
-> **Delivery status:** Phases 1–5 are signed off. [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is the merged Phase 5 implementation; it has not been deployed to Production. Tracker criteria in sections 8–9 remain Phase 6–7 work and the full launch list in section 12 is not yet complete.
+> **Delivery status:** Phases 1–5 are signed off and deployed to Production. [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is the merged Phase 5 implementation. Tracker criteria in sections 8–9 remain Phase 6–7 work and the full launch list in section 12 is not yet complete.
 
 ## 1. Product roles and boundaries
 | **Role** | **Purpose** | **MVP access** |

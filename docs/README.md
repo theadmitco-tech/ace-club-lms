@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Engineering
-Last updated: 2 August 2026
+Last updated: 3 August 2026
 
 This index routes readers to the smallest set of documents needed for a task. Product authority remains in [`instruction/`](../instruction/README.md).
 
@@ -32,7 +32,7 @@ Current continuation state: [Ace Club LMS Running Handoff](handoffs/ace-club-lms
   - [Decision summary](phase-5/student-experience-foundation.md)
   - [UI state and content matrix](phase-5/ui-state-and-content-matrix.md)
   - [Preparation and delivery verification checklist](phase-5/manual-verification-checklist.md)
-- Phase 5: signed off, including batch-specific recordings — [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is merged; Production remains untouched.
+- Phase 5: signed off and deployed to Production, including batch-specific recordings — [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is merged.
   - [Implementation status](phase-5/README.md)
 - Phase 6: not started — persistent Practice log and worksheet question tracking are next from updated `origin/main`.
 

@@ -2,13 +2,13 @@
 
 Status: Active
 Owner: Product owner
-Last updated: 2 August 2026
+Last updated: 3 August 2026
 
 **DELIVERY ROADMAP**
 
 *A retain–repair–adapt–complete plan for the partially built Ace Club LMS*
 
-Current delivery state: Phases 1–5 are signed off. [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is the merged Phase 5 implementation; it has not been deployed to Production. Phase 6 is next.
+Current delivery state: Phases 1–5 are signed off and deployed to Production. [PR #5](https://github.com/theadmitco-tech/ace-club-lms/pull/5) is the merged Phase 5 implementation. Phase 6 is next.
 
 | **Product** | Ace Club Learning Management System |
 | --- | --- |
