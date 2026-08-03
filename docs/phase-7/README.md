@@ -1,6 +1,6 @@
 # Phase 7 — Adapt Admin Progress
 
-Status: Staging accepted — 34/34 checks pass; Production rollout pending
+Status: Staging accepted — Production migration applied; deployment pending
 Owner: Product owner and Engineering
 Last updated: 3 August 2026
 
@@ -46,7 +46,11 @@ The Product Owner applied `20260803160000_add_admin_practice_progress.sql` to st
 
 The anonymized [manual staging verification evidence](evidence/manual-staging-verification-2026-08-03.md) records the signed-in Admin and Student browser checks plus the rollback-only authorization/data-contract probe. All 34 checklist items pass.
 
-The Product Owner accepted the verified cohort totals and read-only question-level inspection on 3 August 2026. Production remains unchanged and must not be seeded merely for positive coverage.
+The Product Owner accepted the verified cohort totals and read-only question-level inspection on 3 August 2026. Production tracker data remains unchanged and must not be seeded merely for positive coverage.
+
+## Production rollout
+
+The Product Owner applied the Phase 7 migration to Production on 3 August 2026; Supabase returned `Success. No rows returned`. Application promotion and authenticated Production smoke testing remain pending. The rollout record is in [Production rollout evidence](evidence/production-rollout-2026-08-03.md).
 
 ## Exit gate
 
