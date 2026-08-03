@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { createClient } from '@/utils/supabase/client';
 import { formatDate } from '@/lib/utils';
 import { useAuth } from '@/lib/AuthContext';
@@ -333,6 +334,16 @@ export default function AdminUsersPage() {
                           </button>
                         );
                       })}
+
+                      {studentEnrollments.map((enrollment) => (
+                        <Link
+                          key={`progress-${enrollment.id}`}
+                          className="btn btn-secondary btn-sm"
+                          href={`/admin/progress/${enrollment.course_id}`}
+                        >
+                          View progress
+                        </Link>
+                      ))}
                       
                       <button
                         className={`btn btn-sm ${student.is_active ? 'btn-ghost' : 'btn-primary'}`}

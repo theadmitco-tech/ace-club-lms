@@ -39,7 +39,11 @@ Current continuation state: [Ace Club LMS Running Handoff](handoffs/ace-club-lms
   - [Manual verification checklist](phase-6/manual-verification-checklist.md)
   - [Staging acceptance evidence](phase-6/evidence/manual-staging-verification-2026-08-03.md)
   - [Production rollout evidence](phase-6/evidence/production-rollout-2026-08-03.md)
-- Phase 7: next — adapt Admin progress to the Phase 6 manual tracker records.
+- Phase 7: active — adapt Admin progress to the Phase 6 manual tracker records.
+  - [Status and implementation boundary](phase-7/README.md)
+  - [Manual verification checklist](phase-7/manual-verification-checklist.md)
+  - [Local automated verification](phase-7/evidence/automated-verification-2026-08-03.md)
+  - [Staging migration evidence](phase-7/evidence/staging-migration-application-2026-08-03.md)
 
 There is no approved Phase 1.5.
 

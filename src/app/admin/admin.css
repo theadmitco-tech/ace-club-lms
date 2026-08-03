@@ -742,6 +742,104 @@
 .badge-data-insights { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
 
 /* ============================================
+   Manual Student Progress
+   ============================================ */
+.admin-progress-course-grid,
+.admin-progress-worksheet-list {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.admin-progress-course-grid {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.admin-progress-course-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+}
+
+.admin-progress-card-heading,
+.admin-progress-student-name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.admin-progress-card-heading {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.admin-progress-message {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-md);
+  max-width: 720px;
+}
+
+.admin-progress-meta {
+  color: var(--text-tertiary);
+  font-size: 0.75rem;
+  margin-top: 4px;
+}
+
+.admin-progress-table {
+  min-width: 940px;
+}
+
+.admin-progress-question-table {
+  min-width: 860px;
+}
+
+.admin-progress-comment {
+  max-width: 360px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.admin-progress-status {
+  display: inline-flex;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.admin-progress-status-done {
+  border-color: rgba(16, 185, 129, 0.45);
+  color: var(--success);
+}
+
+.admin-progress-status-review {
+  border-color: rgba(245, 158, 11, 0.45);
+  color: var(--warning);
+}
+
+.admin-progress-status-empty {
+  color: var(--text-secondary);
+}
+
+.admin-progress-totals {
+  margin-bottom: var(--space-xl);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================
    Responsive
    ============================================ */
 @media (max-width: 768px) {
@@ -792,5 +890,10 @@
 
   .admin-stats-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-progress-course-card {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
