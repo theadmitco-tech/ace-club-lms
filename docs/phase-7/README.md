@@ -1,6 +1,6 @@
 # Phase 7 — Adapt Admin Progress
 
-Status: Active — staging migration applied; authorization and UI acceptance pending
+Status: Staging accepted — 34/34 checks pass; Production rollout pending
 Owner: Product owner and Engineering
 Last updated: 3 August 2026
 
@@ -42,12 +42,11 @@ The current local results are recorded in [automated verification evidence](evid
 
 The Product Owner applied `20260803160000_add_admin_practice_progress.sql` to staging Supabase `eyphkkginlgoaxflauog` on 3 August 2026. The SQL Editor returned `Success. No rows returned`. The immutable record is in [staging migration evidence](evidence/staging-migration-application-2026-08-03.md).
 
-## Risks and pending evidence
+## Staging verification
 
-- SQL execution passed in staging. Admin-only RPC denial, enrollment/release matching and totals against live Phase 6 records remain unproved.
-- Empty Production-like data must remain a deliberate non-error state; Production must not be seeded merely for positive coverage.
-- Positive question-level coverage should use staging fixtures or rollback-only probes and must not expose private Student data in evidence.
-- Common desktop widths, keyboard focus, text zoom and role redirects still require signed-in staging verification.
+The anonymized [manual staging verification evidence](evidence/manual-staging-verification-2026-08-03.md) records the signed-in Admin and Student browser checks plus the rollback-only authorization/data-contract probe. All 34 checklist items pass.
+
+The Product Owner accepted the verified cohort totals and read-only question-level inspection on 3 August 2026. Production remains unchanged and must not be seeded merely for positive coverage.
 
 ## Exit gate
 
