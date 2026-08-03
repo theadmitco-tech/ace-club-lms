@@ -10,9 +10,9 @@ Last updated: 3 August 2026
 - [ ] Existing enrolled Students receive one record per cohort worksheet question without duplicates.
 - [ ] A new enrollment receives the same independent records.
 - [ ] A newly copied worksheet or newly added master question provisions missing records once.
-- [ ] Student A cannot read or update Student B records through table access or RPC calls.
-- [ ] A signed-out caller cannot read or update tracker data.
-- [ ] A deactivated Student cannot read or update tracker data.
+- [x] Student A cannot read or update Student B records through table access or RPC calls (staging privacy probe passed, 3 August 2026).
+- [x] A signed-out caller cannot read tracker data through the worksheet-log URL.
+- [x] A deactivated Student cannot read or update tracker data (staging privacy probe passed, 3 August 2026).
 - [ ] An unreleased worksheet cannot be found in Practice log or opened through a direct tracker call.
 - [ ] An authorised Admin can read the records needed by Phase 7 and cannot accidentally become their Student owner.
 
@@ -28,10 +28,10 @@ Last updated: 3 August 2026
 ## Canonical entry points
 
 - [ ] Recommended practice exposes Update log only when the tracker exists.
-- [ ] Timeline exposes Log only when the released tracker exists.
+- [x] Timeline exposes Log only when the released tracker exists.
 - [ ] Browse by section exposes the same Log action and records.
 - [ ] Curriculum-item Tracker opens the same worksheet workspace.
-- [ ] Reopening from every entry point never creates duplicate records.
+- [ ] Reopening from every entry point never creates duplicate records. (Practice log and Timeline entry points pass; Recommended practice and Browse by section remain pending.)
 
 ## Individual tracking
 
@@ -40,19 +40,19 @@ Last updated: 3 August 2026
 - [x] Come back for review saves, is visually distinct and persists after refresh.
 - [x] Choosing the other status replaces the previous status; overview totals changed from 15 Done / 5 review to 16 Done / 4 review after refresh.
 - [ ] A blank optional time and comment do not block saving.
-- [ ] Valid `mm:ss` time saves and persists; invalid input remains visible with actionable feedback. (Valid persistence passed; invalid feedback pending.)
-- [x] A comment saves on blur and persists. Cross-student privacy remains a separate pending database probe.
-- [ ] Saving, Saved and Retry states are understandable without relying only on colour.
+- [x] Valid `mm:ss` time saves and persists; invalid input remains visible with actionable feedback.
+- [x] A comment saves on blur and persists; the staging privacy probe also confirmed another Student cannot read or change the owner's tracker row.
+- [x] Saving, Saved and Retry states are understandable without relying only on colour.
 
 ## Bulk tracking and recovery
 
-- [ ] Select all selects every visible question and can be cleared.
-- [ ] Mark selected Done changes only selected questions.
+- [x] Select all selects every visible question and can be cleared.
+- [x] Mark selected Done changes only selected questions.
 - [x] Mark selected for review changes only selected questions.
 - [x] Bulk confirmation states the exact number and target status.
-- [ ] Successful records remain saved when a subset fails.
-- [ ] Failed question numbers remain selected and identifiable.
-- [ ] Retry failed only does not resubmit successful or unselected records.
+- [x] Successful records remain saved when a subset fails.
+- [x] Failed question numbers remain selected and identifiable.
+- [x] Retry failed only does not resubmit successful or unselected records.
 
 ## Quality and non-regression
 
