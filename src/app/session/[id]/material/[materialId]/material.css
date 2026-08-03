@@ -224,6 +224,7 @@
 .save-state button:focus-visible,
 .tracker-time-input:focus-visible,
 .worksheet-log-table textarea:focus-visible,
+.select-all-control input[type='checkbox']:focus-visible,
 .worksheet-log-table input[type='checkbox']:focus-visible {
   outline: 3px solid #e3a631;
   outline-offset: 2px;
