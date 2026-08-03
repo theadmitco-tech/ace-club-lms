@@ -1,6 +1,6 @@
 # Phase 6 — Simplify the Tracker
 
-Status: Active — local implementation and automated checks pass; staging migration is applied; staging acceptance is pending  
+Status: Complete — staging acceptance passed; Production rollout pending
 Owner: Product owner and Engineering  
 Last updated: 3 August 2026
 
@@ -38,7 +38,7 @@ The worksheet material route is the canonical workspace. The released PDF and qu
 - `git diff --check`: pass.
 - `npm run lint`: unchanged signed Phase 5 baseline of 22 errors and 3 warnings, all outside Phase 6-touched files.
 - Staging migration application: pass on 3 August 2026; Supabase SQL Editor returned `Success. No rows returned`.
-- RLS probes and signed-in staging journeys: pending.
+- RLS probes and signed-in staging journeys: passed on 3 August 2026.
 
 The immutable local check summary is in [automated verification evidence](evidence/automated-verification-2026-08-03.md).
 
@@ -46,6 +46,4 @@ Repository-wide lint retains the signed Phase 5 legacy baseline outside the Phas
 
 ## Next gate
 
-1. Complete the [manual verification checklist](manual-verification-checklist.md) incrementally with the controlled staging Student.
-2. Run disposable Student A, Student B and Admin privacy/release probes.
-3. Record immutable evidence before any Production rollout or Phase 6 sign-off.
+Review and merge the Phase 6 branch, apply the migration to Production with explicit approval, deploy, and complete the Production smoke test.
