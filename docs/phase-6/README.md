@@ -1,6 +1,6 @@
 # Phase 6 — Simplify the Tracker
 
-Status: Complete — staging acceptance passed; Production rollout pending
+Status: Complete — Production rollout verified on 3 August 2026
 Owner: Product owner and Engineering  
 Last updated: 3 August 2026
 
@@ -39,6 +39,10 @@ The worksheet material route is the canonical workspace. The released PDF and qu
 - `npm run lint`: unchanged signed Phase 5 baseline of 22 errors and 3 warnings, all outside Phase 6-touched files.
 - Staging migration application: pass on 3 August 2026; Supabase SQL Editor returned `Success. No rows returned`.
 - RLS probes and signed-in staging journeys: passed on 3 August 2026.
+- Production migration application: pass on 3 August 2026; Supabase returned `Success. No rows returned`.
+- Production post-migration validation: RLS and all three tracker RPCs exist; expected and actual rows both equal 0, with no missing or duplicate rows.
+- Production deployment: merge commit `13aeb9e` reached Ready on `main`.
+- Production Student and Admin smoke tests: pass; post-smoke tracker, Admin-owned and duplicate row counts remain 0.
 
 The immutable local check summary is in [automated verification evidence](evidence/automated-verification-2026-08-03.md).
 
@@ -46,4 +50,4 @@ Repository-wide lint retains the signed Phase 5 legacy baseline outside the Phas
 
 ## Next gate
 
-Review and merge the Phase 6 branch, apply the migration to Production with explicit approval, deploy, and complete the Production smoke test.
+Begin Phase 7 — Adapt admin progress.
