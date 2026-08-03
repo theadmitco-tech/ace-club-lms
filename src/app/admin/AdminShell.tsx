@@ -34,7 +34,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     { href: '/admin/sessions', label: 'Sessions', icon: '📋' },
     { href: '/admin/users', label: 'Users', icon: '👥' },
     { href: '/admin/courses', label: 'Batches', icon: '📚' },
-    { href: '/admin/worksheets', label: 'Worksheet', icon: '✅' },
+    { href: '/admin/progress', label: 'Student progress', icon: '✅' },
   ];
 
   return (

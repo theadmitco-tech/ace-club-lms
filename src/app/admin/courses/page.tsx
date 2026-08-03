@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { createClient } from '@/utils/supabase/client';
 import { formatDate } from '@/lib/utils';
 import { useAuth } from '@/lib/AuthContext';
@@ -601,6 +602,9 @@ export default function AdminCoursesPage() {
                       </td>
                       <td>
                         <div className="admin-table-actions" style={{ justifyContent: 'flex-end' }}>
+                          <Link className="btn btn-secondary btn-sm" href={`/admin/progress/${course.id}`}>
+                            Progress
+                          </Link>
                           <button className="btn btn-ghost btn-sm" onClick={() => handleEdit(course)}>
                             Edit
                           </button>
@@ -647,12 +651,17 @@ export default function AdminCoursesPage() {
         <div className="admin-card animate-fade-in">
           <div className="admin-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h2 className="admin-card-title">Enrolled Students</h2>
-            <button className="btn btn-primary btn-sm" onClick={() => {
-              handleEdit(viewingStudentsFor);
-              setViewingStudentsFor(null);
-            }}>
-              + Add Students
-            </button>
+            <div className="admin-table-actions">
+              <Link className="btn btn-secondary btn-sm" href={`/admin/progress/${viewingStudentsFor.id}`}>
+                View progress
+              </Link>
+              <button className="btn btn-primary btn-sm" onClick={() => {
+                handleEdit(viewingStudentsFor);
+                setViewingStudentsFor(null);
+              }}>
+                + Add Students
+              </button>
+            </div>
           </div>
           
           <div className="admin-table-container">
@@ -687,6 +696,13 @@ export default function AdminCoursesPage() {
                         {enrollment.profiles?.email}
                       </td>
                       <td style={{ textAlign: 'right' }}>
+                        <Link
+                          className="btn btn-secondary btn-sm"
+                          href={`/admin/progress/${viewingStudentsFor.id}`}
+                          style={{ marginRight: 8 }}
+                        >
+                          Progress
+                        </Link>
                         <button 
                           className="btn btn-ghost btn-sm" 
                           onClick={() => handleRemoveStudent(enrollment.id)}

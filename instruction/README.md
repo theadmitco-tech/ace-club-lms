@@ -6,7 +6,7 @@ Last updated: 3 August 2026
 
 This folder contains the documents that define product intent, scope, phase boundaries, acceptance, and signed checkpoints. Read this register before starting product or engineering work.
 
-Current delivery state: Phases 1–6 are signed off and deployed to Production. [PR #7](https://github.com/theadmitco-tech/ace-club-lms/pull/7) is the merged Phase 6 implementation. Phase 7 — Adapt admin progress — is next.
+Current delivery state: Phases 1–6 are signed off and deployed to Production. [PR #7](https://github.com/theadmitco-tech/ace-club-lms/pull/7) is the merged Phase 6 implementation. Phase 7 — Adapt admin progress — is active on `codex/phase-7-admin-progress`; the staging migration is applied and authorization/UI acceptance remain pending.
 
 ## Authority order
 
