@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner
-Last updated: 3 August 2026
+Last updated: 4 August 2026
 
 **PRODUCT REQUIREMENTS**
 
@@ -15,7 +15,7 @@ Last updated: 3 August 2026
 
 > **Scope decision:** The MVP uses Google Sign-In with controlled, pre-provisioned accounts, a fixed curriculum with approved QA/VA/DI labels, embedded Notion pre-reads, automatically released PDF worksheets, Admin-managed YouTube recordings, weekly worksheet recommendations, QA/VA/DI browsing, and a manual spreadsheet-style question tracker. The launch interface targets current desktop browsers and keyboard navigation; mobile optimisation is deferred.
 
-> **Delivery status:** Phases 1–6 are signed off and deployed to Production. [PR #7](https://github.com/theadmitco-tech/ace-club-lms/pull/7) is the merged Phase 6 implementation. Student tracker criteria in section 8 are complete; Admin progress criteria in section 9 remain Phase 7 work, and the full launch list in section 12 is not yet complete.
+> **Delivery status:** Phases 1–7 are signed off and deployed to Production. [PR #9](https://github.com/theadmitco-tech/ace-club-lms/pull/9) is the merged Phase 7 implementation. Student tracker criteria in section 8 and Admin progress criteria in section 9 are complete; the full launch list in section 12 is the Phase 8 gate.
 
 ## 1. Product roles and boundaries
 | **Role** | **Purpose** | **MVP access** |
@@ -81,7 +81,7 @@ Last updated: 3 August 2026
 | **Placement** | **What appears there** |
 | --- | --- |
 | Recommended practice | Prior-week released worksheets recommended as whole weekly tasks, with Open worksheet and Update log for each eligible released worksheet |
-| This week | Current programme events and preparation; Thursday recommends DI pre-read, Friday VA pre-read and Saturday QA pre-read |
+| This week | Current programme events and preparation; Thursday recommends VA pre-read, Friday QA pre-read and Saturday DI pre-read |
 | Dashboard navigation | Timeline by week and Browse by section for QA, VA and DI only |
 | Week 0 card | Immediately available Week 0 pre-read preparation at the top of the timeline; worksheets and recordings retain their item-end release |
 | Class card | Pre-read → class information → recording when present → worksheet → tracker |
@@ -103,15 +103,15 @@ Last updated: 3 August 2026
 ### **AC-UI-04 — Browse by section**
 **Given:** The fixed curriculum contains academic and non-academic items.
 **When:** A student opens Browse by section.
-**Then:** Exactly QA, VA and DI are offered; each lists its curriculum items in course order, while mocks, orientation, breaks and support events remain Timeline-only.
+**Then:** Exactly QA, VA and DI are offered; each lists its curriculum items in course order, while mocks, breaks and support events remain Timeline-only.
 ### **AC-UI-05 — Access resources from course views**
 **Given:** A curriculum item has configured materials.
 **When:** It appears in Timeline or Browse by section.
 **Then:** A compact resource row provides direct Pre-read, Recording and Worksheet access when available; Log appears only for a released worksheet with tracker records, unreleased resources show availability information, and unconfigured resources do not create broken controls.
 ### **AC-UI-06 — Recommend class preparation**
-**Given:** The current programme week contains Friday DI, Saturday VA and Sunday QA classes.
+**Given:** The current programme week contains Friday VA, Saturday QA and Sunday DI classes.
 **When:** This week is viewed in the programme timezone.
-**Then:** Thursday recommends the DI pre-read, Friday recommends the VA pre-read and Saturday recommends the QA pre-read; this emphasis does not change release timestamps or authorization.
+**Then:** Thursday recommends the VA pre-read, Friday recommends the QA pre-read and Saturday recommends the DI pre-read; this emphasis does not change release timestamps or authorization.
 ## 5. Notion pre-reads
 ### **AC-READ-01 — Render Week 0 immediately**
 **Given:** A student receives course access.

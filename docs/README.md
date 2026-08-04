@@ -46,6 +46,10 @@ Current continuation state: [Ace Club LMS Running Handoff](handoffs/ace-club-lms
   - [Staging migration evidence](phase-7/evidence/staging-migration-application-2026-08-03.md)
   - [Staging acceptance evidence](phase-7/evidence/manual-staging-verification-2026-08-03.md)
   - [Production rollout evidence](phase-7/evidence/production-rollout-2026-08-03.md)
+- Phase 8: planning active — pilot, launch and stabilise.
+  - [Status and boundaries](phase-8/README.md)
+  - [Pilot and launch plan](phase-8/pilot-and-launch-plan.md)
+  - [Manual verification checklist](phase-8/manual-verification-checklist.md)
 
 There is no approved Phase 1.5.
 

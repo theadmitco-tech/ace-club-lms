@@ -19,7 +19,7 @@ type CourseRow = {
   registration_closes_at: string | null;
   public_note: string | null;
   created_at: string;
-  sessions?: { id: string; session_date: string }[];
+  sessions?: { id: string; session_date: string; is_published: boolean }[];
   enrollments?: { id: string }[];
   registrations?: {
     id: string;
@@ -93,7 +93,7 @@ export default function AdminCoursesPage() {
     setIsLoading(true);
     const { data, error } = await supabase
       .from('courses')
-      .select('*, sessions(id, session_date), enrollments(id), registrations(id, status, reserved_until, payments(amount, status))')
+      .select('*, sessions(id, session_date, is_published), enrollments(id), registrations(id, status, reserved_until, payments(amount, status))')
       .order('created_at', { ascending: false });
       
     if (!error && data) {
@@ -377,7 +377,7 @@ export default function AdminCoursesPage() {
               <div className="form-group">
                 <label htmlFor="start-date" className="form-label">Week 0 Friday</label>
                 <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginBottom: '8px' }}>
-                  Generates all 31 timeline items. Friday sessions begin at 8 PM IST; Saturday and Sunday sessions begin at 10 AM IST.
+                  Generates all 30 timeline items. Friday sessions begin at 8 PM IST; Saturday and Sunday sessions begin at 10 AM IST.
                 </p>
                 <input
                   id="start-date"
@@ -548,8 +548,9 @@ export default function AdminCoursesPage() {
               <tbody>
                 {courses.map((course) => {
                   const now = new Date();
-                  const sessionsDone = course.sessions?.filter((session) => new Date(session.session_date) < now).length || 0;
-                  const totalSessions = course.sessions?.length || 0;
+                  const currentSessions = course.sessions?.filter((session) => session.is_published) || [];
+                  const sessionsDone = currentSessions.filter((session) => new Date(session.session_date) < now).length;
+                  const totalSessions = currentSessions.length;
                   const progress = totalSessions > 0 ? Math.round((sessionsDone / totalSessions) * 100) : 0;
                   const registrationStats = getCourseRegistrationStats(course);
 
@@ -611,8 +612,8 @@ export default function AdminCoursesPage() {
                           <button
                             className="btn btn-ghost btn-sm"
                             onClick={() => handleSyncMasterMaterials(course.id)}
-                            disabled={syncingCourseId === course.id || totalSessions !== 31}
-                            title={totalSessions === 31 ? 'Add missing materials and update linked master content' : 'Only Phase 4 cohorts can be synced'}
+                            disabled={syncingCourseId === course.id || totalSessions !== 30}
+                            title={totalSessions === 30 ? 'Add missing materials and update linked master content' : 'Only current-curriculum cohorts can be synced'}
                           >
                             {syncingCourseId === course.id ? 'Syncing…' : 'Sync materials'}
                           </button>

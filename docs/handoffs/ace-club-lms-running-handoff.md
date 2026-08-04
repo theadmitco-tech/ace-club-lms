@@ -15,13 +15,13 @@ Read:
 3. This running handoff, starting with the latest signed section.
 4. The [MVP acceptance criteria](../../instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.md).
 5. The relevant phase in the [product roadmap](../../instruction/Ace_Club_LMS_Product_Roadmap.md).
-6. For historical Phase 5 interaction decisions, the [foundation plan](../phase-5/student-experience-foundation-plan.md), [decision summary](../phase-5/student-experience-foundation.md), [UI state and content matrix](../phase-5/ui-state-and-content-matrix.md), and [shared Phase 5–6 verification checklist](../phase-5/manual-verification-checklist.md).
-7. For the shipped Student tracker and the Phase 7 data boundary, the [Phase 6 status](../phase-6/README.md), [Phase 6 checklist](../phase-6/manual-verification-checklist.md), [staging evidence](../phase-6/evidence/manual-staging-verification-2026-08-03.md), and [Production rollout evidence](../phase-6/evidence/production-rollout-2026-08-03.md).
-8. The [approved revised course structure](../phase-3/revised-course-structure.md), without reconstructing curriculum labels from screenshots or title parsing.
-9. The [documentation index](../README.md) and [coding rules](../development/coding-rules.md).
-10. The relevant Next.js 16 guides under `node_modules/next/dist/docs/` before writing or changing Next.js code.
-11. The [current code landscape and cleanup plan](../development/current-code-landscape-and-cleanup-plan.md) only when the task touches legacy cleanup or an area it maps.
-12. Only the implementation files relevant to the immediate task.
+6. For current Phase 8 work, the [Phase 8 status](../phase-8/README.md), [pilot and launch plan](../phase-8/pilot-and-launch-plan.md), and [verification checklist](../phase-8/manual-verification-checklist.md).
+7. For the shipped Admin/Student tracker boundary, the [Phase 7 status](../phase-7/README.md), [Phase 7 checklist](../phase-7/manual-verification-checklist.md), [staging evidence](../phase-7/evidence/manual-staging-verification-2026-08-03.md), and [Production rollout evidence](../phase-7/evidence/production-rollout-2026-08-03.md).
+8. For historical Phase 5 interaction decisions, the [foundation plan](../phase-5/student-experience-foundation-plan.md), [decision summary](../phase-5/student-experience-foundation.md), [UI state and content matrix](../phase-5/ui-state-and-content-matrix.md), and [shared Phase 5–6 verification checklist](../phase-5/manual-verification-checklist.md).
+9. For the shipped Student tracker contract, the [Phase 6 status](../phase-6/README.md), [Phase 6 checklist](../phase-6/manual-verification-checklist.md), [staging evidence](../phase-6/evidence/manual-staging-verification-2026-08-03.md), and [Production rollout evidence](../phase-6/evidence/production-rollout-2026-08-03.md).
+10. The [approved revised course structure](../phase-3/revised-course-structure.md), without reconstructing curriculum labels from screenshots or title parsing.
+11. The [documentation index](../README.md), [coding rules](../development/coding-rules.md), and [current code landscape and cleanup plan](../development/current-code-landscape-and-cleanup-plan.md).
+12. The relevant Next.js 16 guides under `node_modules/next/dist/docs/` before writing or changing Next.js code, then only the implementation files relevant to the immediate task.
 
 Do not repeat completed recovery, audit, scheduling, release, or foundation work unless newer evidence invalidates it. The latest signed section and its linked product files are the durable replacement for chat history.
 
@@ -605,7 +605,7 @@ Phase 7 is complete. Read-only Admin progress now uses the Phase 6 Student-owned
 
 Phase 8 is **Pilot, launch and stabilise**. Begin from updated `origin/main` after the Phase 7 rollout-documentation PR is merged.
 
-1. Pilot with one Test Admin, one Test Student and five to ten first-time Students.
+1. Use one Test Admin and one Test Student for a controlled rehearsal, then pilot with five to ten first-time Students. Four first-time Students may be used for an early rehearsal but do not satisfy the signed pilot gate.
 2. Exercise Week 0, scheduled pre-read, class, released worksheet, matching Student/Admin progress, permissions, time-zone and supported desktop-browser behavior.
 3. Bring repository-wide lint from the signed 22-error/3-warning legacy baseline to zero without suppressing findings.
 4. Correct broken scripts, unsafe setup guidance and stale documentation; retire only launch-interface paths proven unreachable.
@@ -614,4 +614,17 @@ Phase 8 is **Pilot, launch and stabilise**. Begin from updated `origin/main` aft
 
 ### Resume instruction
 
-> Continue Ace Club LMS from the signed Phase 7 handoff in `docs/handoffs/ace-club-lms-running-handoff.md`. Read `AGENTS.md`, the instruction register, the MVP acceptance criteria, the Phase 8 roadmap section, the Phase 7 status/checklist/staging/Production evidence, the documentation index, the cleanup plan and coding rules. Confirm the Phase 7 rollout-documentation PR is merged, fetch updated `origin/main`, and create a new `codex/phase-8-*` branch. Preserve the signed Phase 1–7 authentication, curriculum, schedule/release, Student tracker and Admin read-only boundaries. Start with the pilot/launch gate and the explicit Phase 8 cleanup register; do not perform destructive data cleanup without a separately reviewed retention and rollback decision.
+> Continue Ace Club LMS from the signed Phase 7 handoff in `docs/handoffs/ace-club-lms-running-handoff.md`. Read `AGENTS.md`, the instruction register, the MVP acceptance criteria, the Phase 8 roadmap section, `docs/phase-8/README.md`, the Phase 8 pilot plan/checklist, the Phase 7 status/checklist/staging/Production evidence, the documentation index, cleanup plan and coding rules. Confirm PR #10 is merged, fetch updated `origin/main`, and create a new `codex/phase-8-*` implementation branch. Preserve the signed Phase 1–7 authentication, curriculum, schedule/release, Student tracker and Admin read-only boundaries. Work through launch cleanup, rehearsal, a five-to-ten first-time-Student pilot, stabilization and monitored launch; do not perform destructive data cleanup without a separately reviewed retention and rollback decision.
+
+---
+
+## Post–Phase 7 curriculum revision — Weekly class days
+
+Date: 4 August 2026
+Status: **Product decision approved; implementation prepared; Production application pending**
+
+The Product Owner removed Orientation from the active curriculum and approved Friday VA, Saturday QA/mocks, and Sunday DI. Week 3 has no Sunday class. All approved detailed academic titles, instructors, master IDs, pre-reads, worksheets, and question associations remain unchanged.
+
+The one-day preparation emphasis is now Thursday VA, Friday QA, and Saturday DI. Configured pre-reads still release exactly seven days before class; recommendation emphasis does not alter release or authorization.
+
+The durable decision is [ADR-0003](../decisions/adr-0003-weekly-course-schedule.md). Ordered migration `20260804120000_realign_weekly_course_schedule.sql` archives Orientation, realigns existing cohort sessions and material release timestamps, and changes future generation to 30 active timeline items. Do not mark this revision deployed until the Production SQL result and application rollout are verified.

@@ -136,9 +136,9 @@ export function getPreReadRecommendation(
   timeZone: string,
 ): PreReadRecommendation | null {
   const targetByDay: Partial<Record<string, AcademicSection>> = {
-    Thursday: 'DI',
-    Friday: 'VA',
-    Saturday: 'QA',
+    Thursday: 'VA',
+    Friday: 'QA',
+    Saturday: 'DI',
   };
   const section = targetByDay[getWeekdayInTimeZone(generatedAt, timeZone)];
   if (!section) return null;
