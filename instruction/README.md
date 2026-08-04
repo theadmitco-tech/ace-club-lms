@@ -6,7 +6,7 @@ Last updated: 3 August 2026
 
 This folder contains the documents that define product intent, scope, phase boundaries, acceptance, and signed checkpoints. Read this register before starting product or engineering work.
 
-Current delivery state: Phases 1–6 are signed off and deployed to Production. [PR #7](https://github.com/theadmitco-tech/ace-club-lms/pull/7) is the merged Phase 6 implementation. Phase 7 — Adapt admin progress — is active on `codex/phase-7-admin-progress`; the staging migration is applied and authorization/UI acceptance remain pending.
+Current delivery state: Phases 1–7 are signed off and deployed to Production. [PR #9](https://github.com/theadmitco-tech/ace-club-lms/pull/9) is the merged Phase 7 implementation and [PR #10](https://github.com/theadmitco-tech/ace-club-lms/pull/10) is the merged rollout record. Phase 8 — Pilot, launch and stabilise — is the active planning phase.
 
 ## Authority order
 
@@ -38,7 +38,8 @@ Code is evidence of the current implementation, not authority for product scope.
 3. Read the latest section of the running handoff.
 4. Read the Markdown acceptance criteria and relevant roadmap phase.
 5. Read `docs/README.md`.
-6. Read the current phase status and only the implementation files relevant to the immediate task.
+6. For Phase 8, read `docs/phase-8/README.md`, its pilot plan and checklist, plus the Phase 7 Production evidence and active cleanup register.
+7. Read only the implementation files relevant to the immediate task.
 
 ### Making a product decision
 

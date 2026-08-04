@@ -2,13 +2,13 @@
 
 Status: Active
 Owner: Product owner
-Last updated: 3 August 2026
+Last updated: 4 August 2026
 
 **DELIVERY ROADMAP**
 
 *A retain–repair–adapt–complete plan for the partially built Ace Club LMS*
 
-Current delivery state: Phases 1–6 are signed off and deployed to Production. [PR #7](https://github.com/theadmitco-tech/ace-club-lms/pull/7) is the merged Phase 6 implementation. Phase 7 — Adapt admin progress — is next.
+Current delivery state: Phases 1–7 are signed off and deployed to Production. [PR #9](https://github.com/theadmitco-tech/ace-club-lms/pull/9) is the merged Phase 7 implementation and [PR #10](https://github.com/theadmitco-tech/ace-club-lms/pull/10) is the merged rollout record. Phase 8 — Pilot, launch and stabilise — is next.
 
 | **Product** | Ace Club Learning Management System |
 | --- | --- |
@@ -81,7 +81,7 @@ Current delivery state: Phases 1–6 are signed off and deployed to Production. 
 ### Phase 5 — Adapt the student experience
 **Duration:** 6–8 working days
 - Place Recommended practice above This week and show prior-week released worksheets as whole weekly tasks.
-- Recommend DI pre-read on Thursday, VA pre-read on Friday and QA pre-read on Saturday without changing release rules.
+- Recommend VA pre-read on Thursday, QA pre-read on Friday and DI pre-read on Saturday without changing release rules.
 - Build a chronological Timeline with Week 0 and curriculum-derived class cards.
 - Add Browse by section for QA, VA and DI only; keep non-academic events in Timeline.
 - Place pre-read, class, recording, worksheet and tracker in journey order.
@@ -117,11 +117,12 @@ Current delivery state: Phases 1–6 are signed off and deployed to Production. 
 **Completion record:** Passed 34/34 staging acceptance and Production rollout on 3 August 2026. Read-only Admin cohort totals and question inspection use the canonical Student tracker rows; authorization, release, inactive-history, empty-state, keyboard, responsive, role-routing and ownership checks passed. Advanced V2 analytics remain absent from the reachable MVP interface.
 ### Phase 8 — Pilot, launch and stabilise
 **Duration:** 1–2 weeks
-- Pilot with one Test Admin, one Test Student and five to ten first-time students.
+- Rehearse with one Test Admin and one Test Student, then pilot with five to ten first-time students. A four-Student rehearsal does not replace the minimum five-person first-time pilot.
 - Exercise Week 0, a scheduled pre-read, a class and a released worksheet.
 - Run authentication, permissions, time-zone, supported desktop-browser and regression testing.
+- Finish launch-readiness cleanup: zero lint findings, working scripts/current guidance, no reachable MVP-excluded analytics, and an explicit public-registration/payment decision.
 - Fix critical and high-severity defects.
-- Launch the first live cohort and monitor key failures.
+- Launch the first live cohort only after the pilot gate passes, then monitor authentication, release, content-rendering, tracker, Admin-parity and privacy failures.
 **Exit gate:** End-to-end acceptance passes with no critical defects or cross-student data exposure.
 ## 3. Recommended implementation sequence
 1. Repair login, roles and environments before building additional screens.
