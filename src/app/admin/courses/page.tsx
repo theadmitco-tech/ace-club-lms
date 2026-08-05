@@ -6,6 +6,8 @@ import { createClient } from '@/utils/supabase/client';
 import { formatDate } from '@/lib/utils';
 import { useAuth } from '@/lib/AuthContext';
 
+const CURRENT_CURRICULUM_SESSION_COUNT = 31;
+
 type ProfileSummary = { full_name: string; email: string };
 type EnrollmentRow = { id: string; user_id: string; profiles: ProfileSummary | null };
 type CourseRow = {
@@ -377,7 +379,7 @@ export default function AdminCoursesPage() {
               <div className="form-group">
                 <label htmlFor="start-date" className="form-label">Week 0 Friday</label>
                 <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginBottom: '8px' }}>
-                  Generates all 30 timeline items. Friday sessions begin at 8 PM IST; Saturday and Sunday sessions begin at 10 AM IST.
+                  Generates all {CURRENT_CURRICULUM_SESSION_COUNT} timeline items. Friday sessions begin at 8 PM IST; Saturday and Sunday sessions begin at 10 AM IST.
                 </p>
                 <input
                   id="start-date"
@@ -612,8 +614,8 @@ export default function AdminCoursesPage() {
                           <button
                             className="btn btn-ghost btn-sm"
                             onClick={() => handleSyncMasterMaterials(course.id)}
-                            disabled={syncingCourseId === course.id || totalSessions !== 30}
-                            title={totalSessions === 30 ? 'Add missing materials and update linked master content' : 'Only current-curriculum cohorts can be synced'}
+                            disabled={syncingCourseId === course.id || totalSessions !== CURRENT_CURRICULUM_SESSION_COUNT}
+                            title={totalSessions === CURRENT_CURRICULUM_SESSION_COUNT ? 'Add missing materials and update linked master content' : 'Only current-curriculum cohorts can be synced'}
                           >
                             {syncingCourseId === course.id ? 'Syncing…' : 'Sync materials'}
                           </button>

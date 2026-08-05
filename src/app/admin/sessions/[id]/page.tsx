@@ -560,12 +560,12 @@ export default function EditSessionPage() {
 
               {newMaterial.type === 'pre_read' && (
                 <div className="form-group">
-                  <label htmlFor="mat-notion" className="form-label">Notion URL</label>
+                  <label htmlFor="mat-notion" className="form-label">Notion embed code or link</label>
                   <input
                     id="mat-notion"
                     type="url"
                     className="form-input"
-                    placeholder="https://notion.so/..."
+                    placeholder='<iframe src="https://...notion.site/ebd/...">'
                     value={newMaterial.notion_url}
                     onChange={(e) => setNewMaterial({ ...newMaterial, notion_url: e.target.value })}
                   />

@@ -229,11 +229,11 @@ export default function AdminCurriculumPage() {
                           />
                         </label>
                         <label>
-                          Notion link
+                          Notion embed code or link
                           <input
                             className="form-input"
                             type="url"
-                            placeholder="https://www.notion.so/..."
+                            placeholder='<iframe src="https://...notion.site/ebd/...">'
                             value={material.notion_url ?? ''}
                             onChange={(event) => updateLocalMaterial(material.id, { notion_url: event.target.value })}
                             onBlur={() => void persistMaterial(material.id, { notion_url: material.notion_url?.trim() || null })}
