@@ -102,7 +102,9 @@ export default async function MaterialViewerPage({
           </header>
 
           <section className="material-content">
-            {material.type === 'pre_read' && notionPageId && <NotionReader pageId={notionPageId} />}
+            {material.type === 'pre_read' && notionPageId && (
+              <NotionReader pageId={notionPageId} sourceUrl={material.notion_url} title={material.title} />
+            )}
 
             {material.type === 'pre_read' && !notionPageId && (
               <div className="material-status material-status-error" role="alert">
