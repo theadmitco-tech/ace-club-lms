@@ -12,19 +12,36 @@ export async function POST(request: Request) {
   const authorization = await requireAdmin();
   if (!authorization.authorized) return authorization.response;
 
-  const formData = await request.formData();
-  const file = formData.get('file');
-  const masterSessionId = formData.get('masterSessionId');
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid upload request.' }, { status: 400 });
+  }
 
-  if (!(file instanceof File) || typeof masterSessionId !== 'string' || !masterSessionId) {
+  const payload = body && typeof body === 'object' ? body as {
+    fileName?: unknown;
+    fileSize?: unknown;
+    fileType?: unknown;
+    masterSessionId?: unknown;
+  } : {};
+  const { fileName, fileSize, fileType, masterSessionId } = payload;
+
+  if (
+    typeof fileName !== 'string'
+    || typeof fileSize !== 'number'
+    || typeof fileType !== 'string'
+    || typeof masterSessionId !== 'string'
+    || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(masterSessionId)
+  ) {
     return NextResponse.json({ error: 'A worksheet PDF and master session are required.' }, { status: 400 });
   }
 
-  if (file.type !== 'application/pdf' || !file.name.toLowerCase().endsWith('.pdf')) {
+  if (fileType !== 'application/pdf' || !fileName.toLowerCase().endsWith('.pdf')) {
     return NextResponse.json({ error: 'Only PDF worksheets can be uploaded.' }, { status: 400 });
   }
 
-  if (file.size > MAX_WORKSHEET_SIZE_BYTES) {
+  if (!Number.isSafeInteger(fileSize) || fileSize <= 0 || fileSize > MAX_WORKSHEET_SIZE_BYTES) {
     return NextResponse.json({ error: 'Worksheet PDFs must be 50 MB or smaller.' }, { status: 400 });
   }
 
@@ -40,15 +57,17 @@ export async function POST(request: Request) {
   const path = `worksheets/${masterSessionId}/${randomUUID()}.pdf`;
   const { data, error } = await admin.storage
     .from(COURSE_MATERIALS_BUCKET)
-    .upload(path, file, { contentType: 'application/pdf', upsert: false });
+    .createSignedUploadUrl(path, { upsert: false });
 
   if (error) {
-    console.error('Master worksheet upload failed:', error);
-    return NextResponse.json({ error: 'Unable to upload the worksheet.' }, { status: 500 });
+    console.error('Master worksheet upload authorization failed:', error);
+    return NextResponse.json({ error: 'Unable to authorize the worksheet upload.' }, { status: 500 });
   }
 
   return NextResponse.json({
-    fileName: file.name,
-    fileReference: createProtectedMaterialUrl(data.path),
+    fileName,
+    fileReference: createProtectedMaterialUrl(path),
+    uploadPath: data.path,
+    uploadToken: data.token,
   });
 }

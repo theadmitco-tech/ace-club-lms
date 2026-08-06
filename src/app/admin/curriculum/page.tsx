@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/lib/AuthContext';
+import { COURSE_MATERIALS_BUCKET } from '@/lib/materialFiles';
 import { getMaterialTypeIcon } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/client';
 
@@ -26,6 +27,8 @@ type UploadResponse = {
   error?: string;
   fileName?: string;
   fileReference?: string;
+  uploadPath?: string;
+  uploadToken?: string;
 };
 
 export default function AdminCurriculumPage() {
@@ -144,19 +147,38 @@ export default function AdminCurriculumPage() {
     file: File,
   ) => {
     setSavingMaterialId(material.id);
-    const formData = new FormData();
-    formData.set('masterSessionId', masterSessionId);
-    formData.set('file', file);
 
     try {
       const response = await fetch('/api/admin/master-material-upload', {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fileName: file.name,
+          fileSize: file.size,
+          fileType: file.type,
+          masterSessionId,
+        }),
       });
-      const result = await response.json() as UploadResponse;
-      if (!response.ok || !result.fileReference) {
+      const responseText = await response.text();
+      let result: UploadResponse = {};
+      try {
+        result = responseText ? JSON.parse(responseText) as UploadResponse : {};
+      } catch {
+        throw new Error(response.ok ? 'Invalid upload response.' : `Upload request failed (${response.status}).`);
+      }
+
+      if (!response.ok || !result.fileReference || !result.uploadPath || !result.uploadToken) {
         throw new Error(result.error || 'Unable to upload the worksheet.');
       }
+
+      const { error: uploadError } = await supabase.storage
+        .from(COURSE_MATERIALS_BUCKET)
+        .uploadToSignedUrl(result.uploadPath, result.uploadToken, file, {
+          contentType: 'application/pdf',
+          upsert: false,
+        });
+
+      if (uploadError) throw uploadError;
 
       const title = material.title.trim() || result.fileName || 'Worksheet';
       const { error } = await supabase
