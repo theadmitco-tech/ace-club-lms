@@ -2,11 +2,13 @@
 
 Status: Active
 Owner: Engineering
-Last updated: 3 August 2026
+Last updated: 10 August 2026
 
 This index routes readers to the smallest set of documents needed for a task. Product authority remains in [`instruction/`](../instruction/README.md).
 
-Current continuation state: [Ace Club LMS Running Handoff](handoffs/ace-club-lms-running-handoff.md).
+Current signed history: [Ace Club LMS Running Handoff](handoffs/ace-club-lms-running-handoff.md).
+
+Current post-MVP iteration state: [Pilot Iterations Running Handoff](handoffs/pilot-iterations-running-handoff.md).
 
 ## Current phase
 
@@ -46,10 +48,11 @@ Current continuation state: [Ace Club LMS Running Handoff](handoffs/ace-club-lms
   - [Staging migration evidence](phase-7/evidence/staging-migration-application-2026-08-03.md)
   - [Staging acceptance evidence](phase-7/evidence/manual-staging-verification-2026-08-03.md)
   - [Production rollout evidence](phase-7/evidence/production-rollout-2026-08-03.md)
-- Phase 8: planning active — pilot, launch and stabilise.
-  - [Status and boundaries](phase-8/README.md)
-  - [Pilot and launch plan](phase-8/pilot-and-launch-plan.md)
-  - [Manual verification checklist](phase-8/manual-verification-checklist.md)
+- Phase 8: signed off with explicit evidence exceptions; the Product Owner confirmed the MVP is live with real Students on 10 August 2026.
+  - [Closeout status and exceptions](phase-8/README.md)
+  - [Superseded pilot and launch plan](phase-8/pilot-and-launch-plan.md)
+  - [Closeout checklist](phase-8/manual-verification-checklist.md)
+  - [Operational closeout evidence](phase-8/evidence/operational-closeout-2026-08-10.md)
 
 There is no approved Phase 1.5.
 
@@ -87,6 +90,7 @@ These stable paths are grandfathered. New multi-file feature documentation shoul
 
 - [Instruction register](../instruction/README.md)
 - [Running handoff](handoffs/ace-club-lms-running-handoff.md)
+- [Pilot iterations running handoff](handoffs/pilot-iterations-running-handoff.md)
 - [Current code landscape and cleanup plan](development/current-code-landscape-and-cleanup-plan.md)
 - [Document conventions](governance/document-conventions.md)
 - [Living coding rules](development/coding-rules.md)

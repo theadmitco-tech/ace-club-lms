@@ -2,7 +2,7 @@
 
 Status: Historical audit with an active cleanup register
 Owner: Engineering
-Last updated: 3 August 2026
+Last updated: 10 August 2026
 
 ## Purpose and boundary
 
@@ -10,7 +10,7 @@ This document maps the repository after the Phase 2 sign-off, records cleanup ca
 
 This is an assessment, not cleanup authorization. No candidate in this document is approved for implementation or deletion merely because it is listed here. Phase 3 must not begin until the Product Owner supplies the approved revised curriculum and the team confirms the correct Git baseline.
 
-Current update: the start-gate language and audit counts below are preserved as the 31 July snapshot. Phases 3–7 are signed off and deployed; [PR #9](https://github.com/theadmitco-tech/ace-club-lms/pull/9) is the merged Phase 7 implementation. Repository-wide lint remains 22 errors and 3 warnings in untouched legacy files. Phase 8 authorizes launch-readiness work through the [Phase 8 plan](../phase-8/pilot-and-launch-plan.md), but still does not authorize destructive database cleanup.
+Current update: the start-gate language and audit counts below are preserved as the 31 July snapshot. Phases 3–8 are signed off, and the Product Owner confirmed on 10 August 2026 that the MVP is live with real Students. Repository-wide lint still reports 22 errors and 3 warnings. Phase 8 closure does not authorize destructive database cleanup; unresolved cleanup remains post-MVP work requiring its own scope and verification.
 
 Product scope remains controlled by the [MVP acceptance criteria](../../instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.md), the [roadmap](../../instruction/Ace_Club_LMS_Product_Roadmap.md), and the [running handoff](../handoffs/ace-club-lms-running-handoff.md).
 

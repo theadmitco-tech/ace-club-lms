@@ -2,13 +2,13 @@
 
 Status: Active
 Owner: Product owner
-Last updated: 4 August 2026
+Last updated: 10 August 2026
 
 **DELIVERY ROADMAP**
 
 *A retain–repair–adapt–complete plan for the partially built Ace Club LMS*
 
-Current delivery state: Phases 1–7 are signed off and deployed to Production. [PR #9](https://github.com/theadmitco-tech/ace-club-lms/pull/9) is the merged Phase 7 implementation and [PR #10](https://github.com/theadmitco-tech/ace-club-lms/pull/10) is the merged rollout record. Phase 8 — Pilot, launch and stabilise — is next.
+Current delivery state: Phases 1–8 are signed off. The Product Owner confirmed on 10 August 2026 that the MVP is live in Production with real Students. Phase 8 closed through explicit operational acceptance with documented evidence exceptions rather than a claim that every proposed pilot artifact exists.
 
 | **Product** | Ace Club Learning Management System |
 | --- | --- |
@@ -124,6 +124,8 @@ Current delivery state: Phases 1–7 are signed off and deployed to Production. 
 - Fix critical and high-severity defects.
 - Launch the first live cohort only after the pilot gate passes, then monitor authentication, release, content-rendering, tracker, Admin-parity and privacy failures.
 **Exit gate:** End-to-end acceptance passes with no critical defects or cross-student data exposure.
+
+**Completion record:** The Product Owner confirmed on 10 August 2026 that the MVP is running in Production with real Students and approved Phase 8 closure. The repository records a passing local Production build and anonymous HTTP 200 responses for live `/` and `/login`. The closeout explicitly retains the 22-error/3-warning lint baseline and does not claim missing pilot, authenticated smoke-test, monitoring, or weekly-schedule Production-migration evidence.
 ## 3. Recommended implementation sequence
 1. Repair login, roles and environments before building additional screens.
 1. Make one complete master course work before importing every curriculum item.
