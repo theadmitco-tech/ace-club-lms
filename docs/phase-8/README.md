@@ -1,8 +1,21 @@
 # Phase 8 — Pilot, Launch and Stabilise
 
-Status: Planning active
+Status: Signed off with explicit evidence exceptions
 Owner: Product owner, Engineering and pilot operations
-Last updated: 3 August 2026
+Last updated: 10 August 2026
+
+## Closeout decision
+
+The Product Owner confirmed on 10 August 2026 that the MVP is running in Production with real Students and approved Phase 8 closure. This is an operational launch sign-off, not a retrospective claim that every item in the proposed pilot checklist was completed or documented.
+
+The closeout preserves these explicit exceptions:
+
+- the repository-wide lint target is not met; the current baseline remains 22 errors and 3 warnings;
+- the repository does not contain the proposed anonymized five-to-ten-Student pilot matrix, complete defect register, or authenticated Phase 8 Production smoke-test record;
+- the Production application of `20260804120000_realign_weekly_course_schedule.sql` is not independently evidenced in the repository and must not be inferred from the application being live; and
+- public registration/payment scope remains a separate Product Owner decision unless documented elsewhere.
+
+The local Production build passed on 10 August 2026, and anonymous read-only requests to the live `/` and `/login` pages returned HTTP 200. No Production database, deployment, environment, account, or application change was made during closeout. See [operational closeout evidence](evidence/operational-closeout-2026-08-10.md).
 
 ## Objective
 
@@ -37,4 +50,4 @@ The value of the pilot comes from independent first-time behavior, not load test
 
 ## Exit gate
 
-The [manual verification checklist](manual-verification-checklist.md) passes end to end, the first-time pilot includes at least five Students, there are no open critical/high defects or cross-student exposures, Production preflight passes and the first live cohort launches with monitoring and an owner for every unresolved lower-severity issue.
+Phase 8 is closed by explicit Product Owner operational acceptance because the MVP is live with real Students. Items not evidenced by the repository remain visible in the [closeout checklist](manual-verification-checklist.md) and are not silently marked passed.

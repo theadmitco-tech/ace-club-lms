@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-Last updated: 3 August 2026
+Last updated: 10 August 2026
 
 This is the current cross-phase continuity document. Append a signed section when a phase closes; preserve earlier sections as historical snapshots instead of rewriting them to match later state.
 
@@ -15,7 +15,7 @@ Read:
 3. This running handoff, starting with the latest signed section.
 4. The [MVP acceptance criteria](../../instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.md).
 5. The relevant phase in the [product roadmap](../../instruction/Ace_Club_LMS_Product_Roadmap.md).
-6. For current Phase 8 work, the [Phase 8 status](../phase-8/README.md), [pilot and launch plan](../phase-8/pilot-and-launch-plan.md), and [verification checklist](../phase-8/manual-verification-checklist.md).
+6. For post-MVP pilot changes, read the signed [Phase 8 closeout](../phase-8/README.md), [closeout evidence](../phase-8/evidence/operational-closeout-2026-08-10.md), and [verification exceptions](../phase-8/manual-verification-checklist.md).
 7. For the shipped Admin/Student tracker boundary, the [Phase 7 status](../phase-7/README.md), [Phase 7 checklist](../phase-7/manual-verification-checklist.md), [staging evidence](../phase-7/evidence/manual-staging-verification-2026-08-03.md), and [Production rollout evidence](../phase-7/evidence/production-rollout-2026-08-03.md).
 8. For historical Phase 5 interaction decisions, the [foundation plan](../phase-5/student-experience-foundation-plan.md), [decision summary](../phase-5/student-experience-foundation.md), [UI state and content matrix](../phase-5/ui-state-and-content-matrix.md), and [shared Phase 5–6 verification checklist](../phase-5/manual-verification-checklist.md).
 9. For the shipped Student tracker contract, the [Phase 6 status](../phase-6/README.md), [Phase 6 checklist](../phase-6/manual-verification-checklist.md), [staging evidence](../phase-6/evidence/manual-staging-verification-2026-08-03.md), and [Production rollout evidence](../phase-6/evidence/production-rollout-2026-08-03.md).
@@ -628,3 +628,41 @@ The Product Owner removed Orientation from the active curriculum and approved Fr
 The one-day preparation emphasis is now Thursday VA, Friday QA, and Saturday DI. Configured pre-reads still release exactly seven days before class; recommendation emphasis does not alter release or authorization.
 
 The durable decision is [ADR-0003](../decisions/adr-0003-weekly-course-schedule.md). Ordered migration `20260804120000_realign_weekly_course_schedule.sql` archives Orientation, realigns existing cohort sessions and material release timestamps, and changes future generation to 30 active timeline items. Do not mark this revision deployed until the Production SQL result and application rollout are verified.
+
+---
+
+## Phase 8 handoff — Pilot, launch and stabilise
+
+Date: 10 August 2026
+Status: **Signed off with explicit evidence exceptions**
+
+### Operational outcome
+
+The Product Owner confirmed that the MVP is running in Production with real Students and approved Phase 8 closure. This confirmation establishes the operational launch outcome. It does not retroactively prove every item in the proposed pilot checklist.
+
+Closeout verification was deliberately non-mutating:
+
+- latest remote `main` was confirmed at `0e7be4d`, including the merged PDF-upload fix from PR #14;
+- the local Next.js Production build, including TypeScript, passed;
+- anonymous read-only requests to Production `/` and `/login` returned HTTP 200; and
+- no Supabase query, migration, Vercel action, Production login, account operation, deployment, or application-code change was performed.
+
+### Explicit exceptions and remaining debt
+
+- Repository-wide lint remains at 22 errors and 3 warnings; the original zero-lint Phase 8 target is not met.
+- No complete anonymized five-to-ten-Student pilot matrix, defect register, authenticated Phase 8 Production smoke-test record, or first-cycle monitoring record is committed.
+- The Production application of `20260804120000_realign_weekly_course_schedule.sql` remains unverified in repository evidence. The earlier pending statement is preserved; live application service is not proof of a specific migration ledger entry.
+- Public registration/payment scope remains unresolved unless a separate Product Owner decision records it.
+
+These items must not be described as passed. They are accepted closeout exceptions and may be addressed as scoped post-MVP operational or pilot iterations.
+
+### Continuation point for iterative pilot changes
+
+Continue post-MVP pilot work in the separate [Pilot Iterations Running Handoff](pilot-iterations-running-handoff.md) so V1/V2 working notes do not expand this signed Phase 0.5–8 history. Start every pilot version from updated `origin/main` on a new `codex/pilot-vN` branch. Define three or four coherent changes with explicit acceptance criteria, keep all local and Preview work connected to staging, apply ordered migrations to staging first, and merge to `main` only after the version is independently releasable and the Product Owner approves Production. Preserve the signed authentication, RLS, release, Student ownership, and read-only Admin boundaries.
+
+Authoritative closeout records:
+
+- [Phase 8 status and exceptions](../phase-8/README.md)
+- [Closeout checklist](../phase-8/manual-verification-checklist.md)
+- [Operational closeout evidence](../phase-8/evidence/operational-closeout-2026-08-10.md)
+- [Pilot iterations running handoff](pilot-iterations-running-handoff.md)
