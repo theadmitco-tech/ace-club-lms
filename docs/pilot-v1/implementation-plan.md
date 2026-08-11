@@ -221,8 +221,8 @@ Create the safe batch-only foundation for private PDF Session materials without 
 - [x] Only an authorized Admin can manage a Session material.
 - [x] Only an active enrolled Student can read it after release.
 - [x] Signed-out, inactive, pre-release, and cross-batch reads are denied without leaking a storage URL.
-- [ ] Invalid or failed upload, replace, or remove operations preserve the last valid state and return actionable errors.
-- [ ] Migration review, targeted lint, TypeScript, build, and focused authorization checks pass locally.
+- [x] Invalid or failed upload, replace, or remove operations preserve the last valid state and return actionable errors.
+- [x] Migration review, targeted lint, TypeScript, build, and focused authorization checks pass locally.
 - [x] Data and server work are captured in a focused commit before UI integration.
 
 ---

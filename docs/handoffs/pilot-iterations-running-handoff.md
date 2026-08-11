@@ -40,7 +40,7 @@ Do not reread every historical evidence file by default. The list above carries 
 
 Use the following instruction to start or continue a pilot version:
 
-> Continue Ace Club LMS from `docs/handoffs/pilot-iterations-running-handoff.md`. Treat it as the single bootstrap file. Continue Pilot V1 Phase 4 — Session-material data, storage and authorization — on `codex/pilot-v1` after accepted Phase 3 application commit `7db4359`; Phases 1–3 are complete and must not be repeated. Follow this file's Authority and required reading list, including `docs/pilot-v1/acceptance-criteria.md`, `docs/pilot-v1/implementation-plan.md`, `docs/pilot-v1/phase-0-readiness.md`, `docs/pilot-v1/phase-4-staging-authorization-probe.sql`, `docs/pilot-v1/evidence/phase-4-staging-migration-and-authorization-2026-08-11.md`, the signed Phase 8 closeout, affected MVP criteria and product-roadmap requirements, shipped Phase 5–7 boundaries, curriculum decisions, documentation rules and coding rules. Read the active V1 phase register and current phase checkpoint below. Inspect Git status and recent commits, fetch the remote baseline read-only, verify the recorded Phase 4 implementation state, and continue only from its exact next action. Preserve staging/Production separation, Google-only controlled access, server-side authorization, RLS, release protection, Student tracker ownership, read-only Admin progress, batch-specific recordings and private file delivery. Keep implementation and SQL on staging until verification passes, and do not merge, deploy or run Production SQL without explicit Product Owner approval. Phase 4 must resolve the secure staging service-role verification prerequisite without committing or exposing secrets. After every V1 phase, update this handoff with phase status, owner, exact commit, local/pushed state, migrations and environments, checks, findings, new durable files and one exact next action. Add every new durable file to this handoff's active document register and required reading before pausing or transferring ownership.
+> Continue Ace Club LMS from `docs/handoffs/pilot-iterations-running-handoff.md`. Treat it as the single bootstrap file. Start Pilot V1 Phase 5 — Session resources UI and Student Recommended reading — on `codex/pilot-v1` after completed Phase 4 application commit `1a746ae`; Phases 1–4 are complete and must not be repeated. Follow this file's Authority and required reading list, including `docs/pilot-v1/acceptance-criteria.md`, `docs/pilot-v1/implementation-plan.md`, `docs/pilot-v1/phase-0-readiness.md`, `docs/pilot-v1/phase-4-staging-authorization-probe.sql`, `docs/pilot-v1/evidence/phase-4-staging-migration-and-authorization-2026-08-11.md`, `docs/pilot-v1/evidence/phase-4-preview-route-lifecycle-2026-08-11.md`, the signed Phase 8 closeout, affected MVP criteria and product-roadmap requirements, shipped Phase 5–7 boundaries, curriculum decisions, documentation rules and coding rules. Read the active V1 phase register and current phase checkpoint below. Inspect Git status and recent commits, fetch the remote baseline read-only, verify the recorded Phase 4 final state, and continue only from its exact next action. Preserve staging/Production separation, Google-only controlled access, server-side authorization, RLS, release protection, Student tracker ownership, read-only Admin progress, batch-specific recordings and private file delivery. Keep implementation and SQL on staging until verification passes, and do not merge, deploy or run Production SQL without explicit Product Owner approval. After every V1 phase, update this handoff with phase status, owner, exact commit, local/pushed state, migrations and environments, checks, findings, new durable files and one exact next action. Add every new durable file to this handoff's active document register and required reading before pausing or transferring ownership.
 
 ## Non-regression boundaries
 
@@ -115,7 +115,7 @@ A phase is `Complete` only when its exit criteria pass, its focused change is co
 
 | Version | Objective | Branch | Status | Staging decision | Production decision |
 |---|---|---|---|---|---|
-| Pilot V1 | Improve titled resources, worksheet/log usability, recommendations and batch-specific Session reading | `codex/pilot-v1` | Active | Phases 1–3 accepted; Phase 4 ready to start | Not approved |
+| Pilot V1 | Improve titled resources, worksheet/log usability, recommendations and batch-specific Session reading | `codex/pilot-v1` | Active | Phases 1–3 accepted; Phase 4 engineering and security gates complete | Not approved |
 
 Allowed version statuses: `Proposed`, `Active`, `Staging verification`, `Accepted for Production`, `Deployed`, `Paused`, or `Superseded`.
 
@@ -133,6 +133,7 @@ This table is the complete Pilot V1 reading layer added on top of the repository
 | [Pilot V1 Phase 0 Readiness Record](../pilot-v1/phase-0-readiness.md) | Complete | Git/environment baseline, Next.js conventions, affected-file inventory, staging material inventory and findings | Preserve as the Phase 1 entry gate; amend only with new dated evidence |
 | [Phase 4 Staging Authorization Probe](../pilot-v1/phase-4-staging-authorization-probe.sql) | Passed on staging | Rollback-only Admin, Student, signed-out, inactive, pre-release, unpublished and cross-batch database checks | Preserve; never include identity values or raw output in Git |
 | [Phase 4 Staging Migration and Authorization Evidence](../pilot-v1/evidence/phase-4-staging-migration-and-authorization-2026-08-11.md) | Passed | Sanitized migration, ledger, rollback-probe and post-check results | Preserve; add separate evidence for later Preview or Production work |
+| [Phase 4 Preview Route Lifecycle Evidence](../pilot-v1/evidence/phase-4-preview-route-lifecycle-2026-08-11.md) | Passed | Sanitized Admin authorization, private upload, attach, protected read, cleanup and no-residue results | Preserve; never add signed tokens, URLs or identity-bearing output |
 
 When a manual verification checklist, evidence record, decision, or other durable V1 file is created, add a row here before pausing. If the file is required to continue safely, also add it to the Authority and required reading list and the Exact resume instruction.
 
@@ -155,8 +156,8 @@ Make Student resources identifiable and usable during the live pilot, show every
 | Phase 1 | Shared titled resource-card system | Complete | Engineering and Product Owner | `d4ee94d` / `fb18712` | All local gates pass; staging Auth correction and option B Preview accepted by Product Owner on 2026-08-11 | Transfer to Phase 2 |
 | Phase 2 | Independent PDF/tracker scrolling | Complete | Engineering and Product Owner | `9655a85` / `b4cad40` | All eight exit criteria pass; updated Preview passed Product Owner review on 2026-08-11 | Transfer to Phase 3 |
 | Phase 3 | Complete worksheet and pre-read recommendations | Complete | Engineering and Product Owner | `b4cad40` / `7db4359` | Nine exit criteria pass; Vercel and signed-in runtime checks pass; Product Owner accepted staging on 2026-08-11 | Transfer to Phase 4 |
-| Phase 4 | Session-material data, storage and authorization | Exit review | Engineering and QA/Security | `746625f` / `1a746ae` | Local gates, staging migration/ledger/probe and Vercel deployment pass; privileged route check awaits a fresh staging Admin sign-in | Sign in with the approved staging Admin in the prepared Preview tab, then verify privileged upload/protected read; do not start Phase 5 |
-| Phase 5 | Session resources UI and Student Recommended reading | Not started | Engineering | — | — | Wait for Phase 4 exit |
+| Phase 4 | Session-material data, storage and authorization | Complete | Engineering and QA/Security | `746625f` / `1a746ae` | Local gates, staging migration/ledger/probe, Vercel deployment and sanitized privileged route lifecycle pass | Transfer to Phase 5 |
+| Phase 5 | Session resources UI and Student Recommended reading | Not started | Engineering | — | — | Begin Phase 5 entry review |
 | Phase 6 | Integrated local checks and staging Preview | Not started | Engineering and QA/Security | — | — | Wait for Phase 5 exit |
 | Phase 7 | Staging acceptance and version decision | Not started | Product Owner, Engineering and QA/Security | — | — | Wait for Phase 6 exit |
 
@@ -164,19 +165,19 @@ Allowed V1 phase statuses: `Not started`, `In progress`, `Exit review`, `Complet
 
 ### Current V1 phase checkpoint
 
-- Current V1 phase: Phase 4 — Session-material data, storage and authorization.
-- Phase status: Exit review. The focused data, storage and authorization implementation is committed; staging migration/probe and privileged upload verification remain before Phase 4 can be marked complete. Phases 1–3 remain complete and accepted.
-- Current owner: Engineering and QA/Security.
-- Phase 4 application baseline: `7db43596eea5efb58ab9d99a7d77a799339cdf72`; `origin/codex/pilot-v1` includes the Phase 3 application, engineering closeout and staging runtime checkpoint through `876fe8b`, and the working tree was clean before this acceptance transfer update.
+- Current V1 phase: Phase 5 — Session resources UI and Student Recommended reading; not started.
+- Phase status: Phase 4 is complete. Its focused data, storage and authorization implementation, staging migration/probe and privileged Preview lifecycle all pass. Phases 1–3 remain complete and accepted.
+- Current owner: Engineering for the Phase 5 entry review.
+- Phase 5 application baseline: Phase 4 implementation commit `1a746ae`; `origin/codex/pilot-v1` contains the verified implementation and evidence through temporary verification commit `652343b`, with the verifier removed in the pending Phase 4 closeout commit.
 - Baseline: The branch remains based on `origin/main` application commit `0e7be4d40f7a47d34fe1c9441ffa5834eaf12ef2`.
 - Entry criteria state: Passed. All nine Phase 3 exit criteria are checked from controlled fixtures, targeted lint, TypeScript, build, focused commit and preserved authorization/release boundaries; the Vercel Preview and signed-in Student runtime checks passed, and the Product Owner accepted staging on 2026-08-11.
 - Phase 4 intended outcome: Add the safe batch-only data, private storage and authorization foundation for Session materials without changing reusable Master content, another batch or Production.
-- Required Phase 4 verification: Static review and the staging rollback-only Admin, Student, signed-out, inactive, pre-release, unpublished and cross-batch probe pass. The privileged signed upload and protected read path still require the secure staging Preview configuration.
+- Required Phase 4 verification: Complete. Static review, local gates, the staging rollback-only Admin, Student, signed-out, inactive, pre-release, unpublished and cross-batch probe, and the secure Preview privileged route lifecycle pass.
 - Migrations: `20260811170000_add_batch_session_materials.sql` is applied to staging and recorded in its migration ledger as version `20260811170000`. It has not been applied to Production.
-- Preview: Commit `57207e2` deployed successfully through Vercel to the stable staging alias `https://ace-club-lms-git-codex-pilot-v1-theadmitco-techs-projects.vercel.app`. The prior authenticated browser session had expired, so the privileged Phase 4 route check awaits a fresh approved staging Admin sign-in.
-- Open findings: P0-03 and the database/RLS portion of P0-04 pass on staging. P0-02 remains only for the Preview route check because the local service-role variable is absent; use the existing secure Preview secret after pushing, without exposing it. P0-05 belongs to Phase 5. P1-01, P1-02 and P2-01 passed.
+- Preview: The staging alias deployed temporary verification commit `652343b`; the approved staging Admin completed signed upload, private upload, attach, protected no-store read, removal and no-residue checks. The temporary verifier was then removed from the final branch state.
+- Open findings: P0-02, P0-03 and P0-04 pass for Phase 4. P0-05 belongs to Phase 5. P1-01, P1-02 and P2-01 passed.
 - Production state: Untouched and not approved. Pilot V1 remains staging-only.
-- Exact next action: In the prepared Chrome Preview login tab, sign in with the approved staging Admin account and report when it is ready; then verify the Admin-authorized signed-upload endpoint and protected Student delivery without exposing a secret. Do not start Phase 5 or run Production SQL.
+- Exact next action: Begin the Phase 5 entry review from application commit `1a746ae`, record Phase 5 as `In progress`, and implement the Session resources Admin/Student experience without repeating Phase 4 or running Production SQL.
 
 ### Explicit exclusions
 
@@ -198,19 +199,19 @@ The binding detailed criteria are in [Pilot V1 acceptance criteria](../pilot-v1/
 
 ### Database and environment impact
 
-- Database change required: Expected for secure batch-session material management, batch-specific synchronization exclusions and server/database authorization; final shape remains to be assessed against the current schema.
-- Ordered migration: None created; any migration will be new, ordered and staging-first.
-- Staging application result: Phases 1–3 accepted; Phase 4 not started.
+- Database change required: Added the batch-only `session_material` type, shape/index guards, Admin save/remove RPCs and release-gated read policy without changing reusable Master rows.
+- Ordered migration: `20260811170000_add_batch_session_materials.sql`; applied and ledgered on staging only.
+- Staging application result: Phases 1–3 accepted; Phase 4 engineering, migration, authorization and Preview lifecycle gates complete.
 - Production application: Not approved.
 - Rollback or compatibility requirement: Existing live batches and reusable Master pre-read/worksheet synchronization must remain compatible and untouched; V1 rows must be independently removable without changing another batch.
 
 ### Verification
 
-- Local lint/build: Phase 3 recommendation fixtures pass 5/5; targeted ESLint, `tsc --noEmit`, and the Next.js Production build pass. Repository-wide lint still reports the unchanged legacy baseline of 22 errors and 3 warnings in untouched Admin, registration, landing-page and storage files; Phase 3 files have no lint finding.
-- Vercel Preview commit and URL: Application commit `7db4359` plus closeout `78dc800`; `https://ace-club-lms-git-codex-pilot-v1-theadmitco-techs-projects.vercel.app` (Vercel GitHub status succeeded; public root and authenticated Student dashboard loaded without browser console warnings or errors).
-- Staging accounts and fixtures: Product Owner authenticated staging session from earlier phase reviews; Phase 3 pure-logic fixtures are committed at `scripts/student-timeline-recommendations.test.mjs` and contain no private Student data.
+- Local lint/build: Phase 4 file/path fixtures pass 4/4 and recommendation regressions pass 5/5; targeted ESLint, `tsc --noEmit`, and the Next.js Production build pass. Repository-wide lint remains at the unchanged unrelated baseline of 22 errors and 3 warnings; Phase 4 files have no lint finding.
+- Vercel Preview commit and URL: Verification commit `652343b`; `https://ace-club-lms-git-codex-pilot-v1-theadmitco-techs-projects.vercel.app` (Vercel GitHub status succeeded and the signed-in Admin lifecycle passed). The temporary verifier is removed in the pending closeout commit.
+- Staging accounts and fixtures: Approved staging Admin browser session; Phase 4 file/path fixtures are committed at `scripts/session-material-files.test.mjs`, the rollback-only probe is committed at `docs/pilot-v1/phase-4-staging-authorization-probe.sql`, and neither contains private Student data.
 - Affected journey result: The authenticated staging Student dashboard loaded Recommended practice from the latest released worksheet sets present in that account. The account does not contain every multiple-sibling/replacement edge case, so those remain evidenced by the committed 5/5 controlled fixtures. Product Owner completed review without requesting changes on 2026-08-11.
-- Authorization/privacy/release regression: Passed for the Phase 3 scope from the reviewed diff and inherited RLS/direct-URL evidence. Recommendation selection still receives only the authenticated Student's selected-course, published-session timeline payload; it filters on server-calculated material availability, and no RPC, RLS, direct material route, release timestamp, tracker ownership or migration changed.
+- Authorization/privacy/release regression: Passed for Phase 4 through migration review, rollback-only staging probes, signed-in privileged route lifecycle and post-removal `404`; private delivery retains active-account, enrollment, published-session, release, signed-URL and no-store boundaries.
 - Product Owner staging acceptance: Phases 1–3 passed on 2026-08-11. The Product Owner completed the Phase 3 staging review and requested transfer to Phase 4 without changes.
 
 ### Findings
@@ -238,13 +239,13 @@ Severity rules:
 - Current branch: `codex/pilot-v1`, created from and still based on `origin/main` application commit `0e7be4d`.
 - Current Phase 3 application commit: `7db4359` — complete worksheet and pre-read recommendations with focused fixtures. Phase 3 is accepted and is the Phase 4 application baseline.
 - Current Phase 4 implementation commit: `1a746ae` — ordered migration, Admin-authorized signed upload and management routes, protected delivery extension, focused path tests and rollback-only staging authorization probe.
-- Local changes: Phase 4 implementation is committed at `1a746ae`; this exit-review checkpoint is documentation-only.
-- Pushed state at transfer: Phase 4 implementation, exit-review checkpoint and staging evidence through `57207e2` are pushed to `origin/codex/pilot-v1`.
+- Local changes: The temporary verifier is removed; this pending closeout contains only that cleanup plus Phase 4 documentation and sanitized evidence.
+- Pushed state at transfer: Phase 4 implementation, staging evidence, Preview checkpoint and temporary verifier through `652343b` are pushed to `origin/codex/pilot-v1`; the final cleanup/closeout commit follows this record.
 - Staging migration state: `20260811170000_add_batch_session_materials.sql` is applied and recorded in the staging migration ledger. The rollback-only authorization probe passed and left zero probe courses or Session-material rows.
-- Preview verification state: Vercel reports the `57207e2` deployment successful. The stable alias loaded the updated login route; the prior application session had expired. Unauthenticated command-line requests were stopped by Vercel deployment protection before reaching the application and are not claimed as application authorization evidence.
-- Known blockers: A fresh approved staging Admin sign-in is required in the prepared Chrome Preview tab before the privileged upload/protected-read check can run. The local service-role variable remains absent; no secret was copied or exposed.
+- Preview verification state: Vercel reports the `652343b` deployment successful. The signed-in staging Admin lifecycle returned authorization `200`, attach `200`, protected read `200` with `private, no-store`, removal `200`, cleanup pending `false`, and post-removal `404`. No token or signed URL was recorded.
+- Known blockers: None for Phase 4. The local service-role variable remains absent by design; the secure staging Preview variable satisfied the privileged check without copying or exposing it.
 - Production state: Untouched; V1 is not approved for Production.
-- Exact next action: Follow the Current V1 phase checkpoint above and finish Phase 4 exit review from implementation commit `1a746ae`; do not start Phase 5.
+- Exact next action: Follow the Current V1 phase checkpoint above and start Phase 5 from the completed Phase 4 application baseline `1a746ae`.
 
 ## How to pause and resume safely
 

@@ -20,6 +20,8 @@ Current Phase 4 staging database checks: [Session-material Authorization Probe](
 
 Current Phase 4 staging result: [Session-material Migration and Authorization Evidence](pilot-v1/evidence/phase-4-staging-migration-and-authorization-2026-08-11.md).
 
+Current Phase 4 Preview result: [Session-material Preview Route Lifecycle Evidence](pilot-v1/evidence/phase-4-preview-route-lifecycle-2026-08-11.md).
+
 ## Current phase
 
 - Phase 0.5: signed off in [Setup and Recovery Sign-off](../instruction/Phase_0.5_Setup_Recovery_Signoff.md).
