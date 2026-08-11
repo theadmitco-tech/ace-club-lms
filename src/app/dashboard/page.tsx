@@ -83,10 +83,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
     ? Number(requestedOpenWeekValue)
     : null;
   const thisWeekSessions = sessions.filter((session) => session.week_number === currentWeek);
-  const recommendedPractice = getRecommendedPractice(sessions, generatedAt);
+  const recommendedPractice = getRecommendedPractice(sessions);
   const preReadRecommendation = getPreReadRecommendation(
     sessions,
-    currentWeek,
     generatedAt,
     timeZone,
   );

@@ -54,6 +54,18 @@ function parseDateKey(dateKey: string) {
   return Date.UTC(year, month - 1, day);
 }
 
+function addDaysToDateKey(dateKey: string, days: number) {
+  return new Date(parseDateKey(dateKey) + (days * DAY_IN_MS)).toISOString().slice(0, 10);
+}
+
+function compareSessions(left: StudentTimelineSession, right: StudentTimelineSession) {
+  const dateDifference = new Date(left.session_date).getTime() - new Date(right.session_date).getTime();
+  if (dateDifference !== 0) return dateDifference;
+
+  const numberDifference = left.session_number - right.session_number;
+  return numberDifference !== 0 ? numberDifference : left.id.localeCompare(right.id);
+}
+
 export function getDateKeyInTimeZone(value: string | Date, timeZone: string) {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone,
@@ -98,55 +110,44 @@ export function isAcademicSection(value: string | null): value is AcademicSectio
 
 export function getRecommendedPractice(
   sessions: StudentTimelineSession[],
-  generatedAt: string,
 ) {
-  const now = new Date(generatedAt).getTime();
   const sections: AcademicSection[] = ['DI', 'VA', 'QA'];
 
   return sections.flatMap((section) => {
-    const sectionSessions = sessions
-      .filter((session) => session.class_type === section)
-      .sort((left, right) => (
-        new Date(left.session_date).getTime() - new Date(right.session_date).getTime()
-      ));
-
-    const activeSession = sectionSessions.find((session, index) => {
-      const sessionEnd = new Date(session.session_end_at ?? session.session_date).getTime();
-      const nextSession = sectionSessions[index + 1];
-      const nextSessionStart = nextSession
-        ? new Date(nextSession.session_date).getTime()
-        : Number.POSITIVE_INFINITY;
-
-      return sessionEnd <= now && now < nextSessionStart;
-    });
+    const activeSession = sessions
+      .filter((session) => (
+        session.class_type === section
+        && session.materials.some((material) => material.type === 'worksheet' && material.is_available)
+      ))
+      .sort((left, right) => compareSessions(right, left))[0];
     if (!activeSession) return [];
 
-    const worksheet = activeSession.materials.find((material) => (
-      material.type === 'worksheet' && material.is_available
+    const worksheets = activeSession.materials.filter((material, index, materials) => (
+      material.type === 'worksheet'
+      && material.is_available
+      && materials.findIndex((candidate) => candidate.id === material.id) === index
     ));
 
-    return worksheet ? [{ session: activeSession, material: worksheet }] : [];
+    return worksheets.map((material) => ({ session: activeSession, material }));
   });
 }
 
 export function getPreReadRecommendation(
   sessions: StudentTimelineSession[],
-  currentWeek: number,
   generatedAt: string,
   timeZone: string,
 ): PreReadRecommendation | null {
-  const targetByDay: Partial<Record<string, AcademicSection>> = {
-    Thursday: 'VA',
-    Friday: 'QA',
-    Saturday: 'DI',
-  };
-  const section = targetByDay[getWeekdayInTimeZone(generatedAt, timeZone)];
-  if (!section) return null;
-
-  const session = sessions.find((item) => (
-    item.week_number === currentWeek && item.class_type === section
-  ));
+  const programmeToday = getDateKeyInTimeZone(generatedAt, timeZone);
+  const tomorrow = addDaysToDateKey(programmeToday, 1);
+  const session = sessions
+    .filter((item) => (
+      isAcademicSection(item.class_type)
+      && getDateKeyInTimeZone(item.session_date, timeZone) === tomorrow
+    ))
+    .sort(compareSessions)[0];
   if (!session) return null;
+
+  const section = session.class_type as AcademicSection;
 
   return {
     session,
