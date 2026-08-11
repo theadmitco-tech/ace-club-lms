@@ -157,7 +157,7 @@ Make Student resources identifiable and usable during the live pilot, show every
 | Phase 2 | Independent PDF/tracker scrolling | Complete | Engineering and Product Owner | `9655a85` / `b4cad40` | All eight exit criteria pass; updated Preview passed Product Owner review on 2026-08-11 | Transfer to Phase 3 |
 | Phase 3 | Complete worksheet and pre-read recommendations | Complete | Engineering and Product Owner | `b4cad40` / `7db4359` | Nine exit criteria pass; Vercel and signed-in runtime checks pass; Product Owner accepted staging on 2026-08-11 | Transfer to Phase 4 |
 | Phase 4 | Session-material data, storage and authorization | Complete | Engineering and QA/Security | `746625f` / `1a746ae` | Local gates, staging migration/ledger/probe, Vercel deployment and sanitized privileged route lifecycle pass | Transfer to Phase 5 |
-| Phase 5 | Session resources UI and Student Recommended reading | Exit review | Engineering | `aef8b81` / `bb9aaa5` | Recommendation 7/7, protected paths 4/4, targeted lint, TypeScript and build pass; responsive/accessibility review pending | Complete Phase 5 responsive and accessibility review |
+| Phase 5 | Session resources UI and Student Recommended reading | Exit review | Engineering | `aef8b81` / `906136a` | Recommendation 7/7, protected paths 4/4, targeted lint, TypeScript and build pass; Admin 1440/1024/700px layout passes after overflow fix; keyboard and Student UI review pending | Complete Phase 5 keyboard and Student UI review |
 | Phase 6 | Integrated local checks and staging Preview | Not started | Engineering and QA/Security | — | — | Wait for Phase 5 exit |
 | Phase 7 | Staging acceptance and version decision | Not started | Product Owner, Engineering and QA/Security | — | — | Wait for Phase 6 exit |
 
@@ -165,19 +165,19 @@ Allowed V1 phase statuses: `Not started`, `In progress`, `Exit review`, `Complet
 
 ### Current V1 phase checkpoint
 
-- Current V1 phase: Phase 5 — Session resources UI and Student Recommended reading; exit review after implementation commit `bb9aaa5`.
+- Current V1 phase: Phase 5 — Session resources UI and Student Recommended reading; exit review after implementation commit `bb9aaa5` and responsive fix `906136a`.
 - Phase status: Phase 5 application work is committed and seven of nine exit criteria are checked. The combined Admin surface, Student surfaces and recommendation fixtures pass engineering review; responsive/accessibility review and the resulting all-criteria gate remain open. Phases 1–4 remain complete.
 - Current owner: Engineering for the Phase 5 exit review.
-- Phase 5 application baseline: Phase 4 closeout commit `aef8b81`; Phase 5 application commit `bb9aaa5` is local only and `origin/codex/pilot-v1` remains at `aef8b81`.
+- Phase 5 application baseline: Phase 4 closeout commit `aef8b81`; Phase 5 application commits through `906136a` are local only and `origin/codex/pilot-v1` remains at `aef8b81`.
 - Baseline: The branch remains based on `origin/main` application commit `0e7be4d40f7a47d34fe1c9441ffa5834eaf12ef2`.
 - Entry criteria state: Passed. All nine Phase 3 exit criteria are checked from controlled fixtures, targeted lint, TypeScript, build, focused commit and preserved authorization/release boundaries; the Vercel Preview and signed-in Student runtime checks passed, and the Product Owner accepted staging on 2026-08-11.
 - Phase 5 intended outcome: Let Admins manage recordings and private Session-material PDFs together and let Students find locked/released reading across the course journey and independent section recommendations.
-- Required Phase 5 verification: Recommendation fixtures pass 7/7, protected-path fixtures pass 4/4, targeted ESLint and `tsc --noEmit` pass, the Next.js 16 Production build passes, and the full-lint result remains at the unrelated 22-error/3-warning baseline. Responsive desktop, keyboard focus and 200% text zoom remain for exit review.
+- Required Phase 5 verification: Recommendation fixtures pass 7/7, protected-path fixtures pass 4/4, targeted ESLint and `tsc --noEmit` pass, and the Next.js 16 Production build passes. Browser review passes the Admin surface at 1440px and 700px; a discovered 31px horizontal overflow at 1024px was fixed at `906136a` and retested with zero page overflow or clipped cards. Keyboard focus, 200% text zoom and Student UI review remain open because browser automation was blocked before those checks completed.
 - Migrations: `20260811170000_add_batch_session_materials.sql` is applied to staging and recorded in its migration ledger as version `20260811170000`. It has not been applied to Production.
 - Preview: The staging alias deployed temporary verification commit `652343b`; the approved staging Admin completed signed upload, private upload, attach, protected no-store read, removal and no-residue checks. The temporary verifier was then removed from the final branch state.
 - Open findings: P0-02, P0-03 and P0-04 pass for Phase 4. P0-05 implementation is complete and awaits the Phase 5 responsive/accessibility exit review. P1-01, P1-02 and P2-01 passed.
 - Production state: Untouched and not approved. Pilot V1 remains staging-only.
-- Exact next action: Complete the Phase 5 responsive desktop, keyboard-focus and 200% text-zoom review for Admin Session resources and Student resource cards; then record the result and transfer to Phase 6 if it passes.
+- Exact next action: Complete the Phase 5 keyboard-focus, 200% text-zoom and signed-in Student resource-card review; then record the result and transfer to Phase 6 if it passes.
 
 ### Explicit exclusions
 
@@ -226,6 +226,7 @@ The binding detailed criteria are in [Pilot V1 acceptance criteria](../pilot-v1/
 | P1-01 | High | Opening the Pilot V1 Preview and signing in returned the reviewer to the historical Phase 2 Preview because staging Supabase Auth still used that URL as its Site URL. The historical deployment is commit `822d053` and does not contain the later recordings route or Pilot V1 UI. | Engineering and Product Owner | Corrected staging Site URL to the Pilot V1 hostname and added its exact callback while preserving localhost, wildcard and historical rollback URLs. Production was untouched. | Passed: Product Owner reached and reviewed the updated Pilot V1 Preview after the correction |
 | P1-02 | Medium | The first titled-resource treatment rendered a large white card inside each session row and made simple resource actions visually bulky. | Engineering and Product Owner | Product Owner selected option B: no card or icon tile; show a quiet type/availability overline, use the saved title as the primary button, and retain a compact secondary `Update log` action for worksheets. Committed at `fb18712`. | Passed: Product Owner confirmed the staging treatment looks much better on 2026-08-11 |
 | P2-01 | Low | Product Owner requested removal of the visible `Update log` heading and `Record effort only—answers and correctness are not tracked here.` helper line from the manual tracker. | Engineering and Product Owner | Removed both visible lines at `b4cad40` while retaining `Update log` as a screen-reader-only section heading. | Passed: Product Owner explicitly closed Phase 2 on 2026-08-11 |
+| P5-01 | Medium | At a 1024px viewport, intrinsic form-control width made Session-material cards overflow their columns and the page by 31px | Engineering | Constrained material cards, children and form inputs to their grid column at `906136a` | Passed: 1024px retest reports page width equal to client width and zero clipped cards |
 
 Severity rules:
 
@@ -240,11 +241,12 @@ Severity rules:
 - Current Phase 3 application commit: `7db4359` — complete worksheet and pre-read recommendations with focused fixtures. Phase 3 is accepted and is the Phase 4 application baseline.
 - Current Phase 4 implementation commit: `1a746ae` — ordered migration, Admin-authorized signed upload and management routes, protected delivery extension, focused path tests and rollback-only staging authorization probe.
 - Current Phase 5 implementation commit: `bb9aaa5` — coherent Admin recording/Session-material management, Student resource surfaces, protected PDF reading and independent Recommended reading with focused fixtures.
-- Local changes: Phase 5 application code is committed. Only the Phase 5 plan and handoff closeout updates remain uncommitted.
-- Pushed state at transfer: Phase 4 is pushed through `aef8b81`. Phase 5 commit `bb9aaa5` is local only and no Phase 5 Preview has been deployed.
+- Current Phase 5 responsive-fix commit: `906136a` — prevents intrinsic form widths from overflowing Session-material cards at the supported medium desktop width.
+- Local changes: Phase 5 application code and responsive fix are committed. Only this Phase 5 review checkpoint remains uncommitted.
+- Pushed state at transfer: Phase 4 is pushed through `aef8b81`. Phase 5 commits through `906136a` are local only and no Phase 5 Preview has been deployed.
 - Staging migration state: `20260811170000_add_batch_session_materials.sql` is applied and recorded in the staging migration ledger. The rollback-only authorization probe passed and left zero probe courses or Session-material rows.
 - Preview verification state: Vercel reports the `652343b` deployment successful. The signed-in staging Admin lifecycle returned authorization `200`, attach `200`, protected read `200` with `private, no-store`, removal `200`, cleanup pending `false`, and post-removal `404`. No token or signed URL was recorded.
-- Known blockers: No implementation blocker. Phase 5 still needs its responsive desktop, keyboard-focus and 200% text-zoom exit review before transfer to Phase 6.
+- Known blockers: No implementation blocker. Browser automation was blocked before keyboard, 200% text-zoom and Student checks completed; those remain required before transfer to Phase 6.
 - Production state: Untouched; V1 is not approved for Production.
 - Exact next action: Follow the Current V1 phase checkpoint above and finish the Phase 5 UI exit review without deploying or mutating Production.
 
