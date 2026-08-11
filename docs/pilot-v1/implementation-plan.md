@@ -155,14 +155,14 @@ Let Students reference the PDF and update the tracker side by side without one p
 
 ### Exit criteria
 
-- [ ] All V1-02 acceptance criteria pass locally.
-- [ ] Scrolling either desktop panel leaves the other panel's position unchanged.
-- [ ] The stacked layout has no scroll trap or page-level horizontal overflow.
-- [ ] Retrying one panel does not erase or unnecessarily reload the other panel.
-- [ ] Saved tracker state persists after refresh.
-- [ ] Keyboard navigation and visible focus pass.
-- [ ] Targeted lint, TypeScript, and a focused build check pass for Phase 2 files.
-- [ ] The change is captured in one focused commit.
+- [x] All V1-02 acceptance criteria pass locally.
+- [x] Scrolling either desktop panel leaves the other panel's position unchanged.
+- [x] The stacked layout has no scroll trap or page-level horizontal overflow.
+- [x] Retrying one panel does not erase or unnecessarily reload the other panel.
+- [x] Saved tracker state persists after refresh.
+- [x] Keyboard navigation and visible focus pass.
+- [x] Targeted lint, TypeScript, and a focused build check pass for Phase 2 files.
+- [x] The change is captured in one focused commit.
 
 ---
 

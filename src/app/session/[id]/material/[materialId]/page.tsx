@@ -3,6 +3,7 @@ import { NotionReader } from '@/components/student/NotionReader';
 import { PdfViewer } from '@/components/student/PdfViewer';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { WorksheetLog } from '@/components/student/WorksheetLog';
+import { WorksheetLogRetry } from '@/components/student/WorksheetLogRetry';
 import { extractNotionPageId } from '@/lib/notion';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { loadStudentWorksheetLog } from '@/lib/server/studentPractice';
@@ -153,12 +154,7 @@ export default async function MaterialViewerPage({
                     <p>
                       {worksheetLogResult?.message ?? 'The tracker is not available for this worksheet yet.'}
                     </p>
-                    <Link
-                      className="student-button"
-                      href={`/session/${sessionId}/material/${materialId}?focus=log#worksheet-log`}
-                    >
-                      Retry log
-                    </Link>
+                    <WorksheetLogRetry />
                   </section>
                 )}
               </div>

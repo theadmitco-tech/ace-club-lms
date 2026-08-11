@@ -151,7 +151,7 @@ Make Student resources identifiable and usable during the live pilot, show every
 |---|---|---|---|---|---|---|
 | Phase 0 | Baseline, branch, environment and implementation readiness | Complete | Engineering | `0e7be4d` / `0a87f14` | [Phase 0 readiness record](../pilot-v1/phase-0-readiness.md); all exit criteria pass | Transfer to Phase 1 |
 | Phase 1 | Shared titled resource-card system | Complete | Engineering and Product Owner | `d4ee94d` / `fb18712` | All local gates pass; staging Auth correction and option B Preview accepted by Product Owner on 2026-08-11 | Transfer to Phase 2 |
-| Phase 2 | Independent PDF/tracker scrolling | Not started | Engineering | `9655a85` / — | Phase 1 entry gate is complete; branch is clean and pushed | Mark In progress and implement only the Phase 2 plan |
+| Phase 2 | Independent PDF/tracker scrolling | In progress | Engineering | `9655a85` / — | Phase 1 entry gate is complete; branch is clean and pushed | Implement and verify only the Phase 2 plan |
 | Phase 3 | Complete worksheet and pre-read recommendations | Not started | Engineering | — | — | Wait for Phase 2 exit |
 | Phase 4 | Session-material data, storage and authorization | Not started | Engineering and QA/Security | — | — | Wait for Phase 3 exit |
 | Phase 5 | Session resources UI and Student Recommended reading | Not started | Engineering | — | — | Wait for Phase 4 exit |
@@ -163,7 +163,7 @@ Allowed V1 phase statuses: `Not started`, `In progress`, `Exit review`, `Complet
 ### Current V1 phase checkpoint
 
 - Current V1 phase: Phase 2 — Independent PDF/tracker scrolling.
-- Phase status: Not started; ready for the Phase 2 Engineering owner. Phase 1 is complete and accepted.
+- Phase status: In progress with Engineering. Phase 1 is complete and accepted.
 - Current owner: Engineering.
 - Phase 2 application baseline: `9655a8590d569b90627aee9c5c75c75badcacc6a`; `origin/codex/pilot-v1` includes the handoff-only transfer checkpoint after this closeout commit, and the working tree is expected to be clean at transfer.
 - Baseline: The branch remains based on `origin/main` application commit `0e7be4d40f7a47d34fe1c9441ffa5834eaf12ef2`.

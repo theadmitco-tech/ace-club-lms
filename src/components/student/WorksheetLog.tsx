@@ -171,7 +171,7 @@ export function WorksheetLog({ worksheet }: { worksheet: StudentWorksheetLog }) 
   const allSelected = questions.length > 0 && selected.size === questions.length;
 
   return (
-    <section className="worksheet-log" id="worksheet-log" aria-labelledby="worksheet-log-title">
+    <section className="worksheet-log worksheet-log-panel" id="worksheet-log" aria-labelledby="worksheet-log-title">
       <div className="worksheet-log-heading">
         <div>
           <span className="student-eyebrow">Manual tracker</span>
@@ -228,7 +228,12 @@ export function WorksheetLog({ worksheet }: { worksheet: StudentWorksheetLog }) 
         </div>
       )}
 
-      <div className="worksheet-log-table-wrap">
+      <div
+        className="worksheet-log-table-wrap"
+        role="region"
+        aria-label="Worksheet questions"
+        tabIndex={0}
+      >
         <table className="worksheet-log-table">
           <thead>
             <tr>
