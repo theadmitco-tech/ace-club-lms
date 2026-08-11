@@ -1,5 +1,5 @@
 export type AcademicSection = 'QA' | 'VA' | 'DI';
-export type TimelineMaterialType = 'pre_read' | 'class_material' | 'worksheet' | 'video';
+export type TimelineMaterialType = 'pre_read' | 'class_material' | 'worksheet' | 'video' | 'session_material';
 
 export type StudentTimelineMaterial = {
   id: string;
@@ -129,6 +129,30 @@ export function getRecommendedPractice(
     ));
 
     return worksheets.map((material) => ({ session: activeSession, material }));
+  });
+}
+
+export function getRecommendedReading(
+  sessions: StudentTimelineSession[],
+) {
+  const sections: AcademicSection[] = ['DI', 'VA', 'QA'];
+
+  return sections.flatMap((section) => {
+    const activeSession = sessions
+      .filter((session) => (
+        session.class_type === section
+        && session.materials.some((material) => material.type === 'session_material' && material.is_available)
+      ))
+      .sort((left, right) => compareSessions(right, left))[0];
+    if (!activeSession) return [];
+
+    const reading = activeSession.materials.filter((material, index, materials) => (
+      material.type === 'session_material'
+      && material.is_available
+      && materials.findIndex((candidate) => candidate.id === material.id) === index
+    ));
+
+    return reading.map((material) => ({ session: activeSession, material }));
   });
 }
 

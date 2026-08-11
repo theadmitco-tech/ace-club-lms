@@ -11,6 +11,7 @@ import {
 const MATERIAL_ORDER: StudentTimelineMaterial['type'][] = [
   'pre_read',
   'video',
+  'session_material',
   'worksheet',
   'class_material',
 ];

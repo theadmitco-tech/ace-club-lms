@@ -30,7 +30,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   const navItems = [
     { href: '/admin', label: 'Dashboard', icon: '📊' },
     { href: '/admin/curriculum', label: 'Master Base', icon: '🏛️' },
-    { href: '/admin/recordings', label: 'Recordings', icon: '🎬' },
+    { href: '/admin/recordings', label: 'Session resources', icon: '🎬' },
     { href: '/admin/sessions', label: 'Sessions', icon: '📋' },
     { href: '/admin/users', label: 'Users', icon: '👥' },
     { href: '/admin/courses', label: 'Batches', icon: '📚' },

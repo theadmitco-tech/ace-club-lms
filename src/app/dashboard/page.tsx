@@ -12,6 +12,7 @@ import {
   getMaterialAvailabilityCopy,
   getPreReadRecommendation,
   getRecommendedPractice,
+  getRecommendedReading,
   groupTimelineByWeek,
   isAcademicSection,
   type AcademicSection,
@@ -84,6 +85,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
     : null;
   const thisWeekSessions = sessions.filter((session) => session.week_number === currentWeek);
   const recommendedPractice = getRecommendedPractice(sessions);
+  const recommendedReading = getRecommendedReading(sessions);
   const preReadRecommendation = getPreReadRecommendation(
     sessions,
     generatedAt,
@@ -145,6 +147,40 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
                 <div className="practice-empty">
                   <strong>No worksheets are currently recommended</strong>
                   <p>A section&apos;s worksheet appears here after class and leaves when that section&apos;s next class begins.</p>
+                </div>
+              )}
+            </section>
+          )}
+
+          {currentWeek > 0 && (
+            <section className="practice-callout reading-callout" aria-labelledby="recommended-reading-title">
+              <div className="callout-heading">
+                <div>
+                  <span className="student-eyebrow">After class</span>
+                  <h2 id="recommended-reading-title">Recommended reading</h2>
+                </div>
+                <p>Review each section&apos;s latest released Session materials.</p>
+              </div>
+              {recommendedReading.length > 0 ? (
+                <div className="practice-list">
+                  {recommendedReading.map(({ session, material }) => (
+                    <ResourceCard
+                      actions={[{
+                        href: `/session/${session.id}/material/${material.id}`,
+                        label: 'Open session material',
+                      }]}
+                      availability={getMaterialAvailabilityCopy(material, timeZone)}
+                      context={`${session.class_type ?? 'Course'} · Week ${session.week_number}`}
+                      key={material.id}
+                      title={material.title}
+                      type="session_material"
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="practice-empty">
+                  <strong>No Session materials are currently recommended</strong>
+                  <p>Reading appears here after a class ends and stays until that section releases a newer set.</p>
                 </div>
               )}
             </section>

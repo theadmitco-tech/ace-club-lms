@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   getPreReadRecommendation,
   getRecommendedPractice,
+  getRecommendedReading,
 } from '../src/lib/studentTimeline.ts';
 
 function material(id, type, isAvailable = true) {
@@ -61,6 +62,45 @@ test('keeps an earlier set through missing and unreleased replacements, then rep
   assert.deepEqual(
     getRecommendedPractice([replacement, earlier, missing]).map(({ material: item }) => item.id),
     ['qa-new'],
+  );
+});
+
+test('returns every unique released Session material from each latest released section set', () => {
+  const vaCr = material('va-cr-reading', 'session_material');
+  const vaRc = material('va-rc-reading', 'session_material');
+  const recommendations = getRecommendedReading([
+    session('di-1', 'DI', '2026-08-09T04:30:00.000Z', [material('di-old-reading', 'session_material')], 1),
+    session('di-2', 'DI', '2026-08-16T04:30:00.000Z', [material('di-new-reading', 'session_material', false)], 2),
+    session('va-1', 'VA', '2026-08-07T14:30:00.000Z', [vaCr, vaRc, vaCr], 3),
+    session('qa-1', 'QA', '2026-08-08T04:30:00.000Z', [material('qa-reading', 'session_material')], 4),
+  ]);
+
+  assert.deepEqual(
+    recommendations.map(({ session: item, material: itemMaterial }) => [item.id, itemMaterial.id]),
+    [['di-1', 'di-old-reading'], ['va-1', 'va-cr-reading'], ['va-1', 'va-rc-reading'], ['qa-1', 'qa-reading']],
+  );
+});
+
+test('keeps earlier reading through missing and locked replacements, then replaces the complete set', () => {
+  const earlier = session('qa-1', 'QA', '2026-08-01T04:30:00.000Z', [
+    material('qa-old-reading-1', 'session_material'),
+    material('qa-old-reading-2', 'session_material'),
+  ], 1);
+  const missing = session('qa-2', 'QA', '2026-08-08T04:30:00.000Z', [], 2);
+  const replacement = session('qa-3', 'QA', '2026-08-15T04:30:00.000Z', [
+    material('qa-new-reading-1', 'session_material', false),
+    material('qa-new-reading-2', 'session_material', false),
+  ], 3);
+
+  assert.deepEqual(
+    getRecommendedReading([replacement, earlier, missing]).map(({ material: item }) => item.id),
+    ['qa-old-reading-1', 'qa-old-reading-2'],
+  );
+
+  for (const item of replacement.materials) item.is_available = true;
+  assert.deepEqual(
+    getRecommendedReading([earlier, missing, replacement]).map(({ material: item }) => item.id),
+    ['qa-new-reading-1', 'qa-new-reading-2'],
   );
 });
 

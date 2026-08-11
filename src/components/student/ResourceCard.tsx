@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { TimelineMaterialType } from '@/lib/studentTimeline';
 
-export type ResourceCardType = TimelineMaterialType | 'session_material';
+export type ResourceCardType = TimelineMaterialType;
 
 export type ResourceCardAction = {
   href: string;

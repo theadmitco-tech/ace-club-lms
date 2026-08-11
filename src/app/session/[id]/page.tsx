@@ -22,6 +22,7 @@ const JOURNEY_STEPS: Array<{
   { type: 'pre_read', label: 'Pre-read', description: 'Prepare before class' },
   { type: 'class', label: 'Class', description: 'Attend the scheduled class' },
   { type: 'video', label: 'Recording', description: 'Review after class' },
+  { type: 'session_material', label: 'Session reading', description: 'Review the class reading' },
   { type: 'worksheet', label: 'Worksheet', description: 'Practise after class' },
 ];
 

@@ -140,6 +140,10 @@ export default async function MaterialViewerPage({
               <PdfViewer fileUrl={material.file_url} title={material.title} />
             )}
 
+            {material.type === 'session_material' && material.file_url && (
+              <PdfViewer fileUrl={material.file_url} title={material.title} />
+            )}
+
             {material.type === 'worksheet' && material.file_url && trackerAvailable && (
               <div className="worksheet-workspace-grid">
                 <div className="worksheet-pdf-panel">
@@ -164,7 +168,7 @@ export default async function MaterialViewerPage({
               <PdfViewer fileUrl={material.file_url} title={material.title} />
             )}
 
-            {(material.type === 'worksheet' || material.type === 'class_material') && !material.file_url && (
+            {(material.type === 'worksheet' || material.type === 'class_material' || material.type === 'session_material') && !material.file_url && (
               <div className="material-status material-status-error" role="alert">
                 <strong>The file could not be opened</strong>
                 <p>Retry from the curriculum item. If the problem continues, contact the programme team.</p>
