@@ -9,12 +9,12 @@ export type ResourceCardAction = {
   secondary?: boolean;
 };
 
-const RESOURCE_PRESENTATION: Record<ResourceCardType, { icon: string; label: string }> = {
-  pre_read: { icon: 'PR', label: 'Pre-read' },
-  worksheet: { icon: 'WS', label: 'Worksheet' },
-  video: { icon: 'REC', label: 'Recording' },
-  class_material: { icon: 'CM', label: 'Class material' },
-  session_material: { icon: 'SM', label: 'Session material' },
+const RESOURCE_PRESENTATION: Record<ResourceCardType, { label: string }> = {
+  pre_read: { label: 'Pre-read' },
+  worksheet: { label: 'Worksheet' },
+  video: { label: 'Recording' },
+  class_material: { label: 'Class material' },
+  session_material: { label: 'Session material' },
 };
 
 export function getResourceTypeLabel(type: ResourceCardType) {
@@ -46,25 +46,29 @@ export function ResourceCard({
 
   return (
     <div className={`resource-card resource-card-${type}`}>
-      <div className="resource-card-icon" aria-hidden="true">{presentation.icon}</div>
-      <div className="resource-card-copy">
+      <div className="resource-card-callout">
         <span className="resource-card-type">{presentation.label}</span>
-        <strong className="resource-card-title">{title}</strong>
-        {context && <span className="resource-card-context">{context}</span>}
         <small className="resource-card-availability">{availability}</small>
       </div>
+      {context && <span className="resource-card-context">{context}</span>}
       {actions.length > 0 && (
         <div className="resource-card-actions" aria-label={`${presentation.label} actions for ${title}`}>
-          {actions.map((action) => (
+          {actions.map((action, index) => (
             <Link
-              className={`resource-card-action${action.secondary ? ' resource-card-action-secondary' : ''}`}
+              aria-label={`${action.label}: ${title}`}
+              className={`resource-card-action${index === 0 ? ' resource-card-title-action' : ''}${action.secondary ? ' resource-card-action-secondary' : ''}`}
               href={action.href}
               key={`${action.href}-${action.label}`}
             >
-              {action.label}
+              {index === 0 ? title : action.label}
             </Link>
           ))}
         </div>
+      )}
+      {actions.length === 0 && (
+        <span className="resource-card-locked-title" aria-label={`${title}. ${availability}`}>
+          {title}
+        </span>
       )}
     </div>
   );

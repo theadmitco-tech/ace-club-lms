@@ -574,18 +574,13 @@
 
 .resource-card {
   --resource-accent: #54736b;
-  width: min(100%, 390px);
-  min-width: min(270px, 100%);
-  padding: 13px;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 10px 12px;
-  border: 1px solid var(--border-primary);
-  border-left: 4px solid var(--resource-accent);
-  border-radius: 12px;
-  background: white;
+  width: min(100%, 410px);
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 6px;
   color: var(--text-primary);
-  box-shadow: 0 2px 7px rgba(23, 50, 44, 0.05);
 }
 
 .resource-card-pre_read {
@@ -608,69 +603,103 @@
   --resource-accent: #7655a6;
 }
 
-.resource-card-icon {
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  border-radius: 9px;
-  background: color-mix(in srgb, var(--resource-accent) 12%, white);
+.resource-card-callout {
+  max-width: 100%;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
   color: var(--resource-accent);
-  font-size: 0.61rem;
-  font-weight: 950;
-  letter-spacing: 0.02em;
-}
-
-.resource-card-copy {
-  min-width: 0;
-  display: grid;
-  gap: 3px;
-}
-
-.resource-card-type {
-  color: var(--resource-accent);
-  font-size: 0.65rem;
-  font-weight: 900;
-  letter-spacing: 0.09em;
+  font-size: 0.62rem;
+  font-weight: 850;
+  letter-spacing: 0.075em;
   text-transform: uppercase;
 }
 
-.resource-card-title {
-  overflow-wrap: anywhere;
-  font-size: 0.88rem;
-  line-height: 1.35;
+.resource-card-type {
+  font: inherit;
+}
+
+.resource-card-type::after {
+  content: '·';
+  margin-left: 5px;
 }
 
 .resource-card-context,
 .resource-card-availability {
+  font-size: 0.65rem;
+  line-height: 1.3;
+}
+
+.resource-card-availability {
+  font: inherit;
+}
+
+.resource-card-context {
   color: var(--text-tertiary);
-  font-size: 0.7rem;
-  line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 
 .resource-card-actions {
-  grid-column: 1 / -1;
+  max-width: 100%;
   display: flex;
+  align-items: stretch;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: 6px;
 }
 
-.resource-card-action {
-  min-height: 36px;
-  padding: 7px 11px;
+.resource-card-action,
+.resource-card-locked-title {
+  min-height: 38px;
+  padding: 8px 12px;
+  display: inline-flex;
+  align-items: center;
   border-radius: 8px;
-  background: var(--resource-accent);
-  color: white;
-  font-size: 0.72rem;
-  line-height: 1.25;
-  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.3;
   white-space: normal;
 }
 
-.resource-card-action-secondary {
-  border: 1px solid color-mix(in srgb, var(--resource-accent) 38%, white);
+.resource-card-title-action {
+  max-width: 100%;
+  border: 1px solid color-mix(in srgb, var(--resource-accent) 55%, white);
   background: white;
   color: var(--resource-accent);
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
+.resource-card-action-secondary {
+  border: 1px solid color-mix(in srgb, var(--resource-accent) 30%, white);
+  background: color-mix(in srgb, var(--resource-accent) 9%, white);
+  color: var(--resource-accent);
+}
+
+.resource-card-locked-title {
+  max-width: 100%;
+  border: 1px dashed color-mix(in srgb, var(--resource-accent) 35%, white);
+  background: rgba(255, 255, 255, 0.66);
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.week-callout .resource-card-callout {
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.week-callout .resource-card-context {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.week-callout .resource-card-locked-title {
+  color: var(--text-secondary);
+}
+
+.week-callout .resource-card-action-secondary {
+  border-color: rgba(255, 255, 255, 0.46);
+  background: transparent;
+  color: white;
 }
 
 .practice-list > .resource-card {
