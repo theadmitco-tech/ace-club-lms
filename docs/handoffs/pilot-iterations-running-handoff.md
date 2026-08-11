@@ -40,7 +40,7 @@ Do not reread every historical evidence file by default. The list above carries 
 
 Use the following instruction to start or continue a pilot version:
 
-> Continue Ace Club LMS from `docs/handoffs/pilot-iterations-running-handoff.md`. Treat it as the single bootstrap file. Follow its Authority and required reading list, including `docs/pilot-v1/acceptance-criteria.md`, `docs/pilot-v1/implementation-plan.md`, `docs/pilot-v1/phase-0-readiness.md`, the signed Phase 8 closeout, affected MVP criteria and product-roadmap requirements, shipped Phase 5–7 boundaries, curriculum decisions, documentation rules and coding rules. Read the active V1 phase register and current phase checkpoint below. Inspect Git status and recent commits, fetch the remote baseline read-only, and verify the recorded branch/commit before acting. Do not repeat a completed phase or start the next phase until the previous phase's exit criteria and handoff fields are complete. Preserve staging/Production separation, Google-only controlled access, server-side authorization, RLS, release protection, Student tracker ownership, read-only Admin progress, batch-specific recordings and private file delivery. Keep implementation and SQL on staging until verification passes, and do not merge, deploy or run Production SQL without explicit Product Owner approval. After every V1 phase, update this handoff with phase status, owner, exact commit, local/pushed state, migrations and environments, checks, findings, new durable files and one exact next action. Add every new durable file to this handoff's active document register and required reading before pausing or transferring ownership.
+> Continue Ace Club LMS from `docs/handoffs/pilot-iterations-running-handoff.md`. Treat it as the single bootstrap file. Begin Pilot V1 Phase 2 — Independent PDF/tracker scrolling — from closeout commit `9655a8590d569b90627aee9c5c75c75badcacc6a` on `codex/pilot-v1`; Phase 1 is complete and must not be repeated. Follow this file's Authority and required reading list, including `docs/pilot-v1/acceptance-criteria.md`, `docs/pilot-v1/implementation-plan.md`, `docs/pilot-v1/phase-0-readiness.md`, the signed Phase 8 closeout, affected MVP criteria and product-roadmap requirements, shipped Phase 5–7 boundaries, curriculum decisions, documentation rules and coding rules. Read the active V1 phase register and current phase checkpoint below. Inspect Git status and recent commits, fetch the remote baseline read-only, and verify the recorded branch/commit before acting. Preserve staging/Production separation, Google-only controlled access, server-side authorization, RLS, release protection, Student tracker ownership, read-only Admin progress, batch-specific recordings and private file delivery. Keep implementation and SQL on staging until verification passes, and do not merge, deploy or run Production SQL without explicit Product Owner approval. After every V1 phase, update this handoff with phase status, owner, exact commit, local/pushed state, migrations and environments, checks, findings, new durable files and one exact next action. Add every new durable file to this handoff's active document register and required reading before pausing or transferring ownership.
 
 ## Non-regression boundaries
 
@@ -115,7 +115,7 @@ A phase is `Complete` only when its exit criteria pass, its focused change is co
 
 | Version | Objective | Branch | Status | Staging decision | Production decision |
 |---|---|---|---|---|---|
-| Pilot V1 | Improve titled resources, worksheet/log usability, recommendations and batch-specific Session reading | `codex/pilot-v1` | Active | Phase 0 passed locally | Not approved |
+| Pilot V1 | Improve titled resources, worksheet/log usability, recommendations and batch-specific Session reading | `codex/pilot-v1` | Active | Phase 1 accepted; Phase 2 ready to start | Not approved |
 
 Allowed version statuses: `Proposed`, `Active`, `Staging verification`, `Accepted for Production`, `Deployed`, `Paused`, or `Superseded`.
 
@@ -151,7 +151,7 @@ Make Student resources identifiable and usable during the live pilot, show every
 |---|---|---|---|---|---|---|
 | Phase 0 | Baseline, branch, environment and implementation readiness | Complete | Engineering | `0e7be4d` / `0a87f14` | [Phase 0 readiness record](../pilot-v1/phase-0-readiness.md); all exit criteria pass | Transfer to Phase 1 |
 | Phase 1 | Shared titled resource-card system | Complete | Engineering and Product Owner | `d4ee94d` / `fb18712` | All local gates pass; staging Auth correction and option B Preview accepted by Product Owner on 2026-08-11 | Transfer to Phase 2 |
-| Phase 2 | Independent PDF/tracker scrolling | Not started | Engineering | — | Phase 1 entry gate is complete | Begin only when implementation resumes |
+| Phase 2 | Independent PDF/tracker scrolling | Not started | Engineering | `9655a85` / — | Phase 1 entry gate is complete; branch is clean and pushed | Mark In progress and implement only the Phase 2 plan |
 | Phase 3 | Complete worksheet and pre-read recommendations | Not started | Engineering | — | — | Wait for Phase 2 exit |
 | Phase 4 | Session-material data, storage and authorization | Not started | Engineering and QA/Security | — | — | Wait for Phase 3 exit |
 | Phase 5 | Session resources UI and Student Recommended reading | Not started | Engineering | — | — | Wait for Phase 4 exit |
@@ -162,18 +162,19 @@ Allowed V1 phase statuses: `Not started`, `In progress`, `Exit review`, `Complet
 
 ### Current V1 phase checkpoint
 
-- Current V1 phase: Phase 1 — Shared titled resource-card system.
-- Phase status: Complete. All seven local exit criteria pass, P1-01 is corrected, and the Product Owner accepted the option B staging treatment and closed Phase 1 on 2026-08-11.
-- Current owner: Engineering and Product Owner.
-- Start commit: `d4ee94d39a39b34fd6294abecedc87b1b694dbc6`; freshly fetched `origin/main` remains `0e7be4d40f7a47d34fe1c9441ffa5834eaf12ef2`.
-- Latest pushed implementation checkpoint: `fe2c4cfd6f15043e50c1b5a389efa812295f10ca` — option B implementation plus its pre-review handoff checkpoint.
-- Exit criteria state: All seven Phase 1 criteria are checked from local evidence and Product Owner staging acceptance closes the transfer gate.
-- Checks/evidence: `git diff --check`, targeted ESLint and `npx tsc --noEmit` pass; Next.js Production build passes; temporary representative browser fixtures verified all planned variants, multiple resources, correct worksheet/log pairing, locked-card link absence, long-title wrapping, visible keyboard focus and zero horizontal overflow at the 200%-zoom-equivalent width. The temporary fixture was removed. Repository-wide lint remains at the signed baseline of 22 errors and 3 warnings with no Phase 1-file finding.
-- Migrations: None created or applied.
-- Preview: Vercel deployment for pushed checkpoint commit `fe2c4cfd6f15043e50c1b5a389efa812295f10ca` is Ready at `https://ace-club-lms-git-codex-pilot-v1-theadmitco-techs-projects.vercel.app`; its build log confirms the `codex/pilot-v1` branch and reports that required Preview variables are present and environment URLs are correctly separated.
-- Findings: P0-01 through P0-05 remain unchanged. P1-01 records the corrected staging OAuth redirect mismatch. P1-02 records the rejected bulky card treatment and selected button-only replacement.
-- New durable files registered: `docs/pilot-v1/acceptance-criteria.md`, `docs/pilot-v1/implementation-plan.md`, and `docs/pilot-v1/phase-0-readiness.md`.
-- Exact next action: Commit and push this Phase 1 closeout checkpoint. Phase 2 may begin afterward when implementation resumes.
+- Current V1 phase: Phase 2 — Independent PDF/tracker scrolling.
+- Phase status: Not started; ready for the Phase 2 Engineering owner. Phase 1 is complete and accepted.
+- Current owner: Engineering.
+- Phase 2 application baseline: `9655a8590d569b90627aee9c5c75c75badcacc6a`; `origin/codex/pilot-v1` includes the handoff-only transfer checkpoint after this closeout commit, and the working tree is expected to be clean at transfer.
+- Baseline: The branch remains based on `origin/main` application commit `0e7be4d40f7a47d34fe1c9441ffa5834eaf12ef2`.
+- Entry criteria state: Passed. Phase 1's seven exit criteria, staging Auth correction and Product Owner acceptance are recorded below.
+- Phase 2 intended outcome: On supported desktop side-by-side worksheet pages, the PDF and manual tracker scroll independently without either panel losing its position; stacked layouts and existing tracker save/ownership behavior remain unchanged.
+- Required Phase 2 verification: Exercise independent panel positions, a long 50-question log, PDF and tracker retry isolation, refresh, keyboard navigation, desktop widths and 200% text zoom; run the focused checks in the Phase 2 implementation plan.
+- Migrations: None created or required by Phase 2 at transfer.
+- Preview: The accepted Phase 1 application deployment `fe2c4cfd6f15043e50c1b5a389efa812295f10ca` is Ready at `https://ace-club-lms-git-codex-pilot-v1-theadmitco-techs-projects.vercel.app`; its staging-separation guard passed.
+- Open findings: P0-02 through P0-05 belong to later phases. P1-01 and P1-02 passed and do not block Phase 2. No Phase 2 finding exists at transfer.
+- Production state: Untouched and not approved. Phase 2 remains staging-only.
+- Exact next action: Verify the current `codex/pilot-v1` head and clean working tree, confirm `9655a85` as the Phase 2 application baseline, read the Phase 2 section of `docs/pilot-v1/implementation-plan.md` and the V1-02 criteria, mark Phase 2 `In progress` in this file, then implement only independent PDF/tracker scrolling.
 
 ### Explicit exclusions
 
@@ -239,7 +240,7 @@ Severity rules:
 - Preview verification state: V1 Preview for `fe2c4cf` is Ready, passed the staging-separation guard and includes option B. Product Owner staging review passed and Phase 1 is closed.
 - Known blockers: None for Phase 1. Secure service-role access remains a Phase 4 verification prerequisite.
 - Production state: Untouched; V1 is not approved for Production.
-- Exact next action: Commit and push this closeout checkpoint, then begin Phase 2 when implementation resumes.
+- Exact next action: Follow the Current V1 phase checkpoint above and begin Phase 2 from `9655a85`; do not start Phase 3.
 
 ## How to pause and resume safely
 
