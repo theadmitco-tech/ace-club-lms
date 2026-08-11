@@ -1,17 +1,19 @@
 # Phase 8 — Manual Verification Checklist
 
-Status: Not started
+Status: Closed with explicit evidence exceptions
 Owner: Product owner, Engineering, QA and pilot operations
-Last updated: 3 August 2026
+Last updated: 10 August 2026
+
+Phase 8 was closed by Product Owner operational acceptance after confirmation that the MVP is live with real Students. Checked items below were verified or explicitly confirmed at closeout. Unchecked items were not independently evidenced in the repository and must not be represented as passed.
 
 ## Launch cleanliness
 
 - [ ] Repository-wide lint passes with zero errors and warnings without suppression.
-- [ ] TypeScript and guarded Next.js Production build pass.
+- [x] TypeScript and local Next.js Production build pass.
 - [ ] Broken package scripts and unsafe/stale setup guidance are corrected or removed.
 - [ ] MVP-excluded analytics and editing controls remain absent from reachable launch UI.
 - [ ] Product Owner records the public-registration/payment decision.
-- [ ] No destructive database cleanup is included without separate retention/rollback approval.
+- [x] Closeout includes no database cleanup or Production mutation.
 
 ## Controlled rehearsal
 
@@ -42,11 +44,14 @@ Last updated: 3 August 2026
 - [ ] Every critical/high fix passes its focused test plus authorization/release regression.
 - [ ] Mandatory Vercel Production/Preview environment preflight passes.
 - [ ] Production migration/deployment plan is reviewed; live `/` and `/login` probes pass.
+- [x] Anonymous read-only Production `/` and `/login` probes return HTTP 200 on 10 August 2026.
 - [ ] Production Student/Admin smoke tests pass without unnecessary data seeding.
-- [ ] Product Owner approves first-live-cohort launch.
+- [x] Product Owner confirms the MVP is live with real Students and approves operational Phase 8 closure.
 - [ ] Monitoring covers authentication, content, release, tracker, Admin parity and privacy failures.
 - [ ] First live cycle completes with incidents resolved or explicitly owned.
 
 ## Exit gate
 
 - [ ] End-to-end acceptance passes with no critical defects or cross-student data exposure.
+
+The original evidence-based exit gate remains unchecked because its complete evidence set is absent. The Product Owner accepted live operation as the closeout basis with the exceptions recorded in [operational closeout evidence](evidence/operational-closeout-2026-08-10.md).
