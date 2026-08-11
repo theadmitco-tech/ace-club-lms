@@ -150,8 +150,8 @@ Make Student resources identifiable and usable during the live pilot, show every
 | V1 phase | Outcome | Status | Owner | Start/end commit | Checks or evidence | Next action |
 |---|---|---|---|---|---|---|
 | Phase 0 | Baseline, branch, environment and implementation readiness | Complete | Engineering | `0e7be4d` / `0a87f14` | [Phase 0 readiness record](../pilot-v1/phase-0-readiness.md); all exit criteria pass | Transfer to Phase 1 |
-| Phase 1 | Shared titled resource-card system | Exit review | Engineering | `d4ee94d` / `fb18712` | Local gates pass; P1-01 staging Auth is corrected; P1-02 option B is committed | Push the updated checkpoint and review the new Preview |
-| Phase 2 | Independent PDF/tracker scrolling | Not started | Engineering | — | — | Wait for Phase 1 exit |
+| Phase 1 | Shared titled resource-card system | Complete | Engineering and Product Owner | `d4ee94d` / `fb18712` | All local gates pass; staging Auth correction and option B Preview accepted by Product Owner on 2026-08-11 | Transfer to Phase 2 |
+| Phase 2 | Independent PDF/tracker scrolling | Not started | Engineering | — | Phase 1 entry gate is complete | Begin only when implementation resumes |
 | Phase 3 | Complete worksheet and pre-read recommendations | Not started | Engineering | — | — | Wait for Phase 2 exit |
 | Phase 4 | Session-material data, storage and authorization | Not started | Engineering and QA/Security | — | — | Wait for Phase 3 exit |
 | Phase 5 | Session resources UI and Student Recommended reading | Not started | Engineering | — | — | Wait for Phase 4 exit |
@@ -163,17 +163,17 @@ Allowed V1 phase statuses: `Not started`, `In progress`, `Exit review`, `Complet
 ### Current V1 phase checkpoint
 
 - Current V1 phase: Phase 1 — Shared titled resource-card system.
-- Phase status: Exit review; all seven original local exit criteria pass, P1-01 is corrected, and the Product Owner-selected option B button-only refinement is committed at `fb18712` after targeted lint, TypeScript and build passed. Updated staging review remains pending.
-- Current owner: Engineering.
+- Phase status: Complete. All seven local exit criteria pass, P1-01 is corrected, and the Product Owner accepted the option B staging treatment and closed Phase 1 on 2026-08-11.
+- Current owner: Engineering and Product Owner.
 - Start commit: `d4ee94d39a39b34fd6294abecedc87b1b694dbc6`; freshly fetched `origin/main` remains `0e7be4d40f7a47d34fe1c9441ffa5834eaf12ef2`.
-- Latest completed commit: `0a87f14a882fbeb823bd9ebb75363e712d9623c4` — Phase 0 documentation and readiness checkpoint.
-- Exit criteria state: All seven Phase 1 criteria are checked from local evidence; staging Preview verification is the Product Owner-requested transfer gate.
+- Latest pushed implementation checkpoint: `fe2c4cfd6f15043e50c1b5a389efa812295f10ca` — option B implementation plus its pre-review handoff checkpoint.
+- Exit criteria state: All seven Phase 1 criteria are checked from local evidence and Product Owner staging acceptance closes the transfer gate.
 - Checks/evidence: `git diff --check`, targeted ESLint and `npx tsc --noEmit` pass; Next.js Production build passes; temporary representative browser fixtures verified all planned variants, multiple resources, correct worksheet/log pairing, locked-card link absence, long-title wrapping, visible keyboard focus and zero horizontal overflow at the 200%-zoom-equivalent width. The temporary fixture was removed. Repository-wide lint remains at the signed baseline of 22 errors and 3 warnings with no Phase 1-file finding.
 - Migrations: None created or applied.
-- Preview: Vercel deployment for pushed checkpoint commit `7f953ebddef11d2a31569e7f9af22acfbd2cfa78` is Ready at `https://ace-club-lms-git-codex-pilot-v1-theadmitco-techs-projects.vercel.app`; its build log confirms the `codex/pilot-v1` branch and reports that required Preview variables are present and environment URLs are correctly separated.
+- Preview: Vercel deployment for pushed checkpoint commit `fe2c4cfd6f15043e50c1b5a389efa812295f10ca` is Ready at `https://ace-club-lms-git-codex-pilot-v1-theadmitco-techs-projects.vercel.app`; its build log confirms the `codex/pilot-v1` branch and reports that required Preview variables are present and environment URLs are correctly separated.
 - Findings: P0-01 through P0-05 remain unchanged. P1-01 records the corrected staging OAuth redirect mismatch. P1-02 records the rejected bulky card treatment and selected button-only replacement.
 - New durable files registered: `docs/pilot-v1/acceptance-criteria.md`, `docs/pilot-v1/implementation-plan.md`, and `docs/pilot-v1/phase-0-readiness.md`.
-- Exact next action: Commit this checkpoint, push `codex/pilot-v1`, verify the updated staging Preview and corrected login flow, then resume Product Owner review. Do not start Phase 2.
+- Exact next action: Commit and push this Phase 1 closeout checkpoint. Phase 2 may begin afterward when implementation resumes.
 
 ### Explicit exclusions
 
@@ -188,7 +188,7 @@ The binding detailed criteria are in [Pilot V1 acceptance criteria](../pilot-v1/
 
 | Change | Expected user outcome | Failure and permission checks | Status |
 |---|---|---|---|
-| V1-01 | Students distinguish every resource by type, title and accessible visual variant, with worksheet and log actions kept together | Locked/missing resources, long titles, keyboard focus and canonical destinations remain safe | Approved for planning |
+| V1-01 | Students distinguish every resource by type, title and accessible visual variant, with worksheet and log actions kept together | Locked/missing resources, long titles, keyboard focus and canonical destinations remain safe | Complete; accepted in staging 2026-08-11 |
 | V1-02 | Students scroll the PDF and tracker independently on desktop without losing either position | Stacked layouts, keyboard access, failure isolation and saved tracker state remain safe | Approved for planning |
 | V1-03 | Every worksheet in the active same-section set is recommended and tomorrow's pre-read is highlighted without changing its release | Empty/partial sets, duplicates, cross-batch access and direct unreleased URLs are denied safely | Approved for planning |
 | V1-04 | Admins privately manage batch-session reading beside recordings; Students receive it after class and under Recommended reading | Invalid uploads, non-Admin writes, pre-release reads, cross-batch propagation and stale replacements are prevented | Approved for planning |
@@ -204,11 +204,11 @@ The binding detailed criteria are in [Pilot V1 acceptance criteria](../pilot-v1/
 ### Verification
 
 - Local lint/build: Phase 1 targeted lint, TypeScript and Production build pass; repository lint remains at the signed 22-error/3-warning baseline with no new Phase 1 finding.
-- Vercel Preview commit and URL: `7f953ebddef11d2a31569e7f9af22acfbd2cfa78`; `https://ace-club-lms-git-codex-pilot-v1-theadmitco-techs-projects.vercel.app` (Ready and staging-separation guard passed).
-- Staging accounts and fixtures: Not selected.
-- Affected journey result: Not started.
-- Authorization/privacy/release regression: Not started.
-- Product Owner staging acceptance: Not started.
+- Vercel Preview commit and URL: `fe2c4cfd6f15043e50c1b5a389efa812295f10ca`; `https://ace-club-lms-git-codex-pilot-v1-theadmitco-techs-projects.vercel.app` (Ready and staging-separation guard passed).
+- Staging accounts and fixtures: Product Owner authenticated staging session plus temporary representative local fixtures; local fixtures were removed after verification.
+- Affected journey result: Passed for Phase 1; the Product Owner reached the corrected Pilot V1 Preview and accepted the compact option B resource controls.
+- Authorization/privacy/release regression: Passed for the Phase 1 scope from local evidence; no backend, RLS, release-rule or migration change was introduced, and locked resources expose no active URL.
+- Product Owner staging acceptance: Passed on 2026-08-11; Product Owner explicitly requested Phase 1 closure.
 
 ### Findings
 
@@ -219,8 +219,8 @@ The binding detailed criteria are in [Pilot V1 acceptance criteria](../pilot-v1/
 | P0-03 | Expected migration work | Current constraints and TypeScript unions do not include `session_material` | Engineering | Add through one new ordered, staging-first migration and focused type changes | Phase 4 |
 | P0-04 | Expected authorization work | Protected file delivery currently accepts only `worksheets/` paths | Engineering and QA/Security | Add a separate Session-material prefix while preserving active-account, enrollment, release, RLS, signed-URL and no-store boundaries | Phase 4 |
 | P0-05 | Expected UI work | Batch Recordings is a broad Client Component with direct reads and Admin RPC writes | Engineering | Preserve Admin-only RPC authorization and use an authorized Route Handler for signed uploads | Phase 5 |
-| P1-01 | High | Opening the Pilot V1 Preview and signing in returned the reviewer to the historical Phase 2 Preview because staging Supabase Auth still used that URL as its Site URL. The historical deployment is commit `822d053` and does not contain the later recordings route or Pilot V1 UI. | Engineering and Product Owner | Corrected staging Site URL to the Pilot V1 hostname and added its exact callback while preserving localhost, wildcard and historical rollback URLs. Production was untouched. | OAuth request now carries the Pilot V1 `redirect_to`; final account-selection landing and authenticated UI review pending |
-| P1-02 | Medium | The first titled-resource treatment rendered a large white card inside each session row and made simple resource actions visually bulky. | Engineering and Product Owner | Product Owner selected option B: no card or icon tile; show a quiet type/availability overline, use the saved title as the primary button, and retain a compact secondary `Update log` action for worksheets. Committed at `fb18712`. | Updated staging Preview pending |
+| P1-01 | High | Opening the Pilot V1 Preview and signing in returned the reviewer to the historical Phase 2 Preview because staging Supabase Auth still used that URL as its Site URL. The historical deployment is commit `822d053` and does not contain the later recordings route or Pilot V1 UI. | Engineering and Product Owner | Corrected staging Site URL to the Pilot V1 hostname and added its exact callback while preserving localhost, wildcard and historical rollback URLs. Production was untouched. | Passed: Product Owner reached and reviewed the updated Pilot V1 Preview after the correction |
+| P1-02 | Medium | The first titled-resource treatment rendered a large white card inside each session row and made simple resource actions visually bulky. | Engineering and Product Owner | Product Owner selected option B: no card or icon tile; show a quiet type/availability overline, use the saved title as the primary button, and retain a compact secondary `Update log` action for worksheets. Committed at `fb18712`. | Passed: Product Owner confirmed the staging treatment looks much better on 2026-08-11 |
 
 Severity rules:
 
@@ -232,14 +232,14 @@ Severity rules:
 ### Handoff checkpoint
 
 - Current branch: `codex/pilot-v1`, created from and still based on `origin/main` application commit `0e7be4d`.
-- Current Phase 1 implementation commit: `fb18712` — selected option B compact title-button refinement over the titled-resource foundation. Phase 1 remains in Exit review until the updated staging check is recorded.
-- Local changes: Only this updated Phase 1 handoff checkpoint is uncommitted. No migration changes.
-- Pushed: Yes. `origin/codex/pilot-v1` is at `7f953ebddef11d2a31569e7f9af22acfbd2cfa78`.
+- Current Phase 1 implementation commit: `fb18712` — selected option B compact title-button refinement over the titled-resource foundation. Phase 1 is complete.
+- Local changes: None expected after the Phase 1 closeout checkpoint is committed. No migration changes.
+- Pushed: Yes. `origin/codex/pilot-v1` includes the Phase 1 implementation, staging-feedback fixes and closeout checkpoint.
 - Staging migration state: No V1 migration applied.
-- Preview verification state: V1 Preview for `7f953eb` remains Ready with corrected staging Auth, but it still shows the rejected bulky treatment. The option B update is local and awaits commit/push.
-- Known blockers: No remaining configuration blocker for Phase 1. Product Owner account selection and authenticated UI review remain pending. Secure service-role access remains a Phase 4 verification prerequisite.
+- Preview verification state: V1 Preview for `fe2c4cf` is Ready, passed the staging-separation guard and includes option B. Product Owner staging review passed and Phase 1 is closed.
+- Known blockers: None for Phase 1. Secure service-role access remains a Phase 4 verification prerequisite.
 - Production state: Untouched; V1 is not approved for Production.
-- Exact next action: Commit this checkpoint, push the updated branch, verify the new staging deployment and login hostname, then ask the Product Owner to review the affected Student surfaces before Phase 2 begins.
+- Exact next action: Commit and push this closeout checkpoint, then begin Phase 2 when implementation resumes.
 
 ## How to pause and resume safely
 
