@@ -322,11 +322,22 @@
 .master-material-card {
   display: grid;
   gap: var(--space-sm);
+  min-width: 0;
   padding: var(--space-md);
   margin-top: var(--space-sm);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-md);
   background: var(--bg-secondary);
+}
+
+.master-material-card > *,
+.master-material-card .form-input {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.master-material-card .form-input {
+  width: 100%;
 }
 
 .master-material-card label {
