@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ResourceActions } from '@/components/student/ResourceActions';
+import { ResourceCard } from '@/components/student/ResourceCard';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { TimelineItem } from '@/components/student/TimelineItem';
 import { WeekDisclosure } from '@/components/student/WeekDisclosure';
@@ -121,25 +122,24 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
               {recommendedPractice.length > 0 ? (
                 <div className="practice-list">
                   {recommendedPractice.map(({ session, material }) => (
-                    <div className="practice-row" key={material.id}>
-                      <div>
-                        <span>{session.class_type ?? 'Course'} · Week {session.week_number}</span>
-                        <strong>{material.title}</strong>
-                      </div>
-                      <div className="practice-actions">
-                        <Link className="student-button" href={`/session/${session.id}/material/${material.id}`}>
-                          Open worksheet
-                        </Link>
-                        {material.tracker_available && (
-                          <Link
-                            className="student-button student-button-secondary"
-                            href={`/session/${session.id}/material/${material.id}?focus=log#worksheet-log`}
-                          >
-                            Update log
-                          </Link>
-                        )}
-                      </div>
-                    </div>
+                    <ResourceCard
+                      actions={[
+                        {
+                          href: `/session/${session.id}/material/${material.id}`,
+                          label: 'Open worksheet',
+                        },
+                        ...(material.tracker_available ? [{
+                          href: `/session/${session.id}/material/${material.id}?focus=log#worksheet-log`,
+                          label: 'Update log',
+                          secondary: true,
+                        }] : []),
+                      ]}
+                      availability={getMaterialAvailabilityCopy(material, timeZone)}
+                      context={`${session.class_type ?? 'Course'} · Week ${session.week_number}`}
+                      key={material.id}
+                      title={material.title}
+                      type="worksheet"
+                    />
                   ))}
                 </div>
               ) : (
@@ -160,25 +160,29 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
               <p>Times shown in {timeZone}.</p>
             </div>
 
-            {preReadRecommendation && (
+            {preReadRecommendation && !preReadRecommendation.material && (
               <div className="recommendation-row">
                 <span className="recommended-pill">Recommended</span>
                 <div>
                   <strong>{preReadRecommendation.section} pre-read for {preReadRecommendation.session.title}</strong>
-                  <small>
-                    {preReadRecommendation.material
-                      ? getMaterialAvailabilityCopy(preReadRecommendation.material, timeZone)
-                      : 'No pre-read has been added for this class.'}
-                  </small>
+                  <small>No pre-read has been added for this class.</small>
                 </div>
-                {preReadRecommendation.material?.is_available && (
-                  <Link
-                    className="student-button student-button-light"
-                    href={`/session/${preReadRecommendation.session.id}/material/${preReadRecommendation.material.id}`}
-                  >
-                    Open pre-read
-                  </Link>
-                )}
+              </div>
+            )}
+
+            {preReadRecommendation?.material && (
+              <div className="recommendation-resource">
+                <span className="recommended-pill">Recommended</span>
+                <ResourceCard
+                  actions={preReadRecommendation.material.is_available ? [{
+                    href: `/session/${preReadRecommendation.session.id}/material/${preReadRecommendation.material.id}`,
+                    label: 'Open pre-read',
+                  }] : []}
+                  availability={getMaterialAvailabilityCopy(preReadRecommendation.material, timeZone)}
+                  context={`${preReadRecommendation.section} · ${preReadRecommendation.session.title}`}
+                  title={preReadRecommendation.material.title}
+                  type="pre_read"
+                />
               </div>
             )}
 

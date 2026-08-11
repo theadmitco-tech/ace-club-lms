@@ -185,10 +185,3 @@ export function getMaterialAvailabilityCopy(
   }
   return `Available after class on ${formatProgrammeDate(material.available_from, timeZone)}`;
 }
-
-export function getMaterialActionLabel(type: TimelineMaterialType) {
-  if (type === 'pre_read') return 'Pre-read';
-  if (type === 'video') return 'Recording';
-  if (type === 'worksheet') return 'Worksheet';
-  return 'Class material';
-}

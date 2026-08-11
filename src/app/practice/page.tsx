@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { StudentHeader } from '@/components/student/StudentHeader';
+import { ResourceCard } from '@/components/student/ResourceCard';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { loadStudentPracticeOverview } from '@/lib/server/studentPractice';
 import { formatProgrammeDateTime } from '@/lib/studentTimeline';
@@ -84,26 +85,30 @@ export default async function PracticeLogPage() {
                   <div className="practice-overview-list">
                     {items.map((worksheet) => (
                       <article className="practice-overview-card" key={worksheet.material_id}>
-                        <div className="practice-overview-copy">
-                          <span>Week {worksheet.week_number} · {worksheet.session_title}</span>
-                          <h3>{worksheet.title}</h3>
-                          <small>
-                            {worksheet.last_updated
-                              ? `Last updated ${formatProgrammeDateTime(worksheet.last_updated, course.schedule_timezone)}`
-                              : 'Not updated yet'}
-                          </small>
-                        </div>
+                        <ResourceCard
+                          actions={[
+                            {
+                              href: `/session/${worksheet.session_id}/material/${worksheet.material_id}`,
+                              label: 'Open worksheet',
+                            },
+                            {
+                              href: `/session/${worksheet.session_id}/material/${worksheet.material_id}?focus=log#worksheet-log`,
+                              label: worksheet.last_updated ? 'Update log' : 'Start log',
+                              secondary: true,
+                            },
+                          ]}
+                          availability={worksheet.last_updated
+                            ? `Last updated ${formatProgrammeDateTime(worksheet.last_updated, course.schedule_timezone)}`
+                            : 'Not updated yet'}
+                          context={`Week ${worksheet.week_number} · ${worksheet.session_title}`}
+                          title={worksheet.title}
+                          type="worksheet"
+                        />
                         <div className="practice-overview-totals" aria-label={`Progress for ${worksheet.title}`}>
                           <span><strong>{worksheet.done_count}</strong> Done</span>
                           <span><strong>{worksheet.review_count}</strong> Review</span>
                           <span><strong>{worksheet.total_questions - worksheet.done_count - worksheet.review_count}</strong> Not updated</span>
                         </div>
-                        <Link
-                          className="student-button"
-                          href={`/session/${worksheet.session_id}/material/${worksheet.material_id}?focus=log#worksheet-log`}
-                        >
-                          {worksheet.last_updated ? 'Update log' : 'Start log'}
-                        </Link>
                       </article>
                     ))}
                   </div>

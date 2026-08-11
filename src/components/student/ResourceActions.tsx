@@ -1,9 +1,12 @@
-import Link from 'next/link';
 import {
-  getMaterialActionLabel,
   getMaterialAvailabilityCopy,
   type StudentTimelineMaterial,
 } from '@/lib/studentTimeline';
+import {
+  getResourcePrimaryActionLabel,
+  ResourceCard,
+  type ResourceCardAction,
+} from './ResourceCard';
 
 const MATERIAL_ORDER: StudentTimelineMaterial['type'][] = [
   'pre_read',
@@ -33,39 +36,29 @@ export function ResourceActions({
 
   return (
     <div className="resource-actions" aria-label="Course resources">
-      {orderedMaterials.flatMap((material) => {
-        if (!material.is_available) {
-          return [(
-            <span className="resource-unavailable" key={material.id}>
-              <strong>{getMaterialActionLabel(material.type)}</strong>
-              <small>{getMaterialAvailabilityCopy(material, timeZone)}</small>
-            </span>
-          )];
+      {orderedMaterials.map((material) => {
+        const materialHref = `/session/${sessionId}/material/${material.id}`;
+        const actions: ResourceCardAction[] = material.is_available
+          ? [{ href: materialHref, label: getResourcePrimaryActionLabel(material.type) }]
+          : [];
+
+        if (material.is_available && material.type === 'worksheet' && material.tracker_available) {
+          actions.push({
+            href: `${materialHref}?focus=log#worksheet-log`,
+            label: 'Update log',
+            secondary: true,
+          });
         }
 
-        const actions = [(
-          <Link
-            className="resource-action"
-            href={`/session/${sessionId}/material/${material.id}`}
+        return (
+          <ResourceCard
+            actions={actions}
+            availability={getMaterialAvailabilityCopy(material, timeZone)}
             key={material.id}
-          >
-            {getMaterialActionLabel(material.type)}
-          </Link>
-        )];
-
-        if (material.type === 'worksheet' && material.tracker_available) {
-          actions.push(
-            <Link
-              className="resource-action resource-action-log"
-              href={`/session/${sessionId}/material/${material.id}?focus=log#worksheet-log`}
-              key={`${material.id}-log`}
-            >
-              Log
-            </Link>,
-          );
-        }
-
-        return actions;
+            title={material.title}
+            type={material.type}
+          />
+        );
       })}
     </div>
   );
