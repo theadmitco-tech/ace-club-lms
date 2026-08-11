@@ -18,6 +18,8 @@ Current implementation baseline: [Pilot V1 Phase 0 Readiness Record](pilot-v1/ph
 
 Current Phase 4 staging database checks: [Session-material Authorization Probe](pilot-v1/phase-4-staging-authorization-probe.sql).
 
+Current Phase 4 staging result: [Session-material Migration and Authorization Evidence](pilot-v1/evidence/phase-4-staging-migration-and-authorization-2026-08-11.md).
+
 ## Current phase
 
 - Phase 0.5: signed off in [Setup and Recovery Sign-off](../instruction/Phase_0.5_Setup_Recovery_Signoff.md).

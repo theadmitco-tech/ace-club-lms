@@ -218,9 +218,9 @@ Create the safe batch-only foundation for private PDF Session materials without 
 - [x] The migration is new, ordered, transactional where applicable, and has not been applied to Production.
 - [x] Existing rows require no destructive rewrite and existing live batches remain unchanged.
 - [x] `session_material` cannot be created as reusable Master content or copied by generation or sync.
-- [ ] Only an authorized Admin can manage a Session material.
-- [ ] Only an active enrolled Student can read it after release.
-- [ ] Signed-out, inactive, pre-release, and cross-batch reads are denied without leaking a storage URL.
+- [x] Only an authorized Admin can manage a Session material.
+- [x] Only an active enrolled Student can read it after release.
+- [x] Signed-out, inactive, pre-release, and cross-batch reads are denied without leaking a storage URL.
 - [ ] Invalid or failed upload, replace, or remove operations preserve the last valid state and return actionable errors.
 - [ ] Migration review, targeted lint, TypeScript, build, and focused authorization checks pass locally.
 - [x] Data and server work are captured in a focused commit before UI integration.
