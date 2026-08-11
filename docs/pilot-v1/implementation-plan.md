@@ -248,14 +248,14 @@ Let Admins manage Session materials beside recordings and let Students find rele
 ### Exit criteria
 
 - [ ] All V1-04 product acceptance criteria pass locally with controlled fixtures.
-- [ ] Admin manages Recording and Session material for the same batch session from one coherent surface.
-- [ ] Session-material create, rename, replace, and remove states are clear and recoverable.
-- [ ] The Student sees accurate locked and released states through the shared resource cards.
-- [ ] Recommended reading shows the complete latest released set per section and replaces it only when new reading releases.
-- [ ] Another batch remains unchanged through every Admin action and Sync materials.
-- [ ] Existing recording behavior passes its focused regression checks.
+- [x] Admin manages Recording and Session material for the same batch session from one coherent surface.
+- [x] Session-material create, rename, replace, and remove states are clear and recoverable.
+- [x] The Student sees accurate locked and released states through the shared resource cards.
+- [x] Recommended reading shows the complete latest released set per section and replaces it only when new reading releases.
+- [x] Another batch remains unchanged through every Admin action and Sync materials.
+- [x] Existing recording behavior passes its focused regression checks.
 - [ ] Supported desktop widths, keyboard access, focus, text zoom, targeted lint, TypeScript, and build pass.
-- [ ] Admin and Student integration is captured in focused commits without unrelated cleanup.
+- [x] Admin and Student integration is captured in focused commits without unrelated cleanup.
 
 ---
 

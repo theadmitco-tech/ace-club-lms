@@ -157,7 +157,7 @@ Make Student resources identifiable and usable during the live pilot, show every
 | Phase 2 | Independent PDF/tracker scrolling | Complete | Engineering and Product Owner | `9655a85` / `b4cad40` | All eight exit criteria pass; updated Preview passed Product Owner review on 2026-08-11 | Transfer to Phase 3 |
 | Phase 3 | Complete worksheet and pre-read recommendations | Complete | Engineering and Product Owner | `b4cad40` / `7db4359` | Nine exit criteria pass; Vercel and signed-in runtime checks pass; Product Owner accepted staging on 2026-08-11 | Transfer to Phase 4 |
 | Phase 4 | Session-material data, storage and authorization | Complete | Engineering and QA/Security | `746625f` / `1a746ae` | Local gates, staging migration/ledger/probe, Vercel deployment and sanitized privileged route lifecycle pass | Transfer to Phase 5 |
-| Phase 5 | Session resources UI and Student Recommended reading | Not started | Engineering | — | — | Begin Phase 5 entry review |
+| Phase 5 | Session resources UI and Student Recommended reading | Exit review | Engineering | `aef8b81` / `bb9aaa5` | Recommendation 7/7, protected paths 4/4, targeted lint, TypeScript and build pass; responsive/accessibility review pending | Complete Phase 5 responsive and accessibility review |
 | Phase 6 | Integrated local checks and staging Preview | Not started | Engineering and QA/Security | — | — | Wait for Phase 5 exit |
 | Phase 7 | Staging acceptance and version decision | Not started | Product Owner, Engineering and QA/Security | — | — | Wait for Phase 6 exit |
 
@@ -165,19 +165,19 @@ Allowed V1 phase statuses: `Not started`, `In progress`, `Exit review`, `Complet
 
 ### Current V1 phase checkpoint
 
-- Current V1 phase: Phase 5 — Session resources UI and Student Recommended reading; not started.
-- Phase status: Phase 4 is complete. Its focused data, storage and authorization implementation, staging migration/probe and privileged Preview lifecycle all pass. Phases 1–3 remain complete and accepted.
-- Current owner: Engineering for the Phase 5 entry review.
-- Phase 5 application baseline: Phase 4 implementation commit `1a746ae`; `origin/codex/pilot-v1` contains the verified implementation and evidence through temporary verification commit `652343b`, with the verifier removed in the pending Phase 4 closeout commit.
+- Current V1 phase: Phase 5 — Session resources UI and Student Recommended reading; exit review after implementation commit `bb9aaa5`.
+- Phase status: Phase 5 application work is committed and seven of nine exit criteria are checked. The combined Admin surface, Student surfaces and recommendation fixtures pass engineering review; responsive/accessibility review and the resulting all-criteria gate remain open. Phases 1–4 remain complete.
+- Current owner: Engineering for the Phase 5 exit review.
+- Phase 5 application baseline: Phase 4 closeout commit `aef8b81`; Phase 5 application commit `bb9aaa5` is local only and `origin/codex/pilot-v1` remains at `aef8b81`.
 - Baseline: The branch remains based on `origin/main` application commit `0e7be4d40f7a47d34fe1c9441ffa5834eaf12ef2`.
 - Entry criteria state: Passed. All nine Phase 3 exit criteria are checked from controlled fixtures, targeted lint, TypeScript, build, focused commit and preserved authorization/release boundaries; the Vercel Preview and signed-in Student runtime checks passed, and the Product Owner accepted staging on 2026-08-11.
-- Phase 4 intended outcome: Add the safe batch-only data, private storage and authorization foundation for Session materials without changing reusable Master content, another batch or Production.
-- Required Phase 4 verification: Complete. Static review, local gates, the staging rollback-only Admin, Student, signed-out, inactive, pre-release, unpublished and cross-batch probe, and the secure Preview privileged route lifecycle pass.
+- Phase 5 intended outcome: Let Admins manage recordings and private Session-material PDFs together and let Students find locked/released reading across the course journey and independent section recommendations.
+- Required Phase 5 verification: Recommendation fixtures pass 7/7, protected-path fixtures pass 4/4, targeted ESLint and `tsc --noEmit` pass, the Next.js 16 Production build passes, and the full-lint result remains at the unrelated 22-error/3-warning baseline. Responsive desktop, keyboard focus and 200% text zoom remain for exit review.
 - Migrations: `20260811170000_add_batch_session_materials.sql` is applied to staging and recorded in its migration ledger as version `20260811170000`. It has not been applied to Production.
 - Preview: The staging alias deployed temporary verification commit `652343b`; the approved staging Admin completed signed upload, private upload, attach, protected no-store read, removal and no-residue checks. The temporary verifier was then removed from the final branch state.
-- Open findings: P0-02, P0-03 and P0-04 pass for Phase 4. P0-05 belongs to Phase 5. P1-01, P1-02 and P2-01 passed.
+- Open findings: P0-02, P0-03 and P0-04 pass for Phase 4. P0-05 implementation is complete and awaits the Phase 5 responsive/accessibility exit review. P1-01, P1-02 and P2-01 passed.
 - Production state: Untouched and not approved. Pilot V1 remains staging-only.
-- Exact next action: Begin the Phase 5 entry review from application commit `1a746ae`, record Phase 5 as `In progress`, and implement the Session resources Admin/Student experience without repeating Phase 4 or running Production SQL.
+- Exact next action: Complete the Phase 5 responsive desktop, keyboard-focus and 200% text-zoom review for Admin Session resources and Student resource cards; then record the result and transfer to Phase 6 if it passes.
 
 ### Explicit exclusions
 
@@ -195,19 +195,19 @@ The binding detailed criteria are in [Pilot V1 acceptance criteria](../pilot-v1/
 | V1-01 | Students distinguish every resource by type, title and accessible visual variant, with worksheet and log actions kept together | Locked/missing resources, long titles, keyboard focus and canonical destinations remain safe | Complete; accepted in staging 2026-08-11 |
 | V1-02 | Students scroll the PDF and tracker independently on desktop without losing either position | Stacked layouts, keyboard access, failure isolation and saved tracker state remain safe | Complete; accepted in staging 2026-08-11 |
 | V1-03 | Every worksheet in the active same-section set is recommended and tomorrow's pre-read is highlighted without changing its release | Empty/partial sets, duplicates, cross-batch access and direct unreleased URLs are denied safely | Complete; accepted in staging 2026-08-11 |
-| V1-04 | Admins privately manage batch-session reading beside recordings; Students receive it after class and under Recommended reading | Invalid uploads, non-Admin writes, pre-release reads, cross-batch propagation and stale replacements are prevented | Approved for planning |
+| V1-04 | Admins privately manage batch-session reading beside recordings; Students receive it after class and under Recommended reading | Invalid uploads, non-Admin writes, pre-release reads, cross-batch propagation and stale replacements are prevented | Implemented locally at `bb9aaa5`; Phase 5 UI exit review pending |
 
 ### Database and environment impact
 
 - Database change required: Added the batch-only `session_material` type, shape/index guards, Admin save/remove RPCs and release-gated read policy without changing reusable Master rows.
 - Ordered migration: `20260811170000_add_batch_session_materials.sql`; applied and ledgered on staging only.
-- Staging application result: Phases 1–3 accepted; Phase 4 engineering, migration, authorization and Preview lifecycle gates complete.
+- Staging application result: Phases 1–3 accepted; Phase 4 engineering, migration, authorization and Preview lifecycle gates complete. Phase 5 is local only and has not updated Preview.
 - Production application: Not approved.
 - Rollback or compatibility requirement: Existing live batches and reusable Master pre-read/worksheet synchronization must remain compatible and untouched; V1 rows must be independently removable without changing another batch.
 
 ### Verification
 
-- Local lint/build: Phase 4 file/path fixtures pass 4/4 and recommendation regressions pass 5/5; targeted ESLint, `tsc --noEmit`, and the Next.js Production build pass. Repository-wide lint remains at the unchanged unrelated baseline of 22 errors and 3 warnings; Phase 4 files have no lint finding.
+- Local lint/build: Phase 5 recommendation regressions pass 7/7 and protected file/path fixtures pass 4/4; targeted ESLint, `tsc --noEmit`, and the Next.js 16 Production build pass. Repository-wide lint remains at the unchanged unrelated baseline of 22 errors and 3 warnings; Phase 5 files have no lint finding.
 - Vercel Preview commit and URL: Verification commit `652343b`; `https://ace-club-lms-git-codex-pilot-v1-theadmitco-techs-projects.vercel.app` (Vercel GitHub status succeeded and the signed-in Admin lifecycle passed). The temporary verifier is removed in the pending closeout commit.
 - Staging accounts and fixtures: Approved staging Admin browser session; Phase 4 file/path fixtures are committed at `scripts/session-material-files.test.mjs`, the rollback-only probe is committed at `docs/pilot-v1/phase-4-staging-authorization-probe.sql`, and neither contains private Student data.
 - Affected journey result: The authenticated staging Student dashboard loaded Recommended practice from the latest released worksheet sets present in that account. The account does not contain every multiple-sibling/replacement edge case, so those remain evidenced by the committed 5/5 controlled fixtures. Product Owner completed review without requesting changes on 2026-08-11.
@@ -222,7 +222,7 @@ The binding detailed criteria are in [Pilot V1 acceptance criteria](../pilot-v1/
 | P0-02 | Medium | Local staging public variables are present but the local service-role variable is absent | Engineering and QA/Security | Use secure staging Preview configuration for privileged upload verification or provision local staging access through an approved secret-handling step before Phase 4 verification | Phase 4 |
 | P0-03 | Expected migration work | Current constraints and TypeScript unions do not include `session_material` | Engineering | Add through one new ordered, staging-first migration and focused type changes | Phase 4 |
 | P0-04 | Expected authorization work | Protected file delivery currently accepts only `worksheets/` paths | Engineering and QA/Security | Add a separate Session-material prefix while preserving active-account, enrollment, release, RLS, signed-URL and no-store boundaries | Phase 4 |
-| P0-05 | Expected UI work | Batch Recordings is a broad Client Component with direct reads and Admin RPC writes | Engineering | Preserve Admin-only RPC authorization and use an authorized Route Handler for signed uploads | Phase 5 |
+| P0-05 | Expected UI work | Batch Recordings is a broad Client Component with direct reads and Admin RPC writes | Engineering | Implemented one coherent Session resources surface while preserving recording RPCs; Session-material upload/save/remove use the Phase 4 Admin-authorized Route Handlers | Phase 5 implementation passes; responsive/accessibility exit review pending |
 | P1-01 | High | Opening the Pilot V1 Preview and signing in returned the reviewer to the historical Phase 2 Preview because staging Supabase Auth still used that URL as its Site URL. The historical deployment is commit `822d053` and does not contain the later recordings route or Pilot V1 UI. | Engineering and Product Owner | Corrected staging Site URL to the Pilot V1 hostname and added its exact callback while preserving localhost, wildcard and historical rollback URLs. Production was untouched. | Passed: Product Owner reached and reviewed the updated Pilot V1 Preview after the correction |
 | P1-02 | Medium | The first titled-resource treatment rendered a large white card inside each session row and made simple resource actions visually bulky. | Engineering and Product Owner | Product Owner selected option B: no card or icon tile; show a quiet type/availability overline, use the saved title as the primary button, and retain a compact secondary `Update log` action for worksheets. Committed at `fb18712`. | Passed: Product Owner confirmed the staging treatment looks much better on 2026-08-11 |
 | P2-01 | Low | Product Owner requested removal of the visible `Update log` heading and `Record effort only—answers and correctness are not tracked here.` helper line from the manual tracker. | Engineering and Product Owner | Removed both visible lines at `b4cad40` while retaining `Update log` as a screen-reader-only section heading. | Passed: Product Owner explicitly closed Phase 2 on 2026-08-11 |
@@ -239,13 +239,14 @@ Severity rules:
 - Current branch: `codex/pilot-v1`, created from and still based on `origin/main` application commit `0e7be4d`.
 - Current Phase 3 application commit: `7db4359` — complete worksheet and pre-read recommendations with focused fixtures. Phase 3 is accepted and is the Phase 4 application baseline.
 - Current Phase 4 implementation commit: `1a746ae` — ordered migration, Admin-authorized signed upload and management routes, protected delivery extension, focused path tests and rollback-only staging authorization probe.
-- Local changes: The temporary verifier is removed; this pending closeout contains only that cleanup plus Phase 4 documentation and sanitized evidence.
-- Pushed state at transfer: Phase 4 implementation, staging evidence, Preview checkpoint and temporary verifier through `652343b` are pushed to `origin/codex/pilot-v1`; the final cleanup/closeout commit follows this record.
+- Current Phase 5 implementation commit: `bb9aaa5` — coherent Admin recording/Session-material management, Student resource surfaces, protected PDF reading and independent Recommended reading with focused fixtures.
+- Local changes: Phase 5 application code is committed. Only the Phase 5 plan and handoff closeout updates remain uncommitted.
+- Pushed state at transfer: Phase 4 is pushed through `aef8b81`. Phase 5 commit `bb9aaa5` is local only and no Phase 5 Preview has been deployed.
 - Staging migration state: `20260811170000_add_batch_session_materials.sql` is applied and recorded in the staging migration ledger. The rollback-only authorization probe passed and left zero probe courses or Session-material rows.
 - Preview verification state: Vercel reports the `652343b` deployment successful. The signed-in staging Admin lifecycle returned authorization `200`, attach `200`, protected read `200` with `private, no-store`, removal `200`, cleanup pending `false`, and post-removal `404`. No token or signed URL was recorded.
-- Known blockers: None for Phase 4. The local service-role variable remains absent by design; the secure staging Preview variable satisfied the privileged check without copying or exposing it.
+- Known blockers: No implementation blocker. Phase 5 still needs its responsive desktop, keyboard-focus and 200% text-zoom exit review before transfer to Phase 6.
 - Production state: Untouched; V1 is not approved for Production.
-- Exact next action: Follow the Current V1 phase checkpoint above and start Phase 5 from the completed Phase 4 application baseline `1a746ae`.
+- Exact next action: Follow the Current V1 phase checkpoint above and finish the Phase 5 UI exit review without deploying or mutating Production.
 
 ## How to pause and resume safely
 
