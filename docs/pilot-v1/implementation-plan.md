@@ -184,15 +184,15 @@ Show every current worksheet for QA, VA, and DI and preserve the agreed seven-da
 
 ### Exit criteria
 
-- [ ] All V1-03 acceptance criteria pass against controlled local or staging-like fixtures.
-- [ ] A VA session containing CR and RC worksheets recommends both.
-- [ ] QA, VA, and DI active sets are calculated independently and deterministically.
-- [ ] Earlier work remains until a later same-section worksheet set releases.
-- [ ] Thursday VA, Friday QA, and Saturday DI recommendations pass for the current standard schedule.
-- [ ] The seven-day pre-read release timestamp is unchanged.
-- [ ] Unreleased, unpublished, cross-batch, and unauthorized resources remain inaccessible.
-- [ ] Focused logic checks, targeted lint, TypeScript, and build pass.
-- [ ] The change is captured in one focused commit.
+- [x] All V1-03 acceptance criteria pass against controlled local or staging-like fixtures.
+- [x] A VA session containing CR and RC worksheets recommends both.
+- [x] QA, VA, and DI active sets are calculated independently and deterministically.
+- [x] Earlier work remains until a later same-section worksheet set releases.
+- [x] Thursday VA, Friday QA, and Saturday DI recommendations pass for the current standard schedule.
+- [x] The seven-day pre-read release timestamp is unchanged.
+- [x] Unreleased, unpublished, cross-batch, and unauthorized resources remain inaccessible.
+- [x] Focused logic checks, targeted lint, TypeScript, and build pass.
+- [x] The change is captured in one focused commit.
 
 ---
 
