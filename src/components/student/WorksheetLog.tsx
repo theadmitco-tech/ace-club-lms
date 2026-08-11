@@ -175,8 +175,7 @@ export function WorksheetLog({ worksheet }: { worksheet: StudentWorksheetLog }) 
       <div className="worksheet-log-heading">
         <div>
           <span className="student-eyebrow">Manual tracker</span>
-          <h2 id="worksheet-log-title">Update log</h2>
-          <p>Record effort only—answers and correctness are not tracked here.</p>
+          <h2 className="sr-only" id="worksheet-log-title">Update log</h2>
         </div>
         <div className="worksheet-log-totals" aria-label="Worksheet progress totals">
           <span><strong>{totals.done}</strong> Done</span>
