@@ -171,10 +171,10 @@ Allowed V1 phase statuses: `Not started`, `In progress`, `Exit review`, `Complet
 - Phase 3 intended outcome: Recommend the complete active same-section worksheet set and the agreed tomorrow pre-read without changing release timing, canonical destinations, cross-batch isolation or direct unreleased access denial.
 - Required Phase 3 verification: Passed locally. Five focused fixtures cover multiple VA worksheets, duplicates, independent and partial section sets, missing/unreleased/released replacement sessions, Thursday/Friday/Saturday recommendations, the programme-timezone day boundary and unchanged pre-read release state. Canonical destinations and authorization/release boundaries remain unchanged in the reviewed application diff.
 - Migrations: None created or required by Phase 3; none applied to any environment.
-- Preview: Phase 3 application commit `7db4359` is pushed and its staging-backed Preview is pending inspection. The stable branch alias remains `https://ace-club-lms-git-codex-pilot-v1-theadmitco-techs-projects.vercel.app`.
+- Preview: The staging-backed branch deployment completed successfully after Phase 3 application commit `7db4359` and closeout commit `78dc800`. The stable alias `https://ace-club-lms-git-codex-pilot-v1-theadmitco-techs-projects.vercel.app` passed public-root and authenticated Student-dashboard runtime checks without browser console warnings or errors; Product Owner review remains pending.
 - Open findings: P0-02 through P0-05 belong to later phases. P1-01, P1-02 and P2-01 passed. No Phase 3 engineering finding remains open; Product Owner staging review is pending.
 - Production state: Untouched and not approved. Pilot V1 remains staging-only.
-- Exact next action: Inspect the staging Preview for application commit `7db4359`, ask the Product Owner to verify the complete Recommended practice set and tomorrow pre-read behavior, and record the feedback before starting Phase 4.
+- Exact next action: Ask the Product Owner to review the open staging Student dashboard, verify the visible Recommended practice set and report any feedback; record that decision before starting Phase 4.
 
 ### Explicit exclusions
 
@@ -198,16 +198,16 @@ The binding detailed criteria are in [Pilot V1 acceptance criteria](../pilot-v1/
 
 - Database change required: Expected for secure batch-session material management, batch-specific synchronization exclusions and server/database authorization; final shape remains to be assessed against the current schema.
 - Ordered migration: None created; any migration will be new, ordered and staging-first.
-- Staging application result: Application commit pushed; Preview inspection pending.
+- Staging application result: Vercel deployment and runtime checks pass; Product Owner review pending.
 - Production application: Not approved.
 - Rollback or compatibility requirement: Existing live batches and reusable Master pre-read/worksheet synchronization must remain compatible and untouched; V1 rows must be independently removable without changing another batch.
 
 ### Verification
 
 - Local lint/build: Phase 3 recommendation fixtures pass 5/5; targeted ESLint, `tsc --noEmit`, and the Next.js Production build pass. Repository-wide lint still reports the unchanged legacy baseline of 22 errors and 3 warnings in untouched Admin, registration, landing-page and storage files; Phase 3 files have no lint finding.
-- Vercel Preview commit and URL: Phase 3 commit `7db4359` is pushed; deployment inspection is pending on `https://ace-club-lms-git-codex-pilot-v1-theadmitco-techs-projects.vercel.app`.
+- Vercel Preview commit and URL: Application commit `7db4359` plus closeout `78dc800`; `https://ace-club-lms-git-codex-pilot-v1-theadmitco-techs-projects.vercel.app` (Vercel GitHub status succeeded; public root and authenticated Student dashboard loaded without browser console warnings or errors).
 - Staging accounts and fixtures: Product Owner authenticated staging session from earlier phase reviews; Phase 3 pure-logic fixtures are committed at `scripts/student-timeline-recommendations.test.mjs` and contain no private Student data.
-- Affected journey result: Phase 3 passes controlled local fixtures for the complete active worksheet set, same-section replacement, empty/partial/duplicate data and programme-timezone tomorrow pre-read behavior. Signed-in staging review remains pending.
+- Affected journey result: The authenticated staging Student dashboard loaded Recommended practice from the latest released worksheet sets present in that account. The account does not contain every multiple-sibling/replacement edge case, so those remain evidenced by the committed 5/5 controlled fixtures. Product Owner visual review remains pending.
 - Authorization/privacy/release regression: Passed for the Phase 3 scope from the reviewed diff and inherited RLS/direct-URL evidence. Recommendation selection still receives only the authenticated Student's selected-course, published-session timeline payload; it filters on server-calculated material availability, and no RPC, RLS, direct material route, release timestamp, tracker ownership or migration changed.
 - Product Owner staging acceptance: Phases 1 and 2 passed on 2026-08-11. Phase 3 staging review is pending.
 
@@ -238,10 +238,10 @@ Severity rules:
 - Local changes: Phase 3 application files are committed; only the implementation-plan and handoff closeout are pending their documentation commit. No migration changes.
 - Pushed: Yes for the Phase 3 application. `origin/codex/pilot-v1` contains `7db4359`; the documentation closeout will follow as a separate checkpoint.
 - Staging migration state: No V1 migration applied.
-- Preview verification state: Phase 3 deployment inspection and signed-in Product Owner review are pending on the stable branch alias. Broader integrated staging verification remains assigned to Phase 6.
+- Preview verification state: Deployment status, public-root runtime and authenticated Student-dashboard runtime pass on the stable branch alias; signed-in Product Owner review remains pending. Broader integrated staging verification remains assigned to Phase 6.
 - Known blockers: None for Phase 3 engineering. Product Owner staging feedback is intentionally required before Phase 4 starts; secure service-role access remains a Phase 4 verification prerequisite.
 - Production state: Untouched; V1 is not approved for Production.
-- Exact next action: Inspect and review the Phase 3 staging Preview, record Product Owner feedback, and only then transfer to Phase 4.
+- Exact next action: Product Owner reviews the open Phase 3 staging dashboard and reports acceptance or changes; record that feedback before transferring to Phase 4.
 
 ## How to pause and resume safely
 
