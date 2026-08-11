@@ -155,7 +155,7 @@ Make Student resources identifiable and usable during the live pilot, show every
 | Phase 1 | Shared titled resource-card system | Complete | Engineering and Product Owner | `d4ee94d` / `fb18712` | All local gates pass; staging Auth correction and option B Preview accepted by Product Owner on 2026-08-11 | Transfer to Phase 2 |
 | Phase 2 | Independent PDF/tracker scrolling | Complete | Engineering and Product Owner | `9655a85` / `b4cad40` | All eight exit criteria pass; updated Preview passed Product Owner review on 2026-08-11 | Transfer to Phase 3 |
 | Phase 3 | Complete worksheet and pre-read recommendations | Complete | Engineering and Product Owner | `b4cad40` / `7db4359` | Nine exit criteria pass; Vercel and signed-in runtime checks pass; Product Owner accepted staging on 2026-08-11 | Transfer to Phase 4 |
-| Phase 4 | Session-material data, storage and authorization | Exit review | Engineering and QA/Security | `746625f` / `1a746ae` | Implementation and local gates pass; staging migration, ledger, rollback-only authorization probe and sanitized post-check pass | Push Phase 4 to the staging-backed Preview and verify privileged upload/protected read; do not start Phase 5 |
+| Phase 4 | Session-material data, storage and authorization | Exit review | Engineering and QA/Security | `746625f` / `1a746ae` | Local gates, staging migration/ledger/probe and Vercel deployment pass; privileged route check awaits a fresh staging Admin sign-in | Sign in with the approved staging Admin in the prepared Preview tab, then verify privileged upload/protected read; do not start Phase 5 |
 | Phase 5 | Session resources UI and Student Recommended reading | Not started | Engineering | — | — | Wait for Phase 4 exit |
 | Phase 6 | Integrated local checks and staging Preview | Not started | Engineering and QA/Security | — | — | Wait for Phase 5 exit |
 | Phase 7 | Staging acceptance and version decision | Not started | Product Owner, Engineering and QA/Security | — | — | Wait for Phase 6 exit |
@@ -173,10 +173,10 @@ Allowed V1 phase statuses: `Not started`, `In progress`, `Exit review`, `Complet
 - Phase 4 intended outcome: Add the safe batch-only data, private storage and authorization foundation for Session materials without changing reusable Master content, another batch or Production.
 - Required Phase 4 verification: Static review and the staging rollback-only Admin, Student, signed-out, inactive, pre-release, unpublished and cross-batch probe pass. The privileged signed upload and protected read path still require the secure staging Preview configuration.
 - Migrations: `20260811170000_add_batch_session_materials.sql` is applied to staging and recorded in its migration ledger as version `20260811170000`. It has not been applied to Production.
-- Preview: Phase 3 passed on the stable staging alias `https://ace-club-lms-git-codex-pilot-v1-theadmitco-techs-projects.vercel.app`; Product Owner acceptance was recorded on 2026-08-11.
+- Preview: Commit `57207e2` deployed successfully through Vercel to the stable staging alias `https://ace-club-lms-git-codex-pilot-v1-theadmitco-techs-projects.vercel.app`. The prior authenticated browser session had expired, so the privileged Phase 4 route check awaits a fresh approved staging Admin sign-in.
 - Open findings: P0-03 and the database/RLS portion of P0-04 pass on staging. P0-02 remains only for the Preview route check because the local service-role variable is absent; use the existing secure Preview secret after pushing, without exposing it. P0-05 belongs to Phase 5. P1-01, P1-02 and P2-01 passed.
 - Production state: Untouched and not approved. Pilot V1 remains staging-only.
-- Exact next action: Commit and push the sanitized staging evidence to `codex/pilot-v1`, wait for its staging-backed Vercel Preview, then verify the Admin-authorized signed-upload endpoint and protected Student delivery without exposing a secret; do not start Phase 5 or run Production SQL.
+- Exact next action: In the prepared Chrome Preview login tab, sign in with the approved staging Admin account and report when it is ready; then verify the Admin-authorized signed-upload endpoint and protected Student delivery without exposing a secret. Do not start Phase 5 or run Production SQL.
 
 ### Explicit exclusions
 
@@ -239,10 +239,10 @@ Severity rules:
 - Current Phase 3 application commit: `7db4359` — complete worksheet and pre-read recommendations with focused fixtures. Phase 3 is accepted and is the Phase 4 application baseline.
 - Current Phase 4 implementation commit: `1a746ae` — ordered migration, Admin-authorized signed upload and management routes, protected delivery extension, focused path tests and rollback-only staging authorization probe.
 - Local changes: Phase 4 implementation is committed at `1a746ae`; this exit-review checkpoint is documentation-only.
-- Pushed state at transfer: `origin/codex/pilot-v1` remains at `746625f`. Phase 4 commit `1a746ae` is local and has not been pushed or deployed.
+- Pushed state at transfer: Phase 4 implementation, exit-review checkpoint and staging evidence through `57207e2` are pushed to `origin/codex/pilot-v1`.
 - Staging migration state: `20260811170000_add_batch_session_materials.sql` is applied and recorded in the staging migration ledger. The rollback-only authorization probe passed and left zero probe courses or Session-material rows.
-- Preview verification state: The stable alias still serves the accepted Phase 3 application. No Phase 4 Preview has been created and no Phase 4 privileged route has been exercised.
-- Known blockers: The local service-role variable remains absent. Complete the privileged route check through the secure staging-backed Preview after pushing; no secret was copied or exposed.
+- Preview verification state: Vercel reports the `57207e2` deployment successful. The stable alias loaded the updated login route; the prior application session had expired. Unauthenticated command-line requests were stopped by Vercel deployment protection before reaching the application and are not claimed as application authorization evidence.
+- Known blockers: A fresh approved staging Admin sign-in is required in the prepared Chrome Preview tab before the privileged upload/protected-read check can run. The local service-role variable remains absent; no secret was copied or exposed.
 - Production state: Untouched; V1 is not approved for Production.
 - Exact next action: Follow the Current V1 phase checkpoint above and finish Phase 4 exit review from implementation commit `1a746ae`; do not start Phase 5.
 
