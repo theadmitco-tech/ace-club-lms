@@ -150,7 +150,7 @@ Make Student resources identifiable and usable during the live pilot, show every
 | V1 phase | Outcome | Status | Owner | Start/end commit | Checks or evidence | Next action |
 |---|---|---|---|---|---|---|
 | Phase 0 | Baseline, branch, environment and implementation readiness | Complete | Engineering | `0e7be4d` / `0a87f14` | [Phase 0 readiness record](../pilot-v1/phase-0-readiness.md); all exit criteria pass | Transfer to Phase 1 |
-| Phase 1 | Shared titled resource-card system | Not started | Engineering | — | — | Implement the shared titled resource-card structure only |
+| Phase 1 | Shared titled resource-card system | Exit review | Engineering | `d4ee94d` / `759d0aa` | All seven local exit criteria pass; staging Preview requested before ownership transfer | Commit this checkpoint, push `codex/pilot-v1`, and verify the staging-backed Preview |
 | Phase 2 | Independent PDF/tracker scrolling | Not started | Engineering | — | — | Wait for Phase 1 exit |
 | Phase 3 | Complete worksheet and pre-read recommendations | Not started | Engineering | — | — | Wait for Phase 2 exit |
 | Phase 4 | Session-material data, storage and authorization | Not started | Engineering and QA/Security | — | — | Wait for Phase 3 exit |
@@ -162,18 +162,18 @@ Allowed V1 phase statuses: `Not started`, `In progress`, `Exit review`, `Complet
 
 ### Current V1 phase checkpoint
 
-- Current V1 phase: Phase 1 entry checkpoint — Shared titled resource-card system.
-- Phase status: Not started; Phase 0 is complete and Phase 1 is cleared to begin.
+- Current V1 phase: Phase 1 — Shared titled resource-card system.
+- Phase status: Exit review; all seven local exit criteria pass at focused implementation commit `759d0aa`, and the Product Owner requested a staging check before ownership transfers.
 - Current owner: Engineering.
-- Start commit: `0e7be4d40f7a47d34fe1c9441ffa5834eaf12ef2`, matching freshly fetched `origin/main` at Phase 0 inspection.
+- Start commit: `d4ee94d39a39b34fd6294abecedc87b1b694dbc6`; freshly fetched `origin/main` remains `0e7be4d40f7a47d34fe1c9441ffa5834eaf12ef2`.
 - Latest completed commit: `0a87f14a882fbeb823bd9ebb75363e712d9623c4` — Phase 0 documentation and readiness checkpoint.
-- Exit criteria state: All eight Phase 0 criteria are checked from the linked readiness evidence; Phase 1 criteria remain unchecked.
-- Checks/evidence: Git zero-divergence check; local staging classification; immutable Preview staging-guard build log; bundled Next.js 16 guide review; affected-file inventory; signed-in read-only staging Table Editor inventory.
+- Exit criteria state: All seven Phase 1 criteria are checked from local evidence; staging Preview verification is the Product Owner-requested transfer gate.
+- Checks/evidence: `git diff --check`, targeted ESLint and `npx tsc --noEmit` pass; Next.js Production build passes; temporary representative browser fixtures verified all planned variants, multiple resources, correct worksheet/log pairing, locked-card link absence, long-title wrapping, visible keyboard focus and zero horizontal overflow at the 200%-zoom-equivalent width. The temporary fixture was removed. Repository-wide lint remains at the signed baseline of 22 errors and 3 warnings with no Phase 1-file finding.
 - Migrations: None created or applied.
 - Preview: No V1 Preview created. Latest inspected baseline-lineage Preview was Ready and passed the staging-separation prebuild guard.
-- Findings: P0-01 through P0-05 are recorded below; none blocks Phase 1.
+- Findings: P0-01 through P0-05 remain unchanged. No new Phase 1 product or technical defect was found.
 - New durable files registered: `docs/pilot-v1/acceptance-criteria.md`, `docs/pilot-v1/implementation-plan.md`, and `docs/pilot-v1/phase-0-readiness.md`.
-- Exact next action: Begin V1 Phase 1 by implementing the shared titled resource-card structure only; do not start Phase 2 scrolling work.
+- Exact next action: Commit this Phase 1 checkpoint, push `codex/pilot-v1`, and verify the resulting Vercel Preview is staging-backed; do not start Phase 2 scrolling work.
 
 ### Explicit exclusions
 
@@ -203,7 +203,7 @@ The binding detailed criteria are in [Pilot V1 acceptance criteria](../pilot-v1/
 
 ### Verification
 
-- Local lint/build: Not started.
+- Local lint/build: Phase 1 targeted lint, TypeScript and Production build pass; repository lint remains at the signed 22-error/3-warning baseline with no new Phase 1 finding.
 - Vercel Preview commit and URL: Not available.
 - Staging accounts and fixtures: Not selected.
 - Affected journey result: Not started.
@@ -230,14 +230,14 @@ Severity rules:
 ### Handoff checkpoint
 
 - Current branch: `codex/pilot-v1`, created from and still based on `origin/main` application commit `0e7be4d`.
-- Current completed-phase commit: `0a87f14a882fbeb823bd9ebb75363e712d9623c4` for Phase 0; this handoff checkpoint is a documentation-only follow-up.
-- Local changes: No application or migration changes; only this Phase 0 ownership-transfer checkpoint follows the completed-phase commit.
+- Current Phase 1 implementation commit: `759d0aa` — titled resource-card system. Phase 1 remains in Exit review until the requested staging check is recorded.
+- Local changes: Only the Phase 1 implementation-plan and handoff checkpoint remain uncommitted. No migration changes.
 - Pushed: No.
 - Staging migration state: No V1 migration applied.
 - Preview verification state: No V1 Preview; latest immutable baseline-lineage Preview is Ready and passed environment separation.
-- Known blockers: None for Phase 1. Secure service-role access remains a Phase 4 verification prerequisite.
+- Known blockers: None in the implementation. The Product Owner-requested staging Preview check remains before Phase 1 ownership transfer. Secure service-role access remains a Phase 4 verification prerequisite.
 - Production state: Untouched; V1 is not approved for Production.
-- Exact next action: Begin V1 Phase 1 by implementing the shared titled resource-card structure only; do not start Phase 2 scrolling work.
+- Exact next action: Commit this Phase 1 checkpoint, push `codex/pilot-v1`, and verify the resulting Vercel Preview is staging-backed; do not start Phase 2 scrolling work.
 
 ## How to pause and resume safely
 

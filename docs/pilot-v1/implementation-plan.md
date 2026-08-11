@@ -123,13 +123,13 @@ Replace repetitive generic controls with one accessible resource-card system tha
 
 ### Exit criteria
 
-- [ ] All V1-01 acceptance criteria pass locally with representative fixtures.
-- [ ] Pre-read, Worksheet, Recording, and Session-material variants share one structure but remain visibly distinguishable.
-- [ ] Worksheet and log actions remain paired to the same canonical material.
-- [ ] Locked resources expose no usable material URL.
-- [ ] No page-level horizontal overflow appears at supported widths or 200% text zoom.
-- [ ] Targeted lint and TypeScript pass for Phase 1 files.
-- [ ] The change is captured in one focused commit without unrelated behavior changes.
+- [x] All V1-01 acceptance criteria pass locally with representative fixtures.
+- [x] Pre-read, Worksheet, Recording, and Session-material variants share one structure but remain visibly distinguishable.
+- [x] Worksheet and log actions remain paired to the same canonical material.
+- [x] Locked resources expose no usable material URL.
+- [x] No page-level horizontal overflow appears at supported widths or 200% text zoom.
+- [x] Targeted lint and TypeScript pass for Phase 1 files.
+- [x] The change is captured in one focused commit without unrelated behavior changes.
 
 ---
 
