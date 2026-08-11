@@ -154,7 +154,7 @@ Make Student resources identifiable and usable during the live pilot, show every
 | Phase 1 | Shared titled resource-card system | Complete | Engineering and Product Owner | `d4ee94d` / `fb18712` | All local gates pass; staging Auth correction and option B Preview accepted by Product Owner on 2026-08-11 | Transfer to Phase 2 |
 | Phase 2 | Independent PDF/tracker scrolling | Complete | Engineering and Product Owner | `9655a85` / `b4cad40` | All eight exit criteria pass; updated Preview passed Product Owner review on 2026-08-11 | Transfer to Phase 3 |
 | Phase 3 | Complete worksheet and pre-read recommendations | Complete | Engineering and Product Owner | `b4cad40` / `7db4359` | Nine exit criteria pass; Vercel and signed-in runtime checks pass; Product Owner accepted staging on 2026-08-11 | Transfer to Phase 4 |
-| Phase 4 | Session-material data, storage and authorization | In progress | Engineering and QA/Security | `746625f` / — | Transfer state verified against `origin/codex/pilot-v1`; P0-02 through P0-04 are the active Phase 4 prerequisites/work | Implement and verify only the Phase 4 plan |
+| Phase 4 | Session-material data, storage and authorization | Exit review | Engineering and QA/Security | `746625f` / `1a746ae` | Implementation, 4/4 focused tests, targeted lint, TypeScript and build pass; staging migration/probe and privileged upload verification remain | With Product Owner confirmation, apply the migration to staging only and run the rollback-only probe; do not start Phase 5 |
 | Phase 5 | Session resources UI and Student Recommended reading | Not started | Engineering | — | — | Wait for Phase 4 exit |
 | Phase 6 | Integrated local checks and staging Preview | Not started | Engineering and QA/Security | — | — | Wait for Phase 5 exit |
 | Phase 7 | Staging acceptance and version decision | Not started | Product Owner, Engineering and QA/Security | — | — | Wait for Phase 6 exit |
@@ -164,18 +164,18 @@ Allowed V1 phase statuses: `Not started`, `In progress`, `Exit review`, `Complet
 ### Current V1 phase checkpoint
 
 - Current V1 phase: Phase 4 — Session-material data, storage and authorization.
-- Phase status: In progress. Engineering and QA/Security verified the Phase 3 transfer state and began Phase 4 on 11 August 2026; Phases 1–3 remain complete and accepted.
+- Phase status: Exit review. The focused data, storage and authorization implementation is committed; staging migration/probe and privileged upload verification remain before Phase 4 can be marked complete. Phases 1–3 remain complete and accepted.
 - Current owner: Engineering and QA/Security.
 - Phase 4 application baseline: `7db43596eea5efb58ab9d99a7d77a799339cdf72`; `origin/codex/pilot-v1` includes the Phase 3 application, engineering closeout and staging runtime checkpoint through `876fe8b`, and the working tree was clean before this acceptance transfer update.
 - Baseline: The branch remains based on `origin/main` application commit `0e7be4d40f7a47d34fe1c9441ffa5834eaf12ef2`.
 - Entry criteria state: Passed. All nine Phase 3 exit criteria are checked from controlled fixtures, targeted lint, TypeScript, build, focused commit and preserved authorization/release boundaries; the Vercel Preview and signed-in Student runtime checks passed, and the Product Owner accepted staging on 2026-08-11.
 - Phase 4 intended outcome: Add the safe batch-only data, private storage and authorization foundation for Session materials without changing reusable Master content, another batch or Production.
-- Required Phase 4 verification: Review the new ordered migration and safe replace/remove ordering; verify Admin, Student, signed-out, inactive, pre-release and cross-batch cases; preserve enrollment, RLS, short-lived signed URLs, no-store delivery, recording isolation and existing live batches; run the focused checks in the Phase 4 implementation plan.
-- Migrations: None created or applied by Phases 1–3. Phase 4 expects one new ordered migration, staging-first and never Production during this work.
+- Required Phase 4 verification: Static review of the new ordered migration and safe replace/remove ordering passes. The committed rollback-only probe still must verify Admin, Student, signed-out, inactive, pre-release, unpublished and cross-batch cases on staging; the privileged signed upload and protected read path still require the secure staging Preview configuration.
+- Migrations: `20260811170000_add_batch_session_materials.sql` is committed and unapplied. It has not been applied to staging or Production.
 - Preview: Phase 3 passed on the stable staging alias `https://ace-club-lms-git-codex-pilot-v1-theadmitco-techs-projects.vercel.app`; Product Owner acceptance was recorded on 2026-08-11.
-- Open findings: P0-02 through P0-04 are active Phase 4 work/prerequisites. P0-05 belongs to Phase 5. P1-01, P1-02 and P2-01 passed. No Phase 3 finding remains open.
+- Open findings: P0-03 and P0-04 are implemented locally at `1a746ae` and await staging verification. P0-02 remains the Phase 4 exit-review prerequisite: the local service-role variable and Supabase CLI access token are absent; the signed-in staging SQL Editor is available without exposing a secret, but applying staging SQL requires Product Owner confirmation. P0-05 belongs to Phase 5. P1-01, P1-02 and P2-01 passed.
 - Production state: Untouched and not approved. Pilot V1 remains staging-only.
-- Exact next action: Implement the new ordered Session-material migration, Admin-authorized management/upload boundaries, protected Student delivery extension and focused authorization checks; keep the migration unapplied to Production and do not begin Phase 5 UI work.
+- Exact next action: After Product Owner confirmation, apply `supabase/migrations/20260811170000_add_batch_session_materials.sql` to staging only through the signed-in Supabase SQL Editor, run `docs/pilot-v1/phase-4-staging-authorization-probe.sql`, record sanitized results, then verify the privileged upload/protected-read path through secure staging configuration; do not start Phase 5 or run Production SQL.
 
 ### Explicit exclusions
 
@@ -236,13 +236,14 @@ Severity rules:
 
 - Current branch: `codex/pilot-v1`, created from and still based on `origin/main` application commit `0e7be4d`.
 - Current Phase 3 application commit: `7db4359` — complete worksheet and pre-read recommendations with focused fixtures. Phase 3 is accepted and is the Phase 4 application baseline.
-- Local changes: None expected after this acceptance-transfer checkpoint is committed. No migration changes.
-- Pushed state at transfer: Phase 3 application, closeout and runtime-check history are on `origin/codex/pilot-v1`; this acceptance transfer is documentation-only and does not change the staging application.
-- Staging migration state: No V1 migration applied.
-- Preview verification state: Deployment status, public-root runtime, authenticated Student-dashboard runtime and signed-in Product Owner review pass on the stable branch alias. Broader integrated staging verification remains assigned to Phase 6.
-- Known blockers: None for the Phase 3 transfer. Secure staging service-role access must be resolved safely for Phase 4 privileged upload verification; do not copy a secret into Git, evidence or chat.
+- Current Phase 4 implementation commit: `1a746ae` — ordered migration, Admin-authorized signed upload and management routes, protected delivery extension, focused path tests and rollback-only staging authorization probe.
+- Local changes: Phase 4 implementation is committed at `1a746ae`; this exit-review checkpoint is documentation-only.
+- Pushed state at transfer: `origin/codex/pilot-v1` remains at `746625f`. Phase 4 commit `1a746ae` is local and has not been pushed or deployed.
+- Staging migration state: `20260811170000_add_batch_session_materials.sql` is committed but unapplied. The rollback-only authorization probe is ready and unrun.
+- Preview verification state: The stable alias still serves the accepted Phase 3 application. No Phase 4 Preview has been created and no Phase 4 privileged route has been exercised.
+- Known blockers: The signed-in staging SQL Editor is available, but applying the staging migration is an external database change and awaits Product Owner confirmation. Local Supabase CLI access and the local service-role variable are absent; no secret was copied or exposed.
 - Production state: Untouched; V1 is not approved for Production.
-- Exact next action: Follow the Current V1 phase checkpoint above and begin Phase 4 from accepted application baseline `7db4359`; do not start Phase 5.
+- Exact next action: Follow the Current V1 phase checkpoint above and finish Phase 4 exit review from implementation commit `1a746ae`; do not start Phase 5.
 
 ## How to pause and resume safely
 
