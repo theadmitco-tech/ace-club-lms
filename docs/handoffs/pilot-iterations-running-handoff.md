@@ -149,8 +149,8 @@ Make Student resources identifiable and usable during the live pilot, show every
 
 | V1 phase | Outcome | Status | Owner | Start/end commit | Checks or evidence | Next action |
 |---|---|---|---|---|---|---|
-| Phase 0 | Baseline, branch, environment and implementation readiness | Exit review | Engineering | `0e7be4d` / pending Phase 0 commit | [Phase 0 readiness record](../pilot-v1/phase-0-readiness.md); all exit criteria pass | Commit the Phase 0 documentation checkpoint |
-| Phase 1 | Shared titled resource-card system | Not started | Engineering | — | — | Wait for Phase 0 exit |
+| Phase 0 | Baseline, branch, environment and implementation readiness | Complete | Engineering | `0e7be4d` / `0a87f14` | [Phase 0 readiness record](../pilot-v1/phase-0-readiness.md); all exit criteria pass | Transfer to Phase 1 |
+| Phase 1 | Shared titled resource-card system | Not started | Engineering | — | — | Implement the shared titled resource-card structure only |
 | Phase 2 | Independent PDF/tracker scrolling | Not started | Engineering | — | — | Wait for Phase 1 exit |
 | Phase 3 | Complete worksheet and pre-read recommendations | Not started | Engineering | — | — | Wait for Phase 2 exit |
 | Phase 4 | Session-material data, storage and authorization | Not started | Engineering and QA/Security | — | — | Wait for Phase 3 exit |
@@ -162,18 +162,18 @@ Allowed V1 phase statuses: `Not started`, `In progress`, `Exit review`, `Complet
 
 ### Current V1 phase checkpoint
 
-- Current V1 phase: Phase 0 — Baseline and implementation readiness.
-- Phase status: Exit review; all technical exit criteria pass and the documentation checkpoint is ready to commit.
+- Current V1 phase: Phase 1 entry checkpoint — Shared titled resource-card system.
+- Phase status: Not started; Phase 0 is complete and Phase 1 is cleared to begin.
 - Current owner: Engineering.
 - Start commit: `0e7be4d40f7a47d34fe1c9441ffa5834eaf12ef2`, matching freshly fetched `origin/main` at Phase 0 inspection.
-- Latest completed commit: Pending the focused Phase 0 documentation commit.
-- Exit criteria state: All eight Phase 0 criteria are checked from the linked readiness evidence.
+- Latest completed commit: `0a87f14a882fbeb823bd9ebb75363e712d9623c4` — Phase 0 documentation and readiness checkpoint.
+- Exit criteria state: All eight Phase 0 criteria are checked from the linked readiness evidence; Phase 1 criteria remain unchecked.
 - Checks/evidence: Git zero-divergence check; local staging classification; immutable Preview staging-guard build log; bundled Next.js 16 guide review; affected-file inventory; signed-in read-only staging Table Editor inventory.
 - Migrations: None created or applied.
 - Preview: No V1 Preview created. Latest inspected baseline-lineage Preview was Ready and passed the staging-separation prebuild guard.
 - Findings: P0-01 through P0-05 are recorded below; none blocks Phase 1.
 - New durable files registered: `docs/pilot-v1/acceptance-criteria.md`, `docs/pilot-v1/implementation-plan.md`, and `docs/pilot-v1/phase-0-readiness.md`.
-- Exact next action: Commit the Phase 0 documentation checkpoint, record its exact hash here, then begin V1 Phase 1 only.
+- Exact next action: Begin V1 Phase 1 by implementing the shared titled resource-card structure only; do not start Phase 2 scrolling work.
 
 ### Explicit exclusions
 
@@ -214,7 +214,7 @@ The binding detailed criteria are in [Pilot V1 acceptance criteria](../pilot-v1/
 
 | ID | Severity | Finding | Owner | Disposition | Retest |
 |---|---|---|---|---|---|
-| P0-01 | Medium | Signed Phase 8 closeout commit `cc162ad` is not in `origin/main` history | Engineering | Carry its documentation-only closeout record onto the V1 branch; keep `0e7be4d` as the application baseline | Documentation diff review before Phase 0 commit |
+| P0-01 | Medium | Signed Phase 8 closeout commit `cc162ad` is not in `origin/main` history | Engineering | Carried its documentation-only closeout record onto the V1 branch; retained `0e7be4d` as the application baseline | Passed by comparison with `cc162ad` before `0a87f14` |
 | P0-02 | Medium | Local staging public variables are present but the local service-role variable is absent | Engineering and QA/Security | Use secure staging Preview configuration for privileged upload verification or provision local staging access through an approved secret-handling step before Phase 4 verification | Phase 4 |
 | P0-03 | Expected migration work | Current constraints and TypeScript unions do not include `session_material` | Engineering | Add through one new ordered, staging-first migration and focused type changes | Phase 4 |
 | P0-04 | Expected authorization work | Protected file delivery currently accepts only `worksheets/` paths | Engineering and QA/Security | Add a separate Session-material prefix while preserving active-account, enrollment, release, RLS, signed-URL and no-store boundaries | Phase 4 |
@@ -230,14 +230,14 @@ Severity rules:
 ### Handoff checkpoint
 
 - Current branch: `codex/pilot-v1`, created from and still based on `origin/main` application commit `0e7be4d`.
-- Current commit: `0e7be4d` before the pending Phase 0 documentation checkpoint.
-- Local changes: Intentional documentation only—signed Phase 8 closeout carry-forward, approved V1 criteria/plan, Phase 0 readiness evidence, handoff and index updates. No application or migration file changed.
+- Current completed-phase commit: `0a87f14a882fbeb823bd9ebb75363e712d9623c4` for Phase 0; this handoff checkpoint is a documentation-only follow-up.
+- Local changes: No application or migration changes; only this Phase 0 ownership-transfer checkpoint follows the completed-phase commit.
 - Pushed: No.
 - Staging migration state: No V1 migration applied.
 - Preview verification state: No V1 Preview; latest immutable baseline-lineage Preview is Ready and passed environment separation.
 - Known blockers: None for Phase 1. Secure service-role access remains a Phase 4 verification prerequisite.
 - Production state: Untouched; V1 is not approved for Production.
-- Exact next action: Commit the Phase 0 documentation checkpoint, update the phase register with its exact hash, and begin V1 Phase 1 only.
+- Exact next action: Begin V1 Phase 1 by implementing the shared titled resource-card structure only; do not start Phase 2 scrolling work.
 
 ## How to pause and resume safely
 
