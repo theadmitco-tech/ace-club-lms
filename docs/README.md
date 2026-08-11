@@ -16,6 +16,8 @@ Current proposed delivery sequence: [Pilot V1 Phase-wise Implementation Plan](pi
 
 Current implementation baseline: [Pilot V1 Phase 0 Readiness Record](pilot-v1/phase-0-readiness.md).
 
+Current Phase 4 staging database checks: [Session-material Authorization Probe](pilot-v1/phase-4-staging-authorization-probe.sql).
+
 ## Current phase
 
 - Phase 0.5: signed off in [Setup and Recovery Sign-off](../instruction/Phase_0.5_Setup_Recovery_Signoff.md).

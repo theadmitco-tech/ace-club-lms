@@ -45,7 +45,7 @@ export interface Session {
   materials?: Material[];
 }
 
-export type MaterialType = 'pre_read' | 'class_material' | 'worksheet' | 'video';
+export type MaterialType = 'pre_read' | 'class_material' | 'worksheet' | 'video' | 'session_material';
 
 export interface Material {
   id: string;
@@ -297,6 +297,7 @@ export interface SessionWithStatus extends Session {
     class_material: MaterialStatus;
     worksheet: MaterialStatus;
     video: MaterialStatus;
+    session_material: MaterialStatus;
   };
 }
 
