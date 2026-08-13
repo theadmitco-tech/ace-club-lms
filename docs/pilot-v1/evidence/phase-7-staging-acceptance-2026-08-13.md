@@ -8,7 +8,7 @@ Preview: `https://ace-club-2w3ekxg2n-theadmitco-techs-projects.vercel.app`
 
 ## Result
 
-Engineering and QA/Security acceptance is complete. Every Phase 7 criterion now has a pass or a documented evidence carry-forward, no critical or high finding is open, and Production remains untouched. The only remaining Phase 7 exit item is the Product Owner's explicit version decision.
+Engineering and QA/Security acceptance is complete. Every Phase 7 criterion has a pass or a documented evidence carry-forward, no critical or high finding is open, and Production remains untouched. The Product Owner accepted Pilot V1 for Production planning on 13 August 2026.
 
 This record contains no account identifier, private object path, signed URL, authentication artifact or private Student data.
 
@@ -66,6 +66,10 @@ This record contains no account identifier, private object path, signed URL, aut
 
 No critical or high defect, privacy exposure, cross-batch propagation or unreleased-file exposure remains open.
 
-## Decision boundary
+## Product Owner decision
 
-Engineering and QA/Security recommend accepting Pilot V1 for Production planning. This is not the Product Owner decision and does not authorize a merge, Production migration or Production deployment. Phase 7 remains open until the Product Owner explicitly chooses accept for Production planning, defer, reject or request changes.
+Decision: **Accept Pilot V1 for Production planning.**
+
+Recorded: 13 August 2026.
+
+Phase 7 is complete. This decision authorizes preparation and review of a separate Production release plan only. It does not authorize a Git merge, Production migration, Production deployment or live-batch mutation.

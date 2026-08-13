@@ -30,7 +30,7 @@ Current Phase 6 logo amendment result: [Ace Club Logo Amendment Verification Evi
 
 Current Pilot V1 Phase 7 staging review: [Manual Verification Checklist](pilot-v1/manual-verification-checklist.md).
 
-Current Pilot V1 Phase 7 Engineering and QA/Security result: [Staging Acceptance Evidence](pilot-v1/evidence/phase-7-staging-acceptance-2026-08-13.md). Only the explicit Product Owner version decision remains open.
+Pilot V1 Phase 7 is complete and accepted for Production planning: [Staging Acceptance Evidence](pilot-v1/evidence/phase-7-staging-acceptance-2026-08-13.md). Production promotion remains separately gated.
 
 ## Current phase
 

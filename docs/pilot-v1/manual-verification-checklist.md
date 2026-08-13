@@ -1,6 +1,6 @@
 # Pilot V1 Phase 7 — Manual Verification Checklist
 
-Status: Engineering and QA/Security passed; Product Owner decision pending
+Status: Complete — accepted for Production planning
 Owner: Product Owner, Engineering and QA/Security
 Last updated: 13 August 2026
 
@@ -66,7 +66,7 @@ Use this checklist against one immutable staging-backed Vercel Preview after Pha
 
 - [x] Every finding has severity, owner, disposition and retest result.
 - [x] No critical or high defect, privacy exposure, cross-batch propagation or unreleased-file exposure remains open.
-- [ ] Product Owner records one explicit decision: accept for Production planning, defer, reject or request changes.
+- [x] Product Owner records one explicit decision: accept for Production planning, defer, reject or request changes.
 - [x] Production remains untouched unless a later separately reviewed instruction authorizes promotion.
 
-Evidence: [Phase 7 staging acceptance — 13 August 2026](evidence/phase-7-staging-acceptance-2026-08-13.md). The sole unchecked exit item is the explicit Product Owner version decision.
+Evidence: [Phase 7 staging acceptance — 13 August 2026](evidence/phase-7-staging-acceptance-2026-08-13.md). Product Owner decision: accepted for Production planning on 13 August 2026. This does not authorize a merge or Production promotion.

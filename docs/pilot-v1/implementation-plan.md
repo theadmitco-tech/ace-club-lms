@@ -350,11 +350,11 @@ Verify the complete affected Admin and Student journeys, classify findings, and 
 - [x] No critical or high defect, privacy exposure, cross-batch propagation, or unreleased-file exposure remains open.
 - [x] Test Admin and Test Student journeys pass in the staging-backed Preview, with the unchanged Admin binary-upload lifecycle carried forward from the sanitized Phase 5 evidence.
 - [x] Existing recording, Master material sync, Student tracker, Admin progress, role-routing, and private-file boundaries pass regression.
-- [ ] Product Owner reviews the immutable Preview and explicitly accepts, defers, rejects, or requests changes to V1.
+- [x] Product Owner reviews the immutable Preview and explicitly accepts, defers, rejects, or requests changes to V1.
 - [x] Branch, exact commit, pushed state, migration state, Preview result, findings, and one exact next action are recorded in the pilot handoff.
 - [x] Production remains untouched unless a later, separately reviewed Product Owner instruction authorizes promotion.
 
-Phase 7 Engineering and QA/Security evidence: [staging acceptance — 13 August 2026](evidence/phase-7-staging-acceptance-2026-08-13.md). The explicit Product Owner version decision remains the only unchecked exit criterion.
+Phase 7 evidence: [staging acceptance — 13 August 2026](evidence/phase-7-staging-acceptance-2026-08-13.md). The Product Owner accepted Pilot V1 for Production planning on 13 August 2026. Phase 7 is complete; merge, migration and Production deployment remain separately gated.
 
 ## Conditional Production promotion
 
