@@ -29,6 +29,23 @@ This document does not authorize Production changes. V1 remains local and stagin
 - [x] Recordings and Session materials belong to one batch session and never synchronize into another batch.
 - [x] Flexible course templates, crash courses, and batch schedule building belong to Pilot V2.
 - [x] Existing live batches and Production data remain untouched during V1 development and staging verification.
+- [x] The supplied Ace Club logo variants replace temporary text/letter marks across the public, login, Student and Admin shells before Phase 7 acceptance.
+
+---
+
+## Product Owner amendment — shared Ace Club logo
+
+Date: 13 August 2026
+Status: Approved for implementation before Phase 7 acceptance
+
+The supplied square SVGs are the approved V1 brand assets:
+
+- `public/5.svg` is the dark green treatment;
+- `public/6.svg` is the light treatment.
+
+Accept when the public navigation, login page, Student header and Admin sidebar show the appropriate variant without distortion, clipping or duplicate visible brand wording. Brand links retain clear accessible names and visible keyboard focus; non-interactive logos expose useful alternative text. Both variants remain legible at supported desktop widths and 200% text zoom.
+
+This amendment changes presentation only. It does not change authentication, roles, authorization, release behavior, data, migrations or Production approval.
 
 ---
 

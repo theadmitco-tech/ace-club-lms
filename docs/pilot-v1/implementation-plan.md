@@ -6,12 +6,13 @@ Last updated: 11 August 2026
 
 ## Objective
 
-Deliver the four approved [Pilot V1 acceptance-criteria changes](acceptance-criteria.md) as one independently releasable, staging-first version:
+Deliver the four originally approved [Pilot V1 acceptance-criteria changes](acceptance-criteria.md), plus the Product Owner's 13 August logo amendment, as one independently releasable, staging-first version:
 
 1. titled and visually distinguishable resource cards;
 2. independently scrollable worksheet and tracker panels;
 3. complete worksheet and pre-read recommendations; and
-4. private batch-session Session materials with Recommended reading.
+4. private batch-session Session materials with Recommended reading; and
+5. the supplied Ace Club logo variants across the public, login, Student and Admin shells.
 
 This plan uses `V1 Phase N` labels so it cannot be confused with the signed MVP roadmap Phases 1–8.
 
@@ -60,7 +61,7 @@ Pre-read availability remains seven days before class. The dashboard recommendat
 | 3 | Correct worksheet and pre-read recommendations | V1-03 |
 | 4 | Session-material database, storage and authorization foundation | V1-04 security/data |
 | 5 | Session resources Admin UI and Student Recommended reading | V1-04 experience plus V1-01 reuse |
-| 6 | Integrated local verification and staging Preview | All V1 changes |
+| 6 | Integrated local verification and staging Preview | All V1 changes plus the approved logo amendment |
 | 7 | Staging acceptance, findings and release decision | V1-wide gate |
 
 ---
@@ -287,6 +288,25 @@ Prove the complete V1 version is internally consistent before asking the Product
 - [x] Automated authorization, release, and recommendation checks pass.
 - [x] No critical or high finding remains before manual staging acceptance begins.
 
+### Product Owner amendment — shared logo refresh (13 August 2026)
+
+Before Phase 7 manual acceptance:
+
+1. Add the supplied `public/5.svg` dark treatment and `public/6.svg` light treatment as local, fixed-dimension Next.js images.
+2. Replace temporary letter/text marks in the public navigation, login page, Student header and Admin sidebar.
+3. Use the light variant on white navigation surfaces and the dark variant for standalone login/Admin brand treatments.
+4. Preserve accessible names, keyboard focus, intrinsic aspect ratio and responsive behavior at supported widths and 200% text zoom.
+5. Re-run touched-file lint, TypeScript, the Next.js Production build, changed-file review and responsive browser checks before Phase 7 begins.
+
+Amendment exit criteria:
+
+- [x] Both supplied SVGs are local public assets and no remote brand dependency is introduced.
+- [x] Public, login, Student and Admin shells use the shared logo component with the intended variant.
+- [x] Public and login browser checks show proportional, unclipped logo presentation without duplicate visible brand wording at 1440px, 1024px and narrow widths.
+- [x] Brand links retain accessible names and visible focus; non-interactive logos have useful alternative text and login retains a semantic level-one heading.
+- [x] Touched-file lint, TypeScript and the Next.js Production build pass; repository-wide lint improves to the unrelated legacy baseline of 22 errors and 2 warnings.
+- [ ] Authenticated Student-header and Admin-sidebar presentation passes the Phase 7 manual checklist at supported widths and 200% text zoom.
+
 ---
 
 ## V1 Phase 7 — Staging acceptance and version decision
@@ -305,6 +325,7 @@ Verify the complete affected Admin and Student journeys, classify findings, and 
 6. Time and release checks verify pre-read seven-day availability, next-day recommendation, post-class worksheet, recording and Session-material release, and replacement boundaries.
 7. Authorization probes verify Admin-only writes plus signed-out, inactive, cross-batch, cross-student, unreleased, and direct-URL denial.
 8. Existing Admin progress and Student Practice log remain consistent and operational.
+9. Public navigation, login, Student header and Admin sidebar show the approved Ace Club logo variants with correct contrast, sizing, accessible naming and responsive behavior.
 
 ### Exit criteria
 

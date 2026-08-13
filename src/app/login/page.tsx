@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { BrandLogo } from '@/components/BrandLogo';
 import { useAuth } from '@/lib/AuthContext';
 import './login.css';
 
@@ -46,13 +47,12 @@ export default function LoginPage() {
       <div className="login-container animate-fade-in-up">
         <div className="login-header">
           <div className="login-logo">
-            <div className="login-logo-icon">
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                <path d="M16 2L30 9V23L16 30L2 23V9L16 2Z" fill="#003b30" stroke="#003b30" strokeWidth="1.5"/>
-                <path d="M16 8L24 12.5V21.5L16 26L8 21.5V12.5L16 8Z" fill="#0f5a4c"/>
-                <text x="16" y="20" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">A</text>
-              </svg>
-            </div>
+            <BrandLogo
+              variant="dark"
+              className="login-brand-logo"
+              alt="The Ace Club by The Admit Co."
+              preload
+            />
             <h1 className="login-brand">Ace Club</h1>
           </div>
           <p className="login-subtitle">GMAT Learning Platform</p>

@@ -71,21 +71,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-md);
+  width: 240px;
+  height: 170px;
+  margin-inline: auto;
   margin-bottom: var(--space-sm);
+  overflow: hidden;
 }
 
-.login-logo-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.login-brand-logo {
+  width: 240px;
+  height: 240px;
 }
 
 .login-brand {
-  font-size: var(--font-size-3xl);
-  font-weight: 800;
-  color: var(--accent-primary);
-  letter-spacing: 0;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .login-subtitle {
@@ -313,7 +320,13 @@
     padding: var(--space-lg);
   }
 
-  .login-brand {
-    font-size: var(--font-size-2xl);
+  .login-brand-logo {
+    width: 210px;
+    height: 210px;
+  }
+
+  .login-logo {
+    width: 210px;
+    height: 150px;
   }
 }
