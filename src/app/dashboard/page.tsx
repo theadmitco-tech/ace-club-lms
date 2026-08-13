@@ -1,16 +1,16 @@
 import Link from 'next/link';
-import { ResourceActions } from '@/components/student/ResourceActions';
+import { ResourceCard } from '@/components/student/ResourceCard';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { TimelineItem } from '@/components/student/TimelineItem';
 import { WeekDisclosure } from '@/components/student/WeekDisclosure';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { loadStudentTimeline } from '@/lib/server/studentTimeline';
 import {
-  formatProgrammeDateTime,
   getCurrentProgrammeWeek,
   getMaterialAvailabilityCopy,
   getPreReadRecommendation,
   getRecommendedPractice,
+  getRecommendedReading,
   groupTimelineByWeek,
   isAcademicSection,
   type AcademicSection,
@@ -81,11 +81,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
   const requestedOpenWeek = requestedOpenWeekValue && /^\d+$/.test(requestedOpenWeekValue)
     ? Number(requestedOpenWeekValue)
     : null;
-  const thisWeekSessions = sessions.filter((session) => session.week_number === currentWeek);
-  const recommendedPractice = getRecommendedPractice(sessions, generatedAt);
+  const recommendedPractice = getRecommendedPractice(sessions);
+  const recommendedReading = getRecommendedReading(sessions);
   const preReadRecommendation = getPreReadRecommendation(
     sessions,
-    currentWeek,
     generatedAt,
     timeZone,
   );
@@ -121,25 +120,24 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
               {recommendedPractice.length > 0 ? (
                 <div className="practice-list">
                   {recommendedPractice.map(({ session, material }) => (
-                    <div className="practice-row" key={material.id}>
-                      <div>
-                        <span>{session.class_type ?? 'Course'} · Week {session.week_number}</span>
-                        <strong>{material.title}</strong>
-                      </div>
-                      <div className="practice-actions">
-                        <Link className="student-button" href={`/session/${session.id}/material/${material.id}`}>
-                          Open worksheet
-                        </Link>
-                        {material.tracker_available && (
-                          <Link
-                            className="student-button student-button-secondary"
-                            href={`/session/${session.id}/material/${material.id}?focus=log#worksheet-log`}
-                          >
-                            Update log
-                          </Link>
-                        )}
-                      </div>
-                    </div>
+                    <ResourceCard
+                      actions={[
+                        {
+                          href: `/session/${session.id}/material/${material.id}`,
+                          label: 'Open worksheet',
+                        },
+                        ...(material.tracker_available ? [{
+                          href: `/session/${session.id}/material/${material.id}?focus=log#worksheet-log`,
+                          label: 'Update log',
+                          secondary: true,
+                        }] : []),
+                      ]}
+                      availability={getMaterialAvailabilityCopy(material, timeZone)}
+                      context={`${session.class_type ?? 'Course'} · Week ${session.week_number}`}
+                      key={material.id}
+                      title={material.title}
+                      type="worksheet"
+                    />
                   ))}
                 </div>
               ) : (
@@ -151,56 +149,57 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
             </section>
           )}
 
-          <section className="week-callout" aria-labelledby="this-week-title">
-            <div className="callout-heading">
-              <div>
-                <span className="student-eyebrow">Week {currentWeek}</span>
-                <h2 id="this-week-title">This week</h2>
-              </div>
-              <p>Times shown in {timeZone}.</p>
-            </div>
-
-            {preReadRecommendation && (
-              <div className="recommendation-row">
-                <span className="recommended-pill">Recommended</span>
+          {currentWeek > 0 && (
+            <section className="practice-callout reading-callout" aria-labelledby="recommended-reading-title">
+              <div className="callout-heading">
                 <div>
-                  <strong>{preReadRecommendation.section} pre-read for {preReadRecommendation.session.title}</strong>
-                  <small>
-                    {preReadRecommendation.material
-                      ? getMaterialAvailabilityCopy(preReadRecommendation.material, timeZone)
-                      : 'No pre-read has been added for this class.'}
-                  </small>
+                  <span className="student-eyebrow">Prepare &amp; review</span>
+                  <h2 id="recommended-reading-title">Recommended reading</h2>
                 </div>
-                {preReadRecommendation.material?.is_available && (
-                  <Link
-                    className="student-button student-button-light"
-                    href={`/session/${preReadRecommendation.session.id}/material/${preReadRecommendation.material.id}`}
-                  >
-                    Open pre-read
-                  </Link>
-                )}
+                <p>Prepare for tomorrow&apos;s class and review each section&apos;s latest released Session materials.</p>
               </div>
-            )}
-
-            {thisWeekSessions.length > 0 ? (
-              <div className="this-week-list">
-                {thisWeekSessions.map((session) => (
-                  <div className="this-week-row" key={session.id}>
-                    <div>
-                      <span>{formatProgrammeDateTime(session.session_date, timeZone)}</span>
-                      <strong>{session.title}</strong>
+              {preReadRecommendation || recommendedReading.length > 0 ? (
+                <div className="practice-list">
+                  {preReadRecommendation && !preReadRecommendation.material && (
+                    <div className="practice-empty reading-missing">
+                      <strong>{preReadRecommendation.section} pre-read for {preReadRecommendation.session.title}</strong>
+                      <p>No pre-read has been added for tomorrow&apos;s class.</p>
                     </div>
-                    <ResourceActions sessionId={session.id} materials={session.materials} timeZone={timeZone} />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="inline-empty">
-                <strong>No scheduled curriculum items this week</strong>
-                <p>Use the Timeline to see the next programme event.</p>
-              </div>
-            )}
-          </section>
+                  )}
+                  {preReadRecommendation?.material && (
+                    <ResourceCard
+                      actions={preReadRecommendation.material.is_available ? [{
+                        href: `/session/${preReadRecommendation.session.id}/material/${preReadRecommendation.material.id}`,
+                        label: 'Open pre-read',
+                      }] : []}
+                      availability={getMaterialAvailabilityCopy(preReadRecommendation.material, timeZone)}
+                      context={`Tomorrow · ${preReadRecommendation.section} · ${preReadRecommendation.session.title}`}
+                      title={preReadRecommendation.material.title}
+                      type="pre_read"
+                    />
+                  )}
+                  {recommendedReading.map(({ session, material }) => (
+                    <ResourceCard
+                      actions={[{
+                        href: `/session/${session.id}/material/${material.id}`,
+                        label: 'Open session material',
+                      }]}
+                      availability={getMaterialAvailabilityCopy(material, timeZone)}
+                      context={`${session.class_type ?? 'Course'} · Week ${session.week_number}`}
+                      key={material.id}
+                      title={material.title}
+                      type="session_material"
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="practice-empty">
+                  <strong>No reading is currently recommended</strong>
+                  <p>A pre-read appears one day before class. Session reading appears after class and stays until that section releases a newer set.</p>
+                </div>
+              )}
+            </section>
+          )}
 
           <section className="course-browser" aria-labelledby="course-browser-title">
             <div className="browser-heading">

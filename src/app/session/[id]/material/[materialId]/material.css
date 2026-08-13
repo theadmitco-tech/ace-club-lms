@@ -303,6 +303,12 @@
   overflow: auto;
 }
 
+.worksheet-log-table-wrap:focus-visible,
+.worksheet-pdf-panel iframe:focus-visible {
+  outline: 3px solid #e3a631;
+  outline-offset: -3px;
+}
+
 .worksheet-log-table {
   width: 100%;
   min-width: 620px;
@@ -444,6 +450,39 @@
 @media (max-width: 1180px) {
   .worksheet-workspace-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 1181px) {
+  .worksheet-workspace-grid {
+    height: clamp(560px, 72svh, 820px);
+    align-items: stretch;
+  }
+
+  .worksheet-pdf-panel,
+  .worksheet-pdf-panel .file-workspace,
+  .worksheet-log-panel {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .worksheet-pdf-panel .file-workspace {
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .worksheet-pdf-panel .file-workspace iframe {
+    min-height: 0;
+  }
+
+  .worksheet-log-panel {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .worksheet-log-panel .worksheet-log-table-wrap {
+    min-height: 0;
+    flex: 1 1 auto;
   }
 }
 

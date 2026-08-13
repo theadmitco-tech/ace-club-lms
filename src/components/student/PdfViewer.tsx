@@ -34,7 +34,7 @@ export function PdfViewer({ fileUrl, title }: { fileUrl: string; title: string }
   if (status === 'loading') {
     return (
       <div className="material-status" role="status">
-        <strong>Loading worksheet</strong>
+        <strong>Loading PDF</strong>
         <p>Preparing the protected PDF…</p>
       </div>
     );

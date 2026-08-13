@@ -2,10 +2,19 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { BrandLogo } from '@/components/BrandLogo';
 import { useAuth } from '@/lib/AuthContext';
 import { DEFAULT_CURRICULUM } from '@/lib/curriculum';
 import type { PublicBatch } from '@/lib/registration';
 import './public.css';
+
+const NAV_ITEMS = [
+  { id: 'program', label: 'Program' },
+  { id: 'fit', label: 'Fit' },
+  { id: 'curriculum', label: 'Curriculum' },
+  { id: 'mentors', label: 'Mentors' },
+  { id: 'batches', label: 'Cohorts' },
+];
 
 function formatBatchDate(value: string | null) {
   if (!value) return 'Dates coming soon';
@@ -34,14 +43,6 @@ export default function Home() {
   const [loadingBatches, setLoadingBatches] = useState(true);
   const [activeSection, setActiveSection] = useState('overview');
   const [hasScrolled, setHasScrolled] = useState(false);
-
-  const navItems = [
-    { id: 'program', label: 'Program' },
-    { id: 'fit', label: 'Fit' },
-    { id: 'curriculum', label: 'Curriculum' },
-    { id: 'mentors', label: 'Mentors' },
-    { id: 'batches', label: 'Cohorts' },
-  ];
 
   function handleNavClick(sectionId: string) {
     const section = document.getElementById(sectionId);
@@ -74,7 +75,7 @@ export default function Home() {
     function updateActiveSection() {
       const scrollPosition = window.scrollY + window.innerHeight * 0.45;
       setHasScrolled(window.scrollY > 24);
-      const currentSection = navItems
+      const currentSection = NAV_ITEMS
         .map((item) => document.getElementById(item.id))
         .filter((section): section is HTMLElement => Boolean(section))
         .reverse()
@@ -124,12 +125,11 @@ export default function Home() {
       <nav className={`public-nav ${hasScrolled ? 'is-compact' : ''}`}>
         <div className="public-nav-inner">
           <a className="public-brand" href="#overview" aria-label="Ace Club home">
-            <span className="public-brand-title">Ace Club</span>
-            <span className="public-brand-subtitle">by The Admit Co.</span>
+            <BrandLogo variant="light" className="public-brand-logo" preload />
           </a>
           <div className="public-nav-actions">
             <div className="public-nav-links" aria-label="Landing page sections">
-              {navItems.map((item) => (
+              {NAV_ITEMS.map((item) => (
                 <a
                   key={item.id}
                   href={`#${item.id}`}

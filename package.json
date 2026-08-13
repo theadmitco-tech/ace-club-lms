@@ -7,6 +7,8 @@
     "prebuild": "node scripts/validate-deployment-env.mjs",
     "build": "next build",
     "start": "next start",
+    "test:recommendations": "node --experimental-strip-types --test scripts/student-timeline-recommendations.test.mjs",
+    "test:session-materials": "node --experimental-strip-types --test scripts/session-material-files.test.mjs",
     "question-bank:import": "node scratch/import_question_bank_csv.js",
     "question-bank:dry-run": "node scratch/import_question_bank_csv.js --dry-run",
     "worksheets:convert": "node scratch/convert_worksheet_pdfs.js",

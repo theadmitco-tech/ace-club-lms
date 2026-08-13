@@ -65,9 +65,13 @@
 .practice-overview-card {
   padding: 18px 20px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 24px;
+}
+
+.practice-overview-card .resource-card {
+  width: 100%;
 }
 
 .practice-overview-card + .practice-overview-card {

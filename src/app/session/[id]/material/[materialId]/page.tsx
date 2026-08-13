@@ -3,6 +3,7 @@ import { NotionReader } from '@/components/student/NotionReader';
 import { PdfViewer } from '@/components/student/PdfViewer';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { WorksheetLog } from '@/components/student/WorksheetLog';
+import { WorksheetLogRetry } from '@/components/student/WorksheetLogRetry';
 import { extractNotionPageId } from '@/lib/notion';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { loadStudentWorksheetLog } from '@/lib/server/studentPractice';
@@ -139,6 +140,10 @@ export default async function MaterialViewerPage({
               <PdfViewer fileUrl={material.file_url} title={material.title} />
             )}
 
+            {material.type === 'session_material' && material.file_url && (
+              <PdfViewer fileUrl={material.file_url} title={material.title} />
+            )}
+
             {material.type === 'worksheet' && material.file_url && trackerAvailable && (
               <div className="worksheet-workspace-grid">
                 <div className="worksheet-pdf-panel">
@@ -153,12 +158,7 @@ export default async function MaterialViewerPage({
                     <p>
                       {worksheetLogResult?.message ?? 'The tracker is not available for this worksheet yet.'}
                     </p>
-                    <Link
-                      className="student-button"
-                      href={`/session/${sessionId}/material/${materialId}?focus=log#worksheet-log`}
-                    >
-                      Retry log
-                    </Link>
+                    <WorksheetLogRetry />
                   </section>
                 )}
               </div>
@@ -168,7 +168,7 @@ export default async function MaterialViewerPage({
               <PdfViewer fileUrl={material.file_url} title={material.title} />
             )}
 
-            {(material.type === 'worksheet' || material.type === 'class_material') && !material.file_url && (
+            {(material.type === 'worksheet' || material.type === 'class_material' || material.type === 'session_material') && !material.file_url && (
               <div className="material-status material-status-error" role="alert">
                 <strong>The file could not be opened</strong>
                 <p>Retry from the curriculum item. If the problem continues, contact the programme team.</p>

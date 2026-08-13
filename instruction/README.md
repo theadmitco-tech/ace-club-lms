@@ -2,11 +2,11 @@
 
 Status: Active
 Owner: Product owner
-Last updated: 3 August 2026
+Last updated: 10 August 2026
 
 This folder contains the documents that define product intent, scope, phase boundaries, acceptance, and signed checkpoints. Read this register before starting product or engineering work.
 
-Current delivery state: Phases 1–7 are signed off and deployed to Production. [PR #9](https://github.com/theadmitco-tech/ace-club-lms/pull/9) is the merged Phase 7 implementation and [PR #10](https://github.com/theadmitco-tech/ace-club-lms/pull/10) is the merged rollout record. Phase 8 — Pilot, launch and stabilise — is the active planning phase.
+Current delivery state: Phases 1–7 are signed off and deployed to Production. Phase 8 is signed off with explicit evidence exceptions after the Product Owner confirmed on 10 August 2026 that the MVP is live with real Students. The closeout does not claim that the complete proposed pilot evidence set exists; see the [Phase 8 status](../docs/phase-8/README.md).
 
 ## Authority order
 
@@ -38,7 +38,7 @@ Code is evidence of the current implementation, not authority for product scope.
 3. Read the latest section of the running handoff.
 4. Read the Markdown acceptance criteria and relevant roadmap phase.
 5. Read `docs/README.md`.
-6. For Phase 8, read `docs/phase-8/README.md`, its pilot plan and checklist, plus the Phase 7 Production evidence and active cleanup register.
+6. For post-MVP pilot changes, read the signed Phase 8 closeout, its explicit evidence exceptions, the [Pilot Iterations Running Handoff](../docs/handoffs/pilot-iterations-running-handoff.md), and the active cleanup register.
 7. Read only the implementation files relevant to the immediate task.
 
 ### Making a product decision

@@ -3,12 +3,15 @@ import { type NextRequest, NextResponse } from 'next/server';
 import {
   COURSE_MATERIALS_BUCKET,
   createProtectedMaterialUrl,
+  isSessionMaterialStoragePath,
+  isSupportedProtectedMaterialPath,
+  isWorksheetStoragePath,
 } from '@/lib/materialFiles';
 import { createClient } from '@/utils/supabase/server';
 
 export async function GET(request: NextRequest) {
   const path = request.nextUrl.searchParams.get('path');
-  if (!path || !path.startsWith('worksheets/')) {
+  if (!path || !isSupportedProtectedMaterialPath(path)) {
     return NextResponse.json({ error: 'Invalid material path' }, { status: 400 });
   }
 
@@ -32,10 +35,19 @@ export async function GET(request: NextRequest) {
   }
 
   const fileUrl = createProtectedMaterialUrl(path);
+  const expectedType = isWorksheetStoragePath(path)
+    ? 'worksheet'
+    : isSessionMaterialStoragePath(path)
+      ? 'session_material'
+      : null;
+  if (!expectedType) {
+    return NextResponse.json({ error: 'Invalid material path' }, { status: 400 });
+  }
   const { data: material, error: materialError } = await supabase
     .from('materials')
     .select('id')
     .eq('file_url', fileUrl)
+    .eq('type', expectedType)
     .limit(1)
     .maybeSingle();
 
@@ -68,5 +80,11 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  return NextResponse.redirect(data.signedUrl);
+  return new NextResponse(null, {
+    status: 307,
+    headers: {
+      'Cache-Control': 'private, no-store',
+      Location: data.signedUrl,
+    },
+  });
 }

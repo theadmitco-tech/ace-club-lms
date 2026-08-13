@@ -1,8 +1,10 @@
 # Phase 8 — Pilot and Launch Plan
 
-Status: Proposed operating plan
+Status: Superseded by operational closeout
 Owner: Product owner, Engineering and pilot operations
-Last updated: 3 August 2026
+Last updated: 10 August 2026
+
+The Product Owner closed Phase 8 on 10 August 2026 after confirming that the MVP is live with real Students. This proposed plan is retained as the intended launch process; it is not evidence that every gate below was performed. The accepted result and evidence limitations are recorded in the [Phase 8 status](README.md) and [operational closeout evidence](evidence/operational-closeout-2026-08-10.md).
 
 ## Sequence
 

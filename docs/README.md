@@ -2,11 +2,41 @@
 
 Status: Active
 Owner: Engineering
-Last updated: 3 August 2026
+Last updated: 13 August 2026
 
 This index routes readers to the smallest set of documents needed for a task. Product authority remains in [`instruction/`](../instruction/README.md).
 
-Current continuation state: [Ace Club LMS Running Handoff](handoffs/ace-club-lms-running-handoff.md).
+Current signed history: [Ace Club LMS Running Handoff](handoffs/ace-club-lms-running-handoff.md).
+
+Current post-MVP iteration state: [Pilot Iterations Running Handoff](handoffs/pilot-iterations-running-handoff.md).
+
+Current proposed version requirements: [Pilot V1 Acceptance Criteria](pilot-v1/acceptance-criteria.md).
+
+Current proposed delivery sequence: [Pilot V1 Phase-wise Implementation Plan](pilot-v1/implementation-plan.md).
+
+Current implementation baseline: [Pilot V1 Phase 0 Readiness Record](pilot-v1/phase-0-readiness.md).
+
+Current Phase 4 staging database checks: [Session-material Authorization Probe](pilot-v1/phase-4-staging-authorization-probe.sql).
+
+Current Phase 4 staging result: [Session-material Migration and Authorization Evidence](pilot-v1/evidence/phase-4-staging-migration-and-authorization-2026-08-11.md).
+
+Current Phase 4 Preview result: [Session-material Preview Route Lifecycle Evidence](pilot-v1/evidence/phase-4-preview-route-lifecycle-2026-08-11.md).
+
+Current Phase 5 staging UI result: [Session-resource Admin and Student Lifecycle Evidence](pilot-v1/evidence/phase-5-staging-session-resource-lifecycle-2026-08-13.md).
+
+Current Phase 6 integrated result: [Pilot V1 Integrated Verification Evidence](pilot-v1/evidence/phase-6-integrated-verification-2026-08-13.md).
+
+Current Phase 6 logo amendment result: [Ace Club Logo Amendment Verification Evidence](pilot-v1/evidence/phase-6-logo-amendment-verification-2026-08-13.md).
+
+Current Pilot V1 Phase 7 staging review: [Manual Verification Checklist](pilot-v1/manual-verification-checklist.md).
+
+Pilot V1 Phase 7 is complete and accepted for Production planning: [Staging Acceptance Evidence](pilot-v1/evidence/phase-7-staging-acceptance-2026-08-13.md). Production promotion remains separately gated.
+
+Current Pilot V1 Production planning: [Conditional Production Release Plan](pilot-v1/production-release-plan.md). The plan is draft and requires review, read-only preflight and a new explicit Product Owner Production instruction.
+
+Pilot V1 Production database checks: [Read-only Verification](pilot-v1/production-read-only-verification.sql). Run before and after the tracked migration push and compare sanitized aggregate/schema results.
+
+Current weekly-schedule decision: [ADR-0004 — Defer Weekly Schedule Redesign](decisions/adr-0004-defer-weekly-schedule-redesign.md). The earlier migration is excluded from Pilot V1 and must not be applied or marked as applied.
 
 ## Current phase
 
@@ -46,10 +76,11 @@ Current continuation state: [Ace Club LMS Running Handoff](handoffs/ace-club-lms
   - [Staging migration evidence](phase-7/evidence/staging-migration-application-2026-08-03.md)
   - [Staging acceptance evidence](phase-7/evidence/manual-staging-verification-2026-08-03.md)
   - [Production rollout evidence](phase-7/evidence/production-rollout-2026-08-03.md)
-- Phase 8: planning active — pilot, launch and stabilise.
-  - [Status and boundaries](phase-8/README.md)
-  - [Pilot and launch plan](phase-8/pilot-and-launch-plan.md)
-  - [Manual verification checklist](phase-8/manual-verification-checklist.md)
+- Phase 8: signed off with explicit evidence exceptions; the Product Owner confirmed the MVP is live with real Students on 10 August 2026.
+  - [Closeout status and exceptions](phase-8/README.md)
+  - [Superseded pilot and launch plan](phase-8/pilot-and-launch-plan.md)
+  - [Closeout checklist](phase-8/manual-verification-checklist.md)
+  - [Operational closeout evidence](phase-8/evidence/operational-closeout-2026-08-10.md)
 
 There is no approved Phase 1.5.
 
@@ -87,6 +118,7 @@ These stable paths are grandfathered. New multi-file feature documentation shoul
 
 - [Instruction register](../instruction/README.md)
 - [Running handoff](handoffs/ace-club-lms-running-handoff.md)
+- [Pilot iterations running handoff](handoffs/pilot-iterations-running-handoff.md)
 - [Current code landscape and cleanup plan](development/current-code-landscape-and-cleanup-plan.md)
 - [Document conventions](governance/document-conventions.md)
 - [Living coding rules](development/coding-rules.md)

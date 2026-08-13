@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ResourceActions } from '@/components/student/ResourceActions';
+import { getResourcePrimaryActionLabel, ResourceCard } from '@/components/student/ResourceCard';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { loadStudentTimeline } from '@/lib/server/studentTimeline';
@@ -14,15 +15,15 @@ import '../../dashboard/dashboard.css';
 import './session.css';
 
 const JOURNEY_STEPS: Array<{
-  type: StudentTimelineMaterial['type'] | 'class' | 'tracker';
+  type: StudentTimelineMaterial['type'] | 'class';
   label: string;
   description: string;
 }> = [
   { type: 'pre_read', label: 'Pre-read', description: 'Prepare before class' },
   { type: 'class', label: 'Class', description: 'Attend the scheduled class' },
   { type: 'video', label: 'Recording', description: 'Review after class' },
+  { type: 'session_material', label: 'Session reading', description: 'Review the class reading' },
   { type: 'worksheet', label: 'Worksheet', description: 'Practise after class' },
-  { type: 'tracker', label: 'Tracker', description: 'Record your manual progress' },
 ];
 
 export default async function SessionPage({ params }: { params: Promise<{ id: string }> }) {
@@ -83,8 +84,6 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
                 {JOURNEY_STEPS.map((step, index) => {
                   const materials = step.type === 'class'
                     ? []
-                    : step.type === 'tracker'
-                      ? session.materials.filter((material) => material.type === 'worksheet' && material.tracker_available)
                     : session.materials.filter((material) => material.type === step.type);
                   return (
                     <li className="journey-step" key={step.type}>
@@ -101,28 +100,23 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
                       ) : materials.length > 0 ? (
                         <div className="journey-materials">
                           {materials.map((material) => (
-                            <div className="journey-material" key={material.id}>
-                              <div>
-                                <strong>{material.title}</strong>
-                                <small>{getMaterialAvailabilityCopy(material, timeZone)}</small>
-                              </div>
-                              {material.is_available && (
-                                <Link
-                                  className="student-button"
-                                  href={step.type === 'tracker'
-                                    ? `/session/${session.id}/material/${material.id}?focus=log#worksheet-log`
-                                    : `/session/${session.id}/material/${material.id}`}
-                                >
-                                  {step.type === 'pre_read'
-                                    ? 'Open pre-read'
-                                    : step.type === 'video'
-                                      ? 'Watch recording'
-                                      : step.type === 'tracker'
-                                        ? 'Update log'
-                                        : 'Open worksheet'}
-                                </Link>
-                              )}
-                            </div>
+                            <ResourceCard
+                              actions={material.is_available ? [
+                                {
+                                  href: `/session/${session.id}/material/${material.id}`,
+                                  label: getResourcePrimaryActionLabel(material.type),
+                                },
+                                ...(material.type === 'worksheet' && material.tracker_available ? [{
+                                  href: `/session/${session.id}/material/${material.id}?focus=log#worksheet-log`,
+                                  label: 'Update log',
+                                  secondary: true,
+                                }] : []),
+                              ] : []}
+                              availability={getMaterialAvailabilityCopy(material, timeZone)}
+                              key={material.id}
+                              title={material.title}
+                              type={material.type}
+                            />
                           ))}
                         </div>
                       ) : (

@@ -104,14 +104,12 @@
   font-size: 0.75rem;
 }
 
-.journey-step-state,
-.journey-material > div {
+.journey-step-state {
   display: grid;
   gap: 3px;
 }
 
 .journey-step-state small,
-.journey-material small,
 .not-configured-copy {
   color: var(--text-tertiary);
   font-size: 0.75rem;
@@ -122,16 +120,8 @@
   gap: 8px;
 }
 
-.journey-material {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.journey-material + .journey-material {
-  padding-top: 8px;
-  border-top: 1px solid var(--border-primary);
+.journey-materials .resource-card {
+  width: 100%;
 }
 
 .not-configured-copy {
@@ -147,8 +137,4 @@
     grid-column: 2;
   }
 
-  .journey-material {
-    align-items: flex-start;
-    flex-direction: column;
-  }
 }

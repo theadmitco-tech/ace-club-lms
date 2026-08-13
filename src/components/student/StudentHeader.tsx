@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { BrandLogo } from '@/components/BrandLogo';
 import { SignOutButton } from './SignOutButton';
 
 function getInitials(name: string) {
@@ -16,8 +17,7 @@ export function StudentHeader({ studentName }: { studentName: string }) {
     <header className="student-header">
       <div className="student-header-inner">
         <Link className="student-brand" href="/dashboard" aria-label="Ace Club student home">
-          <span className="student-brand-mark" aria-hidden="true">A</span>
-          <span>Ace Club</span>
+          <BrandLogo variant="light" className="student-brand-logo" preload />
         </Link>
         <nav className="student-navigation" aria-label="Student navigation">
           <Link href="/dashboard">Course</Link>
