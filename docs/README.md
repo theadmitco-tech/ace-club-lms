@@ -34,6 +34,8 @@ Pilot V1 Phase 7 is complete and accepted for Production planning: [Staging Acce
 
 Current Pilot V1 Production planning: [Conditional Production Release Plan](pilot-v1/production-release-plan.md). The plan is draft and requires review, read-only preflight and a new explicit Product Owner Production instruction.
 
+Pilot V1 Production database checks: [Read-only Verification](pilot-v1/production-read-only-verification.sql). Run before and after the tracked migration push and compare sanitized aggregate/schema results.
+
 Current weekly-schedule decision: [ADR-0004 — Defer Weekly Schedule Redesign](decisions/adr-0004-defer-weekly-schedule-redesign.md). The earlier migration is excluded from Pilot V1 and must not be applied or marked as applied.
 
 ## Current phase

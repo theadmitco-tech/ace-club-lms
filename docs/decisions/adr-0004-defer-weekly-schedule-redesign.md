@@ -15,6 +15,6 @@ Pilot V1 must not change Production curriculum structure, course dates, session 
 
 ## Release consequence
 
-Pilot V1 must not use a general command that applies every pending repository migration. Release operators apply only the two explicitly approved Pilot V1 migration files, verify their exact effects, and record only those two versions in migration history after successful application.
+Pilot V1 must not use a command that applies every pending repository migration. Release operators use a temporary detached checkout in which the excluded weekly file is outside the migrations folder, require a dry run that lists only the two approved Pilot V1 files, and then use the tracked migration push so only those two versions are applied and recorded.
 
 ADR-0003 remains historical evidence of the earlier decision. This ADR supersedes its pending Production rollout direction without defining the replacement weekly schedule.

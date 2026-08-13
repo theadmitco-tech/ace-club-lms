@@ -140,6 +140,7 @@ This table is the complete Pilot V1 reading layer added on top of the repository
 | [Pilot V1 Phase 7 Manual Verification Checklist](../pilot-v1/manual-verification-checklist.md) | Complete | Ordered Product Owner, Engineering and QA/Security staging journeys, including the shared-logo amendment | Preserve as the signed Phase 7 gate |
 | [Phase 7 Staging Acceptance Evidence](../pilot-v1/evidence/phase-7-staging-acceptance-2026-08-13.md) | Accepted for Production planning | Sanitized current-Preview Admin/Student, tracker, responsive, release, authorization, carry-forward lifecycle and Product Owner decision | Preserve; Production evidence must be recorded separately after explicit promotion authority |
 | [Conditional Production Release Plan](../pilot-v1/production-release-plan.md) | Draft; ready for review | Exact preflight, migration/deployment order, rollback, live-batch/Student-log protection, smoke checks and evidence gates | Review without changing Production; obtain a new explicit Product Owner instruction before any Production action |
+| [Production Read-only Verification](../pilot-v1/production-read-only-verification.sql) | Ready | Identity-free migration ledger, aggregate data, storage privacy, policy, constraint and grant checks before/after release | Run read-only; preserve only sanitized output and never add identities or private object paths |
 | [ADR-0004 — Defer Weekly Schedule Redesign](../decisions/adr-0004-defer-weekly-schedule-redesign.md) | Approved | Supersedes the earlier weekly-schedule Production rollout; excludes its migration from Pilot V1 and defers redesign | Preserve; do not apply or ledger the excluded migration |
 
 When a manual verification checklist, evidence record, decision, or other durable V1 file is created, add a row here before pausing. If the file is required to continue safely, also add it to the Authority and required reading list and the Exact resume instruction.
@@ -184,7 +185,7 @@ Allowed V1 phase statuses: `Not started`, `In progress`, `Exit review`, `Complet
 - Findings: P7-01, P7-02 and P7-03 are fixed and passed Product Owner visual retest on 13 August 2026. P7-04 is a low reviewer-tool limitation closed by unchanged-code evidence carry-forward. No critical or high finding is open.
 - Fixtures: The approved anonymized staging Admin and enrolled staging Student used for the Phase 5 lifecycle remain available for Phase 7. No identity or authentication artifact is stored in Git.
 - Production state: Untouched. Production planning is approved; merge, migration and deployment are not authorized.
-- Release plan: Drafted at [conditional Production release plan](../pilot-v1/production-release-plan.md). It excludes the superseded weekly-schedule migration, bans a general pending-migration push and defaults all authenticated smoke checks to non-mutating journeys.
+- Release plan: Drafted at [conditional Production release plan](../pilot-v1/production-release-plan.md). It excludes the superseded weekly-schedule migration, requires an isolated-checkout dry run containing only the two V1 migrations, and defaults all authenticated smoke checks to non-mutating journeys.
 - Exact next action: Release owner, Engineering, QA/Security and Product Owner review the plan and complete its read-only preflight; then request a new explicit Product Owner instruction naming the authorized Production actions.
 
 ### Explicit exclusions
@@ -268,7 +269,7 @@ Severity rules:
 - Preview verification state: Vercel reports immutable commit `8fb7cf6` successful at `https://ace-club-2w3ekxg2n-theadmitco-techs-projects.vercel.app`. Recommendation tests pass 7/7, protected-path tests pass 4/4, targeted lint, TypeScript and Production build pass, and the repeated rollback-only staging probe passes with zero residue. Signed-in Admin/Student, tracker, role-routing and responsive checks pass as recorded in the Phase 7 evidence.
 - Known blockers: None for release planning. Chrome binary upload replay was limited by the reviewer's extension permission; the unchanged sanitized Phase 5 lifecycle and Phase 6 diff/integration evidence carry that gate.
 - Production state: Untouched. Pilot V1 is accepted for Production planning, but promotion is not authorized.
-- Exact next action: Review the conditional Production release plan and complete its read-only preflight; then obtain a separate explicit Product Owner instruction before applying only the two Pilot V1 SQL files, recording only their two migration versions, merging, deploying, changing an environment or mutating live data. Do not act on the superseded weekly-schedule migration.
+- Exact next action: Review the conditional Production release plan and run its read-only verification; then obtain a separate explicit Product Owner instruction before the isolated-checkout tracked push of exactly the two Pilot V1 migrations, merge, deployment, environment change or live-data mutation. Do not act on the superseded weekly-schedule migration.
 
 ## How to pause and resume safely
 
