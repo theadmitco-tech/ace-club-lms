@@ -245,9 +245,9 @@ Severity rules:
 - Current Phase 5 implementation commit: `bb9aaa5` — coherent Admin recording/Session-material management, Student resource surfaces, protected PDF reading and independent Recommended reading with focused fixtures.
 - Current Phase 5 responsive-fix commit: `906136a` — prevents intrinsic form widths from overflowing Session-material cards at the supported medium desktop width.
 - Current Phase 6 tested commit: `1e75935` — adds the staging-first least-privilege migration after the complete integrated gate set.
-- Local changes: Phase 6 evidence, checked exit criteria and this transfer are committed at `506969d`; this final checkpoint synchronization is documentation-only.
+- Local changes: Phase 6 evidence, checked exit criteria and transfer are committed at `506969d`; the subsequent final checkpoint synchronization is documentation-only.
 - Uncommitted state: `public/5.svg` and `public/6.svg` are unrelated untracked workspace files. They were not created, reviewed, staged or changed for Pilot V1 and remain preserved for their owner.
-- Pushed state at transfer: Phase 6 tested commit `1e75935` and closeout commit `506969d` are pushed to `origin/codex/pilot-v1`; the immutable tested Preview succeeded.
+- Pushed state at transfer: Phase 6 tested commit `1e75935`, closeout commit `506969d` and the subsequent documentation-only checkpoint synchronization are pushed to `origin/codex/pilot-v1`; the immutable tested Preview succeeded.
 - Staging migration state: `20260811170000_add_batch_session_materials.sql` and `20260813081141_revoke_session_material_trigger_rpc_access.sql` are applied and recorded in the staging migration ledger. The repeated rollback-only authorization probe passed and left zero probe courses or Session-material rows.
 - Preview verification state: Vercel reports immutable commit `1e75935` successful at `https://ace-club-7x8qjkpkz-theadmitco-techs-projects.vercel.app`. The successful build passed the Preview staging guard. The earlier signed-in Phase 5 lifecycle remains the account-dependent entry evidence for Phase 7.
 - Known blockers: None for Phase 7 entry. The local service-role variable remains intentionally absent; privileged lifecycle verification uses the approved secure staging-backed Preview.
