@@ -10,18 +10,18 @@ Use this checklist against one immutable staging-backed Vercel Preview after Pha
 
 ## Preconditions
 
-- [ ] Branch, commit and immutable Preview URL are recorded.
-- [ ] Preview is Ready and its build passed the staging environment guard.
-- [ ] Both Pilot V1 migrations are ledgered on staging only.
+- [x] Branch, commit and immutable Preview URL are recorded.
+- [x] Preview is Ready and its build passed the staging environment guard.
+- [x] Both Pilot V1 migrations are ledgered on staging only.
 - [ ] Approved staging Admin and enrolled staging Student sessions are available.
 - [ ] No real Production Student data or authentication artifact will enter evidence.
 
 ## A. Brand identity amendment
 
-- [ ] Public navigation shows the transparent green `6.svg` artwork without a visible square canvas; its home link has a clear accessible name and visible keyboard focus.
-- [ ] Login composes the transparent green artwork, platform subtitle and sign-in card as one balanced treatment without duplicate visible `Ace Club` wording; the page retains a semantic level-one heading.
-- [ ] Student header shows a legible transparent green wordmark, links to the Student home, and leaves Course, Practice log, account and sign-out controls usable.
-- [ ] Admin sidebar shows the transparent green wordmark without crowding the Admin badge, navigation, account or sign-out controls.
+- [x] Public navigation shows the transparent green `6.svg` artwork without a visible square canvas; its home link has a clear accessible name and visible keyboard focus.
+- [x] Login composes the transparent green artwork, platform subtitle and sign-in card as one balanced treatment without duplicate visible `Ace Club` wording; the page retains a semantic level-one heading.
+- [x] Student header shows a legible transparent green wordmark, links to the Student home, and leaves Course, Practice log, account and sign-out controls usable.
+- [x] Admin sidebar shows the transparent green wordmark without crowding the Admin badge, navigation, account or sign-out controls.
 - [ ] All four surfaces preserve the logo aspect ratio with no visible canvas, clipping, stretching, horizontal overflow or unreadable contrast at supported desktop widths and 200% text zoom.
 
 ## B. Admin Session resources and batch isolation
@@ -33,8 +33,8 @@ Use this checklist against one immutable staging-backed Vercel Preview after Pha
 
 ## C. Student titled resources and recommendations
 
-- [ ] No standalone `This week` section remains; the automatically opened current-week Timeline retains the complete schedule and session-resource journey.
-- [ ] Tomorrow's academic pre-read appears only under Recommended reading one calendar day before class in `Asia/Kolkata`, without changing its release or access.
+- [x] No standalone `This week` section remains; the automatically opened current-week Timeline retains the complete schedule and session-resource journey.
+- [x] Tomorrow's academic pre-read appears only under Recommended reading one calendar day before class in `Asia/Kolkata`, without changing its release or access.
 - [ ] Two worksheets from one VA class both appear once and open their own canonical PDFs and logs.
 - [ ] Released Session materials appear independently under Recommended reading and on every intended Student surface.
 - [ ] Locked resources show accurate availability without an active or exposed private URL.
@@ -60,7 +60,7 @@ Use this checklist against one immutable staging-backed Vercel Preview after Pha
 - [ ] Released private PDFs open only for an active enrolled Student through protected delivery with no-store behavior.
 - [ ] Student tracker ownership and read-only Admin progress remain consistent and operational.
 - [ ] Role routing, Google-only controlled access, Master material sync and batch-specific recording behavior remain intact.
-- [ ] Course loading uses the Ace Club wordmark and the browser tab uses the Ace Club spade icon instead of the legacy `A`.
+- [x] Course loading uses the Ace Club wordmark and the browser tab uses the Ace Club spade icon instead of the legacy `A`.
 
 ## G. Findings and decision
 
