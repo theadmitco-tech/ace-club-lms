@@ -247,7 +247,7 @@ Let Admins manage Session materials beside recordings and let Students find rele
 
 ### Exit criteria
 
-- [ ] All V1-04 product acceptance criteria pass locally with controlled fixtures.
+- [x] All V1-04 product acceptance criteria pass with controlled fixtures and the sanitized staging Preview lifecycle.
 - [x] Admin manages Recording and Session material for the same batch session from one coherent surface.
 - [x] Session-material create, rename, replace, and remove states are clear and recoverable.
 - [x] The Student sees accurate locked and released states through the shared resource cards.
