@@ -30,9 +30,9 @@ Current Phase 6 logo amendment result: [Ace Club Logo Amendment Verification Evi
 
 Current Pilot V1 Phase 7 staging review: [Manual Verification Checklist](pilot-v1/manual-verification-checklist.md).
 
-Pilot V1 Phase 7 is complete and accepted for Production planning: [Staging Acceptance Evidence](pilot-v1/evidence/phase-7-staging-acceptance-2026-08-13.md). Production promotion remains separately gated.
+Pilot V1 Phase 7 is complete and deployed to Production: [Staging Acceptance Evidence](pilot-v1/evidence/phase-7-staging-acceptance-2026-08-13.md) and [Production Rollout Evidence](pilot-v1/evidence/production-rollout-2026-08-13.md).
 
-Current Pilot V1 Production planning: [Conditional Production Release Plan](pilot-v1/production-release-plan.md). The plan is draft and requires review, read-only preflight and a new explicit Product Owner Production instruction.
+Pilot V1 Production release procedure: [Conditional Production Release Plan](pilot-v1/production-release-plan.md). The authorized procedure was executed on 13 August 2026; it does not authorize a later Production change.
 
 Pilot V1 Production database checks: [Read-only Verification](pilot-v1/production-read-only-verification.sql). Run before and after the tracked migration push and compare sanitized aggregate/schema results.
 

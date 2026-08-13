@@ -1,8 +1,10 @@
 # Pilot V1 — Conditional Production Release Plan
 
-Status: Draft
+Status: Executed; see [Production rollout evidence](evidence/production-rollout-2026-08-13.md)
 Owner: Product owner, Release owner, Engineering and QA/Security
 Last updated: 13 August 2026
+
+Execution note: The Product Owner supplied the required exact authorization on 13 August 2026. The authorized sequence completed successfully; the immutable sanitized result is recorded in the linked Production evidence. This plan remains the historical procedure and does not authorize any later Production change.
 
 ## Decision boundary
 
@@ -209,4 +211,4 @@ Do not record secrets, account identifiers, signed URLs, private paths, Student 
 - [ ] Product Owner approves this plan.
 - [ ] Product Owner separately authorizes the exact Production-changing actions.
 
-Until all applicable boxes are evidenced, Pilot V1 remains accepted for Production planning but not authorized for Production promotion.
+Historical gate note: before execution, Pilot V1 remained accepted for Production planning but not authorized for promotion until every applicable box was evidenced. The dated Production rollout evidence records the later explicit authorization and successful completion; this plan grants no continuing authority.
