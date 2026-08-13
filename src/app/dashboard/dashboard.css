@@ -68,8 +68,7 @@
   transform: scale(1.35);
 }
 
-.student-brand-mark,
-.loading-mark {
+.student-brand-mark {
   width: 34px;
   height: 34px;
   border-radius: 11px;
@@ -79,6 +78,13 @@
   color: white;
   font-weight: 900;
   box-shadow: 0 7px 18px rgba(0, 59, 48, 0.18);
+}
+
+.loading-brand-logo {
+  width: 72px;
+  height: 72px;
+  margin: -16px -8px;
+  transform: scale(1.28);
 }
 
 .student-account {
@@ -787,6 +793,10 @@
 .student-loading div {
   display: grid;
   gap: 3px;
+}
+
+.reading-missing {
+  text-align: left;
 }
 
 .student-loading p {

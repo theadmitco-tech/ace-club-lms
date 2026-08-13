@@ -33,7 +33,8 @@ Use this checklist against one immutable staging-backed Vercel Preview after Pha
 
 ## C. Student titled resources and recommendations
 
-- [ ] This week, Timeline, Browse by section, curriculum-item journey and recommendations use the shared titled resource treatment.
+- [ ] No standalone `This week` section remains; the automatically opened current-week Timeline retains the complete schedule and session-resource journey.
+- [ ] Tomorrow's academic pre-read appears only under Recommended reading one calendar day before class in `Asia/Kolkata`, without changing its release or access.
 - [ ] Two worksheets from one VA class both appear once and open their own canonical PDFs and logs.
 - [ ] Released Session materials appear independently under Recommended reading and on every intended Student surface.
 - [ ] Locked resources show accurate availability without an active or exposed private URL.
@@ -59,6 +60,7 @@ Use this checklist against one immutable staging-backed Vercel Preview after Pha
 - [ ] Released private PDFs open only for an active enrolled Student through protected delivery with no-store behavior.
 - [ ] Student tracker ownership and read-only Admin progress remain consistent and operational.
 - [ ] Role routing, Google-only controlled access, Master material sync and batch-specific recording behavior remain intact.
+- [ ] Course loading uses the Ace Club wordmark and the browser tab uses the Ace Club spade icon instead of the legacy `A`.
 
 ## G. Findings and decision
 

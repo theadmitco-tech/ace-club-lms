@@ -51,6 +51,14 @@ This amendment changes presentation only. It does not change authentication, rol
 
 The Product Owner rejected the visible square-canvas treatment in the first Preview. On the current light portal surfaces, use the green `6.svg` artwork with a genuinely transparent canvas, crop its unused space through the shell layout, and size the wordmark for legibility. Login must read as one composed page rather than a dark-green square placed above the sign-in card. Keep `5.svg` available as the supplied dark treatment, but do not use it on the current light Login or Admin surfaces.
 
+### Phase 7 recommendation-layout decision — 13 August 2026
+
+Status: Approved for implementation
+
+Remove the standalone **This week** section. Students do not need its repeated current-week schedule, dates/times or full resource list because the current week is already open in the course Timeline. Move only the existing tomorrow pre-read prompt into **Recommended reading**: it appears one calendar day before the academic class in `Asia/Kolkata`, uses the existing availability and authorization rules, and does not change the seven-day pre-read release. Recommended reading continues to show each section's latest released Session-material set. Recommended practice remains separate.
+
+Replace the legacy `A` loading mark with the Ace Club wordmark, replace the browser-tab `A` with a compact Ace Club spade icon, and remove loading copy that refers to `This week`.
+
 ---
 
 ## V1-01 — Titled resource cards

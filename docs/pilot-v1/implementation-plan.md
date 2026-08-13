@@ -315,6 +315,14 @@ Phase 7 visual refinement:
 - [x] Recompose Login spacing around the transparent wordmark and verify it at 1440×900 and 390×844 without horizontal overflow.
 - [ ] Recheck the revised Student header and Admin sidebar on the immutable staging Preview.
 
+Phase 7 recommendation and identity refinement:
+
+- [x] Remove the standalone `This week` schedule/resource section; keep the automatically opened current-week Timeline as the complete schedule and resource surface.
+- [x] Render the existing one-day-before pre-read prompt inside Recommended reading without changing its release or authorization behavior.
+- [x] Keep latest released Session-material recommendations in the same reading section and keep Recommended practice separate.
+- [x] Replace the loading `A` with the Ace Club wordmark and replace the legacy favicon with an Ace Club spade icon.
+- [ ] Recheck the revised reading surface, loading state and browser-tab icon on the immutable staging Preview.
+
 ---
 
 ## V1 Phase 7 — Staging acceptance and version decision
@@ -327,7 +335,7 @@ Verify the complete affected Admin and Student journeys, classify findings, and 
 
 1. Test Admin manages a recording and multiple Session materials in one selected batch session.
 2. Another batch remains unchanged before and after create, rename, replace, remove, generation, and Sync materials actions.
-3. Test Student verifies titled resource cards across This week, Timeline, Browse by section, curriculum-item journey, Recommended reading, and Recommended practice.
+3. Test Student verifies titled resource cards across Timeline, Browse by section, curriculum-item journey, Recommended reading, and Recommended practice; no standalone `This week` section remains.
 4. Test Student verifies two worksheets from one VA class both appear and reach their own canonical logs.
 5. Test Student verifies independent PDF and tracker scrolling, saving, refresh, failure isolation, keyboard behavior, and 200% text zoom.
 6. Time and release checks verify pre-read seven-day availability, next-day recommendation, post-class worksheet, recording and Session-material release, and replacement boundaries.
