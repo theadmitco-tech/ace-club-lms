@@ -24,6 +24,8 @@ Current Phase 4 Preview result: [Session-material Preview Route Lifecycle Eviden
 
 Current Phase 5 staging UI result: [Session-resource Admin and Student Lifecycle Evidence](pilot-v1/evidence/phase-5-staging-session-resource-lifecycle-2026-08-13.md).
 
+Current Phase 6 integrated result: [Pilot V1 Integrated Verification Evidence](pilot-v1/evidence/phase-6-integrated-verification-2026-08-13.md).
+
 ## Current phase
 
 - Phase 0.5: signed off in [Setup and Recovery Sign-off](../instruction/Phase_0.5_Setup_Recovery_Signoff.md).

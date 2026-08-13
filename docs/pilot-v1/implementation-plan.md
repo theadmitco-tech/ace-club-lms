@@ -278,14 +278,14 @@ Prove the complete V1 version is internally consistent before asking the Product
 
 ### Exit criteria
 
-- [ ] Git diff contains only approved V1 code, migration, tests, and documentation.
-- [ ] No secret, unrestricted private URL, authentication artifact, or private Student data is present.
-- [ ] `git diff --check`, targeted lint, TypeScript, and guarded Production build pass.
-- [ ] Repository-wide lint is reported accurately and has no new V1 findings.
-- [ ] The reviewed migration is applied successfully to staging only and its state is recorded.
-- [ ] The Vercel Preview is Ready, immutable by commit, and confirmed against staging.
-- [ ] Automated authorization, release, and recommendation checks pass.
-- [ ] No critical or high finding remains before manual staging acceptance begins.
+- [x] Git diff contains only approved V1 code, migration, tests, and documentation.
+- [x] No secret, unrestricted private URL, authentication artifact, or private Student data is present.
+- [x] `git diff --check`, targeted lint, TypeScript, and guarded Production build pass.
+- [x] Repository-wide lint is reported accurately and has no new V1 findings.
+- [x] The reviewed migrations are applied successfully to staging only and their state is recorded.
+- [x] The Vercel Preview is Ready, immutable by commit, and confirmed against staging.
+- [x] Automated authorization, release, and recommendation checks pass.
+- [x] No critical or high finding remains before manual staging acceptance begins.
 
 ---
 
