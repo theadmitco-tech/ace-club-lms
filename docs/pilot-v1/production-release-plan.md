@@ -41,14 +41,20 @@ The release must preserve:
 
 The release must not seed Production tracker data, create a live Session material merely for positive coverage, synchronize a recording or Session material across batches, or perform destructive legacy cleanup.
 
+### Weekly schedule exclusion
+
+Per [ADR-0004](../decisions/adr-0004-defer-weekly-schedule-redesign.md), this release does not apply, repair, mark as applied, or otherwise act on `20260804120000_realign_weekly_course_schedule.sql`. Pilot V1 makes no Production curriculum, Orientation, class-day, session-date or release-timestamp change. The future weekly schedule will be designed and released separately.
+
+Do not use `supabase db push`, `supabase db push --include-all`, or another general pending-migration command for this release. Apply only the two exact Pilot V1 SQL files named below. After each file has succeeded and its schema effect has been verified, record only its matching version in migration history.
+
 ## Hard stop conditions
 
 Stop the release before the first Production mutation if any item below is unresolved:
 
 1. The reviewed branch tip is not a descendant of the recorded `origin/main` base, contains an application change after `8fb7cf6`, or differs from the accepted staging diff.
-2. The Production migration ledger cannot be inspected safely or does not reconcile through `20260804120000_realign_weekly_course_schedule.sql`.
-3. `20260804120000_realign_weekly_course_schedule.sql` is pending. Its Production state is an accepted Phase 8 evidence exception and it must not be silently bundled with Pilot V1. Pause for a separate Product Owner decision and release review.
-4. A dry run proposes any migration other than the two Pilot V1 migrations named in this plan, in this order.
+2. The Production migration ledger cannot be inspected safely, or either Pilot V1 version has a ledger/schema mismatch.
+3. Any step proposes applying, repairing or marking `20260804120000_realign_weekly_course_schedule.sql` as applied.
+4. Any step proposes a general pending-migration push or any SQL other than the two Pilot V1 migrations named in this plan, in this order.
 5. The Vercel Production variables are missing, incorrectly scoped, malformed, or point at staging; the service-role key cannot be confirmed as belonging to the Production project without exposing it.
 6. The current Production deployment, aliases, or rollback deployment cannot be identified.
 7. A critical/high defect, authorization regression, unexpected running-batch mutation, Student-log count change, private bucket exposure, or unreleased-resource exposure appears.
@@ -63,8 +69,8 @@ Complete and record the following before requesting Production-changing authorit
 - [ ] Rerun recommendation fixtures (7/7), protected Session-material path fixtures (4/4), targeted lint for V1-touched files, TypeScript, the guarded Next.js Production build, `git diff --check`, and a changed-file secret/privacy review.
 - [ ] Confirm repository-wide lint has no V1-touched-file finding; preserve the signed unrelated baseline rather than claiming a zero-lint result.
 - [ ] Confirm the current immutable Preview is Ready and still uses staging configuration.
-- [ ] Inspect the Production migration ledger read-only and reconcile every repository migration through `20260804120000_realign_weekly_course_schedule.sql`.
-- [ ] Produce a migration dry run that lists only `20260811170000_add_batch_session_materials.sql` followed by `20260813081141_revoke_session_material_trigger_rpc_access.sql`.
+- [ ] Inspect the Production migration ledger read-only. Confirm the ledger and schema state of the two Pilot V1 versions; observe but do not repair, apply or otherwise act on the weekly-schedule version.
+- [ ] Review the exact contents and checksums of `20260811170000_add_batch_session_materials.sql` and `20260813081141_revoke_session_material_trigger_rpc_access.sql`. Confirm the release procedure references no other SQL file.
 - [ ] Confirm the Production Supabase project is healthy and identify its current backup/PITR capability. Do not claim a managed backup exists based on the historical Phase 5 state.
 - [ ] Confirm the `course-materials` bucket remains private and its existing worksheet objects remain untouched.
 - [ ] Capture sanitized aggregate baselines for running courses, sessions, enrollments, materials by type, `student_question_logs`, and Admin-owned tracker rows. Record counts only; do not export Student rows or identities.
@@ -81,9 +87,10 @@ After preflight passes, obtain one new Product Owner instruction that names what
 
 1. merge of the reviewed `codex/pilot-v1` tip;
 2. application of exactly the two Pilot V1 migrations to the Production Supabase project;
-3. deployment of the resulting reviewed commit to Vercel Production;
-4. the authenticated, non-mutating smoke checks below; and
-5. whether a controlled Production test fixture is authorized. The default is **not authorized**.
+3. recording exactly those two successfully verified versions in Production migration history;
+4. deployment of the resulting reviewed commit to Vercel Production;
+5. the authenticated, non-mutating smoke checks below; and
+6. whether a controlled Production test fixture is authorized. The default is **not authorized**.
 
 If only some actions are authorized, execute only those actions and pause at the next gate.
 
@@ -99,8 +106,8 @@ If only some actions are authorized, execute only those actions and pause at the
 
 The old Production application is compatible with these additive database changes; the new application depends on them. Therefore apply and verify the database before promoting the application.
 
-1. Re-run the Production migration dry run immediately before application.
-2. Apply `20260811170000_add_batch_session_materials.sql` as one transaction.
+1. In the Production Supabase SQL Editor, open a new query and paste only the reviewed contents of `20260811170000_add_batch_session_materials.sql`. Confirm the selected project is `owmlxsnzogfapotmjrqk` before running it.
+2. Apply `20260811170000_add_batch_session_materials.sql` as its existing single transaction.
 3. Confirm it is ledgered once, and verify:
    - `master_materials` still rejects `session_material` so Master generation and Sync materials cannot propagate it;
    - `materials` accepts the new batch-only type with its shape and unique-file guards;
@@ -108,12 +115,14 @@ The old Production application is compatible with these additive database change
    - the Student material-read policy still requires release, a published session and authorized course access;
    - the save/remove functions have fixed search paths and perform an internal active-Admin check; and
    - `anon` cannot call the save/remove functions while `authenticated` has only the intended entry-point grants.
-4. Apply `20260813081141_revoke_session_material_trigger_rpc_access.sql`.
-5. Confirm it is ledgered once and that `public`, `anon`, and `authenticated` cannot directly execute the trigger-only helper.
-6. Confirm a new dry run reports no pending Pilot V1 migration.
-7. Compare the sanitized aggregate baselines. Existing courses, sessions, enrollments, materials, `student_question_logs`, Admin-owned tracker rows and private object counts must be unchanged. At this point there should be no Production `session_material` row created by the release itself.
+4. Only after the first migration passes verification, record version `20260811170000` as applied with `npx supabase migration repair --project-ref owmlxsnzogfapotmjrqk --status applied 20260811170000`. Do not use `--linked`, because the local project is expected to remain linked to staging.
+5. In a separate Production SQL Editor query, paste and apply only `20260813081141_revoke_session_material_trigger_rpc_access.sql`.
+6. Confirm that `public`, `anon`, and `authenticated` cannot directly execute the trigger-only helper.
+7. Only after the second migration passes verification, record version `20260813081141` as applied with `npx supabase migration repair --project-ref owmlxsnzogfapotmjrqk --status applied 20260813081141`.
+8. List Production migration history and confirm those two versions are recorded once. The weekly-schedule version may remain absent and must not be repaired or applied.
+9. Compare the sanitized aggregate baselines. Existing courses, sessions, enrollments, materials, `student_question_logs`, Admin-owned tracker rows and private object counts must be unchanged. At this point there should be no Production `session_material` row created by the release itself.
 
-If either transaction fails, stop. Do not retry blindly, edit an applied migration, or continue to application deployment.
+If either transaction, verification, or matching history repair fails, stop. Do not retry blindly, edit an applied migration, run a general database push, or continue to application deployment.
 
 ### 3. Merge and deploy the application
 
