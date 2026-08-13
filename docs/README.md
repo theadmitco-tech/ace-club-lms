@@ -32,6 +32,8 @@ Current Pilot V1 Phase 7 staging review: [Manual Verification Checklist](pilot-v
 
 Pilot V1 Phase 7 is complete and accepted for Production planning: [Staging Acceptance Evidence](pilot-v1/evidence/phase-7-staging-acceptance-2026-08-13.md). Production promotion remains separately gated.
 
+Current Pilot V1 Production planning: [Conditional Production Release Plan](pilot-v1/production-release-plan.md). The plan is draft and requires review, read-only preflight and a new explicit Product Owner Production instruction.
+
 ## Current phase
 
 - Phase 0.5: signed off in [Setup and Recovery Sign-off](../instruction/Phase_0.5_Setup_Recovery_Signoff.md).
