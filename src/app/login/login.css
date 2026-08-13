@@ -64,23 +64,24 @@
 /* Header */
 .login-header {
   text-align: center;
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-lg);
 }
 
 .login-logo {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 240px;
-  height: 170px;
+  width: 260px;
+  height: 138px;
   margin-inline: auto;
-  margin-bottom: var(--space-sm);
+  margin-bottom: 2px;
   overflow: hidden;
 }
 
 .login-brand-logo {
-  width: 240px;
-  height: 240px;
+  width: 200px;
+  height: 200px;
+  transform: scale(1.35);
 }
 
 .login-brand {
@@ -321,12 +322,12 @@
   }
 
   .login-brand-logo {
-    width: 210px;
-    height: 210px;
+    width: 180px;
+    height: 180px;
   }
 
   .login-logo {
-    width: 210px;
-    height: 150px;
+    width: 230px;
+    height: 126px;
   }
 }

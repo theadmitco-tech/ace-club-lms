@@ -45,3 +45,7 @@ Application commit `f822f17` deployed successfully to the immutable staging-back
 ## Boundary
 
 This is presentation-only evidence. No database, storage, identity, staging fixture or Production state was changed.
+
+## Phase 7 Product Owner visual finding and local retest
+
+The Product Owner's first immutable-Preview review found that the square SVG canvases looked pasted onto the public/Login surfaces and that the Student-header artwork was too small. The revised local treatment removes the white background rectangles from `6.svg`, uses that transparent green artwork on all current light surfaces, enlarges the visible artwork within fixed shell containers and tightens the Login composition. Public and Login browser retests pass at 1440×900 and Login passes at 390×844 with no framework overlay or horizontal overflow. Targeted ESLint, `xmllint`, TypeScript and the Next.js Production build pass. Signed-in Student/Admin Preview retesting remains open in Phase 7.

@@ -47,6 +47,10 @@ Accept when the public navigation, login page, Student header and Admin sidebar 
 
 This amendment changes presentation only. It does not change authentication, roles, authorization, release behavior, data, migrations or Production approval.
 
+### Phase 7 visual refinement — 13 August 2026
+
+The Product Owner rejected the visible square-canvas treatment in the first Preview. On the current light portal surfaces, use the green `6.svg` artwork with a genuinely transparent canvas, crop its unused space through the shell layout, and size the wordmark for legibility. Login must read as one composed page rather than a dark-green square placed above the sign-in card. Keep `5.svg` available as the supplied dark treatment, but do not use it on the current light Login or Admin surfaces.
+
 ---
 
 ## V1-01 — Titled resource cards

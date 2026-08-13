@@ -18,11 +18,11 @@ Use this checklist against one immutable staging-backed Vercel Preview after Pha
 
 ## A. Brand identity amendment
 
-- [ ] Public navigation shows the light `6.svg` treatment and its home link has a clear accessible name and visible keyboard focus.
-- [ ] Login shows the dark `5.svg` treatment without duplicate visible `Ace Club` wording; the page retains a semantic level-one heading.
-- [ ] Student header shows the light treatment, links to the Student home, and leaves Course, Practice log, account and sign-out controls usable.
-- [ ] Admin sidebar shows the dark treatment without crowding the Admin badge, navigation, account or sign-out controls.
-- [ ] All four surfaces preserve the logo aspect ratio with no clipping, stretching, horizontal overflow or unreadable contrast at supported desktop widths and 200% text zoom.
+- [ ] Public navigation shows the transparent green `6.svg` artwork without a visible square canvas; its home link has a clear accessible name and visible keyboard focus.
+- [ ] Login composes the transparent green artwork, platform subtitle and sign-in card as one balanced treatment without duplicate visible `Ace Club` wording; the page retains a semantic level-one heading.
+- [ ] Student header shows a legible transparent green wordmark, links to the Student home, and leaves Course, Practice log, account and sign-out controls usable.
+- [ ] Admin sidebar shows the transparent green wordmark without crowding the Admin badge, navigation, account or sign-out controls.
+- [ ] All four surfaces preserve the logo aspect ratio with no visible canvas, clipping, stretching, horizontal overflow or unreadable contrast at supported desktop widths and 200% text zoom.
 
 ## B. Admin Session resources and batch isolation
 

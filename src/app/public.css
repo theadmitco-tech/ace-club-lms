@@ -1700,6 +1700,7 @@ html:has(.public-page) {
   width: 120px;
   height: 120px;
   margin-block: -28px;
+  transform: scale(1.32);
 }
 
 .public-nav.is-compact .public-brand .public-brand-logo {

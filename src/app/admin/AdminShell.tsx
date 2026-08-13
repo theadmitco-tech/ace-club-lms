@@ -45,7 +45,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         <div className="sidebar-header">
           <div className="sidebar-brand">
             <BrandLogo
-              variant="dark"
+              variant="light"
               className="sidebar-brand-logo"
               alt="The Ace Club by The Admit Co."
               preload

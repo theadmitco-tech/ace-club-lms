@@ -54,7 +54,7 @@
 }
 
 .student-brand {
-  width: 82px;
+  width: 112px;
   height: 64px;
   overflow: hidden;
   color: var(--accent-primary);
@@ -62,9 +62,10 @@
 }
 
 .student-brand-logo {
-  width: 82px;
-  height: 82px;
+  width: 100px;
+  height: 100px;
   margin-block: -9px;
+  transform: scale(1.35);
 }
 
 .student-brand-mark,
@@ -830,13 +831,13 @@
 
 @media (max-width: 700px) {
   .student-brand {
-    width: 68px;
+    width: 88px;
   }
 
   .student-brand-logo {
-    width: 72px;
-    height: 72px;
-    margin-block: -4px;
+    width: 84px;
+    height: 84px;
+    margin-block: -10px;
   }
 
   .student-account-copy {

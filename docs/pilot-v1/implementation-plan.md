@@ -294,7 +294,7 @@ Before Phase 7 manual acceptance:
 
 1. Add the supplied `public/5.svg` dark treatment and `public/6.svg` light treatment as local, fixed-dimension Next.js images.
 2. Replace temporary letter/text marks in the public navigation, login page, Student header and Admin sidebar.
-3. Use the light variant on white navigation surfaces and the dark variant for standalone login/Admin brand treatments.
+3. Initially use the light variant on white navigation surfaces and the dark variant for standalone login/Admin brand treatments.
 4. Preserve accessible names, keyboard focus, intrinsic aspect ratio and responsive behavior at supported widths and 200% text zoom.
 5. Re-run touched-file lint, TypeScript, the Next.js Production build, changed-file review and responsive browser checks before Phase 7 begins.
 
@@ -306,6 +306,14 @@ Amendment exit criteria:
 - [x] Brand links retain accessible names and visible focus; non-interactive logos have useful alternative text and login retains a semantic level-one heading.
 - [x] Touched-file lint, TypeScript and the Next.js Production build pass; repository-wide lint improves to the unrelated legacy baseline of 22 errors and 2 warnings.
 - [ ] Authenticated Student-header and Admin-sidebar presentation passes the Phase 7 manual checklist at supported widths and 200% text zoom.
+
+Phase 7 visual refinement:
+
+- [x] Remove the white canvas from `6.svg` so the artwork inherits every light shell surface rather than rendering as a pasted rectangle.
+- [x] Use the transparent green artwork on public, Login, Student and Admin light surfaces; retain `5.svg` for a future genuinely dark surface.
+- [x] Increase the visible wordmark scale inside fixed shell containers without stretching its aspect ratio or changing navigation height.
+- [x] Recompose Login spacing around the transparent wordmark and verify it at 1440×900 and 390×844 without horizontal overflow.
+- [ ] Recheck the revised Student header and Admin sidebar on the immutable staging Preview.
 
 ---
 

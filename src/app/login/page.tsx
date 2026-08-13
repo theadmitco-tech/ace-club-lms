@@ -48,7 +48,7 @@ export default function LoginPage() {
         <div className="login-header">
           <div className="login-logo">
             <BrandLogo
-              variant="dark"
+              variant="light"
               className="login-brand-logo"
               alt="The Ace Club by The Admit Co."
               preload
