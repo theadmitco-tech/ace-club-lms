@@ -2,7 +2,7 @@
 
 Status: Approved for staged implementation
 Owner: Product owner and Engineering
-Last updated: 11 August 2026
+Last updated: 13 August 2026
 
 ## Objective
 

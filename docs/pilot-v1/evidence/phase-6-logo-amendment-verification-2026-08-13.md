@@ -1,7 +1,7 @@
 # Pilot V1 Phase 6 — Logo Amendment Verification
 
 Date: 13 August 2026
-Environment: Local automated and browser checks
+Environment: Local automated/browser checks and staging-backed immutable Vercel Preview
 Scope: Product Owner shared-logo amendment before Phase 7 acceptance
 
 ## Implementation
@@ -37,6 +37,10 @@ The public page retains a pre-existing narrow-viewport curriculum-table overflow
 ## Remaining manual item
 
 The authenticated Student header and Admin sidebar require signed-in Phase 7 review at supported desktop widths and 200% text zoom. Those checks are explicit and unchecked in `docs/pilot-v1/manual-verification-checklist.md`.
+
+## Preview result
+
+Application commit `f822f17` deployed successfully to the immutable staging-backed Preview at `https://ace-club-lkcss1i2m-theadmitco-techs-projects.vercel.app`. The Vercel GitHub deployment reported success, and the repository Preview guard confirmed staging configuration without exposing variable values.
 
 ## Boundary
 

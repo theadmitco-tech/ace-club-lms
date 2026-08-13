@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Engineering
-Last updated: 11 August 2026
+Last updated: 13 August 2026
 
 This index routes readers to the smallest set of documents needed for a task. Product authority remains in [`instruction/`](../instruction/README.md).
 
@@ -25,6 +25,10 @@ Current Phase 4 Preview result: [Session-material Preview Route Lifecycle Eviden
 Current Phase 5 staging UI result: [Session-resource Admin and Student Lifecycle Evidence](pilot-v1/evidence/phase-5-staging-session-resource-lifecycle-2026-08-13.md).
 
 Current Phase 6 integrated result: [Pilot V1 Integrated Verification Evidence](pilot-v1/evidence/phase-6-integrated-verification-2026-08-13.md).
+
+Current Phase 6 logo amendment result: [Ace Club Logo Amendment Verification Evidence](pilot-v1/evidence/phase-6-logo-amendment-verification-2026-08-13.md).
+
+Current Pilot V1 Phase 7 staging review: [Manual Verification Checklist](pilot-v1/manual-verification-checklist.md).
 
 ## Current phase
 
