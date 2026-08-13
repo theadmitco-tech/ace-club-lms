@@ -305,7 +305,7 @@ Amendment exit criteria:
 - [x] Public and login browser checks show proportional, unclipped logo presentation without duplicate visible brand wording at 1440px, 1024px and narrow widths.
 - [x] Brand links retain accessible names and visible focus; non-interactive logos have useful alternative text and login retains a semantic level-one heading.
 - [x] Touched-file lint, TypeScript and the Next.js Production build pass; repository-wide lint improves to the unrelated legacy baseline of 22 errors and 2 warnings.
-- [ ] Authenticated Student-header and Admin-sidebar presentation passes the Phase 7 manual checklist at supported widths and 200% text zoom.
+- [x] Authenticated Student-header and Admin-sidebar presentation passes the Phase 7 manual checklist at supported widths and the 720 CSS-pixel effective-width check for 1440px at 200% enlargement.
 
 Phase 7 visual refinement:
 
@@ -313,7 +313,7 @@ Phase 7 visual refinement:
 - [x] Use the transparent green artwork on public, Login, Student and Admin light surfaces; retain `5.svg` for a future genuinely dark surface.
 - [x] Increase the visible wordmark scale inside fixed shell containers without stretching its aspect ratio or changing navigation height.
 - [x] Recompose Login spacing around the transparent wordmark and verify it at 1440×900 and 390×844 without horizontal overflow.
-- [ ] Recheck the revised Student header and Admin sidebar on the immutable staging Preview.
+- [x] Recheck the revised Student header and Admin sidebar on the immutable staging Preview.
 
 Phase 7 recommendation and identity refinement:
 
@@ -321,7 +321,7 @@ Phase 7 recommendation and identity refinement:
 - [x] Render the existing one-day-before pre-read prompt inside Recommended reading without changing its release or authorization behavior.
 - [x] Keep latest released Session-material recommendations in the same reading section and keep Recommended practice separate.
 - [x] Replace the loading `A` with the Ace Club wordmark and replace the legacy favicon with an Ace Club spade icon.
-- [ ] Recheck the revised reading surface, loading state and browser-tab icon on the immutable staging Preview.
+- [x] Recheck the revised reading surface, loading state and browser-tab icon on the immutable staging Preview.
 
 ---
 
@@ -345,14 +345,16 @@ Verify the complete affected Admin and Student journeys, classify findings, and 
 
 ### Exit criteria
 
-- [ ] Every approved V1 acceptance criterion has a recorded pass, accepted exception, or failing finding.
-- [ ] Every finding has severity, owner, disposition, and retest result.
-- [ ] No critical or high defect, privacy exposure, cross-batch propagation, or unreleased-file exposure remains open.
-- [ ] Test Admin and Test Student journeys pass in the staging-backed Preview.
-- [ ] Existing recording, Master material sync, Student tracker, Admin progress, role-routing, and private-file boundaries pass regression.
+- [x] Every approved V1 acceptance criterion has a recorded pass, accepted exception, or failing finding.
+- [x] Every finding has severity, owner, disposition, and retest result.
+- [x] No critical or high defect, privacy exposure, cross-batch propagation, or unreleased-file exposure remains open.
+- [x] Test Admin and Test Student journeys pass in the staging-backed Preview, with the unchanged Admin binary-upload lifecycle carried forward from the sanitized Phase 5 evidence.
+- [x] Existing recording, Master material sync, Student tracker, Admin progress, role-routing, and private-file boundaries pass regression.
 - [ ] Product Owner reviews the immutable Preview and explicitly accepts, defers, rejects, or requests changes to V1.
-- [ ] Branch, exact commit, pushed state, migration state, Preview result, findings, and one exact next action are recorded in the pilot handoff.
-- [ ] Production remains untouched unless a later, separately reviewed Product Owner instruction authorizes promotion.
+- [x] Branch, exact commit, pushed state, migration state, Preview result, findings, and one exact next action are recorded in the pilot handoff.
+- [x] Production remains untouched unless a later, separately reviewed Product Owner instruction authorizes promotion.
+
+Phase 7 Engineering and QA/Security evidence: [staging acceptance — 13 August 2026](evidence/phase-7-staging-acceptance-2026-08-13.md). The explicit Product Owner version decision remains the only unchecked exit criterion.
 
 ## Conditional Production promotion
 

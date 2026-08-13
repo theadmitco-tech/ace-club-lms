@@ -30,6 +30,8 @@ Current Phase 6 logo amendment result: [Ace Club Logo Amendment Verification Evi
 
 Current Pilot V1 Phase 7 staging review: [Manual Verification Checklist](pilot-v1/manual-verification-checklist.md).
 
+Current Pilot V1 Phase 7 Engineering and QA/Security result: [Staging Acceptance Evidence](pilot-v1/evidence/phase-7-staging-acceptance-2026-08-13.md). Only the explicit Product Owner version decision remains open.
+
 ## Current phase
 
 - Phase 0.5: signed off in [Setup and Recovery Sign-off](../instruction/Phase_0.5_Setup_Recovery_Signoff.md).
