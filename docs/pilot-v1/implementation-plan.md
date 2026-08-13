@@ -254,7 +254,7 @@ Let Admins manage Session materials beside recordings and let Students find rele
 - [x] Recommended reading shows the complete latest released set per section and replaces it only when new reading releases.
 - [x] Another batch remains unchanged through every Admin action and Sync materials.
 - [x] Existing recording behavior passes its focused regression checks.
-- [ ] Supported desktop widths, keyboard access, focus, text zoom, targeted lint, TypeScript, and build pass.
+- [x] Supported desktop widths, keyboard access, focus, text zoom, targeted lint, TypeScript, and build pass.
 - [x] Admin and Student integration is captured in focused commits without unrelated cleanup.
 
 ---
