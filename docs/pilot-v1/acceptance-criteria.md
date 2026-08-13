@@ -281,6 +281,6 @@ V1 will not include:
 
 - Scope agreed: 11 August 2026
 - Acceptance criteria approved with Product Owner edits: 11 August 2026
-- Engineering review: Pending
-- Staging verification: Not started
+- Engineering review: Passed through the Phase 6 gates and Phase 7 logo-refinement checks
+- Staging verification: In progress
 - Production approval: Not granted
