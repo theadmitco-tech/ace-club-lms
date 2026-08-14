@@ -7,10 +7,10 @@ import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { loadStudentTimeline } from '@/lib/server/studentTimeline';
 import {
   getCurrentProgrammeWeek,
+  getLastClassSessionMaterials,
   getMaterialAvailabilityCopy,
-  getPreReadRecommendation,
+  getNextClassPreReads,
   getRecommendedPractice,
-  getRecommendedReading,
   groupTimelineByWeek,
   isAcademicSection,
   type AcademicSection,
@@ -82,12 +82,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
     ? Number(requestedOpenWeekValue)
     : null;
   const recommendedPractice = getRecommendedPractice(sessions);
-  const recommendedReading = getRecommendedReading(sessions);
-  const preReadRecommendation = getPreReadRecommendation(
-    sessions,
-    generatedAt,
-    timeZone,
-  );
+  const nextClassPreReads = getNextClassPreReads(sessions, generatedAt);
+  const lastClassSessionMaterials = getLastClassSessionMaterials(sessions, generatedAt);
   const sectionSessions = sessions.filter((session) => session.class_type === selectedSection);
   const firstName = studentName.split(/\s+/)[0];
 
@@ -156,48 +152,83 @@ export default async function DashboardPage({ searchParams }: { searchParams: Da
                   <span className="student-eyebrow">Prepare &amp; review</span>
                   <h2 id="recommended-reading-title">Recommended reading</h2>
                 </div>
-                <p>Prepare for tomorrow&apos;s class and review each section&apos;s latest released Session materials.</p>
+                <p>Prepare for each section&apos;s next class and review its last class materials.</p>
               </div>
-              {preReadRecommendation || recommendedReading.length > 0 ? (
-                <div className="practice-list">
-                  {preReadRecommendation && !preReadRecommendation.material && (
-                    <div className="practice-empty reading-missing">
-                      <strong>{preReadRecommendation.section} pre-read for {preReadRecommendation.session.title}</strong>
-                      <p>No pre-read has been added for tomorrow&apos;s class.</p>
+              <div className="reading-subsections">
+                <section className="reading-subsection" aria-labelledby="next-class-pre-reads-title">
+                  <div className="reading-subsection-heading">
+                    <h3 id="next-class-pre-reads-title">Next class pre-reads</h3>
+                    <p>Shown until that section&apos;s next class starts.</p>
+                  </div>
+                  {nextClassPreReads.map(({ section, session, materials }) => (
+                    <div className="reading-section-group" key={section}>
+                      <div className="reading-section-label">
+                        <strong>{section}</strong>
+                        <span>{session ? session.title : 'No upcoming class'}</span>
+                      </div>
+                      {materials.length > 0 ? (
+                        <div className="practice-list reading-resource-list">
+                          {materials.map((material) => (
+                            <ResourceCard
+                              actions={material.is_available ? [{
+                                href: `/session/${session!.id}/material/${material.id}`,
+                                label: 'Open pre-read',
+                              }] : []}
+                              availability={getMaterialAvailabilityCopy(material, timeZone)}
+                              context={`Next ${section} class · ${session!.title}`}
+                              key={material.id}
+                              title={material.title}
+                              type="pre_read"
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="practice-empty reading-missing">
+                          <strong>No {section} pre-reads are currently recommended</strong>
+                          <p>{session ? 'No pre-read has been added for this class.' : 'There is no upcoming published class in this section.'}</p>
+                        </div>
+                      )}
                     </div>
-                  )}
-                  {preReadRecommendation?.material && (
-                    <ResourceCard
-                      actions={preReadRecommendation.material.is_available ? [{
-                        href: `/session/${preReadRecommendation.session.id}/material/${preReadRecommendation.material.id}`,
-                        label: 'Open pre-read',
-                      }] : []}
-                      availability={getMaterialAvailabilityCopy(preReadRecommendation.material, timeZone)}
-                      context={`Tomorrow · ${preReadRecommendation.section} · ${preReadRecommendation.session.title}`}
-                      title={preReadRecommendation.material.title}
-                      type="pre_read"
-                    />
-                  )}
-                  {recommendedReading.map(({ session, material }) => (
-                    <ResourceCard
-                      actions={[{
-                        href: `/session/${session.id}/material/${material.id}`,
-                        label: 'Open session material',
-                      }]}
-                      availability={getMaterialAvailabilityCopy(material, timeZone)}
-                      context={`${session.class_type ?? 'Course'} · Week ${session.week_number}`}
-                      key={material.id}
-                      title={material.title}
-                      type="session_material"
-                    />
                   ))}
-                </div>
-              ) : (
-                <div className="practice-empty">
-                  <strong>No reading is currently recommended</strong>
-                  <p>A pre-read appears one day before class. Session reading appears after class and stays until that section releases a newer set.</p>
-                </div>
-              )}
+                </section>
+
+                <section className="reading-subsection" aria-labelledby="last-class-materials-title">
+                  <div className="reading-subsection-heading">
+                    <h3 id="last-class-materials-title">Last class Session materials</h3>
+                    <p>Shown after class until that section&apos;s next class starts.</p>
+                  </div>
+                  {lastClassSessionMaterials.map(({ section, session, materials }) => (
+                    <div className="reading-section-group" key={section}>
+                      <div className="reading-section-label">
+                        <strong>{section}</strong>
+                        <span>{session ? session.title : 'No completed class in the current window'}</span>
+                      </div>
+                      {materials.length > 0 ? (
+                        <div className="practice-list reading-resource-list">
+                          {materials.map((material) => (
+                            <ResourceCard
+                              actions={[{
+                                href: `/session/${session!.id}/material/${material.id}`,
+                                label: 'Open session material',
+                              }]}
+                              availability={getMaterialAvailabilityCopy(material, timeZone)}
+                              context={`Last ${section} class · ${session!.title}`}
+                              key={material.id}
+                              title={material.title}
+                              type="session_material"
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="practice-empty reading-missing">
+                          <strong>No {section} Session materials are currently recommended</strong>
+                          <p>They appear after that section&apos;s class ends and leave when its next class starts.</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </section>
+              </div>
             </section>
           )}
 
