@@ -2,11 +2,11 @@
 
 Status: Active
 Owner: Product owner
-Last updated: 10 August 2026
+Last updated: 14 August 2026
 
 This folder contains the documents that define product intent, scope, phase boundaries, acceptance, and signed checkpoints. Read this register before starting product or engineering work.
 
-Current delivery state: Phases 1–7 are signed off and deployed to Production. Phase 8 is signed off with explicit evidence exceptions after the Product Owner confirmed on 10 August 2026 that the MVP is live with real Students. The closeout does not claim that the complete proposed pilot evidence set exists; see the [Phase 8 status](../docs/phase-8/README.md).
+Current delivery state: Phases 1–7 are signed off and deployed to Production. Phase 8 is signed off with explicit evidence exceptions after the Product Owner confirmed on 10 August 2026 that the MVP is live with real Students. Pilot V1 was deployed on 13 August 2026 and is preserved in its [Production evidence](../docs/pilot-v1/evidence/production-rollout-2026-08-13.md). Pilot V2 is proposed and must begin with scope definition in its [consolidated bootstrap](../docs/pilot-v2/README.md). The Phase 8 closeout does not claim that the complete proposed pilot evidence set exists; see the [Phase 8 status](../docs/phase-8/README.md).
 
 ## Authority order
 
@@ -28,6 +28,8 @@ Code is evidence of the current implementation, not authority for product scope.
 | `Ace_Club_LMS_Product_Roadmap.md` | Delivery roadmap | Active | Defines phases, order, dependencies, and gates | Change only with product-owner approval |
 | `Phase_0.5_Setup_Recovery_Signoff.md` | Historical signed checkpoint | Signed off | Preserves the immutable Phase 0.5 state | Do not rewrite accepted history |
 | `docs/handoffs/ace-club-lms-running-handoff.md` | Running cross-phase handoff | Active | Preserves signed phase sections and the latest continuation state | Append a new signed section at each phase close |
+| `docs/handoffs/pilot-iterations-running-handoff.md` | Signed pilot handoff | Signed off for V1 | Preserves detailed Pilot V1 execution and release history | Do not append V2 working state |
+| `docs/pilot-v2/README.md` | Version bootstrap and status | Proposed | Single active entry point for V2 scope definition and later working state | Update after each V2 decision, phase or ownership transfer |
 
 ## Reading paths
 
@@ -39,7 +41,8 @@ Code is evidence of the current implementation, not authority for product scope.
 4. Read the Markdown acceptance criteria and relevant roadmap phase.
 5. Read `docs/README.md`.
 6. For post-MVP pilot changes, read the signed Phase 8 closeout, its explicit evidence exceptions, the [Pilot Iterations Running Handoff](../docs/handoffs/pilot-iterations-running-handoff.md), and the active cleanup register.
-7. Read only the implementation files relevant to the immediate task.
+7. For Pilot V2, use the [Pilot V2 consolidated bootstrap and running handoff](../docs/pilot-v2/README.md) as the single active entry point and follow its tiered reading map.
+8. Read only the implementation files relevant to the immediate task.
 
 ### Making a product decision
 

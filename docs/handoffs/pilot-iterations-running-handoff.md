@@ -1,12 +1,14 @@
 # Ace Club LMS — Pilot Iterations Running Handoff
 
-Status: Active
+Status: Signed off for Pilot V1; superseded for active work by [Pilot V2](../pilot-v2/README.md)
 Owner: Product owner and Engineering
-Last updated: 13 August 2026
+Last updated: 14 August 2026
+
+Pilot V1 is deployed and this file is preserved as its detailed running history. Start all new work from the consolidated [Pilot V2 bootstrap and running handoff](../pilot-v2/README.md). Do not append V2 implementation state here.
 
 ## Purpose
 
-Use this document for iterative post-MVP pilot changes after the Phase 8 operational closeout. Keep the main [Ace Club LMS running handoff](ace-club-lms-running-handoff.md) as the signed Phase 0.5–8 history. Record short-lived V1/V2 working state here so future work can resume without rereading every historical phase.
+This document records Pilot V1 after the Phase 8 operational closeout. Keep the main [Ace Club LMS running handoff](ace-club-lms-running-handoff.md) as the signed Phase 0.5–8 history and use the [Pilot V2 bootstrap](../pilot-v2/README.md) for current continuation.
 
 This document coordinates work; it does not authorize a Production change. Every version remains staging-only until its acceptance criteria pass and the Product Owner explicitly approves Production promotion.
 
@@ -36,7 +38,7 @@ Before starting or resuming a pilot version, read:
 
 Do not reread every historical evidence file by default. The list above carries forward every current boundary named by the final Phase 7/Phase 8 handoff while routing work to the smallest authoritative files. Load additional historical evidence only when a proposed change touches that boundary or newer evidence contradicts it.
 
-## Exact resume instruction
+## Historical Pilot V1 resume instruction
 
 Use the following instruction to start or continue a pilot version:
 
@@ -119,7 +121,7 @@ A phase is `Complete` only when its exit criteria pass, its focused change is co
 
 Allowed version statuses: `Proposed`, `Active`, `Staging verification`, `Accepted for Production`, `Deployed`, `Paused`, or `Superseded`.
 
-## Active version — Pilot V1
+## Signed version — Pilot V1
 
 ### Active document register
 
