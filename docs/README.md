@@ -40,6 +40,8 @@ Pilot V1 Production database checks: [Read-only Verification](pilot-v1/productio
 
 Pilot V2 scope is currently proposed, not approved: [Consolidated Bootstrap and Running Handoff](pilot-v2/README.md). It contains the complete reading map, batch/course ownership model, candidate V2 areas, required Product Owner decisions and exact next action.
 
+Approved Pilot V2 recommendation requirement: [Recommended Reading Bug and Revised Contract](pilot-v2/recommended-reading-revision.md). It records the multi-pre-read Production defect and the two-subsection next-class/last-class behavior; Recommended practice remains unchanged.
+
 Current weekly-schedule decision: [ADR-0004 — Defer Weekly Schedule Redesign](decisions/adr-0004-defer-weekly-schedule-redesign.md). The earlier migration is excluded from Pilot V1 and must not be applied or marked as applied.
 
 ## Current phase

@@ -67,6 +67,7 @@ Read all of these before defining or implementing any V2 batch/course change:
 6. [Pilot V1 Acceptance Criteria](../pilot-v1/acceptance-criteria.md) — explicitly reserves flexible templates, crash courses and free-form batch schedule building for V2 while locking batch ownership rules.
 7. [Pilot V1 Implementation Plan](../pilot-v1/implementation-plan.md), [Phase 0 Readiness](../pilot-v1/phase-0-readiness.md), [Phase 7 checklist](../pilot-v1/manual-verification-checklist.md), [Production Release Plan](../pilot-v1/production-release-plan.md) and [read-only Production verification](../pilot-v1/production-read-only-verification.sql) — implementation/release method and V1 migration isolation.
 8. All Pilot V1 evidence: [Phase 4 database authorization](../pilot-v1/evidence/phase-4-staging-migration-and-authorization-2026-08-11.md), [Phase 4 Preview lifecycle](../pilot-v1/evidence/phase-4-preview-route-lifecycle-2026-08-11.md), [Phase 5 Session-resource lifecycle](../pilot-v1/evidence/phase-5-staging-session-resource-lifecycle-2026-08-13.md), [Phase 6 integrated checks](../pilot-v1/evidence/phase-6-integrated-verification-2026-08-13.md), [Phase 6 logo amendment](../pilot-v1/evidence/phase-6-logo-amendment-verification-2026-08-13.md), [Phase 7 staging acceptance](../pilot-v1/evidence/phase-7-staging-acceptance-2026-08-13.md) and [Production rollout](../pilot-v1/evidence/production-rollout-2026-08-13.md).
+9. [Recommended Reading Bug and Revised Contract](recommended-reading-revision.md) — approved V2 behavior for all next-class pre-reads and all last-class Session materials; Recommended practice remains unchanged.
 
 ### Tier 2 — authentication, tracker, Admin progress and launch boundaries
 
@@ -263,6 +264,7 @@ Keep all new V2 working material under `docs/pilot-v2/` and link it here and fro
 | Document | Status | Purpose |
 |---|---|---|
 | [Pilot V2 Bootstrap and Running Handoff](README.md) | Proposed; active bootstrap | Consolidated state, complete reading map, candidate scope, guardrails and exact next action |
+| [Recommended Reading Bug and Revised Contract](recommended-reading-revision.md) | Approved for implementation planning | Production defect evidence, two-subsection product contract, timing, multi-file behavior and verification requirements |
 
 Add later, only when created and approved:
 
