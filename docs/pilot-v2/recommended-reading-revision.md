@@ -10,7 +10,6 @@ This file records the Production defect found on 14 August 2026 and the Product 
 
 This decision changes recommendation presentation only. It does not change material release timestamps, content authorization, batch ownership, Recommended practice, Production data or the deferred weekly-schedule migration.
 
-The phrase “last year's Session material” in the Product Owner discussion is recorded here as “last session's Session material,” based on the surrounding requirement.
 
 ## Finding RR-01 — only one Quant pre-read is recommended
 
@@ -37,7 +36,7 @@ The focused recommendation suite passes because its pre-read fixtures contain on
 
 ### Required defect correction
 
-- Return every distinct pre-read attached to the selected next academic session.
+- For each academic section, return every distinct pre-read attached to that section's next class.
 - Render one card per pre-read using stable material identity and deterministic source order.
 - Add a regression fixture with at least two pre-reads on one QA session.
 - Do not repair this by deleting, merging or renaming Production materials.
@@ -53,28 +52,31 @@ Each subsection may contain zero, one or many files. Multiple files must produce
 
 Recommended practice remains exactly as shipped and is outside this change.
 
+The rule is section-wise. `QA`, `VA` and `DI` each maintain their own next-class pre-read set and previous-class Session-material set. A class in one section must not replace or suppress recommendations for another section.
+
 ## A. Next class pre-reads
 
 ### Selection rule
 
 1. Use the signed-in Student's enrolled batch and its database-owned schedule.
-2. Consider published academic sessions only: `QA`, `VA` and `DI`.
-3. Select the next session window in chronological order. The current/next class remains selected until its `session_end_at`; after that boundary, rotate to the following academic session.
-4. Return every distinct `pre_read` attached to that selected session.
-5. Preserve deterministic material order and show every sibling once.
+2. Evaluate `QA`, `VA` and `DI` independently.
+3. For each section, select that section's earliest published class whose `session_date` is later than the current database/programme time.
+4. Return every distinct `pre_read` attached to that selected same-section class.
+5. Preserve deterministic material order and show every sibling once within its section.
 
 ### Visibility and release rule
 
 - Recommendation does not grant access and does not change `available_from`.
 - A released pre-read has an active Open action.
 - If a configured pre-read is still locked, its card may show the accurate availability state but must not expose an active content or private URL.
-- Pre-reads remain in this subsection through the selected class window. They rotate together when that class reaches its database-owned end time.
-- If there is no later published academic session, show a clear subsection empty state rather than selecting an old or unrelated item.
-- If the next session has no pre-read, show a clear next-class empty state naming the class context without inventing a material.
+- Each section's pre-reads remain recommended until that selected class starts at `session_date`.
+- At the class-start boundary, remove that class's pre-reads and select the following published class in the same section.
+- If a section has no later published class, show a clear section empty state rather than selecting an old or different-section item.
+- If a section's next class has no pre-read, show a clear next-class empty state naming that section/class context without inventing a material.
 
 ### Thursday example
 
-On Thursday, when Friday's class is the next published academic session, show every pre-read attached to Friday's class. If Friday has two pre-reads, show both. At Friday's `session_end_at`, rotate this subsection to every pre-read for the next published academic class.
+On Thursday, if Friday's VA class is the next published VA session, show every pre-read attached to that VA class. If it has two pre-reads, show both until the Friday VA class starts. QA and DI simultaneously show all pre-reads for their own next classes. When Friday VA starts, only the VA pre-read set rotates to the following VA class.
 
 The rule is schedule-driven, not hard-coded to Thursday or a particular subject. It must continue to work if a batch has different class days.
 
@@ -82,26 +84,35 @@ The rule is schedule-driven, not hard-coded to Thursday or a particular subject.
 
 ### Selection rule
 
-1. Use the same enrolled batch and published academic-session sequence.
-2. Select the most recent academic session whose `session_end_at` is at or before the current database/programme time.
-3. Return every distinct released `session_material` attached to that session.
-4. Preserve deterministic material order and show every sibling once.
+1. Use the same enrolled batch and evaluate `QA`, `VA` and `DI` independently.
+2. For each section, select its most recent published class whose `session_end_at` is at or before the current database/programme time.
+3. Return every distinct released `session_material` attached to that same-section class.
+4. Preserve deterministic material order and show every sibling once within its section.
 
 ### Visibility and rotation rule
 
 - Show only Session materials belonging to that exact batch session.
 - Each file receives its own protected Open action after release.
-- Keep all files from the last completed class until the next academic class reaches `session_end_at`.
-- At that boundary, replace the previous set with every released Session material from the newly completed class.
-- If the newly completed class has no Session material, show a clear empty state for the last class. Do not silently keep material from an older class, because the Product Owner wants the complete Recommended reading state to advance with the class sequence.
+- A section's Session materials enter Recommended reading only after that class ends at `session_end_at`.
+- Keep all files from that completed class only until the next published class in the same section starts at `session_date`.
+- At the next same-section class-start boundary, remove the previous class's Session materials. Do not wait for the new class to end before removing the old set.
+- During the new class there may be no Session-material recommendation for that section. After the new class ends, show every released Session material from that newly completed class.
+- If a completed class has no Session material, show a clear empty state for that section's last class. Do not silently keep material from an older same-section class.
 - Never fall back to another batch or to reusable Master materials.
 
 ## C. Shared timing model
 
-Both subsections use the selected batch's database timestamps and `schedule_timezone`, currently `Asia/Kolkata`. The class-end boundary gives one coherent rotation event:
+Both subsections use the selected batch's database timestamps and `schedule_timezone`, currently `Asia/Kolkata`. Each academic section has its own independent recommendation window:
 
-- before class end: all pre-reads for that current/next class plus all Session materials from the previously completed class;
-- at/after class end: all pre-reads for the following academic class plus all Session materials from the class that just completed.
+- **Pre-read window:** from selection as that section's next published class until that class starts at `session_date`.
+- **Session-material window:** from a section class ending at `session_end_at` until the next published class in that same section starts at `session_date`.
+
+For one section, the intended sequence is:
+
+1. Before Class A starts: recommend every pre-read for Class A and every Session material from the previous completed class in that section.
+2. When Class A starts: remove Class A pre-reads and the previous class's Session materials; select every pre-read for Class B, the next class in that same section.
+3. When Class A ends: recommend every released Session material from Class A; keep Class B pre-reads.
+4. When Class B starts: remove Class B pre-reads and Class A Session materials, then repeat the same-section cycle.
 
 This timing changes recommendation membership only. Existing seven-day pre-read release and post-class Session-material release remain authoritative.
 
@@ -113,15 +124,20 @@ Recommended reading should render:
 Recommended reading
 
 Next class pre-reads
-  [zero, one or many pre-read cards]
+  QA: [zero, one or many pre-read cards for next QA class]
+  VA: [zero, one or many pre-read cards for next VA class]
+  DI: [zero, one or many pre-read cards for next DI class]
 
 Last class Session materials
-  [zero, one or many Session-material cards]
+  QA: [zero, one or many cards from last QA class, within its window]
+  VA: [zero, one or many cards from last VA class, within its window]
+  DI: [zero, one or many cards from last DI class, within its window]
 ```
 
 Requirements:
 
 - Use distinct subsection headings and context copy.
+- Keep QA, VA and DI recommendation state independent inside each subsection.
 - Every resource card retains its saved title, type, availability and class context.
 - Use stable material IDs as keys and destinations.
 - One unavailable or broken resource must not hide working siblings.
@@ -143,11 +159,14 @@ Requirements:
 
 ### Focused automated cases
 
+- next QA, VA and DI sessions are selected independently;
 - next QA session with two or more released pre-reads returns all siblings once;
 - multiple pre-reads preserve deterministic order;
 - one locked sibling does not expose access or hide released siblings;
-- last completed session with two or more released Session materials returns all siblings once;
-- the pre-read and Session-material subsections rotate together at `session_end_at`;
+- last completed same-section session with two or more released Session materials returns all siblings once;
+- a section's pre-reads disappear at that class's `session_date` and rotate to the following same-section class;
+- a section's Session materials appear at `session_end_at` and disappear at the next same-section class's `session_date`;
+- a QA boundary changes QA recommendations without changing VA or DI recommendations;
 - a missing next-class pre-read set and a missing last-class Session-material set produce independent empty states;
 - unpublished, cross-batch, unreleased and duplicate resources are not exposed;
 - the rule works across Thursday/Friday/weekend and arbitrary batch dates without weekday hard-coding;
@@ -156,7 +175,7 @@ Requirements:
 ### Staging journeys
 
 - Use one staging Student enrolled in a batch with multiple next-class pre-reads and multiple last-class Session materials.
-- Verify both subsections before and after a controlled class-end boundary.
+- Verify both subsections before class start, during class, after class end and at the next same-section class start.
 - Open every eligible file through its canonical protected route.
 - Confirm locked, missing, duplicate, cross-batch and signed-out denial states.
 - Confirm Timeline and class-detail resource lists remain complete and unchanged.
@@ -173,7 +192,7 @@ Requirements:
 
 ## Likely implementation surface
 
-- `src/lib/studentTimeline.ts` — replace the singular pre-read return model with complete subsection collections and implement the shared class-window selection.
+- `src/lib/studentTimeline.ts` — replace the singular pre-read return model with complete per-section collections and implement the separate pre-read and Session-material windows.
 - `src/app/dashboard/page.tsx` — render the two subsections and all resource cards.
 - `scripts/student-timeline-recommendations.test.mjs` — add sibling, rotation, empty-state and non-regression fixtures.
 - `src/lib/server/studentTimeline.ts` and the timeline RPC should be reviewed to confirm they continue returning every material; the diagnosis indicates the current payload already contains all Production pre-reads.
