@@ -2,19 +2,21 @@
 
 Status: Active
 Owner: Engineering
-Last updated: 13 August 2026
+Last updated: 14 August 2026
 
 This index routes readers to the smallest set of documents needed for a task. Product authority remains in [`instruction/`](../instruction/README.md).
 
 Current signed history: [Ace Club LMS Running Handoff](handoffs/ace-club-lms-running-handoff.md).
 
-Current post-MVP iteration state: [Pilot Iterations Running Handoff](handoffs/pilot-iterations-running-handoff.md).
+Current post-MVP iteration state: [Pilot V2 — Consolidated Bootstrap and Running Handoff](pilot-v2/README.md).
 
-Current proposed version requirements: [Pilot V1 Acceptance Criteria](pilot-v1/acceptance-criteria.md).
+Signed Pilot V1 history: [Pilot Iterations Running Handoff](handoffs/pilot-iterations-running-handoff.md) and [Production Rollout Evidence](pilot-v1/evidence/production-rollout-2026-08-13.md).
 
-Current proposed delivery sequence: [Pilot V1 Phase-wise Implementation Plan](pilot-v1/implementation-plan.md).
+Signed Pilot V1 requirements: [Pilot V1 Acceptance Criteria](pilot-v1/acceptance-criteria.md).
 
-Current implementation baseline: [Pilot V1 Phase 0 Readiness Record](pilot-v1/phase-0-readiness.md).
+Signed Pilot V1 delivery sequence: [Pilot V1 Phase-wise Implementation Plan](pilot-v1/implementation-plan.md).
+
+Pilot V1 implementation baseline: [Pilot V1 Phase 0 Readiness Record](pilot-v1/phase-0-readiness.md).
 
 Current Phase 4 staging database checks: [Session-material Authorization Probe](pilot-v1/phase-4-staging-authorization-probe.sql).
 
@@ -30,11 +32,15 @@ Current Phase 6 logo amendment result: [Ace Club Logo Amendment Verification Evi
 
 Current Pilot V1 Phase 7 staging review: [Manual Verification Checklist](pilot-v1/manual-verification-checklist.md).
 
-Pilot V1 Phase 7 is complete and accepted for Production planning: [Staging Acceptance Evidence](pilot-v1/evidence/phase-7-staging-acceptance-2026-08-13.md). Production promotion remains separately gated.
+Pilot V1 Phase 7 is complete and deployed to Production: [Staging Acceptance Evidence](pilot-v1/evidence/phase-7-staging-acceptance-2026-08-13.md) and [Production Rollout Evidence](pilot-v1/evidence/production-rollout-2026-08-13.md).
 
-Current Pilot V1 Production planning: [Conditional Production Release Plan](pilot-v1/production-release-plan.md). The plan is draft and requires review, read-only preflight and a new explicit Product Owner Production instruction.
+Pilot V1 Production release procedure: [Conditional Production Release Plan](pilot-v1/production-release-plan.md). The authorized procedure was executed on 13 August 2026; it does not authorize a later Production change.
 
 Pilot V1 Production database checks: [Read-only Verification](pilot-v1/production-read-only-verification.sql). Run before and after the tracked migration push and compare sanitized aggregate/schema results.
+
+Pilot V2 scope is currently proposed, not approved: [Consolidated Bootstrap and Running Handoff](pilot-v2/README.md). It contains the complete reading map, batch/course ownership model, candidate V2 areas, required Product Owner decisions and exact next action.
+
+Approved Pilot V2 recommendation requirement: [Recommended Reading Bug and Revised Contract](pilot-v2/recommended-reading-revision.md). It records the multi-pre-read Production defect and the section-wise two-subsection timing behavior; Recommended practice remains unchanged.
 
 Current weekly-schedule decision: [ADR-0004 — Defer Weekly Schedule Redesign](decisions/adr-0004-defer-weekly-schedule-redesign.md). The earlier migration is excluded from Pilot V1 and must not be applied or marked as applied.
 

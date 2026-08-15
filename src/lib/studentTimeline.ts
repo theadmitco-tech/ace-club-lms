@@ -41,10 +41,10 @@ export type WeekGroup = {
   sessions: StudentTimelineSession[];
 };
 
-export type PreReadRecommendation = {
-  session: StudentTimelineSession;
-  material: StudentTimelineMaterial | null;
+export type SectionReadingRecommendation = {
   section: AcademicSection;
+  session: StudentTimelineSession | null;
+  materials: StudentTimelineMaterial[];
 };
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -52,10 +52,6 @@ const DAY_IN_MS = 24 * 60 * 60 * 1000;
 function parseDateKey(dateKey: string) {
   const [year, month, day] = dateKey.split('-').map(Number);
   return Date.UTC(year, month - 1, day);
-}
-
-function addDaysToDateKey(dateKey: string, days: number) {
-  return new Date(parseDateKey(dateKey) + (days * DAY_IN_MS)).toISOString().slice(0, 10);
 }
 
 function compareSessions(left: StudentTimelineSession, right: StudentTimelineSession) {
@@ -132,52 +128,77 @@ export function getRecommendedPractice(
   });
 }
 
-export function getRecommendedReading(
-  sessions: StudentTimelineSession[],
-) {
-  const sections: AcademicSection[] = ['DI', 'VA', 'QA'];
+const READING_SECTIONS: AcademicSection[] = ['QA', 'VA', 'DI'];
 
-  return sections.flatMap((section) => {
-    const activeSession = sessions
+function uniqueMaterials(
+  materials: StudentTimelineMaterial[],
+  type: TimelineMaterialType,
+  availableOnly = false,
+) {
+  return materials.filter((material, index, allMaterials) => (
+    material.type === type
+    && (!availableOnly || material.is_available)
+    && allMaterials.findIndex((candidate) => candidate.id === material.id) === index
+  ));
+}
+
+export function getNextClassPreReads(
+  sessions: StudentTimelineSession[],
+  generatedAt: string,
+): SectionReadingRecommendation[] {
+  const generatedAtTime = new Date(generatedAt).getTime();
+
+  return READING_SECTIONS.map((section) => {
+    const nextSession = sessions
       .filter((session) => (
         session.class_type === section
-        && session.materials.some((material) => material.type === 'session_material' && material.is_available)
+        && new Date(session.session_date).getTime() > generatedAtTime
       ))
-      .sort((left, right) => compareSessions(right, left))[0];
-    if (!activeSession) return [];
+      .sort(compareSessions)[0] ?? null;
 
-    const reading = activeSession.materials.filter((material, index, materials) => (
-      material.type === 'session_material'
-      && material.is_available
-      && materials.findIndex((candidate) => candidate.id === material.id) === index
-    ));
-
-    return reading.map((material) => ({ session: activeSession, material }));
+    return {
+      section,
+      session: nextSession,
+      materials: nextSession ? uniqueMaterials(nextSession.materials, 'pre_read') : [],
+    };
   });
 }
 
-export function getPreReadRecommendation(
+export function getLastClassSessionMaterials(
   sessions: StudentTimelineSession[],
   generatedAt: string,
-  timeZone: string,
-): PreReadRecommendation | null {
-  const programmeToday = getDateKeyInTimeZone(generatedAt, timeZone);
-  const tomorrow = addDaysToDateKey(programmeToday, 1);
-  const session = sessions
-    .filter((item) => (
-      isAcademicSection(item.class_type)
-      && getDateKeyInTimeZone(item.session_date, timeZone) === tomorrow
-    ))
-    .sort(compareSessions)[0];
-  if (!session) return null;
+): SectionReadingRecommendation[] {
+  const generatedAtTime = new Date(generatedAt).getTime();
 
-  const section = session.class_type as AcademicSection;
+  return READING_SECTIONS.map((section) => {
+    const sectionSessions = sessions
+      .filter((session) => session.class_type === section)
+      .sort(compareSessions);
+    const lastCompletedSession = sectionSessions
+      .filter((session) => (
+        session.session_end_at !== null
+        && new Date(session.session_end_at).getTime() <= generatedAtTime
+      ))
+      .at(-1) ?? null;
 
-  return {
-    session,
-    material: session.materials.find((material) => material.type === 'pre_read') ?? null,
-    section,
-  };
+    if (!lastCompletedSession) {
+      return { section, session: null, materials: [] };
+    }
+
+    const nextSession = sectionSessions.find((session) => (
+      compareSessions(session, lastCompletedSession) > 0
+    ));
+    const isBeforeNextClass = !nextSession
+      || generatedAtTime < new Date(nextSession.session_date).getTime();
+
+    return {
+      section,
+      session: isBeforeNextClass ? lastCompletedSession : null,
+      materials: isBeforeNextClass
+        ? uniqueMaterials(lastCompletedSession.materials, 'session_material', true)
+        : [],
+    };
+  });
 }
 
 export function formatProgrammeDateTime(value: string, timeZone: string) {

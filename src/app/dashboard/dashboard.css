@@ -255,6 +255,60 @@
   color: #684294;
 }
 
+.reading-subsections {
+  margin-top: 20px;
+  display: grid;
+  gap: 18px;
+}
+
+.reading-subsection {
+  padding-top: 18px;
+  border-top: 1px solid rgba(118, 85, 166, 0.16);
+}
+
+.reading-subsection:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.reading-subsection-heading,
+.reading-section-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.reading-subsection-heading h3 {
+  font-size: 1.05rem;
+}
+
+.reading-subsection-heading p,
+.reading-section-label span {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+.reading-section-group {
+  margin-top: 14px;
+}
+
+.reading-section-label strong {
+  color: #684294;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+}
+
+.reading-section-label span {
+  text-align: right;
+}
+
+.reading-resource-list,
+.reading-missing {
+  margin-top: 8px;
+}
+
 .week-callout {
   padding: 24px;
   border: 1px solid rgba(0, 59, 48, 0.14);
@@ -860,6 +914,8 @@
 
   .student-intro,
   .callout-heading,
+  .reading-subsection-heading,
+  .reading-section-label,
   .browser-heading,
   .practice-row,
   .this-week-row,
@@ -873,6 +929,11 @@
   }
 
   .callout-heading p {
+    text-align: left;
+  }
+
+  .reading-subsection-heading p,
+  .reading-section-label span {
     text-align: left;
   }
 
