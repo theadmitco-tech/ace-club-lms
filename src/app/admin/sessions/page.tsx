@@ -6,6 +6,7 @@ import { createClient } from '@/utils/supabase/client';
 import { formatDate } from '@/lib/utils';
 import { useAuth } from '@/lib/AuthContext';
 import { getDefaultSessionTitle, shouldUseDefaultSessionTitle } from '@/lib/curriculum';
+import { cancelEventAction, reorderEventsAction, shiftScheduleAction } from './actions';
 
 import {
   DndContext,
@@ -28,6 +29,8 @@ import { CSS } from '@dnd-kit/utilities';
 type CourseOption = {
   id: string;
   name: string;
+  schedule_revision: number;
+  source_template_revision_id: string | null;
 };
 
 type AdminSession = {
@@ -37,13 +40,10 @@ type AdminSession = {
   session_number: number;
   session_date: string;
   is_published: boolean;
+  display_order: number | null;
+  session_end_at: string | null;
+  cancelled_at: string | null;
   materials?: { id: string }[];
-};
-
-type SessionMaterial = {
-  id: string;
-  session_id: string;
-  type: 'pre_read' | 'class_material' | 'worksheet' | 'video';
 };
 
 type SortableSessionRowProps = {
@@ -115,7 +115,7 @@ function SortableSessionRow({ session, onEdit, onDeleteConfirm, isConfirmingDele
               onClick={() => onDeleteConfirm(session.id, 'start')}
               style={{ color: 'var(--error)' }}
             >
-              Delete
+              Cancel
             </button>
           )}
         </div>
@@ -126,20 +126,8 @@ function SortableSessionRow({ session, onEdit, onDeleteConfirm, isConfirmingDele
 
 function toDateTimeLocalValue(dateValue: string) {
   const date = new Date(dateValue);
-  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-  return localDate.toISOString().slice(0, 16);
-}
-
-function getMaterialAvailableFrom(type: SessionMaterial['type'], sessionDate: string) {
-  const date = new Date(sessionDate);
-
-  if (type === 'pre_read') {
-    date.setDate(date.getDate() - 7);
-  } else {
-    date.setHours(date.getHours() + 2);
-  }
-
-  return date.toISOString();
+  const istDate = new Date(date.getTime() + 330 * 60000);
+  return istDate.toISOString().slice(0, 16);
 }
 
 // --- Main Page Component ---
@@ -174,7 +162,7 @@ export default function AdminSessionsPage() {
     setIsLoading(true);
     const { data, error } = await supabase
       .from('courses')
-      .select('id, name')
+      .select('id, name, schedule_revision, source_template_revision_id')
       .order('created_at', { ascending: false });
       
     if (!error && data) {
@@ -193,13 +181,15 @@ export default function AdminSessionsPage() {
       .from('sessions')
       .select(`*, materials(id)`)
       .eq('course_id', courseId)
+      .order('display_order', { ascending: true, nullsFirst: false })
       .order('session_number', { ascending: true });
       
     if (!error && data) {
       const fetchedSessions = data as AdminSession[];
+      const isPhase2Batch = Boolean(courses.find((course) => course.id === courseId)?.source_template_revision_id);
       const sessionsWithCurriculumTitles = fetchedSessions.map((session) => {
         const defaultTitle = getDefaultSessionTitle(session.session_number);
-        const shouldUpdateTitle = Boolean(defaultTitle && shouldUseDefaultSessionTitle(session.session_number, session.title));
+        const shouldUpdateTitle = !isPhase2Batch && Boolean(defaultTitle && shouldUseDefaultSessionTitle(session.session_number, session.title));
 
         return {
           ...session,
@@ -239,12 +229,14 @@ export default function AdminSessionsPage() {
   const pushDeltaMs = selectedPushSession && pushToDate
     ? new Date(pushToDate).getTime() - new Date(selectedPushSession.session_date).getTime()
     : 0;
-  const pushedSessionCount = selectedPushSession
-    ? sessions.filter((session) => session.session_number >= selectedPushSession.session_number).length
-    : 0;
   const pushPreviewDate = selectedPushSession && pushToDate
     ? new Date(new Date(selectedPushSession.session_date).getTime() + pushDeltaMs).toISOString()
     : '';
+  const pushConsequences = selectedPushSession && pushDeltaMs
+    ? sessions.filter((session) => session.session_number >= selectedPushSession.session_number
+      && !session.cancelled_at && new Date(session.session_date) > new Date())
+      .map((session) => ({ ...session, after: new Date(new Date(session.session_date).valueOf() + pushDeltaMs).toISOString() }))
+    : [];
 
   const handleDeleteRequest = async (id: string, action: boolean | 'start') => {
     if (action === 'start') {
@@ -256,13 +248,25 @@ export default function AdminSessionsPage() {
       return;
     }
     
-    // Confirmed Delete
-    const { error } = await supabase.from('sessions').delete().eq('id', id);
-    if (error) {
-      addToast('error', 'Failed to delete session.');
-    } else {
-      addToast('success', 'Session deleted successfully.');
-      if (selectedCourseId) fetchSessions(selectedCourseId);
+    const selectedCourse = courses.find((course) => course.id === selectedCourseId);
+    if (!selectedCourse?.source_template_revision_id) {
+      addToast('error', 'Legacy batches are preserved and cannot be deleted through the Phase 2 editor.');
+      setDeleteConfirm(null);
+      return;
+    }
+    const result = await cancelEventAction({
+      courseId: selectedCourseId,
+      sessionId: id,
+      reason: 'Cancelled by Admin after consequence review',
+      expectedRevision: selectedCourse.schedule_revision,
+    });
+    if (result.status === 'error') addToast('error', result.message);
+    else {
+      addToast('success', result.message);
+      setCourses((current) => current.map((course) => course.id === selectedCourseId
+        ? { ...course, schedule_revision: result.scheduleRevision ?? course.schedule_revision }
+        : course));
+      await fetchSessions(selectedCourseId);
     }
     setDeleteConfirm(null);
   };
@@ -271,6 +275,16 @@ export default function AdminSessionsPage() {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
+      const selectedCourse = courses.find((course) => course.id === selectedCourseId);
+      const activeSession = sessions.find((session) => session.id === active.id);
+      const overSession = sessions.find((session) => session.id === over.id);
+      const now = Date.now();
+      if (!selectedCourse?.source_template_revision_id || !activeSession || !overSession
+        || activeSession.cancelled_at || overSession.cancelled_at
+        || new Date(activeSession.session_date).valueOf() <= now || new Date(overSession.session_date).valueOf() <= now) {
+        addToast('error', 'Only eligible future events in a Phase 2 batch can be reordered.');
+        return;
+      }
       setSessions((items) => {
         // 1. Capture the original sequence of dates before moving anything
         // This ensures the "slots" remain fixed in time.
@@ -290,7 +304,12 @@ export default function AdminSessionsPage() {
           session_date: originalDates[index] // Inherit the date of the slot
         }));
 
-        saveNewOrder(updatedItems);
+        const consequence = updatedItems
+          .filter((item, index) => item.id !== items[index]?.id || item.session_date !== items[index]?.session_date)
+          .map((item) => `${item.title}: ${formatDate(items.find((original) => original.id === item.id)?.session_date || item.session_date)} → ${formatDate(item.session_date)}`)
+          .join('\n');
+        if (window.confirm(`Review schedule consequences\n\n${consequence}`)) void saveNewOrder(updatedItems);
+        else return items;
         return updatedItems;
       });
     }
@@ -298,26 +317,25 @@ export default function AdminSessionsPage() {
 
   const saveNewOrder = async (newSessions: AdminSession[]) => {
     setIsUpdatingOrder(true);
-    
-    // We update each session's number in the database
-    const updates = newSessions.map(session => ({
-      id: session.id,
-      course_id: session.course_id,
-      title: session.title,
-      session_number: session.session_number,
-      session_date: session.session_date,
-      is_published: session.is_published
-    }));
-
-    const { error } = await supabase
-      .from('sessions')
-      .upsert(updates, { onConflict: 'id' });
-
-    if (error) {
-      addToast('error', 'Failed to save new order.');
-      console.error(error);
+    const selectedCourse = courses.find((course) => course.id === selectedCourseId);
+    if (!selectedCourse?.source_template_revision_id) {
+      addToast('error', 'Legacy batches remain unchanged.');
+      setIsUpdatingOrder(false);
+      return;
+    }
+    const eligibleIds = newSessions
+      .filter((session) => !session.cancelled_at && new Date(session.session_date) > new Date())
+      .map((session) => session.id);
+    const result = await reorderEventsAction({ courseId: selectedCourseId, sessionIds: eligibleIds, expectedRevision: selectedCourse.schedule_revision });
+    if (result.status === 'error') {
+      addToast('error', result.message);
+      await fetchSessions(selectedCourseId);
     } else {
-      addToast('success', 'Schedule updated successfully.');
+      addToast('success', result.message);
+      setCourses((current) => current.map((course) => course.id === selectedCourseId
+        ? { ...course, schedule_revision: result.scheduleRevision ?? course.schedule_revision }
+        : course));
+      await fetchSessions(selectedCourseId);
     }
     
     setIsUpdatingOrder(false);
@@ -341,6 +359,11 @@ export default function AdminSessionsPage() {
       return;
     }
 
+    const days = Math.round(deltaMs / 86_400_000);
+    if (deltaMs !== days * 86_400_000 || days === 0) {
+      addToast('error', 'Choose a whole-day shift. Event times stay unchanged.');
+      return;
+    }
     const affectedSessions = sessions
       .filter((session) => session.session_number >= selectedPushSession.session_number)
       .map((session) => ({
@@ -350,61 +373,33 @@ export default function AdminSessionsPage() {
 
     setIsPushingSchedule(true);
 
-    const sessionUpdates = affectedSessions.map((session) => ({
-      id: session.id,
-      course_id: session.course_id,
-      title: session.title,
-      session_number: session.session_number,
-      session_date: session.session_date,
-      is_published: session.is_published,
-    }));
-
-    const { error: sessionError } = await supabase
-      .from('sessions')
-      .upsert(sessionUpdates, { onConflict: 'id' });
-
-    if (sessionError) {
-      addToast('error', 'Failed to push the schedule.');
-      console.error(sessionError);
+    const selectedCourse = courses.find((course) => course.id === selectedCourseId);
+    if (!selectedCourse?.source_template_revision_id) {
+      addToast('error', 'Legacy batches remain unchanged and are not editable in the Phase 2 workflow.');
       setIsPushingSchedule(false);
       return;
     }
-
-    const affectedSessionIds = affectedSessions.map((session) => session.id);
-    const nextDatesBySessionId = new Map(affectedSessions.map((session) => [session.id, session.session_date]));
-    const { data: materials, error: materialsError } = await supabase
-      .from('materials')
-      .select('id, session_id, type')
-      .in('session_id', affectedSessionIds);
-
-    if (materialsError) {
-      addToast('info', 'Schedule pushed, but material unlock dates could not be refreshed.');
-      console.error(materialsError);
-    } else if (materials) {
-      const materialUpdates = (materials as SessionMaterial[]).map((material) => {
-        const nextSessionDate = nextDatesBySessionId.get(material.session_id);
-        if (!nextSessionDate) return Promise.resolve({ error: null });
-
-        return supabase
-          .from('materials')
-          .update({ available_from: getMaterialAvailableFrom(material.type, nextSessionDate) })
-          .eq('id', material.id);
-      });
-
-      const materialResults = await Promise.all(materialUpdates);
-      const failedMaterialUpdate = materialResults.find((result) => result.error);
-      if (failedMaterialUpdate) {
-        addToast('info', 'Schedule pushed, but some material unlock dates could not be refreshed.');
-        console.error(failedMaterialUpdate.error);
-      }
+    const result = await shiftScheduleAction({
+      courseId: selectedCourseId,
+      sessionId: selectedPushSession.id,
+      days,
+      expectedRevision: selectedCourse.schedule_revision,
+    });
+    if (result.status === 'error') {
+      addToast('error', result.message);
+      setIsPushingSchedule(false);
+      return;
     }
+    setCourses((current) => current.map((course) => course.id === selectedCourseId
+      ? { ...course, schedule_revision: result.scheduleRevision ?? course.schedule_revision }
+      : course));
 
     setSessions((currentSessions) => currentSessions.map((session) => {
       const updatedSession = affectedSessions.find((affected) => affected.id === session.id);
       return updatedSession || session;
     }));
     setPushToDate('');
-    addToast('success', `Updated ${affectedSessions.length} session${affectedSessions.length === 1 ? '' : 's'}.`);
+    addToast('success', result.message);
     setIsPushingSchedule(false);
   };
 
@@ -517,10 +512,10 @@ export default function AdminSessionsPage() {
             </button>
           </div>
           {selectedPushSession && pushToDate && pushDeltaMs !== 0 && (
-            <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '12px' }}>
-              {pushedSessionCount} session{pushedSessionCount === 1 ? '' : 's'} will move by {Math.round(pushDeltaMs / (24 * 60 * 60 * 1000))} day{Math.abs(Math.round(pushDeltaMs / (24 * 60 * 60 * 1000))) === 1 ? '' : 's'}.
-              {' '}Session {selectedPushSession.session_number} becomes {formatDate(pushPreviewDate)}.
-            </p>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '12px' }}>
+              <p>{pushConsequences.length} session{pushConsequences.length === 1 ? '' : 's'} will move by {Math.round(pushDeltaMs / (24 * 60 * 60 * 1000))} day{Math.abs(Math.round(pushDeltaMs / (24 * 60 * 60 * 1000))) === 1 ? '' : 's'}. Session {selectedPushSession.session_number} becomes {formatDate(pushPreviewDate)}.</p>
+              <details><summary>Review every affected event and unreleased timestamp</summary><ul>{pushConsequences.map((session) => <li key={session.id}>{session.title}: {formatDate(session.session_date)} → {formatDate(session.after)}</li>)}</ul><p>Already-released material remains available; only unreleased timestamps follow this change.</p></details>
+            </div>
           )}
         </div>
       )}

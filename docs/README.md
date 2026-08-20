@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Engineering
-Last updated: 14 August 2026
+Last updated: 20 August 2026
 
 This index routes readers to the smallest set of documents needed for a task. Product authority remains in [`instruction/`](../instruction/README.md).
 
@@ -38,9 +38,41 @@ Pilot V1 Production release procedure: [Conditional Production Release Plan](pil
 
 Pilot V1 Production database checks: [Read-only Verification](pilot-v1/production-read-only-verification.sql). Run before and after the tracked migration push and compare sanitized aggregate/schema results.
 
-Pilot V2 scope is currently proposed, not approved: [Consolidated Bootstrap and Running Handoff](pilot-v2/README.md). It contains the complete reading map, batch/course ownership model, candidate V2 areas, required Product Owner decisions and exact next action.
+Pilot V2 Phases 1–6 are accepted. Phase 6 exact source/Preview acceptance and the read-only Phase 7 readiness baselines are recorded in the [Phase 6 evidence](pilot-v2/evidence/phase-6-preview-acceptance-and-readiness-2026-08-20.md). Production release remains unauthorized: [Consolidated Bootstrap and Running Handoff](pilot-v2/README.md).
+
+Pilot V2 Phase 3 accepted resource-management outcome and current authorization boundary: [Phase 3 Handoff](pilot-v2/README.md#phase-3-handoff).
+
+Approved Pilot V2 outcomes, exclusions and staging journeys: [Product Review and Acceptance Criteria](pilot-v2/acceptance-criteria.md).
+
+Approved Pilot V2 phase sequence and exit gates: [Product Roadmap](pilot-v2/product-roadmap.md).
 
 Approved Pilot V2 recommendation requirement: [Recommended Reading Bug and Revised Contract](pilot-v2/recommended-reading-revision.md). It records the multi-pre-read Production defect and the section-wise two-subsection timing behavior; Recommended practice remains unchanged.
+
+Pilot V2 Phase 0 technical baseline and current exit state: [Phase 0 Readiness](pilot-v2/phase-0-readiness.md).
+
+Approved Pilot V2 template rows, timing, instructors and Admin editor/preview contract: [Template and Admin Interface Specification](pilot-v2/template-interface-specification.md).
+
+Pilot V2 Phase 1 local automated and migration-execution result: [Phase 1 Local Verification Evidence](pilot-v2/evidence/phase-1-local-verification-2026-08-17.md).
+
+Pilot V2 Phase 1 exact Staging migration, authorization, Admin revision and non-regression result: [Phase 1 Staging Verification Evidence](pilot-v2/evidence/phase-1-staging-verification-2026-08-17.md).
+
+Pilot V2 Phase 3 exact Staging migration, bounded access/isolation/sync probe and Product Owner acceptance: [Phase 3 Staging Verification Evidence](pilot-v2/evidence/phase-3-staging-verification-2026-08-18.md).
+
+Pilot V2 Phase 4 exact Staging projection/correction and bounded Full Course/crash-course Student journeys: [Phase 4 Staging Verification Evidence](pilot-v2/evidence/phase-4-staging-verification-2026-08-18.md).
+
+Pilot V2 Phase 5 local integrated authorization, privacy, tracker, compatibility and quality checks: [Phase 5 Local Integrated Safety Evidence](pilot-v2/evidence/phase-5-local-integrated-safety-2026-08-18.md).
+
+Pilot V2 Phase 5 bounded Staging isolation, tracker persistence, Admin parity, exact schedule-shift and aggregate-restoration result: [Phase 5 Staging Integrated Safety Evidence](pilot-v2/evidence/phase-5-staging-verification-2026-08-18.md).
+
+Pilot V2 approved delivery sequence and phase gates: [Implementation Plan](pilot-v2/implementation-plan.md).
+
+Pilot V2 conditional Production procedure: [Release Plan — 20 August 2026](pilot-v2/production-release-plan-2026-08-20.md). Prepared for review; no Production action is authorized.
+
+Pilot V2 read-only Production preflight: [Phase 7 Evidence — 20 August 2026](pilot-v2/evidence/phase-7-production-preflight-2026-08-20.md). Exact dry run and tested manual snapshot recovery pass; documentation freeze and exact Production authorization remain open.
+
+Pilot V2 additive schema, existing-batch compatibility and rollback method: [Data, Compatibility and Rollback Plan](pilot-v2/data-compatibility-and-rollback-plan.md).
+
+Pilot V2 staging acceptance journeys: [Manual Verification Checklist](pilot-v2/manual-verification-checklist.md).
 
 Current weekly-schedule decision: [ADR-0004 — Defer Weekly Schedule Redesign](decisions/adr-0004-defer-weekly-schedule-redesign.md). The earlier migration is excluded from Pilot V1 and must not be applied or marked as applied.
 

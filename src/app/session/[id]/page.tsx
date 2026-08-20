@@ -72,6 +72,14 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
               {formatProgrammeDateTime(session.session_date, timeZone)}
               {session.instructor ? ` · With ${session.instructor}` : ''}
             </p>
+            {(session.venue || session.reporting_time) && (
+              <p>
+                {session.venue ? `Venue: ${session.venue}` : ''}
+                {session.venue && session.reporting_time ? ' · ' : ''}
+                {session.reporting_time ? `Reporting time: ${session.reporting_time.slice(0, 5)}` : ''}
+              </p>
+            )}
+            {session.instructions?.trim() && <p>{session.instructions.trim()}</p>}
           </header>
 
           {isAcademic ? (

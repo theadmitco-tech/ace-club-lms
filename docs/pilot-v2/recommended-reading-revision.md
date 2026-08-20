@@ -1,6 +1,6 @@
 # Pilot V2 — Recommended Reading Bug and Revised Contract
 
-Status: Approved for implementation planning; application code unchanged
+Status: Approved and verified on Staging; Phase 4 accepted
 Owner: Product owner and Engineering
 Last updated: 14 August 2026
 
@@ -8,7 +8,19 @@ Last updated: 14 August 2026
 
 This file records the Production defect found on 14 August 2026 and the Product Owner's replacement Recommended reading behavior. It is the handoff for a later implementation and staging review.
 
-This decision changes recommendation presentation only. It does not change material release timestamps, content authorization, batch ownership, Recommended practice, Production data or the deferred weekly-schedule migration.
+This decision changes recommendation presentation only. It does not change material release timestamps, content authorization, batch ownership, Production data or the deferred weekly-schedule migration.
+
+## Product Owner Phase 4 timing amendment — 18 August 2026
+
+This amendment supersedes any conflicting timing or Recommended Practice statement later in this historical decision record.
+
+- Evaluate `QA`, `VA` and `DI` independently.
+- Before `cohort_start_date`, show every released Starter Pack in Recommended Reading. Stop this Home recommendation when the batch starts; the packs remain available in Resources.
+- Recommended Practice shows every released worksheet from that Section's immediately previous completed class, beginning when that class ends and stopping when the next same-Section class starts.
+- Last class Session materials use the same previous-class/end-to-next-start window.
+- Next class pre-reads appear only after the previous same-Section class ends and remain until the next same-Section class starts.
+- At the next class start, the previous worksheet, previous Session materials and that class's pre-reads all disappear for that Section. The following pre-read set waits until the class in progress ends.
+- A Section with no matching worksheet, Session material or pre-read is omitted from that subsection; do not fall back to an older class or another Section. If the entire subsection is empty, show one compact subsection-level state.
 
 
 ## Finding RR-01 — only one Quant pre-read is recommended
@@ -50,7 +62,7 @@ Recommended reading becomes one parent area with two clearly labeled subsections
 
 Each subsection may contain zero, one or many files. Multiple files must produce multiple independent resource cards; no first-item shortcut is allowed.
 
-Recommended practice remains exactly as shipped and is outside this change.
+Recommended Practice follows the Phase 4 amendment above; no manual selector or Admin-pinned recommendation is introduced.
 
 The rule is section-wise. `QA`, `VA` and `DI` each maintain their own next-class pre-read set and previous-class Session-material set. A class in one section must not replace or suppress recommendations for another section.
 
@@ -61,8 +73,9 @@ The rule is section-wise. `QA`, `VA` and `DI` each maintain their own next-class
 1. Use the signed-in Student's enrolled batch and its database-owned schedule.
 2. Evaluate `QA`, `VA` and `DI` independently.
 3. For each section, select that section's earliest published class whose `session_date` is later than the current database/programme time.
-4. Return every distinct `pre_read` attached to that selected same-section class.
-5. Preserve deterministic material order and show every sibling once within its section.
+4. Require the immediately previous same-Section class to have ended at or before the current database/programme time.
+5. Return every distinct `pre_read` attached to the selected next same-section class.
+6. Preserve deterministic material order and show every sibling once within its section.
 
 ### Visibility and release rule
 
@@ -71,8 +84,7 @@ The rule is section-wise. `QA`, `VA` and `DI` each maintain their own next-class
 - If a configured pre-read is still locked, its card may show the accurate availability state but must not expose an active content or private URL.
 - Each section's pre-reads remain recommended until that selected class starts at `session_date`.
 - At the class-start boundary, remove that class's pre-reads and select the following published class in the same section.
-- If a section has no later published class, show a clear section empty state rather than selecting an old or different-section item.
-- If a section's next class has no pre-read, show a clear next-class empty state naming that section/class context without inventing a material.
+- If a section has no later published class or its next class has no pre-read, omit that Section from the subsection rather than selecting an old or different-section item.
 
 ### Thursday example
 
@@ -97,22 +109,22 @@ The rule is schedule-driven, not hard-coded to Thursday or a particular subject.
 - Keep all files from that completed class only until the next published class in the same section starts at `session_date`.
 - At the next same-section class-start boundary, remove the previous class's Session materials. Do not wait for the new class to end before removing the old set.
 - During the new class there may be no Session-material recommendation for that section. After the new class ends, show every released Session material from that newly completed class.
-- If a completed class has no Session material, show a clear empty state for that section's last class. Do not silently keep material from an older same-section class.
+- If a completed class has no Session material, omit that Section from the subsection. Do not silently keep material from an older same-section class.
 - Never fall back to another batch or to reusable Master materials.
 
 ## C. Shared timing model
 
 Both subsections use the selected batch's database timestamps and `schedule_timezone`, currently `Asia/Kolkata`. Each academic section has its own independent recommendation window:
 
-- **Pre-read window:** from selection as that section's next published class until that class starts at `session_date`.
+- **Pre-read window:** from the previous same-Section class ending at `session_end_at` until the next class starts at `session_date`.
 - **Session-material window:** from a section class ending at `session_end_at` until the next published class in that same section starts at `session_date`.
 
 For one section, the intended sequence is:
 
-1. Before Class A starts: recommend every pre-read for Class A and every Session material from the previous completed class in that section.
-2. When Class A starts: remove Class A pre-reads and the previous class's Session materials; select every pre-read for Class B, the next class in that same section.
-3. When Class A ends: recommend every released Session material from Class A; keep Class B pre-reads.
-4. When Class B starts: remove Class B pre-reads and Class A Session materials, then repeat the same-section cycle.
+1. After the previous class ends and before Class A starts: recommend every pre-read for Class A plus every released worksheet and Session material from the previous completed class in that Section.
+2. When Class A starts: remove Class A pre-reads and the previous class's worksheets and Session materials. Show no replacement for that Section while Class A is in progress.
+3. When Class A ends: recommend every pre-read for Class B plus every released worksheet and Session material from Class A.
+4. When Class B starts: remove Class B pre-reads and Class A worksheets and Session materials, then repeat the same-Section cycle.
 
 This timing changes recommendation membership only. Existing seven-day pre-read release and post-class Session-material release remain authoritative.
 
@@ -141,12 +153,12 @@ Requirements:
 - Every resource card retains its saved title, type, availability and class context.
 - Use stable material IDs as keys and destinations.
 - One unavailable or broken resource must not hide working siblings.
-- Each subsection owns its own empty state; one empty subsection must not hide the other.
+- Each subsection owns at most one compact empty state; one empty subsection must not hide the other.
 - Preserve keyboard focus, 200% text zoom, supported desktop layouts, loading, error and retry behavior.
 
 ## E. Non-regression boundaries
 
-- Recommended practice logic and ordering remain unchanged.
+- Recommended Practice uses the same previous-class/end-to-next-start window section-wise for worksheets.
 - Pre-read and Session-material release timestamps remain unchanged.
 - Direct unreleased/unpublished access remains denied.
 - Recordings and Session materials remain batch-specific and never copy or sync across batches.
@@ -167,10 +179,10 @@ Requirements:
 - a section's pre-reads disappear at that class's `session_date` and rotate to the following same-section class;
 - a section's Session materials appear at `session_end_at` and disappear at the next same-section class's `session_date`;
 - a QA boundary changes QA recommendations without changing VA or DI recommendations;
-- a missing next-class pre-read set and a missing last-class Session-material set produce independent empty states;
+- missing next-class pre-read and last-class Session-material sets produce independent subsection-level empty states without Section placeholders;
 - unpublished, cross-batch, unreleased and duplicate resources are not exposed;
 - the rule works across Thursday/Friday/weekend and arbitrary batch dates without weekday hard-coding;
-- existing Recommended practice fixtures remain unchanged and pass.
+- section-wise Recommended Practice fixtures cover the previous-class, class-start and class-end boundaries.
 
 ### Staging journeys
 

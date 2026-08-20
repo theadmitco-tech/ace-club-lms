@@ -20,8 +20,10 @@ export function StudentHeader({ studentName }: { studentName: string }) {
           <BrandLogo variant="light" className="student-brand-logo" preload />
         </Link>
         <nav className="student-navigation" aria-label="Student navigation">
-          <Link href="/dashboard">Course</Link>
-          <Link href="/practice">Practice log</Link>
+          <Link href="/dashboard">Home</Link>
+          <Link href="/schedule">Schedule</Link>
+          <Link href="/resources">Resources</Link>
+          <Link className="student-navigation-secondary" href="/practice">Practice log</Link>
         </nav>
         <div className="student-account">
           <span className="student-avatar" aria-hidden="true">{getInitials(studentName)}</span>

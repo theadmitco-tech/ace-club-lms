@@ -35,24 +35,32 @@ export function ResourceCard({
   availability,
   actions = [],
   context,
+  description,
+  typeLabel,
+  hideDetails = false,
 }: {
   type: ResourceCardType;
   title: string;
   availability: string;
   actions?: ResourceCardAction[];
   context?: string;
+  description?: string | null;
+  typeLabel?: string;
+  hideDetails?: boolean;
 }) {
   const presentation = RESOURCE_PRESENTATION[type];
+  const label = typeLabel ?? presentation.label;
 
   return (
     <div className={`resource-card resource-card-${type}`}>
-      <div className="resource-card-callout">
-        <span className="resource-card-type">{presentation.label}</span>
-        <small className="resource-card-availability">{availability}</small>
-      </div>
-      {context && <span className="resource-card-context">{context}</span>}
+      {!hideDetails && <div className="resource-card-callout">
+          <span className="resource-card-type">{label}</span>
+          <small className="resource-card-availability">{availability}</small>
+        </div>}
+      {!hideDetails && context && <span className="resource-card-context">{context}</span>}
+      {description && <p className="resource-card-description">{description}</p>}
       {actions.length > 0 && (
-        <div className="resource-card-actions" aria-label={`${presentation.label} actions for ${title}`}>
+        <div className="resource-card-actions" aria-label={`${label} actions for ${title}`}>
           {actions.map((action, index) => (
             <Link
               aria-label={`${action.label}: ${title}`}
