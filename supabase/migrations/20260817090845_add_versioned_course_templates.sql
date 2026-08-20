@@ -250,12 +250,26 @@ order by master.session_number;
 
 do $$
 begin
+  if not exists (
+    select 1
+    from public.master_sessions
+    where curriculum_version = 'mvp-2026'
+      and is_archived = false
+  ) then
+    raise exception 'Full Course template requires at least one active mvp-2026 Master event';
+  end if;
+
   if (
     select count(*)
     from public.course_template_events
     where revision_id = '20000000-0000-4000-8000-000000000001'
-  ) <> 31 then
-    raise exception 'Full Course template requires exactly 31 active mvp-2026 Master events';
+  ) <> (
+    select count(*)
+    from public.master_sessions
+    where curriculum_version = 'mvp-2026'
+      and is_archived = false
+  ) then
+    raise exception 'Full Course template must include every active mvp-2026 Master event';
   end if;
 end
 $$;

@@ -60,7 +60,7 @@ Section: Data Interpretation. Instructor: Ishan.
 
 Revision 1 is a structural snapshot of the existing active `mvp-2026` Master Course:
 
-- all 31 active Master events retain their stable curriculum keys, order, relative day, current start time, duration, event type, Section and instructor;
+- all active Master events retain their stable curriculum keys, order, relative day, current start time, duration, event type, Section and instructor; the seed validates against the active Master count instead of assuming one environment-specific total;
 - existing Master pre-reads and worksheets are associated with their matching template event in deterministic order;
 - no recording or private Session material becomes reusable template content; and
 - later template revisions do not update `master_sessions`, `master_materials`, existing `courses`, `sessions` or `materials`.

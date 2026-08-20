@@ -194,6 +194,9 @@ test('migration seeds exactly four template identities and the approved crash cu
   assert.match(sql, /select template_revision_id, section_id, event_key, title, event_type, relative_day,[\s\S]+time '20:00', 60/);
   assert.match(sql, /create policy "Admins view course templates"/);
   assert.match(sql, /security invoker/);
+  assert.match(sql, /Full Course template must include every active mvp-2026 Master event/);
+  assert.match(sql, /from public\.master_sessions[\s\S]+curriculum_version = 'mvp-2026'[\s\S]+is_archived = false/);
+  assert.doesNotMatch(sql, /requires exactly 31 active mvp-2026 Master events/);
   assert.doesNotMatch(sql, /recording'\s*,\s*'event'/);
   assert.doesNotMatch(sql, /session_material/);
   assert.doesNotMatch(sql, /alter table public\.(?:courses|sessions|materials)\b/i);

@@ -1,6 +1,6 @@
 # Pilot V2 — Conditional Production Release Plan
 
-Status: Prepared for review; Production unauthorized
+Status: Compatibility fix verified locally; Production reauthorization required
 Owner: Product owner, Release owner, Engineering and QA/Security
 Last updated: 20 August 2026
 
@@ -25,7 +25,7 @@ Before authorization, freeze the reviewed branch tip and prove `547581e..<tip>` 
 
 Apply only these files, in order:
 
-1. `20260817090845_add_versioned_course_templates.sql` — `e8f4fb8d3ccb6a50ff148395ef172619ff2b612736169967798c1c4bc249e72c`
+1. `20260817090845_add_versioned_course_templates.sql` — `390d649fbc85acb9f915a492b14157c3c4161fbdd709de45e41975c7c9e3683e`
 2. `20260817143000_add_batch_schedule_builder.sql` — `d212b87a0026a4fe08354f9d594a2712fdb4300e2e859622ecb76612f0d2d96b`
 3. `20260817170000_fix_batch_event_reorder.sql` — `7765916e6b627288853d20e5b4839f16d9e72fd910459b6a62bf60230f3759d9`
 4. `20260817233540_fix_phase2_conflicts_and_shift_materials.sql` — `835b7887ee080d4b64ded6ea81306c6b2d800ba74ec167efafb2a7f8568e0cbb`
@@ -101,6 +101,15 @@ After an authorized attempt, create immutable dated evidence under `docs/pilot-v
 - [ ] Product Owner separately authorizes every Production-changing action.
 
 Phase 7 remains prepared, not authorized, until these gates are recorded.
+
+The first authorized attempt stopped and rolled back because Production has 30
+active Master events while Staging has 31. The first migration now validates
+that the Full Course template contains every active Master event instead of
+assuming an environment-specific total. A disposable restore of the fresh
+Production snapshot passed all seven migrations with 30 template events and
+unchanged existing-batch business-field digests. See the
+[attempt evidence](evidence/phase-7-production-attempt-2026-08-20.md) and
+[compatibility evidence](evidence/phase-7-production-compatibility-2026-08-20.md).
 
 ## Preflight result — 20 August 2026
 
