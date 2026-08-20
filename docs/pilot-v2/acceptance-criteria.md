@@ -1,8 +1,8 @@
 # Pilot V2 — Product Review and Acceptance Criteria
 
-Status: Approved; Phase 4 and Phase 5 accepted; Phase 6 not started
+Status: Approved; Phase 1–6 accepted; Phase 7 not started
 Owner: Product owner and Engineering
-Last updated: 17 August 2026
+Last updated: 20 August 2026
 
 ## Decision and authorization boundary
 

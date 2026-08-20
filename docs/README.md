@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Engineering
-Last updated: 17 August 2026
+Last updated: 20 August 2026
 
 This index routes readers to the smallest set of documents needed for a task. Product authority remains in [`instruction/`](../instruction/README.md).
 
@@ -38,7 +38,7 @@ Pilot V1 Production release procedure: [Conditional Production Release Plan](pil
 
 Pilot V1 Production database checks: [Read-only Verification](pilot-v1/production-read-only-verification.sql). Run before and after the tracked migration push and compare sanitized aggregate/schema results.
 
-Pilot V2 Phases 1–5 are accepted after their authorized local and Staging-only verification. Phase 6 Preview acceptance and Production remain unauthorized: [Consolidated Bootstrap and Running Handoff](pilot-v2/README.md).
+Pilot V2 Phases 1–6 are accepted. Phase 6 exact source/Preview acceptance and the read-only Phase 7 readiness baselines are recorded in the [Phase 6 evidence](pilot-v2/evidence/phase-6-preview-acceptance-and-readiness-2026-08-20.md). Production release remains unauthorized: [Consolidated Bootstrap and Running Handoff](pilot-v2/README.md).
 
 Pilot V2 Phase 3 accepted resource-management outcome and current authorization boundary: [Phase 3 Handoff](pilot-v2/README.md#phase-3-handoff).
 

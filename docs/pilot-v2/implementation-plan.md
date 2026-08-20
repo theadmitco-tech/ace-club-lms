@@ -1,8 +1,8 @@
 # Pilot V2 — Implementation Plan
 
-Status: Phase 4 and Phase 5 accepted; Phase 6 not started
+Status: Phase 1–6 accepted; Phase 7 not started
 Owner: Engineering, QA/Security and Product owner
-Last updated: 17 August 2026
+Last updated: 20 August 2026
 
 ## Delivery rule
 
@@ -65,6 +65,8 @@ Exit: no critical/high security finding; compatibility and quality gates pass.
 ## Phase 6 — Product Owner staging acceptance
 
 Freeze one exact commit and staging-backed Preview. Run the complete checklist in `manual-verification-checklist.md`. Record acceptance or rejection against that commit and Preview.
+
+Exit: accepted on 20 August 2026 against source `547581efccf74300f3902df024db8bf47a27fa25` and the immutable Preview recorded in the [Phase 6 evidence](evidence/phase-6-preview-acceptance-and-readiness-2026-08-20.md).
 
 ## Phase 7 — Conditional Production release
 

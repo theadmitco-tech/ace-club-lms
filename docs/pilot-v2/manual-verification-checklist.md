@@ -1,8 +1,8 @@
 # Pilot V2 — Manual Verification Checklist
 
-Status: Phase 4 and Phase 5 accepted; Phase 6 Preview acceptance not started
+Status: Complete; Phase 6 accepted against the immutable Preview
 Owner: Product owner, Engineering and QA/Security
-Last updated: 17 August 2026
+Last updated: 20 August 2026
 
 Record the exact commit, immutable Preview, staging migration versions and anonymized fixtures before execution. Never use Production data or accounts for these journeys.
 
@@ -96,3 +96,4 @@ Phase 1 interface review completed on 17 August 2026:
 - [x] Guarded Next.js Production build passes with staging configuration.
 - [x] `git diff --check`, documentation links and changed-file secret/privacy review pass.
 - [x] Product Owner accepted the rendered Phase 4 result by instructing Engineering to conduct the remaining tests and close Phase 4 on 18 August 2026.
+- [x] Product Owner accepted Phase 6 on 20 August 2026 against commit `547581efccf74300f3902df024db8bf47a27fa25` and the immutable Preview recorded in the [Phase 6 evidence](evidence/phase-6-preview-acceptance-and-readiness-2026-08-20.md).

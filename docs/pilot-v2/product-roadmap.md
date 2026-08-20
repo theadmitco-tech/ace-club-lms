@@ -1,8 +1,8 @@
 # Pilot V2 — Product Roadmap
 
-Status: Phase 4 and Phase 5 accepted; Phase 6 not started
+Status: Phase 1–6 accepted; Phase 7 not started
 Owner: Product owner and Engineering
-Last updated: 17 August 2026
+Last updated: 20 August 2026
 
 ## Purpose and authorization boundary
 
@@ -198,9 +198,9 @@ The Product Owner accepts or rejects the complete Pilot V2 bundle on one immutab
 
 ### Exit gate
 
-- [ ] Required automated/manual evidence is linked.
-- [ ] No release blocker remains open.
-- [ ] Product Owner acceptance or rejection names the exact commit and Preview.
+- [x] Required automated/manual evidence is linked.
+- [x] No release blocker remains open.
+- [x] Product Owner acceptance names exact commit `547581efccf74300f3902df024db8bf47a27fa25` and its immutable Preview.
 
 ## Phase 7 — Conditional Production release
 
