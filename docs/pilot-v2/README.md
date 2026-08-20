@@ -1,6 +1,6 @@
 # Pilot V2 — Consolidated Bootstrap and Running Handoff
 
-Status: Active — Phase 1–6 accepted; Phase 7 not started
+Status: Active — Phase 1–6 accepted; Phase 7 preflight/recovery complete; Production unauthorized
 Owner: Product owner and Engineering
 Last updated: 20 August 2026
 
@@ -16,7 +16,7 @@ The Product Owner subsequently authorized and accepted Phase 1 through Phase 5. 
 
 ## Exact resume instruction
 
-> Continue Ace Club LMS from `docs/pilot-v2/README.md`. Treat it as the single Pilot V2 bootstrap and running handoff. Pilot V1 remains deployed at Production merge `7c35466a34d20726945544ae98d2e368ca277b01`. Pilot V2 Phase 1 through Phase 6 are accepted. Phase 6 source `547581efccf74300f3902df024db8bf47a27fa25` and immutable Preview deployment `dpl_5rfTN5pyze99mCPzHnuhNyHymsDU` were accepted by the Product Owner on 20 August 2026 after the template reorder schedule-slot correction passed 46/46 regression. The seven V2 migrations through `20260818173000` are applied and ledgered on Staging only; Production remains on the two Pilot V1 migrations. The read-only Phase 7 readiness baselines are recorded in `evidence/phase-6-preview-acceptance-and-readiness-2026-08-20.md`. Next prepare a dated conditional Production release plan. Do not merge, migrate, deploy or change Production without a new exact Product Owner instruction naming every authorized action and migration.
+> Continue Ace Club LMS from `docs/pilot-v2/README.md`. Pilot V2 Phase 1–6 are accepted at source `547581efccf74300f3902df024db8bf47a27fa25` and Preview `dpl_5rfTN5pyze99mCPzHnuhNyHymsDU`. The seven V2 migrations are Staging-only; Production remains on Pilot V1. The [conditional Production release plan](production-release-plan-2026-08-20.md) and [read-only preflight evidence](evidence/phase-7-production-preflight-2026-08-20.md) are prepared. The exact dry run and encrypted manual snapshot restore rehearsal pass. Release remains unauthorized until the documentation-only tip is committed/frozen, the volatile preflight is refreshed, a fresh snapshot is taken and the Product Owner names every authorized Production action. Do not merge, migrate, deploy or change Production first.
 
 ## Current checkpoint
 
@@ -31,11 +31,11 @@ The Product Owner subsequently authorized and accepted Phase 1 through Phase 5. 
 | Pilot V1 deployment | Vercel Production deployment `5886517926`, successful on 13 August 2026 |
 | V1 migrations in Production | `20260811170000`, `20260813081141` |
 | Explicitly excluded Production migrations | `20260803120000`, `20260803160000`, `20260804120000` |
-| V2 state | Phase 0 complete; Phase 1–6 accepted; Phase 7 not started |
+| V2 state | Phase 0 complete; Phase 1–6 accepted; Phase 7 preflight/recovery complete; Production unauthorized |
 | V2 documentation branch | `codex/pilot-v2-handoff`, based on the Production merge and carrying the V1 rollout evidence |
 | V2 working branch | `codex/pilot-v2`, created from `origin/main` at `c3bc1851553d44aaa48c88f542e64bf9ae68da1d` through the approved Phase 0 workflow |
 | V2 acceptance criteria | Approved; Phase 1–6 accepted |
-| V2 product roadmap | Approved; Phase 1–6 accepted; Phase 7 not started |
+| V2 product roadmap | Approved; Phase 1–6 accepted; Phase 7 preflight/recovery complete |
 | V2 migrations | Through `20260818173000` applied and ledgered on Staging only except the three documented excluded versions; none applied to Production |
 | V2 staging/Preview/Production state | Phase 1–6 accepted; immutable Staging-backed Preview accepted at `547581e`; Production unchanged |
 
@@ -273,11 +273,13 @@ Keep all new V2 working material under `docs/pilot-v2/` and link it here and fro
 |---|---|---|
 | [Pilot V2 Bootstrap and Running Handoff](README.md) | Active | Single current V2 entry point, approved-scope checkpoint, inherited history, guardrails and exact next action |
 | [Pilot V2 Product Review and Acceptance Criteria](acceptance-criteria.md) | Phase 1–6 accepted | Binding V2 outcomes, exclusions, running-batch rules, resource ownership and staging journeys |
-| [Pilot V2 Product Roadmap](product-roadmap.md) | Phase 1–6 accepted; Phase 7 not started | Phase 0–7 product sequence, focused review sets and exit gates |
+| [Pilot V2 Product Roadmap](product-roadmap.md) | Phase 1–6 accepted; Phase 7 preflight/recovery complete | Phase 0–7 product sequence, focused review sets and exit gates |
 | [Recommended Reading Bug and Revised Contract](recommended-reading-revision.md) | Approved for implementation planning | Production defect evidence, section-wise two-subsection contract, start/end windows, multi-file behavior and verification requirements |
 | [Approved Template and Admin Interface Specification](template-interface-specification.md) | Approved for local Phase 1 implementation | Exact Full Course/crash-course seed rules, instructors, timing and Admin editor/preview contract |
 | [Phase 0 Readiness](phase-0-readiness.md) | Complete | Exact Git/deployment/environment/schema/ledger/batch/code baseline and closed Phase 1 start gate |
-| [Implementation Plan](implementation-plan.md) | Phase 1–6 accepted; Phase 7 not started | Ordered implementation phases, commit boundaries and exit gates |
+| [Implementation Plan](implementation-plan.md) | Phase 1–6 accepted; Phase 7 preflight/recovery complete | Ordered implementation phases, commit boundaries and exit gates |
+| [Conditional Production Release Plan](production-release-plan-2026-08-20.md) | Prepared; Production unauthorized | Exact release, preflight, rollback, smoke and evidence procedure |
+| [Phase 7 Production Preflight Evidence](evidence/phase-7-production-preflight-2026-08-20.md) | Complete; release unauthorized | Sanitized source, Vercel, ledger, aggregate, Auth, tested snapshot recovery and exact dry-run result |
 | [Data, Compatibility and Rollback Plan](data-compatibility-and-rollback-plan.md) | Phase 2 migrations verified on Staging | Additive model, compatibility rules, migration sequence, reconciliation constraint and rollback |
 | [Manual Verification Checklist](manual-verification-checklist.md) | Complete; Phase 6 accepted | Complete staging acceptance and non-regression journeys |
 | [Phase 1 Local Verification Evidence](evidence/phase-1-local-verification-2026-08-17.md) | Passed locally; staging pending | Focused tests, migration execution, revision probe, lint, TypeScript, build and environment boundary |
@@ -310,15 +312,15 @@ These files remain immutable historical authority. They are linked rather than c
 
 Add later, only when created and approved:
 
-- `production-release-plan.md` — separately reviewed Production procedure; and
+- `production-release-plan-2026-08-20.md` — separately reviewed Production procedure; and
 - `evidence/` — dated immutable staging and Production records.
 
 Do not create parallel copies of V1 evidence or rewrite the signed MVP/V1 handoffs. Link them.
 
 ## Current V2 handoff checkpoint
 
-- Current internal phase: Phase 6 accepted; Phase 7 not started.
-- Current owner: Engineering to prepare the dated conditional Production release plan; Product Owner retains authorization of every Production action.
+- Current internal phase: Phase 7 read-only preflight and tested snapshot recovery complete; Production unauthorized.
+- Current owner: Engineering to freeze the documentation-only tip and refresh volatile checks; Product Owner retains authorization of every Production action.
 - Documentation branch: `codex/pilot-v2-handoff` at pre-change commit `078256a`, based on Production merge `7c35466a34d20726945544ae98d2e368ca277b01` and carrying the Pilot V1 rollout evidence.
 - Working branch: `codex/pilot-v2`, created from freshly fetched `origin/main` at exact start commit `c3bc1851553d44aaa48c88f542e64bf9ae68da1d` in the separate worktree `/Users/tanishagarg/Developer/ace-club-lms-pilot-v2`.
 - Working tree state: accepted application source is committed and pushed; this handoff update records the later acceptance evidence.

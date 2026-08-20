@@ -1,6 +1,6 @@
 # Pilot V2 — Implementation Plan
 
-Status: Phase 1–6 accepted; Phase 7 not started
+Status: Phase 1–6 accepted; Phase 7 preflight/recovery complete; Production unauthorized
 Owner: Engineering, QA/Security and Product owner
 Last updated: 20 August 2026
 
@@ -71,6 +71,8 @@ Exit: accepted on 20 August 2026 against source `547581efccf74300f3902df024db8bf
 ## Phase 7 — Conditional Production release
 
 Prepare a separate dated release plan. Do not merge, migrate or deploy until a new Product Owner instruction names every exact action and migration. Production preflight and smoke checks remain read-only unless explicitly authorized.
+
+The dated [conditional Production release plan](production-release-plan-2026-08-20.md), read-only preflight and tested manual snapshot recovery are complete. Documentation freeze, volatile refresh, fresh pre-migration snapshot and exact authorization remain open.
 
 ## Commit boundaries
 

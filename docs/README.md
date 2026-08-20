@@ -66,6 +66,10 @@ Pilot V2 Phase 5 bounded Staging isolation, tracker persistence, Admin parity, e
 
 Pilot V2 approved delivery sequence and phase gates: [Implementation Plan](pilot-v2/implementation-plan.md).
 
+Pilot V2 conditional Production procedure: [Release Plan — 20 August 2026](pilot-v2/production-release-plan-2026-08-20.md). Prepared for review; no Production action is authorized.
+
+Pilot V2 read-only Production preflight: [Phase 7 Evidence — 20 August 2026](pilot-v2/evidence/phase-7-production-preflight-2026-08-20.md). Exact dry run and tested manual snapshot recovery pass; documentation freeze and exact Production authorization remain open.
+
 Pilot V2 additive schema, existing-batch compatibility and rollback method: [Data, Compatibility and Rollback Plan](pilot-v2/data-compatibility-and-rollback-plan.md).
 
 Pilot V2 staging acceptance journeys: [Manual Verification Checklist](pilot-v2/manual-verification-checklist.md).

@@ -1,6 +1,6 @@
 # Pilot V2 — Product Roadmap
 
-Status: Phase 1–6 accepted; Phase 7 not started
+Status: Phase 1–6 accepted; Phase 7 preflight/recovery complete; Production unauthorized
 Owner: Product owner and Engineering
 Last updated: 20 August 2026
 
@@ -223,6 +223,8 @@ Promote only a separately authorized source and migration set with a reversible,
 - [ ] Only named changes are executed.
 - [ ] Application, schema and aggregate verification pass.
 - [ ] Production evidence is complete, or rollback is recorded.
+
+The dated [conditional Production release plan](production-release-plan-2026-08-20.md), read-only preflight and tested manual snapshot recovery were completed on 20 August 2026. This authorizes no Production action; all Production-changing exit boxes remain open.
 
 ## Deferred and excluded
 
