@@ -85,6 +85,7 @@ test('selects next event and next mock independently', () => {
 test('Student projection preserves authorization, publication, release, and least-privilege boundaries', async () => {
   const sql = await readFile(new URL('../supabase/migrations/20260818170000_add_student_portal_projection.sql', import.meta.url), 'utf8');
   const compatibilitySql = await readFile(new URL('../supabase/migrations/20260818173000_fix_student_portal_projection_compatibility.sql', import.meta.url), 'utf8');
+  const inactiveBatchAccessSql = await readFile(new URL('../supabase/migrations/20260820114212_restore_enrolled_student_inactive_batch_access.sql', import.meta.url), 'utf8');
   assert.match(sql, /profile\.role = 'student'/);
   assert.match(sql, /profile\.is_active = true/);
   assert.match(sql, /public\.can_access_course\(selected_course_id\)/);
@@ -98,6 +99,16 @@ test('Student projection preserves authorization, publication, release, and leas
   assert.match(compatibilitySql, /material\.available_from <= statement_timestamp\(\)/);
   assert.match(compatibilitySql, /revoke all on function public\.get_student_timeline\(\) from public, anon/);
   assert.doesNotMatch(compatibilitySql, /session\.is_cancelled|drop table public\.|truncate public\.|include-all/i);
+  assert.match(inactiveBatchAccessSql, /profile\.role = 'student'/);
+  assert.match(inactiveBatchAccessSql, /profile\.is_active = true/);
+  assert.match(inactiveBatchAccessSql, /from public\.enrollments as enrollment\s+where enrollment\.user_id = student_id/);
+  assert.doesNotMatch(inactiveBatchAccessSql, /and course\.is_active = true/);
+  assert.match(inactiveBatchAccessSql, /public\.can_access_course\(selected_course_id\)/);
+  assert.match(inactiveBatchAccessSql, /session\.is_published = true/);
+  assert.match(inactiveBatchAccessSql, /material\.available_from <= statement_timestamp\(\)/);
+  assert.match(inactiveBatchAccessSql, /revoke all on function public\.get_student_timeline\(\) from public, anon/);
+  assert.match(inactiveBatchAccessSql, /grant execute on function public\.get_student_timeline\(\) to authenticated/);
+  assert.doesNotMatch(inactiveBatchAccessSql, /update public\.courses|update public\.enrollments|drop table public\.|truncate public\.|include-all/i);
 });
 
 test('Student surfaces keep Home compact and use Day/Week plus contextual resource filters', async () => {
