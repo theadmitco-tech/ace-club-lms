@@ -1,0 +1,710 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { createClient } from '@/utils/supabase/client';
+import { formatDate } from '@/lib/utils';
+import { useAuth } from '@/lib/AuthContext';
+import type { CourseTemplate } from '@/lib/courseTemplates';
+import BatchCreationBuilder from './BatchCreationBuilder';
+
+type ProfileSummary = { full_name: string; email: string };
+type EnrollmentRow = { id: string; user_id: string; profiles: ProfileSummary | null };
+type CourseRow = {
+  id: string;
+  name: string;
+  is_active: boolean;
+  registration_open: boolean;
+  capacity: number;
+  price_amount: number;
+  currency: string;
+  registration_closes_at: string | null;
+  public_note: string | null;
+  created_at: string;
+  source_template_revision_id: string | null;
+  sessions?: { id: string; session_date: string; is_published: boolean }[];
+  enrollments?: { id: string }[];
+  registrations?: {
+    id: string;
+    status: string;
+    reserved_until: string | null;
+    payments?: { amount: number; status: string }[];
+  }[];
+};
+
+export default function CoursesClient({ templates }: { templates: CourseTemplate[] }) {
+  const [courses, setCoursesList] = useState<CourseRow[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAdd, setShowAdd] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [syncingCourseId, setSyncingCourseId] = useState<string | null>(null);
+  
+  // Student management state
+  const [viewingStudentsFor, setViewingStudentsFor] = useState<CourseRow | null>(null);
+  const [studentsInBatch, setStudentsInBatch] = useState<EnrollmentRow[]>([]);
+  const [isStudentsLoading, setIsStudentsLoading] = useState(false);
+  
+  const supabase = createClient();
+  const { addToast } = useAuth();
+  
+  const [form, setForm] = useState({
+    name: '',
+    is_active: true,
+    registration_open: false,
+    capacity: '8',
+    price_amount: '',
+    currency: 'INR',
+    registration_closes_at: '',
+    public_note: '',
+    startDate: '',
+    bulkEmails: '',
+  });
+
+  const formatMoney = (amount: number, currency = 'INR') => new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency,
+    maximumFractionDigits: 0,
+  }).format((amount || 0) / 100);
+
+  const getCourseRegistrationStats = (course: CourseRow) => {
+    const now = new Date();
+    const registrations = course.registrations || [];
+    const paidPayments = registrations.flatMap((registration) => (
+      (registration.payments || []).filter((payment) => payment.status === 'paid')
+    ));
+    const pendingReservations = registrations.filter((registration) => (
+      registration.status === 'pending_payment'
+      && registration.reserved_until
+      && new Date(registration.reserved_until) > now
+    )).length;
+    const revenue = paidPayments.reduce((sum, payment) => sum + (payment.amount || 0), 0);
+    const capacity = course.capacity || 8;
+    const paidSeats = course.enrollments?.length || 0;
+
+    return {
+      capacity,
+      paidSeats,
+      pendingReservations,
+      availableSeats: Math.max(capacity - paidSeats - pendingReservations, 0),
+      revenue,
+    };
+  };
+
+  const fetchCourses = async () => {
+    setIsLoading(true);
+    const { data, error } = await supabase
+      .from('courses')
+      .select('*, sessions(id, session_date, is_published), enrollments(id), registrations(id, status, reserved_until, payments(amount, status))')
+      .order('created_at', { ascending: false });
+      
+    if (!error && data) {
+      setCoursesList(data as unknown as CourseRow[]);
+    }
+    setIsLoading(false);
+  };
+
+  const fetchStudentsInBatch = async (courseId: string) => {
+    setIsStudentsLoading(true);
+    const { data, error } = await supabase
+      .from('enrollments')
+      .select('id, user_id, profiles(full_name, email)')
+      .eq('course_id', courseId);
+    
+    if (!error && data) {
+      const rows = data as unknown as Array<Omit<EnrollmentRow, 'profiles'> & {
+        profiles: ProfileSummary | ProfileSummary[] | null;
+      }>;
+      setStudentsInBatch(rows.map((row) => ({
+        ...row,
+        profiles: Array.isArray(row.profiles) ? row.profiles[0] || null : row.profiles,
+      })));
+    }
+    setIsStudentsLoading(false);
+  };
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => void fetchCourses(), 0);
+    return () => window.clearTimeout(timeoutId);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleEdit = (course: CourseRow) => {
+    setEditingId(course.id);
+    setForm({
+      name: course.name,
+      is_active: course.is_active,
+      registration_open: Boolean(course.registration_open),
+      capacity: String(course.capacity || 8),
+      price_amount: course.price_amount ? String((course.price_amount || 0) / 100) : '',
+      currency: course.currency || 'INR',
+      registration_closes_at: course.registration_closes_at ? new Date(course.registration_closes_at).toISOString().slice(0, 16) : '',
+      public_note: course.public_note || '',
+      startDate: '',
+      bulkEmails: '',
+    });
+    fetchStudentsInBatch(course.id);
+    setShowAdd(true);
+  };
+
+  const handleUpdate = async () => {
+    if (!editingId) return;
+    setIsSubmitting(true);
+    
+    const { error } = await supabase
+      .from('courses')
+      .update({
+        name: form.name,
+        is_active: form.is_active,
+        registration_open: form.registration_open,
+        capacity: Number(form.capacity) || 8,
+        price_amount: Math.max(0, Math.round(Number(form.price_amount || 0) * 100)),
+        currency: form.currency || 'INR',
+        registration_closes_at: form.registration_closes_at ? new Date(form.registration_closes_at).toISOString() : null,
+        public_note: form.public_note.trim() || null,
+      })
+      .eq('id', editingId);
+
+    if (form.bulkEmails) {
+      const emails = form.bulkEmails.split(/[\n,]/).map(e => e.trim()).filter(e => e.length > 0 && e.includes('@'));
+      if (emails.length > 0) {
+        try {
+          const res = await fetch('/api/admin/bulk-enroll', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ emails, courseId: editingId })
+          });
+          const result = await res.json();
+          if (result.success > 0) addToast('success', `Enrolled ${result.success} new students.`);
+          if (result.failed > 0) addToast('warning', `Failed to enroll ${result.failed} students.`);
+        } catch (err) { console.error(err); }
+      }
+    }
+
+    if (error) {
+      addToast('error', 'Failed to update batch.');
+    } else {
+      addToast('success', 'Batch updated.');
+      await fetchCourses();
+      resetForm();
+      setShowAdd(false);
+    }
+    setIsSubmitting(false);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (courses.find((course) => course.id === id)?.source_template_revision_id) {
+      addToast('error', 'Phase 2 batches preserve schedule history and cannot be hard-deleted here.');
+      setDeleteConfirm(null);
+      return;
+    }
+    const { error } = await supabase.from('courses').delete().eq('id', id);
+    if (error) {
+      addToast('error', 'Failed to delete batch.');
+    } else {
+      addToast('success', 'Batch deleted.');
+      await fetchCourses();
+    }
+    setDeleteConfirm(null);
+  };
+
+  const handleSyncMasterMaterials = async (courseId: string) => {
+    const course = courses.find((candidate) => candidate.id === courseId);
+    if (course?.source_template_revision_id) {
+      setSyncingCourseId(courseId);
+      const { data: previewData, error: previewError } = await supabase.rpc('preview_course_template_resource_sync', { p_course_id: courseId });
+      if (previewError || !previewData) {
+        addToast('error', previewError?.message || 'Unable to review reusable-resource changes.');
+        setSyncingCourseId(null);
+        return;
+      }
+      const preview = previewData as {
+        revisionId: string;
+        add: Array<{ title: string }>;
+        update: Array<{ title: string }>;
+        preserveReleased: Array<{ title: string }>;
+        unmatched: Array<{ title: string }>;
+      };
+      const consequences = [
+        `Add: ${preview.add.length}${preview.add.length ? ` — ${preview.add.map((item) => item.title).join(', ')}` : ''}`,
+        `Update unreleased: ${preview.update.length}${preview.update.length ? ` — ${preview.update.map((item) => item.title).join(', ')}` : ''}`,
+        `Preserve released unchanged: ${preview.preserveReleased.length}`,
+        `Skip unmatched new-template events: ${preview.unmatched.length}`,
+      ].join('\n');
+      if (!window.confirm(`Review reusable-resource sync consequences:\n\n${consequences}\n\nContinue?`)) {
+        setSyncingCourseId(null);
+        return;
+      }
+      const { data, error } = await supabase.rpc('sync_course_template_resources', {
+        p_course_id: courseId,
+        p_expected_revision_id: preview.revisionId,
+      });
+      if (error) addToast('error', error.message || 'Failed to sync reusable resources. Review and retry.');
+      else {
+        const result = data as { added?: number; updated?: number; unchanged?: number; preservedReleased?: number; unmatched?: number };
+        addToast('success', `Reusable resources synced: ${result.added ?? 0} added, ${result.updated ?? 0} updated, ${result.preservedReleased ?? 0} released preserved, ${result.unmatched ?? 0} unmatched skipped.`);
+      }
+      setSyncingCourseId(null);
+      return;
+    }
+    setSyncingCourseId(courseId);
+    const { data, error } = await supabase.rpc('sync_course_master_materials', {
+      p_course_id: courseId,
+    });
+
+    if (error) {
+      console.error('Master material sync failed:', error);
+      addToast('error', 'Failed to sync master materials. Retry this batch.');
+    } else {
+      const result = data as { materials_added?: number; materials_updated?: number } | null;
+      const added = Number(result?.materials_added || 0);
+      const updated = Number(result?.materials_updated || 0);
+      addToast(
+        'success',
+        added || updated
+          ? `Synced master materials: ${added} added, ${updated} updated.`
+          : 'Batch materials are already up to date.',
+      );
+    }
+    setSyncingCourseId(null);
+  };
+
+  const handleRemoveStudent = async (enrollmentId: string) => {
+    const { error } = await supabase.from('enrollments').delete().eq('id', enrollmentId);
+    if (error) {
+      addToast('error', 'Failed to remove student.');
+    } else {
+      addToast('success', 'Student removed from batch.');
+      if (editingId) fetchStudentsInBatch(editingId);
+      if (viewingStudentsFor) fetchStudentsInBatch(viewingStudentsFor.id);
+      fetchCourses();
+    }
+  };
+
+  const resetForm = () => {
+    setEditingId(null);
+    setForm({
+      name: '',
+      is_active: true,
+      registration_open: false,
+      capacity: '8',
+      price_amount: '',
+      currency: 'INR',
+      registration_closes_at: '',
+      public_note: '',
+      startDate: '',
+      bulkEmails: '',
+    });
+    setStudentsInBatch([]);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="admin-loading">
+        <div className="spinner spinner-lg" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="animate-fade-in">
+      <div className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">{viewingStudentsFor ? `Students: ${viewingStudentsFor.name}` : 'Batches'}</h1>
+          <p className="admin-page-subtitle">
+            {viewingStudentsFor ? 'Manage students enrolled in this batch' : 'Create and manage your GMAT study batches'}
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          {viewingStudentsFor ? (
+            <button className="btn btn-secondary" onClick={() => setViewingStudentsFor(null)}>
+              ← Back to Batches
+            </button>
+          ) : (
+            <button
+              className="btn btn-primary"
+              onClick={() => { 
+                if (showAdd) {
+                  resetForm();
+                  setShowAdd(false);
+                } else {
+                  resetForm();
+                  setShowAdd(true);
+                }
+              }}
+            >
+              {showAdd ? '✕ Cancel' : '+ New Batch'}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {showAdd && !viewingStudentsFor && !editingId && (
+        <BatchCreationBuilder
+          templates={templates}
+          onCreated={(message) => { addToast('success', message); void fetchCourses(); }}
+          onError={(message) => addToast('error', message)}
+          onCancel={() => { resetForm(); setShowAdd(false); }}
+        />
+      )}
+
+      {/* Edit Form */}
+      {showAdd && !viewingStudentsFor && editingId && (
+        <div className="admin-card animate-fade-in-up" style={{ marginBottom: 'var(--space-xl)' }}>
+          <div className="admin-card-header">
+            <h2 className="admin-card-title">{editingId ? 'Edit Batch' : 'Create New Batch'}</h2>
+          </div>
+          <div className="admin-form">
+            <div className="form-group">
+              <label htmlFor="course-name" className="form-label">Batch Name</label>
+              <input
+                id="course-name"
+                type="text"
+                className="form-input"
+                placeholder="e.g., GMAT Focus — Jan 2026 Batch"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
+            </div>
+
+            <div className="admin-form-row">
+              <div className="form-group">
+                <label htmlFor="batch-capacity" className="form-label">Capacity</label>
+                <input
+                  id="batch-capacity"
+                  type="number"
+                  min="1"
+                  className="form-input"
+                  value={form.capacity}
+                  onChange={(e) => setForm({ ...form, capacity: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="batch-price" className="form-label">Price (INR)</label>
+                <input
+                  id="batch-price"
+                  type="number"
+                  min="0"
+                  className="form-input"
+                  placeholder="e.g., 49999"
+                  value={form.price_amount}
+                  onChange={(e) => setForm({ ...form, price_amount: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="admin-form-row">
+              <div className="form-group">
+                <label htmlFor="registration-closes" className="form-label">Registration Closes</label>
+                <input
+                  id="registration-closes"
+                  type="datetime-local"
+                  className="form-input"
+                  value={form.registration_closes_at}
+                  onChange={(e) => setForm({ ...form, registration_closes_at: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="batch-currency" className="form-label">Currency</label>
+                <input
+                  id="batch-currency"
+                  className="form-input"
+                  value={form.currency}
+                  onChange={(e) => setForm({ ...form, currency: e.target.value.toUpperCase() })}
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="public-note" className="form-label">Public Registration Note</label>
+              <input
+                id="public-note"
+                className="form-input"
+                placeholder="e.g., Weekend classes at 10 AM IST"
+                value={form.public_note}
+                onChange={(e) => setForm({ ...form, public_note: e.target.value })}
+              />
+            </div>
+
+            {/* List existing students while editing */}
+            {editingId && studentsInBatch.length > 0 && (
+              <div className="form-group">
+                <label className="form-label">Enrolled Students ({studentsInBatch.length})</label>
+                <div style={{ 
+                  maxHeight: '150px', 
+                  overflowY: 'auto', 
+                  background: 'var(--bg-secondary)', 
+                  padding: '8px',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid var(--border-primary)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '4px'
+                }}>
+                  {studentsInBatch.map(s => (
+                    <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', padding: '4px' }}>
+                      <span>{s.profiles?.full_name} ({s.profiles?.email})</span>
+                      <button 
+                        onClick={() => handleRemoveStudent(s.id)}
+                        style={{ color: 'var(--error)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '10px' }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="form-group">
+              <label className="form-label">{editingId ? 'Add More Students' : 'Initial Students'} (Bulk Enroll)</label>
+              <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginBottom: '8px' }}>
+                Paste emails (comma separated or new line).
+              </p>
+              <textarea
+                className="form-input"
+                rows={3}
+                placeholder="student1@gmail.com, student2@gmail.com..."
+                value={form.bulkEmails}
+                onChange={(e) => setForm({ ...form, bulkEmails: e.target.value })}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={form.is_active}
+                  onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
+                  style={{ width: 16, height: 16, accentColor: 'var(--accent-primary)' }}
+                />
+                Published / Active
+              </label>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={form.registration_open}
+                  onChange={(e) => setForm({ ...form, registration_open: e.target.checked })}
+                  style={{ width: 16, height: 16, accentColor: 'var(--accent-primary)' }}
+                />
+                Open public registration
+              </label>
+            </div>
+            
+            <div className="admin-form-actions">
+              <button
+                className="btn btn-primary"
+                onClick={handleUpdate}
+                disabled={!form.name || isSubmitting}
+              >
+                {isSubmitting ? 'Processing...' : 'Update Batch'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Batches Table View */}
+      {!viewingStudentsFor ? (
+        <div className="admin-card">
+          <div className="admin-table-container">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Batch Name</th>
+                  <th>Sessions Done</th>
+                  <th>Students</th>
+                  <th>Registration</th>
+                  <th>Revenue</th>
+                  <th>Status</th>
+                  <th style={{ textAlign: 'right' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {courses.map((course) => {
+                  const now = new Date();
+                  const currentSessions = course.sessions?.filter((session) => session.is_published) || [];
+                  const sessionsDone = currentSessions.filter((session) => new Date(session.session_date) < now).length;
+                  const totalSessions = currentSessions.length;
+                  const progress = totalSessions > 0 ? Math.round((sessionsDone / totalSessions) * 100) : 0;
+                  const registrationStats = getCourseRegistrationStats(course);
+
+                  return (
+                    <tr key={course.id}>
+                      <td>
+                        <div style={{ fontWeight: 600 }}>{course.name}</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Created {formatDate(course.created_at)}</div>
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <div style={{ fontSize: '13px', fontWeight: 500 }}>{sessionsDone} / {totalSessions} sessions</div>
+                          <div style={{ width: '80px', height: '4px', background: 'var(--bg-tertiary)', borderRadius: '2px' }}>
+                            <div style={{ width: `${progress}%`, height: '100%', background: 'var(--accent-primary)', borderRadius: '2px' }} />
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <button 
+                          className="btn btn-ghost btn-sm" 
+                          onClick={() => {
+                            setViewingStudentsFor(course);
+                            fetchStudentsInBatch(course.id);
+                          }}
+                          style={{ color: 'var(--accent-primary)', padding: '4px 0' }}
+                        >
+                          {course.enrollments?.length || 0} students →
+                        </button>
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          <span className={`badge ${course.registration_open ? 'badge-available' : 'badge-locked'}`}>
+                            {course.registration_open ? 'Open' : 'Closed'}
+                          </span>
+                          <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
+                            {registrationStats.availableSeats} open · {registrationStats.pendingReservations} reserved
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        <div style={{ fontWeight: 700 }}>{formatMoney(registrationStats.revenue, course.currency || 'INR')}</div>
+                        <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
+                          Price {formatMoney(course.price_amount || 0, course.currency || 'INR')}
+                        </div>
+                      </td>
+                      <td>
+                        <span className={`badge ${course.is_active ? 'badge-available' : 'badge-locked'}`}>
+                          {course.is_active ? '● Active' : '○ Draft'}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="admin-table-actions" style={{ justifyContent: 'flex-end' }}>
+                          <Link className="btn btn-secondary btn-sm" href={`/admin/progress/${course.id}`}>
+                            Progress
+                          </Link>
+                          <button className="btn btn-ghost btn-sm" onClick={() => handleEdit(course)}>
+                            Edit
+                          </button>
+                          <button
+                            className="btn btn-ghost btn-sm"
+                            onClick={() => handleSyncMasterMaterials(course.id)}
+                            disabled={syncingCourseId === course.id}
+                            title="Add missing materials and update linked master content"
+                          >
+                            {syncingCourseId === course.id ? 'Syncing…' : 'Sync materials'}
+                          </button>
+                          {deleteConfirm === course.id ? (
+                            <>
+                              <button className="btn btn-danger btn-sm" onClick={() => handleDelete(course.id)}>Confirm</button>
+                              <button className="btn btn-ghost btn-sm" onClick={() => setDeleteConfirm(null)}>Cancel</button>
+                            </>
+                          ) : (
+                            <button
+                              className="btn btn-ghost btn-sm"
+                              onClick={() => setDeleteConfirm(course.id)}
+                              style={{ color: 'var(--error)' }}
+                            >
+                              Delete
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          {courses.length === 0 && (
+            <div className="empty-state" style={{ padding: '40px' }}>
+              <div className="empty-state-icon">📚</div>
+              <h3 className="empty-state-title">No batches found</h3>
+              <p className="empty-state-text">Click &quot;New Batch&quot; to get started.</p>
+            </div>
+          )}
+        </div>
+      ) : (
+        /* Students Management View */
+        <div className="admin-card animate-fade-in">
+          <div className="admin-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2 className="admin-card-title">Enrolled Students</h2>
+            <div className="admin-table-actions">
+              <Link className="btn btn-secondary btn-sm" href={`/admin/progress/${viewingStudentsFor.id}`}>
+                View progress
+              </Link>
+              <button className="btn btn-primary btn-sm" onClick={() => {
+                handleEdit(viewingStudentsFor);
+                setViewingStudentsFor(null);
+              }}>
+                + Add Students
+              </button>
+            </div>
+          </div>
+          
+          <div className="admin-table-container">
+            {isStudentsLoading ? (
+              <div style={{ padding: '40px', textAlign: 'center' }}><div className="spinner" /></div>
+            ) : (
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Student Name</th>
+                    <th>Email</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {studentsInBatch.map((enrollment) => (
+                    <tr key={enrollment.id}>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ 
+                            width: 24, height: 24, borderRadius: 4, 
+                            background: 'var(--accent-gradient)', color: 'white', 
+                            fontSize: '10px', fontWeight: 700,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center'
+                          }}>
+                            {enrollment.profiles?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
+                          </div>
+                          <span style={{ fontWeight: 500 }}>{enrollment.profiles?.full_name}</span>
+                        </div>
+                      </td>
+                      <td style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>
+                        {enrollment.profiles?.email}
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        <Link
+                          className="btn btn-secondary btn-sm"
+                          href={`/admin/progress/${viewingStudentsFor.id}`}
+                          style={{ marginRight: 8 }}
+                        >
+                          Progress
+                        </Link>
+                        <button 
+                          className="btn btn-ghost btn-sm" 
+                          onClick={() => handleRemoveStudent(enrollment.id)}
+                          style={{ color: 'var(--error)' }}
+                        >
+                          Remove from Batch
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {studentsInBatch.length === 0 && (
+                    <tr>
+                      <td colSpan={3} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-tertiary)' }}>
+                        No students enrolled in this batch yet.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

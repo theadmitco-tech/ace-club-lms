@@ -1,11 +1,14 @@
 'use client';
 
+/* eslint-disable @typescript-eslint/no-explicit-any, react-hooks/set-state-in-effect -- legacy editor debt; Phase 2 routes schedule writes through the authorized action below */
+
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { MaterialType } from '@/lib/types';
 import { getMaterialTypeIcon, getMaterialTypeLabel } from '@/lib/utils';
 import { useAuth } from '@/lib/AuthContext';
+import { saveEventAction } from '../actions';
 
 export default function EditSessionPage() {
   const router = useRouter();
@@ -23,6 +26,13 @@ export default function EditSessionPage() {
     session_date: '',
     course_id: '',
     is_published: true,
+    event_type: 'live_class',
+    section_key: 'programme',
+    duration_minutes: '120',
+    instructor: '',
+    venue: '',
+    reporting_time: '',
+    instructions: '',
   });
   
   const [materials, setMaterialsList] = useState<any[]>([]);
@@ -69,13 +79,13 @@ export default function EditSessionPage() {
     ] = await Promise.all([
       supabase.from('sessions').select('*, courses(name)').eq('id', sessionId).single(),
       supabase.from('materials').select('*').eq('session_id', sessionId).order('created_at', { ascending: true }),
-      supabase.from('courses').select('id, name')
+      supabase.from('courses').select('id, name, schedule_revision, source_template_revision_id')
     ]);
 
     if (session) {
       // Convert session_date to local datetime-local format
       const dt = new Date(session.session_date);
-      const localDt = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+      const localDt = new Date(dt.getTime() + 330 * 60000).toISOString().slice(0, 16);
       
       setForm({
         title: session.title,
@@ -83,6 +93,13 @@ export default function EditSessionPage() {
         session_date: localDt,
         course_id: session.course_id,
         is_published: session.is_published,
+        event_type: session.event_type || 'live_class',
+        section_key: session.section_key || 'programme',
+        duration_minutes: String(session.session_end_at ? Math.round((new Date(session.session_end_at).valueOf() - dt.valueOf()) / 60000) : 120),
+        instructor: session.instructor || '',
+        venue: session.venue || '',
+        reporting_time: session.reporting_time?.slice(0, 5) || '',
+        instructions: session.instructions || '',
       });
       setCourseName(session.courses?.name || '');
     }
@@ -156,6 +173,30 @@ export default function EditSessionPage() {
   const handleUpdateSession = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSaving(true);
+
+    const selectedCourse = courses.find((course) => course.id === form.course_id);
+    if (selectedCourse?.source_template_revision_id) {
+      if (!window.confirm('Review consequences\n\nThis event will be updated only in this batch. Unreleased material timestamps will follow a schedule change; already-released material remains available.')) {
+        setSaving(false);
+        return;
+      }
+      const result = await saveEventAction({
+        courseId: form.course_id, sessionId, expectedRevision: selectedCourse.schedule_revision,
+        title: form.title, eventType: form.event_type, sectionKey: form.section_key,
+        startsAt: new Date(`${form.session_date}:00+05:30`).toISOString(),
+        durationMinutes: Number(form.duration_minutes), instructor: form.instructor,
+        venue: form.venue, reportingTime: form.reporting_time, instructions: form.instructions,
+        isPublished: form.is_published,
+      });
+      addToast(result.status === 'success' ? 'success' : 'error', result.message);
+      if (result.status === 'success') {
+        setCourses((current) => current.map((course) => course.id === form.course_id
+          ? { ...course, schedule_revision: result.scheduleRevision ?? course.schedule_revision }
+          : course));
+      }
+      setSaving(false);
+      return;
+    }
 
     const { error } = await supabase
       .from('sessions')
@@ -443,6 +484,31 @@ export default function EditSessionPage() {
               />
             </div>
           </div>
+
+          <div className="admin-form-row">
+            <div className="form-group">
+              <label htmlFor="edit-event-type" className="form-label">Event type</label>
+              <select id="edit-event-type" className="form-select" value={form.event_type} onChange={(e) => setForm({ ...form, event_type: e.target.value })}>
+                {['live_class', 'mock', 'orientation', 'break', 'support'].map((value) => <option key={value} value={value}>{value.replace('_', ' ')}</option>)}
+              </select>
+            </div>
+            <div className="form-group">
+              <label htmlFor="edit-section" className="form-label">Section</label>
+              <select id="edit-section" className="form-select" value={form.section_key} onChange={(e) => setForm({ ...form, section_key: e.target.value })}>
+                {[['programme', 'Programme'], ['va', 'Verbal'], ['qa', 'Quant'], ['di', 'Data Insights']].map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div className="admin-form-row">
+            <div className="form-group"><label htmlFor="edit-duration" className="form-label">Duration (minutes)</label><input id="edit-duration" className="form-input" type="number" min="15" max="720" value={form.duration_minutes} onChange={(e) => setForm({ ...form, duration_minutes: e.target.value })} /></div>
+            <div className="form-group"><label htmlFor="edit-instructor" className="form-label">Instructor</label><input id="edit-instructor" className="form-input" value={form.instructor} onChange={(e) => setForm({ ...form, instructor: e.target.value })} /></div>
+          </div>
+          <div className="admin-form-row">
+            <div className="form-group"><label htmlFor="edit-venue" className="form-label">Venue</label><input id="edit-venue" className="form-input" value={form.venue} onChange={(e) => setForm({ ...form, venue: e.target.value })} /></div>
+            <div className="form-group"><label htmlFor="edit-reporting" className="form-label">Reporting time</label><input id="edit-reporting" className="form-input" type="time" value={form.reporting_time} onChange={(e) => setForm({ ...form, reporting_time: e.target.value })} /></div>
+          </div>
+          <div className="form-group"><label htmlFor="edit-instructions" className="form-label">Instructions</label><textarea id="edit-instructions" className="form-input" value={form.instructions} onChange={(e) => setForm({ ...form, instructions: e.target.value })} /></div>
 
           <div className="form-group">
             <label htmlFor="edit-course" className="form-label">Batch</label>

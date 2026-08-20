@@ -207,7 +207,7 @@ export default function AdminCurriculumPage() {
         <div>
           <h1 className="admin-page-title">Master Course Content</h1>
           <p className="admin-page-subtitle">
-            Add reusable Notion pre-reads and PDF worksheets. Manage each batch&apos;s recordings and private reading under Session resources.
+            Maintain the reusable Full Course source library. Template-specific Starter Packs, pre-reads and worksheets are managed under Course templates; batch recordings and private reading stay under Resources.
           </p>
         </div>
       </div>
