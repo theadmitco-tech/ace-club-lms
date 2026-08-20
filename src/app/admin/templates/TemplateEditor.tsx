@@ -5,6 +5,7 @@ import {
   COURSE_TEMPLATE_EVENT_TYPES,
   formatTemplateEventType,
   normalizeNotionInput,
+  reorderCourseTemplateEvents,
   validateCourseTemplateDraft,
   type CourseTemplate,
   type CourseTemplateDraft,
@@ -213,11 +214,10 @@ export default function TemplateEditor({
   const reorderEvent = (index: number, direction: -1 | 1) => {
     const target = index + direction;
     if (target < 0 || target >= draft.events.length) return;
-    setDraft((current) => {
-      const events = [...current.events];
-      [events[index], events[target]] = [events[target], events[index]];
-      return { ...current, events: events.map((event, eventIndex) => ({ ...event, displayOrder: eventIndex + 1 })) };
-    });
+    setDraft((current) => ({
+      ...current,
+      events: reorderCourseTemplateEvents(current.events, index, direction),
+    }));
     setReviewReady(false);
   };
 

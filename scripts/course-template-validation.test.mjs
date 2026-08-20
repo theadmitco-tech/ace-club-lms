@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { normalizeNotionInput, validateCourseTemplateDraft } from '../src/lib/courseTemplates.ts';
+import {
+  normalizeNotionInput,
+  reorderCourseTemplateEvents,
+  validateCourseTemplateDraft,
+} from '../src/lib/courseTemplates.ts';
 
 const validDraft = {
   title: 'Critical Reasoning Crash Course',
@@ -33,6 +37,42 @@ test('accepts the approved crash-course event shape', () => {
     assert.equal(result.draft.events[0].durationMinutes, 60);
     assert.equal(result.draft.events[0].instructor, 'Tanya');
   }
+});
+
+test('reordering events moves them into the destination schedule slots', () => {
+  const orientation = {
+    ...validDraft.events[0],
+    key: 'orientation',
+    title: 'Orientation',
+    relativeDay: 7,
+    displayOrder: 1,
+    startTime: '20:00',
+    durationMinutes: 60,
+  };
+  const verbal = {
+    ...validDraft.events[0],
+    key: 'verbal-one',
+    title: 'VA 1',
+    relativeDay: 8,
+    displayOrder: 2,
+    startTime: '10:00',
+    durationMinutes: 120,
+  };
+
+  const moved = reorderCourseTemplateEvents([orientation, verbal], 0, 1);
+
+  assert.deepEqual(
+    moved.map(({ key, relativeDay, displayOrder, startTime, durationMinutes }) => ({
+      key, relativeDay, displayOrder, startTime, durationMinutes,
+    })),
+    [
+      { key: 'verbal-one', relativeDay: 7, displayOrder: 1, startTime: '20:00', durationMinutes: 120 },
+      { key: 'orientation', relativeDay: 8, displayOrder: 2, startTime: '10:00', durationMinutes: 60 },
+    ],
+  );
+
+  const restored = reorderCourseTemplateEvents(moved, 1, -1);
+  assert.deepEqual(restored, [orientation, verbal]);
 });
 
 test('accepts reusable Starter Pack, pre-read and worksheet content for a crash template', () => {

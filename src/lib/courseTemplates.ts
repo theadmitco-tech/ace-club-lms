@@ -91,6 +91,25 @@ export function normalizeNotionInput(value: unknown) {
   return (iframeSource ?? input).replaceAll('&amp;', '&').trim();
 }
 
+export function reorderCourseTemplateEvents(
+  events: CourseTemplateEvent[],
+  index: number,
+  direction: -1 | 1,
+) {
+  const target = index + direction;
+  if (target < 0 || target >= events.length) return events;
+
+  const scheduleSlots = events.map(({ relativeDay, startTime }) => ({ relativeDay, startTime }));
+  const reorderedEvents = [...events];
+  [reorderedEvents[index], reorderedEvents[target]] = [reorderedEvents[target], reorderedEvents[index]];
+
+  return reorderedEvents.map((event, eventIndex) => ({
+    ...event,
+    ...scheduleSlots[eventIndex],
+    displayOrder: eventIndex + 1,
+  }));
+}
+
 export function validateCourseTemplateDraft(input: unknown): TemplateValidationResult {
   if (!input || typeof input !== 'object') {
     return { valid: false, errors: ['Template data is missing.'] };
