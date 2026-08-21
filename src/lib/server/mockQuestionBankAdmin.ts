@@ -137,10 +137,11 @@ export async function listMockQuestions(filters: Record<string, string | undefin
   const revisionIds = (data ?? []).map((row) => row.id);
   const [{ data: options, error: optionsError }, { data: keys, error: keysError }] = revisionIds.length ? await Promise.all([
     admin.from('mock_question_options').select('question_revision_id, response_slot_id, option_id, display_order, content_json').in('question_revision_id', revisionIds).order('display_order'),
-    admin.schema('private').from('mock_question_keys').select('question_revision_id, answer_json').in('question_revision_id', revisionIds),
+    admin.rpc('get_mock_question_keys', { p_revision_ids: revisionIds }),
   ]) : [{ data: [], error: null }, { data: [], error: null }];
   if (optionsError || keysError) throw optionsError ?? keysError;
-  const answerByRevision = new Map((keys ?? []).map((key) => [key.question_revision_id, key.answer_json as Record<string, string>]));
+  const answerKeys = (keys ?? []) as Array<{ question_revision_id: string; answer_json: Record<string, string> }>;
+  const answerByRevision = new Map(answerKeys.map((key) => [key.question_revision_id, key.answer_json]));
   return (data ?? []).map((row) => {
     const question = row.mock_questions as unknown as { source_external_id: string; mock_source_namespaces: { code: string } };
     const topic = row.topic as unknown as { label: string } | null;
