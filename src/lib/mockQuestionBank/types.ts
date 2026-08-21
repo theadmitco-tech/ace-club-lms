@@ -132,6 +132,7 @@ export type ParseQuestionPackageContext = {
   authorizedNamespaces: Set<string>;
   taxonomy: MockTaxonomyEntry[];
   existing: ExistingMockContent;
+  completedPackageFingerprints: Set<string>;
   now?: Date;
 };
 

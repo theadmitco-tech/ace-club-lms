@@ -19,7 +19,7 @@ export function createMockAdminClient(): SupabaseClient {
 
 export async function loadQuestionPackageContext(userId: string): Promise<ParseQuestionPackageContext> {
   const admin = createMockAdminClient();
-  const [memberships, topics, questionIdentities, questionRevisions, stimulusIdentities, stimulusRevisions, media] = await Promise.all([
+  const [memberships, topics, questionIdentities, questionRevisions, stimulusIdentities, stimulusRevisions, media, completedImports] = await Promise.all([
     admin.from('mock_source_namespace_members').select('namespace_id, mock_source_namespaces!inner(code, is_active)').eq('user_id', userId).eq('is_active', true),
     admin.from('mock_topics').select('id, section, label, parent_id').eq('is_active', true),
     admin.from('mock_questions').select('id, namespace_id, source_external_id'),
@@ -27,8 +27,9 @@ export async function loadQuestionPackageContext(userId: string): Promise<ParseQ
     admin.from('mock_stimuli').select('id, namespace_id, source_external_id'),
     admin.from('mock_stimulus_revisions').select('stimulus_id, content_fingerprint, status, stimulus_kind').order('revision_number', { ascending: false }),
     admin.from('mock_media').select('namespace_id, source_external_id, sha256').eq('status', 'ready'),
+    admin.from('mock_imports').select('package_fingerprint').eq('status', 'completed'),
   ]);
-  const failed = [memberships, topics, questionIdentities, questionRevisions, stimulusIdentities, stimulusRevisions, media].find((result) => result.error);
+  const failed = [memberships, topics, questionIdentities, questionRevisions, stimulusIdentities, stimulusRevisions, media, completedImports].find((result) => result.error);
   if (failed?.error) throw failed.error;
 
   const namespaceCodeById = new Map<string, string>();
@@ -89,7 +90,12 @@ export async function loadQuestionPackageContext(userId: string): Promise<ParseQ
     const relation = membership.mock_source_namespaces as unknown as { code: string; is_active: boolean } | null;
     if (relation?.is_active) authorizedNamespaces.add(relation.code);
   }
-  return { authorizedNamespaces, taxonomy, existing };
+  return {
+    authorizedNamespaces,
+    taxonomy,
+    existing,
+    completedPackageFingerprints: new Set((completedImports.data ?? []).map((item) => item.package_fingerprint)),
+  };
 }
 
 export type MockQuestionListItem = {

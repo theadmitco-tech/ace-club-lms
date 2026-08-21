@@ -529,6 +529,18 @@ export async function parseMockQuestionPackage(
 ): Promise<ParsedQuestionPackage> {
   const issues: PackageIssue[] = [];
   const packageFingerprint = sha256(bytes);
+  const validationContext = context.completedPackageFingerprints.has(packageFingerprint)
+    ? {
+        ...context,
+        existing: {
+          questions: new Map(),
+          stimuli: new Map(),
+          assets: new Map(),
+          questionFingerprints: new Set<string>(),
+          stimulusFingerprints: new Set<string>(),
+        },
+      }
+    : context;
   let files: PackageFiles;
   try {
     files = await unpackPackage(bytes, fileName);
@@ -564,9 +576,9 @@ export async function parseMockQuestionPackage(
   if (assetRows.length > MAX_ASSETS) addIssue(issues, 'Assets', `Package exceeds the ${MAX_ASSETS}-asset limit.`, 'Split the package into smaller imports.');
   if (!questionRows.length) addIssue(issues, 'Questions', 'No question rows were found.', 'Add at least one candidate question row.');
   const optionsByQuestion = parseOptions(optionRows, namespace, issues);
-  const parsedStimuli = parseStimuli(stimulusRows, namespace, issues, context);
-  const parsedQuestions = parseQuestions(questionRows, namespace, optionsByQuestion, new Map(parsedStimuli.stimuli.map((item) => [item.sourceStimulusId, item.stimulusType])), issues, context);
-  const parsedAssets = parseAssets(assetRows, namespace, packageId, files.assets, issues, context);
+  const parsedStimuli = parseStimuli(stimulusRows, namespace, issues, validationContext);
+  const parsedQuestions = parseQuestions(questionRows, namespace, optionsByQuestion, new Map(parsedStimuli.stimuli.map((item) => [item.sourceStimulusId, item.stimulusType])), issues, validationContext);
+  const parsedAssets = parseAssets(assetRows, namespace, packageId, files.assets, issues, validationContext);
   const assetIds = new Set(parsedAssets.assets.map((asset) => asset.sourceAssetId));
   for (const asset of parsedAssets.assets) {
     if (asset.sourceQuestionId && !parsedQuestions.questions.some((question) => question.sourceQuestionId === asset.sourceQuestionId)) addIssue(issues, 'Assets', 'Asset references an unresolved question.', 'Correct source_question_id.', undefined, 'source_question_id');
@@ -575,7 +587,7 @@ export async function parseMockQuestionPackage(
   for (const stimulus of parsedStimuli.stimuli) {
     const json = stableStringify(stimulus.content);
     const assetMatches = [...json.matchAll(/ASSET-[0-9a-fA-F-]{36}/g)].map(([id]) => id);
-    for (const id of assetMatches) if (!assetIds.has(id) && !context.existing.assets.has(`${namespace}::${id}`)) addIssue(issues, 'Stimuli', `Stimulus references missing asset ${id}.`, 'Add the asset to the package or choose an existing immutable asset.');
+    for (const id of assetMatches) if (!assetIds.has(id) && !validationContext.existing.assets.has(`${namespace}::${id}`)) addIssue(issues, 'Stimuli', `Stimulus references missing asset ${id}.`, 'Add the asset to the package or choose an existing immutable asset.');
   }
   const payloadForDigest = {
     schemaVersion: SCHEMA_VERSION,

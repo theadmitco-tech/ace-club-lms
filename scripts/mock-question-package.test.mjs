@@ -75,6 +75,7 @@ function context() {
     authorizedNamespaces: new Set(['UNNATI']),
     taxonomy: topics.map((topic, index) => ({ section: index < 2 ? 'quant' : index < 4 ? 'verbal' : 'data_insights', topic, subtopic: subtopics[index] })),
     existing: { questions: new Map(), stimuli: new Map(), assets: new Map(), questionFingerprints: new Set(), stimulusFingerprints: new Set() },
+    completedPackageFingerprints: new Set(),
     now: new Date('2026-08-21T10:00:00Z'),
   };
 }
@@ -116,4 +117,29 @@ test('unauthorized namespace fails without trusting workbook registry values', a
   const result = await parseMockQuestionPackage(fixture.bytes, fixture.name, denied);
   assert.equal(result.preview.valid, false);
   assert.equal(result.preview.issues.some((issue) => issue.message.includes('not authorized')), true);
+});
+
+test('an exact completed package retry validates against its original package state', async () => {
+  const fixture = await buildPackage();
+  const first = await parseMockQuestionPackage(fixture.bytes, fixture.name, context());
+  assert.equal(first.preview.valid, true, JSON.stringify(first.preview.issues, null, 2));
+
+  const retryContext = context();
+  for (const question of first.preview.package.questions) {
+    retryContext.existing.questions.set(`${question.sourceNamespace}::${question.sourceQuestionId}`, { fingerprint: question.contentFingerprint, status: 'draft' });
+    retryContext.existing.questionFingerprints.add(question.contentFingerprint);
+  }
+  for (const stimulus of first.preview.package.stimuli) {
+    retryContext.existing.stimuli.set(`${stimulus.sourceNamespace}::${stimulus.sourceStimulusId}`, { fingerprint: stimulus.contentFingerprint, status: 'draft', stimulusType: stimulus.stimulusType });
+    retryContext.existing.stimulusFingerprints.add(stimulus.contentFingerprint);
+  }
+  for (const asset of first.preview.package.assets) {
+    retryContext.existing.assets.set(`${asset.sourceNamespace}::${asset.sourceAssetId}`, { sha256: asset.sha256 });
+  }
+  retryContext.completedPackageFingerprints.add(first.preview.package.packageFingerprint);
+
+  const retry = await parseMockQuestionPackage(fixture.bytes, fixture.name, retryContext);
+  assert.equal(retry.preview.valid, true, JSON.stringify(retry.preview.issues, null, 2));
+  assert.equal(retry.preview.package.previewDigest, first.preview.package.previewDigest);
+  assert.equal(retry.preview.counts.likelyDuplicates, 0);
 });
