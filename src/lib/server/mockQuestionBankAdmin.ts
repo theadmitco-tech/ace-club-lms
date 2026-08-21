@@ -117,7 +117,7 @@ export async function listMockQuestions(filters: Record<string, string | undefin
   let query = admin.from('mock_question_revisions').select(`
     id, question_id, revision_number, section, question_type, response_type, difficulty,
     status, stem_json, interaction_json, source_reference, created_at,
-    mock_questions!inner(source_external_id, mock_source_namespaces!inner(code)),
+    mock_questions!mock_question_revisions_question_id_fkey!inner(source_external_id, mock_source_namespaces!inner(code)),
     topic:mock_topics!mock_question_revisions_topic_id_fkey(label),
     subtopic:mock_topics!mock_question_revisions_subtopic_id_fkey(label)
   `).eq('import_state', 'ready').order('created_at', { ascending: false }).limit(200);
@@ -159,7 +159,7 @@ export async function loadMockQuestionBankReference(userId: string) {
   const context = await loadQuestionPackageContext(userId);
   const [{ data: topics, error: topicsError }, { data: stimuli, error: stimuliError }, { data: namespaces, error: namespacesError }, { data: media, error: mediaError }] = await Promise.all([
     admin.from('mock_topics').select('id, label, section, parent_id').eq('is_active', true).order('label'),
-    admin.from('mock_stimulus_revisions').select('id, stimulus_kind, content_json, mock_stimuli!inner(source_external_id, namespace_id)').eq('status', 'draft').eq('import_state', 'ready').order('created_at', { ascending: false }),
+    admin.from('mock_stimulus_revisions').select('id, stimulus_kind, content_json, mock_stimuli!mock_stimulus_revisions_stimulus_id_fkey!inner(source_external_id, namespace_id)').eq('status', 'draft').eq('import_state', 'ready').order('created_at', { ascending: false }),
     admin.from('mock_source_namespaces').select('id, code, display_name').eq('is_active', true).order('code'),
     admin.from('mock_media').select('id, namespace_id, source_external_id, alt_text').eq('status', 'ready').order('created_at', { ascending: false }),
   ]);

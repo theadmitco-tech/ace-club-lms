@@ -34,11 +34,11 @@ export default async function QuestionBankPage({ searchParams }: { searchParams:
     questions = questionData; reference = referenceData; allNamespaces = namespaceResult.data ?? [];
   } catch (error) {
     console.error('Question Bank page load failed:', error);
-    loadError = 'Question Bank schema is not available in this environment yet. Apply the authorized Phase 1 migration to Staging, then retry.';
+    loadError = 'Question Bank could not be loaded. Retry the page; if the problem continues, check the Preview runtime logs.';
   }
 
   return <div className="animate-fade-in mock-question-bank">
-    <div className="admin-page-header"><div><h1 className="admin-page-title">Question Bank</h1><p className="admin-page-subtitle">Draft, preview, publish, retire and import GMAT mock questions without exposing answer keys to Students.</p></div><Link className="btn btn-secondary" href="#bulk-upload-title">Bulk upload questions</Link></div>
+    <div className="admin-page-header"><div><h1 className="admin-page-title">Question Bank</h1><p className="admin-page-subtitle">Draft, preview, publish, retire and import GMAT mock questions without exposing answer keys to Students.</p></div>{loadError ? <button className="btn btn-secondary" type="button" disabled title="Question Bank must load before bulk upload is available.">Bulk upload questions</button> : <Link className="btn btn-secondary" href="#bulk-upload-title">Bulk upload questions</Link>}</div>
     {loadError && <div className="admin-card mock-status" role="alert">{loadError}</div>}
     {!loadError && <>
       <section className="admin-card mock-workspace-card" aria-labelledby="question-list-title">
