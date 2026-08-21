@@ -1,0 +1,38 @@
+.mock-question-bank { display: grid; gap: var(--space-xl); }
+.mock-question-bank .admin-page-header { margin-bottom: 0; }
+.mock-workspace-card { display: grid; gap: var(--space-lg); }
+.mock-filter-grid, .mock-form-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-md); align-items: end; }
+.mock-form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.mock-field { display: grid; gap: 6px; min-width: 0; color: var(--text-secondary); font-size: var(--font-size-sm); font-weight: 600; }
+.mock-field-wide { grid-column: 1 / -1; }
+.mock-field input, .mock-field select, .mock-field textarea { width: 100%; border: 1px solid var(--border-primary); border-radius: var(--radius-md); background: var(--bg-primary); color: var(--text-primary); padding: 10px 12px; font: inherit; }
+.mock-field textarea { resize: vertical; line-height: 1.5; }
+.mock-field input:focus-visible, .mock-field select:focus-visible, .mock-field textarea:focus-visible, .mock-question-row summary:focus-visible { outline: 3px solid #e3a631; outline-offset: 2px; }
+.mock-code-input, .mock-json-preview, .mock-question-preview code, .mock-question-row code { font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace); }
+.mock-action-row, .mock-inline-form, .mock-radio-row { display: flex; flex-wrap: wrap; gap: var(--space-md); align-items: end; }
+.mock-inline-form .mock-field { flex: 1 1 220px; }
+.mock-status { padding: var(--space-md); border: 1px solid var(--border-primary); border-radius: var(--radius-md); background: var(--bg-secondary); }
+.mock-preview-stack, .mock-question-list { display: grid; gap: var(--space-md); }
+.mock-stats { margin: 0; }
+.mock-preview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-md); }
+.mock-question-preview, .mock-question-row { border: 1px solid var(--border-primary); border-radius: var(--radius-md); background: var(--bg-secondary); overflow: hidden; }
+.mock-question-preview { padding: var(--space-lg); display: grid; gap: var(--space-sm); }
+.mock-preview-heading { display: flex; justify-content: space-between; gap: var(--space-md); }
+.mock-options-preview { display: grid; gap: 8px; }
+.mock-options-preview > div { display: grid; grid-template-columns: minmax(110px, auto) 1fr auto; gap: var(--space-sm); align-items: center; padding: var(--space-sm); border: 1px solid var(--border-primary); border-radius: var(--radius-sm); }
+.mock-correct-option { border-color: #22c55e !important; background: rgba(34, 197, 94, .08); }
+.mock-question-row summary { display: grid; grid-template-columns: minmax(240px, 1.4fr) minmax(160px, 1fr) auto; gap: var(--space-md); align-items: center; padding: var(--space-md); cursor: pointer; }
+.mock-question-row summary > span:first-child { display: grid; gap: 4px; }
+.mock-question-detail { border-top: 1px solid var(--border-primary); padding: var(--space-lg); display: grid; grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr) auto; gap: var(--space-lg); }
+.mock-question-detail dl { margin: 0; display: grid; align-content: start; gap: var(--space-sm); }
+.mock-question-detail dl div { display: grid; gap: 2px; }
+.mock-question-detail dt { color: var(--text-tertiary); font-size: var(--font-size-xs); text-transform: uppercase; }
+.mock-question-detail dd { margin: 0; overflow-wrap: anywhere; }
+.mock-json-preview { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 320px; overflow: auto; padding: var(--space-md); border-radius: var(--radius-sm); background: var(--bg-primary); border: 1px solid var(--border-primary); font-size: var(--font-size-xs); }
+.mock-rich-content p { margin: var(--space-xs) 0; }
+.mock-content-callout, .mock-asset-placeholder { padding: var(--space-md); border: 1px dashed var(--border-primary); border-radius: var(--radius-sm); }
+.mock-inline-error { color: #ef4444; max-width: 240px; font-size: var(--font-size-xs); }
+.mock-draft-editor, .mock-draft-editor-fields { display: grid; gap: var(--space-md); margin-top: var(--space-md); }
+.mock-empty-state { text-align: center; color: var(--text-secondary); padding: var(--space-xl); }
+@media (max-width: 1100px) { .mock-filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .mock-preview-grid { grid-template-columns: 1fr; } .mock-question-row summary { grid-template-columns: 1fr auto; } .mock-question-row summary > span:nth-child(2) { grid-column: 1; } .mock-question-detail { grid-template-columns: 1fr; } }
+@media (max-width: 700px) { .mock-form-grid, .mock-filter-grid { grid-template-columns: 1fr; } .mock-question-row summary { grid-template-columns: 1fr; } .mock-options-preview > div { grid-template-columns: 1fr; } }

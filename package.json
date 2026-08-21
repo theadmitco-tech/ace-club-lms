@@ -14,6 +14,7 @@
     "test:flexible-resources": "node --experimental-strip-types --test scripts/flexible-resources.test.mjs",
     "test:student-portal": "node --experimental-strip-types --test scripts/student-portal.test.mjs",
     "test:phase5-safety": "node --experimental-strip-types --test scripts/phase5-integrated-safety.test.mjs",
+    "test:mock-question-package": "node --import tsx --test scripts/mock-question-package.test.mjs",
     "test:pilot-v2": "node --experimental-strip-types --test scripts/course-template-validation.test.mjs scripts/batch-schedule.test.mjs scripts/flexible-resources.test.mjs scripts/student-portal.test.mjs scripts/student-timeline-recommendations.test.mjs scripts/session-material-files.test.mjs scripts/phase5-integrated-safety.test.mjs",
     "question-bank:import": "node scratch/import_question_bank_csv.js",
     "question-bank:dry-run": "node scratch/import_question_bank_csv.js --dry-run",
@@ -27,6 +28,8 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.104.1",
+    "exceljs": "4.4.0",
+    "jszip": "3.10.1",
     "katex": "^0.16.45",
     "next": "16.2.4",
     "notion-client": "^7.10.0",
@@ -41,6 +44,13 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "tsx": "4.20.5",
     "typescript": "^5"
+  },
+  "overrides": {
+    "brace-expansion@<1.1.18": "1.1.18",
+    "nanoid@<3.3.18": "3.3.18",
+    "uuid@<11.1.1": "11.1.1",
+    "ws@<8.21.0": "8.21.0"
   }
 }
