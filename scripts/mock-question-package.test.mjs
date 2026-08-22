@@ -43,7 +43,7 @@ async function prefixSpreadsheetNamespace(bytes) {
   return zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
 }
 
-async function buildPackage({ badResponse = false, includeAsset = true, prefixedWorkbook = false } = {}) {
+async function buildPackage({ badResponse = false, includeAsset = true, prefixedWorkbook = false, standaloneTpa = false } = {}) {
   const workbook = new ExcelJS.Workbook();
   const manifest = workbook.addWorksheet('Manifest');
   manifest.addRow(['Ace Club GMAT Mock Engine — Bulk Question Package V1']); manifest.addRow([]); manifest.addRow(['Field', 'Value']);
@@ -52,7 +52,8 @@ async function buildPackage({ badResponse = false, includeAsset = true, prefixed
   const questionRows = types.map((type, index) => ({
     source_namespace: 'UNNATI', source_question_id: `Q-${type}-${uuids[index]}`, section: sections[index], question_type: type,
     response_type: badResponse && type === 'TI' ? 'single_choice' : responses[index], topic: topics[index], subtopic: subtopics[index], difficulty: 'Medium',
-    source_stimulus_id: index < 2 ? '' : `STIM-${uuids[Math.min(index - 2, 5)]}`, stimulus_group_order: index < 2 ? '' : 1,
+    source_stimulus_id: index < 2 || (standaloneTpa && type === 'TPA') ? '' : `STIM-${uuids[Math.min(index - 2, 5)]}`,
+    stimulus_group_order: index < 2 || (standaloneTpa && type === 'TPA') ? '' : 1,
     question_content_json: JSON.stringify(rich(`${type} question`)), interaction_config_json: JSON.stringify({ slots: [{ id: 'answer' }] }),
     source_reference: 'founder-source.pdf', answer_confirmation: 'FOUNDER_CONFIRMED', conflict_action: 'reject', answer_check: 'PASS',
     asset_check: type === 'GI' ? 'PASS' : 'NOT_APPLICABLE', validation_status: 'READY', validation_notes: '',
@@ -88,6 +89,14 @@ test('valid ZIP round-trips all eight question types and private answer declarat
   assert.deepEqual(Object.keys(result.preview.byQuestionType).sort(), [...types].sort());
   assert.equal(result.preview.package.questions.every((question) => Object.keys(question.answer).length >= 1), true);
   assert.equal(result.assetBytes.size, 1);
+});
+
+test('a self-contained TPA question does not require a shared stimulus', async () => {
+  const fixture = await buildPackage({ standaloneTpa: true });
+  const result = await parseMockQuestionPackage(fixture.bytes, fixture.name, context());
+  assert.equal(result.preview.valid, true, JSON.stringify(result.preview.issues, null, 2));
+  const tpa = result.preview.package.questions.find((question) => question.questionType === 'TPA');
+  assert.equal(tpa?.sourceStimulusId, null);
 });
 
 test('accepted namespace-prefixed OOXML is normalized before parsing', async () => {

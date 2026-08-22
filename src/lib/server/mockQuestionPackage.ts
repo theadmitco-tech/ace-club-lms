@@ -471,7 +471,7 @@ function parseQuestions(
     if (sourceStimulusId && !stimulusTypes.has(sourceStimulusId) && !existingStimulus) {
       addIssue(issues, 'Questions', 'Referenced stimulus is unresolved.', 'Add the Stimuli row or choose an existing stimulus explicitly.', row.__row, 'source_stimulus_id');
     }
-    if (['RC', 'GI', 'TI', 'MSR', 'TPA'].includes(questionType) && !sourceStimulusId) addIssue(issues, 'Questions', `${questionType} requires a shared stimulus.`, 'Create or select the compatible stimulus.', row.__row, 'source_stimulus_id');
+    if (['RC', 'GI', 'TI', 'MSR'].includes(questionType) && !sourceStimulusId) addIssue(issues, 'Questions', `${questionType} requires a shared stimulus.`, 'Create or select the compatible stimulus.', row.__row, 'source_stimulus_id');
     const stimulusType = sourceStimulusId ? stimulusTypes.get(sourceStimulusId) ?? existingStimulus?.stimulusType : undefined;
     const expectedStimulusType: Partial<Record<MockQuestionType, string>> = { RC: 'passage', GI: 'graphic', TI: 'sortable_table', MSR: 'tabbed_content', TPA: 'two_part_context' };
     if (expectedStimulusType[questionType] && stimulusType && stimulusType !== expectedStimulusType[questionType]) addIssue(issues, 'Questions', `${questionType} is linked to an incompatible ${stimulusType} stimulus.`, `Use a ${expectedStimulusType[questionType]} stimulus.`, row.__row, 'source_stimulus_id');
