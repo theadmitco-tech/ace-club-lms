@@ -8,3 +8,4 @@
 .mock-player-logo,.mock-gate-logo,.mock-complete-logo{height:auto}
 @media (max-width:1050px){.mock-passage-workspace{grid-template-columns:1fr}.mock-passage-workspace>.mock-stimulus{position:static;max-height:none}.mock-player-body{grid-template-columns:minmax(0,1fr) 230px}.mock-question-panel{padding:32px 28px}}@media (max-width:760px){.mock-player-body{display:block}.mock-navigator{border-top:1px solid #d9dfe1;border-left:0}.mock-question-meta{gap:12px;flex-wrap:wrap}.mock-response-matrix{min-width:560px}.mock-player-footer span{display:none}}
 .mock-submit-dialog{width:min(480px,100%);padding:32px;border-radius:16px;background:#fff}.mock-submit-dialog h2{margin-top:0;color:#102d3a}.mock-submit-dialog p{color:#607078;line-height:1.6}.mock-submit-dialog .mock-modal-actions button:not(.student-button){padding:11px 16px;border:1px solid #9aa7ac;border-radius:6px;background:#fff;font-weight:800}
+.mock-player-body{display:block;grid-template-columns:none}
