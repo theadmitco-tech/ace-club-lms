@@ -15,6 +15,8 @@
     "test:student-portal": "node --experimental-strip-types --test scripts/student-portal.test.mjs",
     "test:phase5-safety": "node --experimental-strip-types --test scripts/phase5-integrated-safety.test.mjs",
     "test:mock-question-package": "node --import tsx --test scripts/mock-question-package.test.mjs",
+    "test:mock-attempt-player": "node --import tsx --test scripts/mock-attempt-player.test.mjs",
+    "test:phase3-formats": "node --import tsx --test scripts/phase3-question-formats.test.mjs",
     "test:pilot-v2": "node --experimental-strip-types --test scripts/course-template-validation.test.mjs scripts/batch-schedule.test.mjs scripts/flexible-resources.test.mjs scripts/student-portal.test.mjs scripts/student-timeline-recommendations.test.mjs scripts/session-material-files.test.mjs scripts/phase5-integrated-safety.test.mjs",
     "question-bank:import": "node scratch/import_question_bank_csv.js",
     "question-bank:dry-run": "node scratch/import_question_bank_csv.js --dry-run",

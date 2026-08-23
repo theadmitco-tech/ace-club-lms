@@ -115,7 +115,7 @@ export type MockQuestionListItem = {
   interaction: unknown;
   sourceReference: string;
   createdAt: string;
-  options: Array<{ slotId: string; optionId: string; displayOrder: number; content: unknown; isCorrect: boolean }>;
+  options: Array<{ slotId: string; optionId: string; displayOrder: number; content: unknown }>;
 };
 
 export async function listMockQuestions(filters: Record<string, string | undefined>): Promise<MockQuestionListItem[]> {
@@ -135,13 +135,10 @@ export async function listMockQuestions(filters: Record<string, string | undefin
   const { data, error } = await query;
   if (error) throw error;
   const revisionIds = (data ?? []).map((row) => row.id);
-  const [{ data: options, error: optionsError }, { data: keys, error: keysError }] = revisionIds.length ? await Promise.all([
-    admin.from('mock_question_options').select('question_revision_id, response_slot_id, option_id, display_order, content_json').in('question_revision_id', revisionIds).order('display_order'),
-    admin.rpc('get_mock_question_keys', { p_revision_ids: revisionIds }),
-  ]) : [{ data: [], error: null }, { data: [], error: null }];
-  if (optionsError || keysError) throw optionsError ?? keysError;
-  const answerKeys = (keys ?? []) as Array<{ question_revision_id: string; answer_json: Record<string, string> }>;
-  const answerByRevision = new Map(answerKeys.map((key) => [key.question_revision_id, key.answer_json]));
+  const { data: options, error: optionsError } = revisionIds.length
+    ? await admin.from('mock_question_options').select('question_revision_id, response_slot_id, option_id, display_order, content_json').in('question_revision_id', revisionIds).order('display_order')
+    : { data: [], error: null };
+  if (optionsError) throw optionsError;
   return (data ?? []).map((row) => {
     const question = row.mock_questions as unknown as { source_external_id: string; mock_source_namespaces: { code: string } };
     const topic = row.topic as unknown as { label: string } | null;
@@ -155,7 +152,7 @@ export async function listMockQuestions(filters: Record<string, string | undefin
       createdAt: row.created_at,
       options: (options ?? []).filter((option) => option.question_revision_id === row.id).map((option) => ({
         slotId: option.response_slot_id, optionId: option.option_id, displayOrder: option.display_order,
-        content: option.content_json, isCorrect: answerByRevision.get(row.id)?.[option.response_slot_id] === option.option_id,
+        content: option.content_json,
       })),
     };
   });

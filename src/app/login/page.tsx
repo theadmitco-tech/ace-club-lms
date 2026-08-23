@@ -9,8 +9,11 @@ import './login.css';
 export default function LoginPage() {
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { user, loginWithGoogle, isLoading } = useAuth();
+  const [localEmail, setLocalEmail] = useState('');
+  const [localPassword, setLocalPassword] = useState('');
+  const { user, loginWithGoogle, loginWithPassword, isLoading } = useAuth();
   const router = useRouter();
+  const localPasswordLoginEnabled = process.env.NEXT_PUBLIC_ENABLE_LOCAL_PASSWORD_LOGIN === 'true';
 
   useEffect(() => {
     if (!isLoading && user) {
@@ -25,6 +28,17 @@ export default function LoginPage() {
 
     if (!result.success) {
       setError('Google Sign-In could not be started. Please try again.');
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleLocalSignIn = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError('');
+    setIsSubmitting(true);
+    const result = await loginWithPassword(localEmail, localPassword);
+    if (!result.success) {
+      setError(result.error ?? 'Local sign-in failed.');
       setIsSubmitting(false);
     }
   };
@@ -86,6 +100,16 @@ export default function LoginPage() {
               'Continue with Google'
             )}
           </button>
+          {localPasswordLoginEnabled && (
+            <>
+              <div className="login-divider"><span>Local QA only</span></div>
+              <form className="login-form" onSubmit={handleLocalSignIn}>
+                <label>Email<input autoComplete="username" onChange={(event) => setLocalEmail(event.target.value)} required type="email" value={localEmail} /></label>
+                <label>Password<input autoComplete="current-password" onChange={(event) => setLocalPassword(event.target.value)} required type="password" value={localPassword} /></label>
+                <button className="btn btn-secondary btn-lg login-btn" disabled={isSubmitting} type="submit">Sign in to local fixture</button>
+              </form>
+            </>
+          )}
         </div>
       </div>
     </div>

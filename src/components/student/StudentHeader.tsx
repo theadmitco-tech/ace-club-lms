@@ -23,6 +23,7 @@ export function StudentHeader({ studentName }: { studentName: string }) {
           <Link href="/dashboard">Home</Link>
           <Link href="/schedule">Schedule</Link>
           <Link href="/resources">Resources</Link>
+          <Link href="/mocks">Mocks</Link>
           <Link className="student-navigation-secondary" href="/practice">Practice log</Link>
         </nav>
         <div className="student-account">

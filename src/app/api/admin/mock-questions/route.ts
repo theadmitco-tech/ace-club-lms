@@ -179,10 +179,27 @@ export async function POST(request: Request) {
 export async function PATCH(request: Request) {
   const authorization = await requireAdmin();
   if (!authorization.authorized) return authorization.response;
-  let body: { revisionId?: unknown; stem?: unknown; interaction?: unknown; sourceReference?: unknown; validationNotes?: unknown; options?: unknown };
+  let body: { revisionId?: unknown; stem?: unknown; interaction?: unknown; sourceReference?: unknown; validationNotes?: unknown; options?: unknown; answerOnly?: unknown; answerChoices?: unknown };
   try { body = await request.json() as typeof body; } catch { return response({ error: 'Question request must be valid JSON.' }, 400); }
   const revisionId = typeof body.revisionId === 'string' ? body.revisionId : '';
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(revisionId)) return response({ error: 'Choose a valid Draft revision.' }, 400);
+  const supabase = await createClient();
+  if (body.answerOnly === true) {
+    const choices = body.answerChoices && typeof body.answerChoices === 'object' && !Array.isArray(body.answerChoices) ? body.answerChoices as Record<string, unknown> : {};
+    const [{ data: revision, error: revisionError }, { data: existingOptions, error: optionsError }] = await Promise.all([
+      supabase.from('mock_question_revisions').select('stem_json,interaction_json,source_reference,status').eq('id', revisionId).single(),
+      supabase.from('mock_question_options').select('response_slot_id,option_id,display_order,content_json').eq('question_revision_id', revisionId).order('display_order'),
+    ]);
+    if (revisionError || optionsError) return response({ error: (revisionError ?? optionsError)?.message ?? 'Unable to load Draft options.' }, 409);
+    if (revision.status !== 'draft') return response({ error: 'Only Draft revisions can have their correct option changed.' }, 409);
+    const options = (existingOptions ?? []).map((option) => ({ slotId: option.response_slot_id, optionId: option.option_id, displayOrder: option.display_order, content: option.content_json, isCorrect: choices[option.response_slot_id] === option.option_id }));
+    const parsedOptions = parseOptions(options);
+    if (parsedOptions.error) return response({ error: parsedOptions.error }, 400);
+    const fingerprint = sha256(stableStringify({ stem: revision.stem_json, interaction: revision.interaction_json, options: parsedOptions.options.map((option) => ({ slotId: option.slotId, optionId: option.optionId, displayOrder: option.displayOrder, content: option.content })) }));
+    const { data, error } = await supabase.rpc('update_mock_question_draft', { p_revision_id: revisionId, p_stem: revision.stem_json, p_interaction: revision.interaction_json, p_source_reference: revision.source_reference, p_validation_notes: 'Correct option updated in Admin preview', p_content_fingerprint: fingerprint, p_options: parsedOptions.options });
+    if (error) return response({ error: error.message }, error.code === '42501' ? 403 : 409);
+    return response(data);
+  }
   const stem = validateRichContent(body.stem);
   if (!stem.value) return response({ error: stem.errors[0] ?? 'Question content is invalid.' }, 400);
   if (!body.interaction || typeof body.interaction !== 'object' || Array.isArray(body.interaction)) return response({ error: 'Interaction configuration must be an object.' }, 400);
@@ -194,7 +211,6 @@ export async function PATCH(request: Request) {
   if (!sourceReference || sourceReference.length > 1000) return response({ error: 'A source filename or URL is required.' }, 400);
   const validationNotes = typeof body.validationNotes === 'string' ? body.validationNotes.trim() : '';
   const fingerprint = sha256(stableStringify({ stem: stem.value, interaction: body.interaction, options: parsedOptions.options.map((option) => ({ slotId: option.slotId, optionId: option.optionId, displayOrder: option.displayOrder, content: option.content })) }));
-  const supabase = await createClient();
   const { data, error } = await supabase.rpc('update_mock_question_draft', {
     p_revision_id: revisionId,
     p_stem: stem.value,

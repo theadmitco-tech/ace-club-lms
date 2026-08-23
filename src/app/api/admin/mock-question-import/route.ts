@@ -28,6 +28,34 @@ function tokensMatch(left: string, right: string) {
   return leftBytes.length === 32 && rightBytes.length === 32 && timingSafeEqual(leftBytes, rightBytes);
 }
 
+function rawTopicCode(section: string, label: string) {
+  const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 80) || 'label';
+  return `raw-${section.replace(/_/g, '-')}-${slug}-${randomUUID().slice(0, 8)}`;
+}
+
+async function ensureRawQuestionLabels(admin: ReturnType<typeof createMockAdminClient>, questions: Array<{ section: string; topic: string; subtopic: string | null }>) {
+  const { data, error } = await admin.from('mock_topics').select('id,label,section,parent_id,is_active');
+  if (error) throw error;
+  const rows = data ?? [];
+  for (const question of questions) {
+    let topic = rows.find((row) => row.is_active && row.section === question.section && row.parent_id === null && row.label.toLowerCase() === question.topic.toLowerCase());
+    if (!topic) {
+      const result = await admin.from('mock_topics').insert({ code: rawTopicCode(question.section, question.topic), label: question.topic, section: question.section, is_active: true }).select('id,label,section,parent_id,is_active').single();
+      if (result.error) throw result.error;
+      topic = result.data;
+      rows.push(topic);
+    }
+    if (question.subtopic) {
+      const child = rows.find((row) => row.is_active && row.parent_id === topic.id && row.label.toLowerCase() === question.subtopic!.toLowerCase());
+      if (!child) {
+        const result = await admin.from('mock_topics').insert({ code: rawTopicCode(question.section, `${question.topic}-${question.subtopic}`), label: question.subtopic, section: question.section, parent_id: topic.id, is_active: true }).select('id,label,section,parent_id,is_active').single();
+        if (result.error) throw result.error;
+        rows.push(result.data);
+      }
+    }
+  }
+}
+
 export async function POST(request: Request) {
   const authorization = await requireAdmin();
   if (!authorization.authorized) return authorization.response;
@@ -73,6 +101,7 @@ export async function POST(request: Request) {
   }
 
   const admin = createMockAdminClient();
+  await ensureRawQuestionLabels(admin, parsed.preview.package.questions);
   const sessionClient = await createClient();
   const operationId = randomUUID();
   const tempPaths: string[] = [];

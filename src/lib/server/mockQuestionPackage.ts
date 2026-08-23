@@ -496,8 +496,7 @@ function parseQuestions(
       duplicateKeys.push(key);
       addIssue(issues, 'Questions', 'Content resembles an existing question.', 'Review the likely duplicate before import.', row.__row, 'question_content_json', 'warning');
     }
-    const taxonomyMatches = context.taxonomy.filter((entry) => entry.section === section && entry.topic.toLowerCase() === topic.toLowerCase() && (entry.subtopic ?? '').toLowerCase() === (subtopic ?? '').toLowerCase());
-    if (taxonomyMatches.length !== 1) addIssue(issues, 'Questions', taxonomyMatches.length ? 'Taxonomy label is ambiguous.' : 'Taxonomy label is unknown.', 'Choose one active canonical topic/subtopic mapping.', row.__row, subtopic ? 'subtopic' : 'topic');
+    // V3 preserves topic/subtopic values as raw labels. Canonical taxonomy mapping is deferred.
     const answer: Record<string, string> = {};
     for (const option of options.filter((candidate) => candidate.isCorrect)) answer[option.slotId] = option.optionId;
     const canCreate = sourceNamespace === namespace && QUESTION_ID.test(sourceQuestionId) && MOCK_QUESTION_TYPES.includes(questionType)

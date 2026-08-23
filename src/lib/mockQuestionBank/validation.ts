@@ -103,7 +103,8 @@ export function expectedSection(questionType: MockQuestionType): MockSection {
 
 export function responseTypeAllowed(questionType: MockQuestionType, responseType: MockResponseType): boolean {
   if (['PS', 'DS', 'CR', 'RC'].includes(questionType)) return responseType === 'single_choice';
-  if (questionType === 'GI' || questionType === 'MSR') return responseType === 'single_choice' || responseType === 'dropdowns';
+  if (questionType === 'GI') return responseType === 'single_choice' || responseType === 'dropdowns';
+  if (questionType === 'MSR') return responseType === 'single_choice' || responseType === 'dropdowns' || responseType === 'binary_matrix';
   if (questionType === 'TI') return responseType === 'binary_matrix';
   return responseType === 'two_part_matrix';
 }

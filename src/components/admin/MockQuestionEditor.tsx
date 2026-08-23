@@ -12,7 +12,7 @@ type Media = { id: string; sourceId: string; namespace: string; altText: string 
 const TYPE_SECTION: Record<MockQuestionType, string> = { PS: 'quant', DS: 'quant', CR: 'verbal', RC: 'verbal', GI: 'data_insights', TI: 'data_insights', MSR: 'data_insights', TPA: 'data_insights' };
 const TYPE_RESPONSES: Record<MockQuestionType, MockResponseType[]> = {
   PS: ['single_choice'], DS: ['single_choice'], CR: ['single_choice'], RC: ['single_choice'],
-  GI: ['dropdowns', 'single_choice'], TI: ['binary_matrix'], MSR: ['single_choice', 'dropdowns'], TPA: ['two_part_matrix'],
+  GI: ['dropdowns', 'single_choice'], TI: ['binary_matrix'], MSR: ['single_choice', 'dropdowns', 'binary_matrix'], TPA: ['two_part_matrix'],
 };
 
 function rich(text: string) { return { type: 'doc', version: 1, blocks: [{ type: 'paragraph', children: [{ type: 'text', text }] }] }; }
