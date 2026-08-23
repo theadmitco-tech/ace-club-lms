@@ -35,6 +35,6 @@ All four migrations are applied and ledgered on Staging. Production remains unch
 
 See `evidence/phase-3-verification-2026-08-22.md`.
 
-Engineering and QA Staging acceptance passed on 23 August 2026 against immutable Preview deployment `dpl_GBBas92jMv8VEm5AN7uiphJN5mEJ`. Product Owner visual acceptance is the remaining Phase 3 closeout gate.
+Engineering and QA Staging acceptance passed on 23 August 2026. The accepted application source is commit `4a6fd6b`; its final immutable Preview is `dpl_FWhVmKN7jNZb2CiAGHYWQ1GobZCd`. Product Owner visual acceptance is the remaining Phase 3 closeout gate.
 
 For local browser QA only, start the app with `NEXT_PUBLIC_ENABLE_LOCAL_PASSWORD_LOGIN=true` to expose the development-gated email/password form. The normal Google-only Production login is unchanged when the flag is absent.
