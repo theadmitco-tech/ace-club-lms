@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { loadAttemptState, mutationHash } from '@/lib/server/mockAttempts';
+import { createMockAdminClient } from '@/lib/server/mockQuestionBankAdmin';
 import { getPortalIdentity } from '@/lib/server/portalAuthorization';
 import { createClient } from '@/utils/supabase/server';
 
@@ -37,4 +38,18 @@ export async function POST(request: Request, { params }: { params: Promise<{ att
     return NextResponse.json({ error: error.message, code: error.code }, { status: error.code === '42501' ? 403 : staleConflict ? 409 : 422 });
   }
   return NextResponse.json(data);
+}
+
+export async function DELETE(_request: Request, { params }: { params: Promise<{ attemptId: string }> }) {
+  if (process.env.VERCEL_ENV !== 'preview' && process.env.NODE_ENV !== 'development') {
+    return NextResponse.json({ error: 'Not found.' }, { status: 404 });
+  }
+  const identity = await getPortalIdentity();
+  if (!identity || identity.role !== 'student') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { error } = await createMockAdminClient().rpc('reset_mock_attempt_for_testing', {
+    p_attempt_id: (await params).attemptId,
+    p_student_id: identity.id,
+  });
+  if (error) return NextResponse.json({ error: error.message }, { status: error.code === '42501' ? 403 : 422 });
+  return NextResponse.json({ reset: true });
 }

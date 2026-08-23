@@ -8,6 +8,7 @@ const { formatClock, isSectionOrder, remainingSeconds, SECTION_ORDERS } = mockAt
 const migrationUrl = new URL('../supabase/migrations/20260822213000_add_mock_attempt_player.sql', import.meta.url);
 const timeoutMigrationUrl = new URL('../supabase/migrations/20260823110000_advance_expired_mock_sections.sql', import.meta.url);
 const rulesMigrationUrl = new URL('../supabase/migrations/20260823111000_enforce_gmat_player_rules.sql', import.meta.url);
+const resetMigrationUrl = new URL('../supabase/migrations/20260823112000_add_preview_attempt_reset.sql', import.meta.url);
 const playerUrl = new URL('../src/app/mocks/[attemptId]/MockPlayer.tsx', import.meta.url);
 const vercelConfigUrl = new URL('../vercel.json', import.meta.url);
 
@@ -65,6 +66,14 @@ test('database enforces official sequential answering, review and break boundari
   assert.match(sql, /ALL_QUESTIONS_MUST_BE_ANSWERED/);
   assert.match(sql, /QUESTION_REVIEW_REQUIRED/);
   assert.match(sql, /preserve_optional_break_after_first_section/);
+});
+
+test('test-attempt reset is ownership-scoped and unavailable to authenticated clients directly', async () => {
+  const sql = await readFile(resetMigrationUrl, 'utf8');
+  assert.match(sql, /student_id = p_student_id/);
+  assert.match(sql, /delete from private\.mock_attempt_keys/);
+  assert.match(sql, /revoke all on function public\.reset_mock_attempt_for_testing\(uuid, uuid\) from public, anon, authenticated/);
+  assert.match(sql, /grant execute on function public\.reset_mock_attempt_for_testing\(uuid, uuid\) to service_role/);
 });
 
 test('migration enforces the Phase 3 authority and lifecycle boundaries', async () => {
