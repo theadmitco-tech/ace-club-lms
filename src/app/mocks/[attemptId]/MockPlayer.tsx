@@ -60,9 +60,9 @@ export function MockPlayer({ initialState }: { initialState: PlayerState }) {
       }
       if (options.refreshAfter) await refresh();
       else setState((current) => ({ ...current, attempt: { ...current.attempt,
-        lock_version: result.lock_version ?? current.attempt.lock_version,
+        lock_version: Math.max(result.lock_version ?? current.attempt.lock_version, current.attempt.lock_version),
         status: result.status ?? current.attempt.status,
-        current_section_index: result.current_section_index ?? current.attempt.current_section_index,
+        current_section_index: Math.max(result.current_section_index ?? current.attempt.current_section_index, current.attempt.current_section_index),
         break_status: result.break_status ?? current.attempt.break_status,
       } }));
       return true;
@@ -89,7 +89,7 @@ export function MockPlayer({ initialState }: { initialState: PlayerState }) {
       }) }),
     });
   }
-  useEffect(() => { if (!state.activeSection?.deadline_at || state.attempt.status === 'completed') return; const timer = window.setInterval(() => { const next = remainingSeconds(state.activeSection?.deadline_at ?? null); setSeconds(next); if (next === 0) { window.clearInterval(timer); void mutate('submit', {}, {refreshAfter:true}); } }, 1000); return () => window.clearInterval(timer); }, [state.activeSection?.deadline_at, state.attempt.status]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!state.activeSection?.deadline_at || state.attempt.status === 'completed') return; const timer = window.setInterval(() => { const next = remainingSeconds(state.activeSection?.deadline_at ?? null); setSeconds(next); if (next === 0) { window.clearInterval(timer); void mutate('timeout', {}, {refreshAfter:true}); } }, 1000); return () => window.clearInterval(timer); }, [state.activeSection?.deadline_at, state.attempt.status]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (state.attempt.break_status !== 'active') return; const timer = window.setInterval(() => { const next = remainingSeconds(state.attempt.break_deadline_at); setBreakSeconds(next); if (next === 0) { window.clearInterval(timer); void mutate('break', {action:'end'}, {refreshAfter:true}); } }, 1000); return () => window.clearInterval(timer); }, [state.attempt.break_status, state.attempt.break_deadline_at]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (state.attempt.status === 'completed') return <main className="mock-complete"><BrandLogo variant="dark" className="mock-complete-logo"/><span className="mock-success-mark">✓</span><h1>Mock completed</h1><p>Your responses were submitted successfully. Score reporting will be added in the next phase.</p><Link className="student-button" href="/mocks">Return to mocks</Link></main>;
@@ -101,6 +101,7 @@ export function MockPlayer({ initialState }: { initialState: PlayerState }) {
   }
   const warning = seconds !== null && seconds <= 300;
   const warningCopy = seconds !== null && seconds <= 60 ? '1 minute remaining' : warning ? '5 minutes remaining' : '';
+  if (seconds === 0) return <main className="mock-gate"><BrandLogo variant="dark" className="mock-gate-logo"/><span className="student-eyebrow">Section complete</span><h1>Time is up</h1><p>Your saved answers are locked. Moving you to the next section.</p>{error && <p className="mock-error">{error}</p>}{!busy && <button className="student-button" onClick={() => mutate('timeout', {}, {refreshAfter:true})} type="button">Continue</button>}</main>;
   return <div className="mock-player"><header className="mock-player-header"><BrandLogo variant="light" className="mock-player-logo"/><div><span>{SECTION_LABELS[state.activeSection.section]}</span>{warningCopy && <span className="timer-warning-copy" role="status">{warningCopy}</span>}<strong className={warning ? 'timer-warning' : ''}>{seconds === null ? '--:--' : formatClock(seconds)}</strong></div></header>
     <div className="mock-progress" style={{'--mock-progress': `${((item?.display_order ?? 1) / Math.max(state.items.length,1))*100}%`} as React.CSSProperties}/>
     <main className="mock-player-body"><section className="mock-question-panel"><div className="mock-question-meta"><span>Question {item?.display_order} of {state.items.length}</span><button className={item?.bookmarked ? 'mock-bookmark active' : 'mock-bookmark'} disabled={!item || busy} onClick={() => item && mutate('bookmark',{attempt_item_id:item.id,bookmarked:!item.bookmarked}, {optimistic:(current) => ({...current, items:current.items.map((entry) => entry.id === item.id ? {...entry, bookmarked:!entry.bookmarked} : entry)})})} type="button">{item?.bookmarked ? '★ Bookmarked' : '☆ Bookmark'}</button><span>{item?.question_snapshot.question_type}</span></div>

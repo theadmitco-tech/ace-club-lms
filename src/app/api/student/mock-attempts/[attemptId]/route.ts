@@ -15,12 +15,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ att
   if (!identity || identity.role !== 'student') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const attemptId = (await params).attemptId;
   const body = await request.json().catch(() => null);
-  if (!body || !['begin','response','navigate','bookmark','review','submit','break'].includes(body.operation)
+  if (!body || !['begin','response','navigate','bookmark','review','submit','break','timeout'].includes(body.operation)
     || !Number.isInteger(body.expectedLockVersion) || typeof body.clientMutationId !== 'string') {
     return NextResponse.json({ error: 'Invalid mutation request.' }, { status: 400 });
   }
   const payload = body.payload ?? {};
   const supabase = await createClient();
+  if (body.operation === 'timeout') {
+    const { data, error } = await supabase.rpc('advance_mock_attempt_timeout', { p_attempt_id: attemptId });
+    if (error) return NextResponse.json({ error: error.message, code: error.code }, { status: error.code === '42501' ? 403 : 422 });
+    return NextResponse.json(data);
+  }
   const hashInput = { attemptId, operation: body.operation, payload, expectedLockVersion: body.expectedLockVersion };
   const { data, error } = await supabase.rpc('mutate_mock_attempt', {
     p_attempt_id: attemptId, p_operation: body.operation, p_payload: payload,

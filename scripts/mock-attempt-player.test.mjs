@@ -6,6 +6,7 @@ import mockAttempt from '../src/lib/mockAttempt.ts';
 const { formatClock, isSectionOrder, remainingSeconds, SECTION_ORDERS } = mockAttempt;
 
 const migrationUrl = new URL('../supabase/migrations/20260822213000_add_mock_attempt_player.sql', import.meta.url);
+const timeoutMigrationUrl = new URL('../supabase/migrations/20260823110000_advance_expired_mock_sections.sql', import.meta.url);
 const playerUrl = new URL('../src/app/mocks/[attemptId]/MockPlayer.tsx', import.meta.url);
 const vercelConfigUrl = new URL('../vercel.json', import.meta.url);
 
@@ -36,6 +37,18 @@ test('student player uses sequential navigation and optimistic routine saves', a
 test('Vercel functions run alongside the Singapore data source', async () => {
   const config = JSON.parse(await readFile(vercelConfigUrl, 'utf8'));
   assert.deepEqual(config.regions, ['sin1']);
+});
+
+test('expired sections advance idempotently instead of accepting late interactions', async () => {
+  const player = await readFile(playerUrl, 'utf8');
+  const sql = await readFile(timeoutMigrationUrl, 'utf8');
+  assert.match(player, /mutate\('timeout'/);
+  assert.match(player, /Time is up/);
+  assert.match(sql, /create or replace function public\.advance_mock_attempt_timeout/);
+  assert.match(sql, /v_section\.deadline_at > v_now/);
+  assert.match(sql, /current_section_index = current_section_index \+ 1/);
+  assert.match(sql, /status = 'completed'/);
+  assert.match(sql, /v_section\.status = 'pending'/);
 });
 
 test('migration enforces the Phase 3 authority and lifecycle boundaries', async () => {
