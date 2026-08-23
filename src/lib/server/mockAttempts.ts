@@ -51,9 +51,13 @@ export async function loadAttemptState(studentId: string, attemptId: string) {
     .eq('id', attemptId).eq('student_id', studentId).single();
   if (error) throw error;
   const activeSection = (attempt.mock_attempt_sections ?? []).find((section) => section.sequence_index === attempt.current_section_index) ?? null;
-  const { data: items, error: itemError } = activeSection
-    ? await db.from('mock_attempt_items').select('id,display_order,section,bookmarked,time_spent_ms,question_snapshot,stimulus_snapshot,response_config_snapshot,mock_responses(response,response_version,answered_at)').eq('attempt_section_id', activeSection.id).order('display_order')
-    : { data: [], error: null };
+  const [{ data: items, error: itemError }, { data: reviewEdits, error: reviewEditError }] = activeSection
+    ? await Promise.all([
+      db.from('mock_attempt_items').select('id,display_order,section,bookmarked,time_spent_ms,question_snapshot,stimulus_snapshot,response_config_snapshot,mock_responses(response,response_version,answered_at)').eq('attempt_section_id', activeSection.id).order('display_order'),
+      db.from('mock_review_edits').select('attempt_item_id').eq('attempt_section_id', activeSection.id),
+    ])
+    : [{ data: [], error: null }, { data: [], error: null }];
   if (itemError) throw itemError;
-  return { attempt, activeSection, items: (items ?? []) as unknown as MockAttemptItem[], serverNow: new Date().toISOString() };
+  if (reviewEditError) throw reviewEditError;
+  return { attempt, activeSection, items: (items ?? []) as unknown as MockAttemptItem[], reviewEditedItemIds: (reviewEdits ?? []).map((entry) => entry.attempt_item_id), serverNow: new Date().toISOString() };
 }

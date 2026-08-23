@@ -7,6 +7,7 @@ const { formatClock, isSectionOrder, remainingSeconds, SECTION_ORDERS } = mockAt
 
 const migrationUrl = new URL('../supabase/migrations/20260822213000_add_mock_attempt_player.sql', import.meta.url);
 const timeoutMigrationUrl = new URL('../supabase/migrations/20260823110000_advance_expired_mock_sections.sql', import.meta.url);
+const rulesMigrationUrl = new URL('../supabase/migrations/20260823111000_enforce_gmat_player_rules.sql', import.meta.url);
 const playerUrl = new URL('../src/app/mocks/[attemptId]/MockPlayer.tsx', import.meta.url);
 const vercelConfigUrl = new URL('../vercel.json', import.meta.url);
 
@@ -28,10 +29,15 @@ test('timer display is derived from a server deadline', () => {
 test('student player uses sequential navigation and optimistic routine saves', async () => {
   const player = await readFile(playerUrl, 'utf8');
   assert.doesNotMatch(player, /Question navigator|mock-question-grid|mock-navigator/);
+  assert.doesNotMatch(player, />Previous</);
   assert.match(player, /function navigateTo/);
   assert.match(player, /optimistic:/);
   assert.match(player, /refreshAfter:true/);
   assert.match(player, /Saving…/);
+  assert.match(player, /Question Review &amp; Edit/);
+  assert.match(player, /Confirm your answer\?/);
+  assert.match(player, /answerComplete/);
+  assert.match(player, /setDraftResponses/);
 });
 
 test('Vercel functions run alongside the Singapore data source', async () => {
@@ -49,6 +55,16 @@ test('expired sections advance idempotently instead of accepting late interactio
   assert.match(sql, /current_section_index = current_section_index \+ 1/);
   assert.match(sql, /status = 'completed'/);
   assert.match(sql, /v_section\.status = 'pending'/);
+});
+
+test('database enforces official sequential answering, review and break boundaries', async () => {
+  const sql = await readFile(rulesMigrationUrl, 'utf8');
+  assert.match(sql, /ANSWER_REQUIRED/);
+  assert.match(sql, /QUESTIONS_MUST_BE_SEQUENTIAL/);
+  assert.match(sql, /RESPONSE_ALREADY_CONFIRMED/);
+  assert.match(sql, /ALL_QUESTIONS_MUST_BE_ANSWERED/);
+  assert.match(sql, /QUESTION_REVIEW_REQUIRED/);
+  assert.match(sql, /preserve_optional_break_after_first_section/);
 });
 
 test('migration enforces the Phase 3 authority and lifecycle boundaries', async () => {
