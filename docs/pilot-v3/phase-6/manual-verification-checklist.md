@@ -1,6 +1,6 @@
 # Pilot V3 Phase 6 — Product Owner review checklist
 
-Status: **Engineering review passed; Product Owner decision pending**
+Status: **Accepted by Product Owner**
 Owner: Product Owner  
 Last updated: 24 August 2026
 
@@ -41,14 +41,14 @@ Do not use a stable alias or older Preview for this decision.
 
 Select exactly one after reviewing the fixed candidate:
 
-- [ ] **Accepted** — Phase 6 is closed for source `500d1af` and deployment `dpl_AMysKwGhYz3hmARNFhwB8r6CNzvJ`.
+- [x] **Accepted** — Phase 6 is closed for source `500d1af` and deployment `dpl_AMysKwGhYz3hmARNFhwB8r6CNzvJ`.
 - [ ] **Rejected** — record each bounded finding below; Phase 7 remains blocked.
 
 Findings, if any:
 
 1. _None recorded._
 
-Product Owner: _Pending_  
-Decision date: _Pending_
+Product Owner: Tanisha Garg
+Decision date: 24 August 2026
 
 Production remains unauthorized regardless of this decision. Phase 7 requires a separate instruction naming the permitted Production actions.

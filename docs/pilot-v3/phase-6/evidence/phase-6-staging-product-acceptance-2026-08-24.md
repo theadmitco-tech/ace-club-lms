@@ -1,6 +1,6 @@
 # Pilot V3 Phase 6 — Staging product acceptance evidence
 
-Status: **Engineering gates passed; Product Owner decision pending**  
+Status: **Accepted by Product Owner; Phase 6 closed**
 Environment: Local and exact Staging-backed Vercel Preview only  
 Date: 24 August 2026
 
@@ -98,6 +98,8 @@ The current candidate is a descendant of every accepted implementation below:
 
 The detailed evidence is linked from the [Phase 6 status](../README.md). Phase 6 does not repeat destructive fixture work after Phase 5 proved exact cleanup; the Product Owner may request a designated-attempt reset and fresh visual walkthrough from the checklist if desired.
 
-## Open decision
+## Product Owner decision
 
-Engineering found no release blocker in the fixed candidate. Phase 6 remains open until the Product Owner selects **Accepted** or **Rejected** in the [review checklist](../manual-verification-checklist.md). Production remains separately unauthorized in either case.
+Engineering found no release blocker in the fixed candidate. On 24 August 2026, Product Owner Tanisha Garg explicitly instructed: **“Accept phase 6.”** Phase 6 is therefore closed for exact source `500d1af` and exact deployment `dpl_AMysKwGhYz3hmARNFhwB8r6CNzvJ`.
+
+This acceptance does not authorize Phase 7 or any Production inventory, query, merge, migration, deployment, environment change, smoke check or other Production operation.

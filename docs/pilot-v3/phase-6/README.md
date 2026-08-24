@@ -1,6 +1,6 @@
 # Pilot V3 Phase 6 — Staging product acceptance
 
-Status: **Active — ready for Product Owner decision; Production remains unauthorized**  
+Status: **Closed and accepted on Staging/Preview; Production remains unauthorized**
 Owner: Product Owner and Engineering  
 Last updated: 24 August 2026
 
@@ -40,9 +40,9 @@ The later Phase 5 documentation commit and this Phase 6 documentation do not cha
 
 - [x] One exact source revision and immutable Preview are identified.
 - [x] Required automated and manual evidence is linked.
-- [ ] Product Owner records acceptance or rejection in the checklist and Phase 6 evidence.
-- [x] No known engineering release blocker remains; the Product Owner decision is the only open gate.
+- [x] Product Owner accepted source `500d1af` and deployment `dpl_AMysKwGhYz3hmARNFhwB8r6CNzvJ` on 24 August 2026.
+- [x] No unresolved release blocker remains.
 
 ## Next boundary
 
-Phase 7 Production inventory, planning, merge, migrations, deployment and smoke checks require new, explicit authorization after Phase 6 acceptance. Nothing in this phase authorizes contact with Production.
+Phase 6 is closed. Phase 7 Production inventory, planning, merge, migrations, deployment and smoke checks require new, explicit authorization. Nothing in this acceptance authorizes contact with Production.
