@@ -28,6 +28,7 @@ test('derives reconciled counts and time from attempt items', () => {
 
 test('phase 4 migration keeps keys private and notes student-owned/admin-read-only', async () => {
   const sql = await readFile(new URL('../supabase/migrations/20260824173000_add_mock_results_and_notes.sql', import.meta.url), 'utf8');
+  const reader = await readFile(new URL('../supabase/migrations/20260824190000_add_mock_result_key_reader.sql', import.meta.url), 'utf8');
   assert.match(sql, /enable row level security/);
   assert.match(sql, /Students create own mock notes/);
   assert.match(sql, /Students edit own mock notes/);
@@ -35,4 +36,8 @@ test('phase 4 migration keeps keys private and notes student-owned/admin-read-on
   assert.doesNotMatch(sql, /Admins .*mock notes.*update/i);
   assert.doesNotMatch(sql, /grant .*private\.mock_attempt_keys/i);
   assert.match(sql, /status <> 'completed'/);
+  assert.match(reader, /attempt\.status = 'completed'/);
+  assert.match(reader, /revoke all .* from public, anon, authenticated/);
+  assert.match(reader, /grant execute .* to service_role/);
+  assert.doesNotMatch(reader, /explanation_json/);
 });

@@ -50,7 +50,7 @@ export async function loadMockResult(attemptId: string, access: { studentId?: st
   const itemIds = items.map((item) => item.id);
   const revisionIds = items.map((item) => item.question_revision_id);
   const [{ data: keys, error: keyError }, { data: notes, error: noteError }, { data: revisions, error: revisionError }] = await Promise.all([
-    itemIds.length ? db.schema('private').from('mock_attempt_keys').select('attempt_item_id,answer_json').in('attempt_item_id', itemIds) : { data: [], error: null },
+    itemIds.length ? db.rpc('get_completed_mock_attempt_keys', { p_attempt_id: attempt.id }) : { data: [], error: null },
     itemIds.length ? db.from('mock_attempt_item_notes').select('attempt_item_id,note').eq('attempt_id', attempt.id).in('attempt_item_id', itemIds) : { data: [], error: null },
     revisionIds.length ? db.from('mock_question_revisions').select('id,topic_id,subtopic_id').in('id', revisionIds) : { data: [], error: null },
   ]);
@@ -59,7 +59,7 @@ export async function loadMockResult(attemptId: string, access: { studentId?: st
   const { data: topics, error: topicError } = topicIds.length ? await db.from('mock_topics').select('id,label').in('id', topicIds) : { data: [], error: null };
   if (topicError) throw topicError;
 
-  const keyByItem = new Map((keys ?? []).map((key) => [key.attempt_item_id, key.answer_json]));
+  const keyByItem = new Map((keys ?? []).map((key: { attempt_item_id: string; answer_json: unknown }) => [key.attempt_item_id, key.answer_json]));
   const noteByItem = new Map((notes ?? []).map((note) => [note.attempt_item_id, note.note]));
   const revisionById = new Map((revisions ?? []).map((revision) => [revision.id, revision]));
   const topicById = new Map((topics ?? []).map((topic) => [topic.id, topic.label]));

@@ -9,6 +9,6 @@ export default async function MockResultsPage({ params }: { params: Promise<{ at
   const identity = await requirePortalRole('student');
   let result;
   try { result = await loadMockResult((await params).attemptId, { studentId: identity.id }); }
-  catch { notFound(); }
+  catch (error) { console.error('Student mock result failed:', error); notFound(); }
   return <div className="student-page"><StudentHeader studentName={result.student.full_name ?? 'Student'}/><main className="student-main"><div className="student-container"><div className="mock-results-back"><Link href="/mocks">← Back to mocks</Link></div><MockResultView result={result}/></div></main></div>;
 }

@@ -8,6 +8,6 @@ export default async function AdminMockAttemptResultPage({ params }: { params: P
   await requirePortalRole('admin');
   let result;
   try { result = await loadMockResult((await params).attemptId, { admin: true }); }
-  catch { notFound(); }
+  catch (error) { console.error('Admin mock result failed:', error); notFound(); }
   return <div className="animate-fade-in"><div className="admin-results-heading"><Link href="/admin/mock-results">← Back to mock reporting</Link><p>Read-only Student attempt</p><h1>{result.student.full_name}</h1><span>{result.student.email}</span></div><MockResultView admin result={result}/></div>;
 }
