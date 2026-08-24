@@ -28,3 +28,11 @@ The initial checkpoint was local-only. The Product Owner then requested a Previe
 Vercel built immutable Staging-backed Preview `dpl_EsqAH492gioUvzEqMsUBF4McpYVS` at `https://ace-club-4hu7zdq85-theadmitco-techs-projects.vercel.app`. Environment validation, compilation and TypeScript passed; Vercel reports READY and functions in `sin1`. The hostname is protected by Vercel SSO and requires an authorized browser session before the normal Ace Club sign-in.
 
 No Production system was queried or changed.
+
+## Results-route correction
+
+Product Owner verification of the first Preview found `/mocks/{attemptId}/results` returning the application 404. The route existed and built correctly; the server loader was attempting to query `private.mock_attempt_keys` through PostgREST, while `private` is intentionally not an exposed API schema.
+
+Commit `5a408ca` replaces that direct read with `get_completed_mock_attempt_keys(uuid)`. Migration `20260824190000_add_mock_result_key_reader.sql` restricts the function to completed attempts, returns only answer JSON, revokes execution from public/anonymous/authenticated roles and grants execution only to `service_role`. Its isolated dry run listed exactly that correction, and it applied and ledgered once on Staging.
+
+Phase 4 tests, touched-file ESLint, TypeScript, build and diff checks passed. Corrected Preview `dpl_Ar2iW7PJDEbgLEqMkpvrmbuvWECE` is READY at `https://ace-club-fp197k4y4-theadmitco-techs-projects.vercel.app`. Live navigation reaches the normal Ace Club login boundary rather than the 404; authenticated content verification requires a fresh sign-in on that hostname.

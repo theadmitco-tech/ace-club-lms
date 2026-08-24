@@ -27,10 +27,12 @@ Score and diagnostic totals are not persisted. They remain derived from immutabl
 
 ## Staging Preview
 
-- Migration `20260824173000_add_mock_results_and_notes.sql` is applied and ledgered exactly once on Staging.
-- Preview deployment: `dpl_EsqAH492gioUvzEqMsUBF4McpYVS`.
-- Preview URL: `https://ace-club-4hu7zdq85-theadmitco-techs-projects.vercel.app`.
+- Migrations `20260824173000_add_mock_results_and_notes.sql` and `20260824190000_add_mock_result_key_reader.sql` are applied and ledgered exactly once on Staging.
+- Current Preview deployment: `dpl_Ar2iW7PJDEbgLEqMkpvrmbuvWECE`.
+- Current Preview URL: `https://ace-club-fp197k4y4-theadmitco-techs-projects.vercel.app`.
 - Vercel status is READY and functions are built in `sin1`.
+
+The first Preview exposed one bounded defect: the result loader attempted a direct PostgREST read from the deliberately unexposed `private` schema and returned the application 404. Correction `5a408ca` adds a completed-attempt-only, service-role-only key reader, returns no explanation data, and records loader failures server-side. The corrected hostname reaches the normal Ace Club authentication boundary; a fresh Student sign-in is required on the new hostname.
 
 ## Remaining acceptance
 
