@@ -62,3 +62,12 @@ This paragraph records the 22 August local-only checkpoint. The separately autho
 - Student-readable Staging snapshots contain only `question_type`, `stem`, media/stimulus data, `response_type`, interaction and options. No correct-answer or explanation field is present.
 - Local regression after the Staging-found compatibility correction passed: Phase 3 formats 3/3, TypeScript and focused ESLint. Both Vercel builds passed Next.js compilation and TypeScript.
 - Production was not queried or changed. Product Owner visual acceptance of the immutable Preview is the remaining closeout gate.
+
+## Final visual closure — 24 August 2026
+
+- Product Owner requested Phase 3 completion after the remaining GI layout finding was isolated to an older `dpcvmuwid` Preview hostname.
+- Commit `6807553` places GI stimulus media above the question, enlarges the graph, aligns native single-choice radios with their answer text, adds Review-tab question reordering, and removes the Mock Builder's 100-per-section and 500-total display caps.
+- The same verified source was deployed without `--prod` as immutable Staging Preview `dpl_57dEiq48dwz4bhgkSdhGHTntpmse`, READY at `https://ace-club-gp20wqhtc-theadmitco-techs-projects.vercel.app`.
+- Live Student inspection on the accepted fixture confirmed `mock-gi-stacked`; at a 1,900 × 1,200 desktop viewport, the 1,808 px stimulus ended before the question began and the protected graph rendered 1,429 px wide. The exact Student GI question was left open for Product Owner inspection.
+- Final regression passed: Phase 3 formats 3/3, mock-player/rules 9/9, focused Phase 3 ESLint, Vercel environment separation, Next.js compilation and TypeScript.
+- Phase 3 is closed on Staging. Production remains untouched and requires separate explicit authorization.
