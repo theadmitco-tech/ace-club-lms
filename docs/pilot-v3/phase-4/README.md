@@ -1,6 +1,6 @@
 # Pilot V3 Phase 4 — Results, diagnostics and Admin reporting
 
-Status: **Staging migration, sectional-results redesign and authenticated Preview verification complete; Product Owner acceptance remains pending**
+Status: **Closed and accepted on Staging/Preview; Production remains separately authorized**
 Date: 24 August 2026  
 Branch: `codex/pilot-v3-phase-4`
 
@@ -43,11 +43,12 @@ Authenticated verification then exposed a Next.js Server/Client boundary defect 
 
 Product Owner feedback on the result layout is implemented in `5cb34bc`. Authenticated live verification on the stable alias confirmed the four tabs, DI pacing chart, question-wise breakdown, linked Question 1 review, answer/correct-answer/note content, and Back restoration to the DI table with focus returned to the originating Question 1 link.
 
-## Remaining acceptance
+## Acceptance closeout
 
-- Verify one completed Student attempt against the Admin detail view.
-- Verify note creation/edit and Admin read-only visibility.
-- Verify Student and Admin protected historical media.
-- Complete desktop/mobile Product Owner visual acceptance.
+- The completed Student attempt and Admin detail reconcile exactly at 8/64, 13% accuracy, 46 incorrect, 10 unanswered and 3m 39s total time.
+- Student note creation, editing and persistence after reload passed. Admin displays the edited note without an input or save control.
+- The protected historical GI image rendered for Student and Admin at its full 1429 × 339 dimensions through their separate role-scoped endpoints.
+- Admin reporting displays the expected Completed, Not Started and In Progress assignment states.
+- Desktop Product Owner acceptance is complete. The Product Owner explicitly waived mobile acceptance on 24 August 2026.
 
-Production remains outside this boundary and was not contacted.
+Phase 4 is closed on Staging/Preview. Production remains outside this boundary and was not contacted.

@@ -56,3 +56,16 @@ Authenticated live-browser acceptance on the stable alias confirmed:
 - onscreen Back restores the DI question table and returns keyboard focus to the exact originating Question 1 link.
 
 Production was not contacted or changed.
+
+## Final desktop acceptance closeout
+
+The Product Owner requested completion of all remaining acceptance checks and explicitly waived mobile verification. Authenticated desktop verification passed:
+
+- Student and Admin totals reconcile exactly: 8/64 correct, 13% accuracy, 46 incorrect, 10 unanswered and 3m 39s total time.
+- The Admin overview correctly shows one Completed assignment, one Not Started assignment and one In Progress assignment for the Staging Student.
+- A Student note was created, edited to `Phase 4 acceptance note — edited and verified`, saved and confirmed after reload.
+- Admin sees that exact note as read-only; the Admin detail contains no textarea or Save note control.
+- The historical GI image is delivered through separate Student/Admin protected endpoints and renders at 1429 × 339 in both contexts.
+- The four-tab sectional layout, linked detail and history-aware Back restoration remain verified on desktop.
+
+Phase 4 is therefore closed and accepted on Staging/Preview. Production was not contacted or changed.
