@@ -39,6 +39,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     { href: '/admin/progress', label: 'Student progress', icon: '✅' },
     { href: '/admin/question-bank', label: 'Question Bank', icon: '🧠' },
     { href: '/admin/mock-builder', label: 'Mock Builder', icon: '📝' },
+    { href: '/admin/mock-results', label: 'Mock reporting', icon: '📈' },
   ];
 
   return (

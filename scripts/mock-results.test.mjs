@@ -1,0 +1,38 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import test from 'node:test';
+import results from '../src/lib/mockResults.ts';
+
+const { buildMockResultSummary, formatDuration, resultOutcome } = results;
+
+test('scores all required response slots with no partial credit', () => {
+  assert.equal(resultOutcome(null, { answer: 'A' }), 'unanswered');
+  assert.equal(resultOutcome({}, { answer: 'A' }), 'unanswered');
+  assert.equal(resultOutcome({ answer: 'A' }, { answer: 'A' }), 'correct');
+  assert.equal(resultOutcome({ left: 'A' }, { left: 'A', right: 'B' }), 'incorrect');
+  assert.equal(resultOutcome({ left: 'A', right: 'C' }, { left: 'A', right: 'B' }), 'incorrect');
+});
+
+test('derives reconciled counts and time from attempt items', () => {
+  const items = [
+    { id: '1', section: 'quant', topic: 'Arithmetic', subtopic: 'Factors', timeSpentMs: 61000, selectedAnswer: { a: '1' }, correctAnswer: { a: '1' } },
+    { id: '2', section: 'quant', topic: 'Arithmetic', subtopic: 'Averages', timeSpentMs: 30000, selectedAnswer: { a: '2' }, correctAnswer: { a: '1' } },
+    { id: '3', section: 'verbal', topic: 'Critical Reasoning', subtopic: null, timeSpentMs: 0, selectedAnswer: null, correctAnswer: { a: '1' } },
+  ];
+  const summary = buildMockResultSummary(items);
+  assert.deepEqual({ total: summary.overall.total, correct: summary.overall.correct, incorrect: summary.overall.incorrect, unanswered: summary.overall.unanswered, time: summary.overall.timeSpentMs }, { total: 3, correct: 1, incorrect: 1, unanswered: 1, time: 91000 });
+  assert.equal(summary.sections.length, 2);
+  assert.equal(summary.topics[0].total, 2);
+  assert.equal(formatDuration(61000), '1m 1s');
+});
+
+test('phase 4 migration keeps keys private and notes student-owned/admin-read-only', async () => {
+  const sql = await readFile(new URL('../supabase/migrations/20260824173000_add_mock_results_and_notes.sql', import.meta.url), 'utf8');
+  assert.match(sql, /enable row level security/);
+  assert.match(sql, /Students create own mock notes/);
+  assert.match(sql, /Students edit own mock notes/);
+  assert.match(sql, /Admins read mock notes/);
+  assert.doesNotMatch(sql, /Admins .*mock notes.*update/i);
+  assert.doesNotMatch(sql, /grant .*private\.mock_attempt_keys/i);
+  assert.match(sql, /status <> 'completed'/);
+});
