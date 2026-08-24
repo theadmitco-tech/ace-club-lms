@@ -10,6 +10,9 @@ const timeoutMigrationUrl = new URL('../supabase/migrations/20260823110000_advan
 const rulesMigrationUrl = new URL('../supabase/migrations/20260823111000_enforce_gmat_player_rules.sql', import.meta.url);
 const resetMigrationUrl = new URL('../supabase/migrations/20260823112000_add_preview_attempt_reset.sql', import.meta.url);
 const playerUrl = new URL('../src/app/mocks/[attemptId]/MockPlayer.tsx', import.meta.url);
+const playerCssUrl = new URL('../src/app/mocks/mocks.css', import.meta.url);
+const builderUrl = new URL('../src/components/admin/MockBuilder.tsx', import.meta.url);
+const builderServerUrl = new URL('../src/lib/server/mockBuilder.ts', import.meta.url);
 const vercelConfigUrl = new URL('../vercel.json', import.meta.url);
 
 test('exposes all six and only six three-section permutations', () => {
@@ -39,6 +42,23 @@ test('student player uses sequential navigation and optimistic routine saves', a
   assert.match(player, /Confirm your answer\?/);
   assert.match(player, /answerComplete/);
   assert.match(player, /setDraftResponses/);
+});
+
+test('GI is stacked, answer controls align, and admin review can reorder every published question', async () => {
+  const [player, css, builder, builderServer] = await Promise.all([
+    readFile(playerUrl, 'utf8'),
+    readFile(playerCssUrl, 'utf8'),
+    readFile(builderUrl, 'utf8'),
+    readFile(builderServerUrl, 'utf8'),
+  ]);
+  assert.match(player, /question_type === 'GI'.*mock-gi-stacked/);
+  assert.match(css, /\.mock-gi-stacked/);
+  assert.match(css, /\.mock-single-choice label\{align-items:center\}/);
+  assert.match(builder, /published available/);
+  assert.match(builder, /Review the selected questions and reorder them here/);
+  assert.match(builder, /available\.map/);
+  assert.doesNotMatch(builder, /available\.slice/);
+  assert.doesNotMatch(builderServer, /\.limit\(500\)/);
 });
 
 test('Vercel functions run alongside the Singapore data source', async () => {

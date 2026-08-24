@@ -44,7 +44,7 @@ export async function loadMockAssessment(assessmentId: string) {
 export async function loadMockBuilderReference() {
   const db = createMockAdminClient();
   const [questions, courses] = await Promise.all([
-    db.from('mock_question_revisions').select('id,section,question_type,difficulty,content_json:stem_json,stimulus_revision_id,mock_questions!mock_question_revisions_question_id_fkey!inner(source_external_id,mock_source_namespaces!inner(code))').eq('status', 'published').order('created_at', { ascending: false }).limit(500),
+    db.from('mock_question_revisions').select('id,section,question_type,difficulty,content_json:stem_json,stimulus_revision_id,mock_questions!mock_question_revisions_question_id_fkey!inner(source_external_id,mock_source_namespaces!inner(code))').eq('status', 'published').order('created_at', { ascending: false }),
     db.from('courses').select('id,name,is_active').eq('is_active', true).order('name'),
   ]);
   if (questions.error) throw questions.error; if (courses.error) throw courses.error;

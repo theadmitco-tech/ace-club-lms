@@ -165,7 +165,8 @@ export function MockPlayer({ initialState }: { initialState: PlayerState }) {
         'mock-question-workspace',
         item?.stimulus_snapshot?.kind === 'passage' ? 'mock-passage-workspace' : '',
         state.activeSection.section === 'data_insights' ? 'mock-di-workspace' : '',
-        state.activeSection.section === 'data_insights' && item?.stimulus_snapshot ? 'mock-di-split' : '',
+        state.activeSection.section === 'data_insights' && item?.stimulus_snapshot && item.question_snapshot.question_type !== 'GI' ? 'mock-di-split' : '',
+        item?.question_snapshot.question_type === 'GI' && item.stimulus_snapshot ? 'mock-gi-stacked' : '',
       ].filter(Boolean).join(' ')}>
         {item?.stimulus_snapshot && <MockStimulus config={item.stimulus_snapshot.config} content={item.stimulus_snapshot.content} kind={item.stimulus_snapshot.kind} media={studentMedia(state.attempt.id, item.stimulus_snapshot.media)} title={item.stimulus_snapshot.title ?? 'Information'} />}
         {item && <div className="mock-question-response"><MockQuestionBody disabled={busy || (isReview && !canEditInReview)} interaction={item.response_config_snapshot.interaction} media={studentMedia(state.attempt.id, item.question_snapshot.media)} onChange={(next) => setDraftResponses((current) => ({...current,[item.id]:next}))} options={item.response_config_snapshot.options ?? []} response={draftResponse} responseType={item.response_config_snapshot.response_type} stem={item.question_snapshot.stem} /></div>}
