@@ -1,3 +1,5 @@
+'use client';
+
 import { MockQuestionBody, MockStimulus, mockContentText, type MockMediaAsset } from './MockQuestionContent';
 import { SECTION_LABELS } from '@/lib/mockAttempt';
 import { formatDuration, type MockDiagnostic } from '@/lib/mockResults';

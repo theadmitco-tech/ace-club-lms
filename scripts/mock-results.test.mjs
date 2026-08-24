@@ -4,6 +4,7 @@ import test from 'node:test';
 import results from '../src/lib/mockResults.ts';
 
 const { buildMockResultSummary, formatDuration, resultOutcome } = results;
+const resultViewUrl = new URL('../src/components/mock/MockResultView.tsx', import.meta.url);
 
 test('scores all required response slots with no partial credit', () => {
   assert.equal(resultOutcome(null, { answer: 'A' }), 'unanswered');
@@ -40,4 +41,11 @@ test('phase 4 migration keeps keys private and notes student-owned/admin-read-on
   assert.match(reader, /revoke all .* from public, anon, authenticated/);
   assert.match(reader, /grant execute .* to service_role/);
   assert.doesNotMatch(reader, /explanation_json/);
+});
+
+test('results renderer owns its interactive client boundary', async () => {
+  const view = await readFile(resultViewUrl, 'utf8');
+  assert.match(view, /^'use client';/);
+  assert.match(view, /<MockQuestionBody disabled/);
+  assert.match(view, /onChange=\{\(\) => undefined\}/);
 });
