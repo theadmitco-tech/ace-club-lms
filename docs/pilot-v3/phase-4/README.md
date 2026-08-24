@@ -32,7 +32,9 @@ Score and diagnostic totals are not persisted. They remain derived from immutabl
 - Current Preview URL: `https://ace-club-fp197k4y4-theadmitco-techs-projects.vercel.app`.
 - Vercel status is READY and functions are built in `sin1`.
 
-The first Preview exposed one bounded defect: the result loader attempted a direct PostgREST read from the deliberately unexposed `private` schema and returned the application 404. Correction `5a408ca` adds a completed-attempt-only, service-role-only key reader, returns no explanation data, and records loader failures server-side. The corrected hostname reaches the normal Ace Club authentication boundary; a fresh Student sign-in is required on the new hostname.
+The first Preview exposed one bounded defect: the result loader attempted a direct PostgREST read from the deliberately unexposed `private` schema and returned the application 404. Correction `5a408ca` adds a completed-attempt-only, service-role-only key reader, returns no explanation data, and records loader failures server-side.
+
+Authenticated verification then exposed a Next.js Server/Client boundary defect in the review renderer. Correction `f0328fb` makes the interactive renderer a Client Component and adds regression coverage. READY deployment `dpl_3rMNoPHJcXmKgY8u22auXKJuSsKe` is assigned to stable Preview alias `https://ace-club-phase4-theadmitco-techs-projects.vercel.app`; a fresh Student sign-in is required once on this alias.
 
 ## Remaining acceptance
 
