@@ -1,12 +1,16 @@
 # Pilot V3 Phase 4 — Results, diagnostics and Admin reporting
 
-Status: **Staging migration and Preview deployment complete; Product Owner acceptance remains pending**  
+Status: **Staging migration, sectional-results redesign and authenticated Preview verification complete; Product Owner acceptance remains pending**
 Date: 24 August 2026  
 Branch: `codex/pilot-v3-phase-4`
 
 ## Delivered boundary
 
 - Student results overview with raw correct count, accuracy, total time, incorrect and unanswered counts.
+- Four result tabs: Overall, Data Insights (DI), Quantitative Reasoning (QA) and Verbal Reasoning (VA).
+- Overall and section diagnostics report average time per question, calculated as section question time divided by section question count.
+- Each sectional tab starts with a response-time-per-question pacing chart and then a question-wise breakdown.
+- Linked question numbers open the exact completed-attempt review; browser/onscreen Back restores the originating section, row, scroll position and focused question link.
 - Section, topic and subtopic diagnostics derived from immutable attempt items.
 - Per-question review of the attempted snapshot, selected answer, correct answer and time spent.
 - No explanation, scaled score, rank, prediction or comparative profile.
@@ -28,13 +32,16 @@ Score and diagnostic totals are not persisted. They remain derived from immutabl
 ## Staging Preview
 
 - Migrations `20260824173000_add_mock_results_and_notes.sql` and `20260824190000_add_mock_result_key_reader.sql` are applied and ledgered exactly once on Staging.
-- Current Preview deployment: `dpl_Ar2iW7PJDEbgLEqMkpvrmbuvWECE`.
-- Current Preview URL: `https://ace-club-fp197k4y4-theadmitco-techs-projects.vercel.app`.
+- Current Preview deployment: `dpl_HEiQk2yZFZanKXq9wgNe1F3oLWpF`.
+- Immutable Preview URL: `https://ace-club-njo8516s7-theadmitco-techs-projects.vercel.app`.
+- Stable Preview alias: `https://ace-club-phase4-theadmitco-techs-projects.vercel.app`.
 - Vercel status is READY and functions are built in `sin1`.
 
 The first Preview exposed one bounded defect: the result loader attempted a direct PostgREST read from the deliberately unexposed `private` schema and returned the application 404. Correction `5a408ca` adds a completed-attempt-only, service-role-only key reader, returns no explanation data, and records loader failures server-side.
 
 Authenticated verification then exposed a Next.js Server/Client boundary defect in the review renderer. Correction `f0328fb` makes the interactive renderer a Client Component and adds regression coverage. READY deployment `dpl_3rMNoPHJcXmKgY8u22auXKJuSsKe` is assigned to stable Preview alias `https://ace-club-phase4-theadmitco-techs-projects.vercel.app`; a fresh Student sign-in is required once on this alias.
+
+Product Owner feedback on the result layout is implemented in `5cb34bc`. Authenticated live verification on the stable alias confirmed the four tabs, DI pacing chart, question-wise breakdown, linked Question 1 review, answer/correct-answer/note content, and Back restoration to the DI table with focus returned to the originating Question 1 link.
 
 ## Remaining acceptance
 

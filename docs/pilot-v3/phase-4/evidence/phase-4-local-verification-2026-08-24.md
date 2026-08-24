@@ -2,7 +2,7 @@
 
 ## Automated result
 
-- Phase 4 scoring/results tests: 3/3 passed.
+- Phase 4 scoring/results tests: 4/4 passed.
 - Phase 3 player regression tests: 9/9 passed.
 - Phase 3 format regression tests: 3/3 passed.
 - Touched-file ESLint: passed.
@@ -40,3 +40,19 @@ Phase 4 tests, touched-file ESLint, TypeScript, build and diff checks passed. Co
 After fresh authentication, the loader succeeded but the page returned digest `759638202`. Vercel logs identified a Next.js Server/Client boundary violation: the Server Component invoked a client-only content helper and passed an event handler to the client question renderer. Correction `f0328fb` makes `MockResultView` the owning Client Component and adds a source-boundary regression test. Phase 4 tests pass 4/4; ESLint, TypeScript, build and diff checks pass.
 
 READY deployment `dpl_3rMNoPHJcXmKgY8u22auXKJuSsKe` is assigned to stable Preview alias `https://ace-club-phase4-theadmitco-techs-projects.vercel.app`. Live navigation reaches its normal login boundary. Final authenticated content verification awaits one fresh Student sign-in on the stable alias.
+
+## Sectional result redesign and authenticated acceptance
+
+Commit `5cb34bc` implements the Product Owner's requested result hierarchy: Overall, DI, QA and VA. Overall and section diagnostics explicitly use average time per question. Each section begins with an accessible SVG response-time chart with a two-minute guide and the Student average, followed by the requested question-wise table. Question numbers are links into the completed-attempt review.
+
+The focused Phase 4 suite passes 4/4, and touched-file ESLint, TypeScript, Production build and `git diff --check` pass. Vercel deployment `dpl_HEiQk2yZFZanKXq9wgNe1F3oLWpF` is READY at `https://ace-club-njo8516s7-theadmitco-techs-projects.vercel.app` and is assigned to the stable alias `https://ace-club-phase4-theadmitco-techs-projects.vercel.app`.
+
+Authenticated live-browser acceptance on the stable alias confirmed:
+
+- all four result tabs render for the completed Staging attempt;
+- DI renders the pacing chart and all 20 question-wise rows;
+- the table exposes response minutes, performance, content domain and question type;
+- Question 1 links to `#question-data_insights-1` and renders the immutable question, selected answer, correct answer and note surface; and
+- onscreen Back restores the DI question table and returns keyboard focus to the exact originating Question 1 link.
+
+Production was not contacted or changed.
