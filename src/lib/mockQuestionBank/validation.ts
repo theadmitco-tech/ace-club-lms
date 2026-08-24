@@ -96,7 +96,7 @@ export function validateRichContent(value: unknown): { value: RichContentV1 | nu
 }
 
 export function expectedSection(questionType: MockQuestionType): MockSection {
-  if (questionType === 'PS' || questionType === 'DS') return 'quant';
+  if (questionType === 'PS') return 'quant';
   if (questionType === 'CR' || questionType === 'RC') return 'verbal';
   return 'data_insights';
 }

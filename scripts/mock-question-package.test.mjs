@@ -89,6 +89,7 @@ test('valid ZIP round-trips all eight question types and private answer declarat
   assert.equal(result.preview.counts.questions, 8);
   assert.deepEqual(Object.keys(result.preview.byQuestionType).sort(), [...types].sort());
   assert.equal(result.preview.package.questions.every((question) => Object.keys(question.answer).length >= 1), true);
+  assert.equal(result.preview.package.questions.find((question) => question.questionType === 'DS')?.section, 'data_insights');
   const msr = result.preview.package.questions.find((question) => question.questionType === 'MSR');
   assert.equal(msr?.responseType, 'binary_matrix');
   assert.deepEqual(Object.keys(msr?.answer ?? {}), ['statement-1', 'statement-2', 'statement-3']);

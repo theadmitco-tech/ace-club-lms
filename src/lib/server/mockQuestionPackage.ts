@@ -440,7 +440,11 @@ function parseQuestions(
     const sourceNamespace = text(row, 'source_namespace').toUpperCase();
     const sourceQuestionId = text(row, 'source_question_id');
     const questionType = text(row, 'question_type').toUpperCase() as MockQuestionType;
-    const section = normalizeSection(text(row, 'section'));
+    const declaredSection = normalizeSection(text(row, 'section'));
+    // Accepted V1.2 packages historically declared DS as Quant. Keep those packages
+    // importable, but normalize DS into the current GMAT Data Insights section.
+    const legacyDsQuant = questionType === 'DS' && declaredSection === 'quant';
+    const section = legacyDsQuant ? 'data_insights' : declaredSection;
     const responseType = normalizeResponseType(text(row, 'response_type'));
     const topic = text(row, 'topic');
     const subtopic = text(row, 'subtopic') || null;
@@ -455,7 +459,7 @@ function parseQuestions(
     if (sourceNamespace !== namespace) addIssue(issues, 'Questions', 'Question namespace differs from the Manifest.', 'Use the one submitting namespace throughout the package.', row.__row, 'source_namespace');
     if (!QUESTION_ID.test(sourceQuestionId) || !sourceQuestionId.startsWith(`Q-${questionType}-`)) addIssue(issues, 'Questions', 'Invalid or type-mismatched source_question_id.', 'Use Q-{TYPE}-{UUIDv4}.', row.__row, 'source_question_id');
     if (!MOCK_QUESTION_TYPES.includes(questionType)) addIssue(issues, 'Questions', 'Unsupported question_type.', 'Use PS, DS, CR, RC, GI, TI, MSR, or TPA.', row.__row, 'question_type');
-    if (!section || (MOCK_QUESTION_TYPES.includes(questionType) && section !== expectedSection(questionType))) addIssue(issues, 'Questions', 'Section is incompatible with question type.', `Use ${MOCK_QUESTION_TYPES.includes(questionType) ? expectedSection(questionType) : 'the compatible section'}.`, row.__row, 'section');
+    if (!declaredSection || (MOCK_QUESTION_TYPES.includes(questionType) && declaredSection !== expectedSection(questionType) && !legacyDsQuant)) addIssue(issues, 'Questions', 'Section is incompatible with question type.', `Use ${MOCK_QUESTION_TYPES.includes(questionType) ? expectedSection(questionType) : 'the compatible section'}.`, row.__row, 'section');
     if (!responseType || (MOCK_QUESTION_TYPES.includes(questionType) && !responseTypeAllowed(questionType, responseType))) addIssue(issues, 'Questions', 'Response type is incompatible with question type.', 'Choose a response type from the canonical compatibility table.', row.__row, 'response_type');
     if (!MOCK_DIFFICULTIES.includes(difficulty)) addIssue(issues, 'Questions', 'Difficulty must be Easy, Medium, or Hard.', 'Choose an approved editorial difficulty.', row.__row, 'difficulty');
     if (!ALLOWED_ACTIONS.has(action)) addIssue(issues, 'Questions', 'Invalid conflict_action.', 'Use reject, skip, or new_revision.', row.__row, 'conflict_action');
