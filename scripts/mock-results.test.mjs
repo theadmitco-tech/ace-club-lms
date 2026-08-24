@@ -48,4 +48,14 @@ test('results renderer owns its interactive client boundary', async () => {
   assert.match(view, /^'use client';/);
   assert.match(view, /<MockQuestionBody disabled/);
   assert.match(view, /onChange=\{\(\) => undefined\}/);
+  assert.match(view, /label: 'Overall'/);
+  assert.match(view, /label: 'DI'/);
+  assert.match(view, /label: 'QA'/);
+  assert.match(view, /label: 'VA'/);
+  assert.match(view, /Average time\/question/);
+  assert.match(view, /function PacingChart/);
+  assert.match(view, /Question-wise breakdown/);
+  assert.match(view, /window\.history\.pushState/);
+  assert.match(view, /window\.history\.back/);
+  assert.match(view, /scrollIntoView/);
 });
