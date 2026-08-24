@@ -23,4 +23,8 @@ The full repository lint command remains blocked by 14 inherited errors and two 
 
 ## Environment boundary
 
-No migration was applied, no Preview was deployed, and no Staging or Production data was queried or changed during this local checkpoint.
+The initial checkpoint was local-only. The Product Owner then requested a Preview link. Engineering created an isolated Supabase work directory containing all already-ledgered Staging versions, the remote-only ledger placeholder and only the new Phase 4 migration. The dry run listed exactly `20260824173000_add_mock_results_and_notes.sql`, with no seeds or roles. That exact migration applied successfully and the final ledger lists it once while preserving all historical exclusions.
+
+Vercel built immutable Staging-backed Preview `dpl_EsqAH492gioUvzEqMsUBF4McpYVS` at `https://ace-club-4hu7zdq85-theadmitco-techs-projects.vercel.app`. Environment validation, compilation and TypeScript passed; Vercel reports READY and functions in `sin1`. The hostname is protected by Vercel SSO and requires an authorized browser session before the normal Ace Club sign-in.
+
+No Production system was queried or changed.

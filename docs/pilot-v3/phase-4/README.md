@@ -1,6 +1,6 @@
 # Pilot V3 Phase 4 — Results, diagnostics and Admin reporting
 
-Status: **Local implementation complete; Staging migration, Preview deployment and acceptance remain pending**  
+Status: **Staging migration and Preview deployment complete; Product Owner acceptance remains pending**  
 Date: 24 August 2026  
 Branch: `codex/pilot-v3-phase-4`
 
@@ -25,13 +25,18 @@ Migration `20260824173000_add_mock_results_and_notes.sql` is additive. It adds o
 
 Score and diagnostic totals are not persisted. They remain derived from immutable attempt items, responses and private attempt answer keys.
 
+## Staging Preview
+
+- Migration `20260824173000_add_mock_results_and_notes.sql` is applied and ledgered exactly once on Staging.
+- Preview deployment: `dpl_EsqAH492gioUvzEqMsUBF4McpYVS`.
+- Preview URL: `https://ace-club-4hu7zdq85-theadmitco-techs-projects.vercel.app`.
+- Vercel status is READY and functions are built in `sin1`.
+
 ## Remaining acceptance
 
-- Apply only the reviewed Phase 4 migration to Staging after exact authorization.
-- Deploy an immutable Staging-backed Preview.
 - Verify one completed Student attempt against the Admin detail view.
 - Verify note creation/edit and Admin read-only visibility.
 - Verify Student and Admin protected historical media.
 - Complete desktop/mobile Product Owner visual acceptance.
 
-Production remains outside this boundary.
+Production remains outside this boundary and was not contacted.
