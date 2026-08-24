@@ -1,6 +1,6 @@
 # Pilot V3 Phase 6 — Product Owner review checklist
 
-Status: **Ready for review**  
+Status: **Engineering review passed; Product Owner decision pending**
 Owner: Product Owner  
 Last updated: 24 August 2026
 
@@ -14,17 +14,17 @@ Do not use a stable alias or older Preview for this decision.
 
 ## Admin journey
 
-- [ ] Open **Question Bank** and confirm inventory, filters, question previews, Draft answer editing/publishing, answer reveal and bulk-upload dry-run/confirm surfaces are acceptable.
-- [ ] Open **Mock Builder**, confirm Build and Review, then review a published 21 Quant / 23 Verbal / 20 Data Insights mock and its batch assignment/release controls.
-- [ ] Open **Mock results** and confirm Not Started, In Progress and Completed states.
-- [ ] Open a completed attempt and confirm its totals, sectional diagnostics, response-time chart, question review, protected media and read-only Student note.
+- [x] **Question Bank** loaded 153 questions with inventory filters, rendered preview, protected answer reveal, lifecycle controls and the XLSX/ZIP bulk-upload validation surface. Mutation workflows retain their previously accepted Phase 1 evidence and were not repeated against retained Staging data.
+- [x] **Mock Builder** Build and Review loaded an existing 64-question composition and reconciled exactly at 21 Quant / 23 Verbal / 20 Data Insights. Save/publish plus active-batch, release and optional-due controls rendered. No retained mock or assignment was changed.
+- [x] **Mock results** displayed Not Started, In Progress and Completed states for the existing Staging Student.
+- [x] The completed Admin attempt reconciled at `8/64`, `13%`, `3m 39s`, `46` incorrect and `10` unanswered; sectional chart/table, 20 DI links, selected/correct answer, protected media and the Student note rendered. Admin had no note input or save control.
 
 ## Student journey
 
 - [x] Open **Mocks** and confirm completed, not-started and in-progress cards render on the exact Preview.
-- [ ] Open or reset the designated Staging acceptance attempt only if a fresh player walkthrough is desired; confirm one of six section orders, instructions, timer, sequential answering, Next → Yes, Question Review & Edit, three-distinct-answer edit cap, optional break, timeout and completion.
+- [x] The in-progress **Week 4** attempt reached the correct pre-section gate with 45-minute instructions, Next → Yes copy, mandatory answering, Question Review & Edit and three-distinct-answer edit-cap copy. It was not started or changed. Six orders, server timing, navigation, break, edit cap, timeout and completion remain covered by the accepted Phase 3 journey and current 32/32 suite.
 - [x] Open the completed **Midway Mock Version 1.2** result and confirm `8/64`, `13%`, `3m 39s`, `46` incorrect and `10` unanswered.
-- [ ] Review DI, QA and VA tabs; open a question and confirm selected answer, correct answer, time, protected media where applicable, note editing and Back restoration.
+- [x] DI, QA and VA rendered 20, 21 and 23 question rows respectively with pacing charts. Question 1 showed selected answer, correct answer, time and the saved editable Student note; Back restored focus to the exact Question 1 link. DI Question 11 loaded the protected 1429 × 339 GI image with descriptive alternative text.
 
 ## Safety and compatibility evidence
 
@@ -34,6 +34,7 @@ Do not use a stable alias or older Preview for this decision.
 - [x] Phase 5 Staging isolation probe passed `15/15` with exact aggregate restoration and zero disposable users/batches.
 - [x] Phase 5 database lint/advisor review found no `ERROR` issue.
 - [x] Phase 5 Admin/Student accessibility and 720 px/200%-zoom-equivalent checks passed.
+- [x] Fresh Phase 6 checks at 720 px found no document overflow, unnamed button, missing image alternative or console warning/error on Student results/question review, Admin result/question review or Question Bank.
 - [x] No Production system was contacted.
 
 ## Product Owner decision

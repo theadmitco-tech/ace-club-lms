@@ -31,9 +31,9 @@ Phase 5's later documentation commit `2adc148` and the Phase 6 acceptance record
 
 The inherited Node module-type warnings in the Pilot V2 suite remain unchanged and did not fail any test.
 
-## Exact Preview read-only check
+## Exact Preview authenticated read-only check
 
-The exact Preview loaded with no browser console warning/error. The existing Staging Student session reached `/dashboard` and `/mocks` successfully.
+The exact Preview loaded with no browser console warning/error. The existing Staging Student session reached `/dashboard` and `/mocks` successfully. A separately authenticated active Admin session reached the exact deployment using the approved `theaceclub.tac@gmail.com` account. An initial attempt with `theadmitco@gmail.com` correctly failed closed at the inactive-access boundary.
 
 The Mock library displayed all required assignment states through existing records:
 
@@ -50,6 +50,41 @@ The completed result rendered:
 - reconciled section rows for 20 DI, 23 Verbal and 21 Quant questions.
 
 At a 1280 px viewport, the result document reported `1274` px for both client width and scroll width, so there was no document-level horizontal overflow. No record was created or changed during this check.
+
+### Student detail
+
+- DI, QA and VA rendered semantic pacing charts plus exactly 20, 21 and 23 question rows/links.
+- DI Question 1 rendered the immutable prompt and disabled response controls, the selected answer, the correct answer, time spent and the existing editable Student note.
+- The onscreen Back control returned to the DI table at the previous scroll position and restored focus to the originating Question 1 link.
+- DI Question 11 rendered the protected historical GI image at its natural 1429 × 339 size with descriptive alternative text, plus disabled slot-labelled dropdowns, `Unanswered` and the protected correct answer.
+- The existing in-progress **Week 4** attempt reached the pre-section gate without starting the timer. It showed 45-minute instructions, Next → Yes confirmation, mandatory answering, Question Review & Edit and the three-distinct-answer edit cap. The attempt was left unchanged.
+
+### Admin Question Bank and Builder
+
+- Question Bank rendered 153 latest revisions, all five accepted filters, question previews, protected answer reveal, lifecycle controls and the XLSX/ZIP package input/validation surface.
+- Revealing the first published DS answer returned the protected correct answer only after the Admin action; no answer was present in the inventory response.
+- The existing **Midway Mock Version 1.2** builder composition contained 64 checked questions. Review reconciled `21 / 21` Quant, `23 / 23` Verbal and `20 / 20` Data Insights and rendered the exact selected question text in section order.
+- Save/publish controls and active-batch, release-at and optional due-at assignment fields rendered. No control that would create, edit, publish, retire, import, assign or release retained Staging data was submitted.
+
+### Admin reporting and attempt detail
+
+- Reporting showed one Completed, one Not Started and one In Progress assignment state for the existing Staging Student.
+- The completed Admin detail reconciled exactly with the Student at `8/64`, `13%`, `3m 39s`, `46` incorrect and `10` unanswered.
+- Admin DI rendered its pacing chart and 20 question links. Question 1 showed the selected answer, correct answer and existing Student note with zero textareas and zero note-save controls.
+- Admin DI Question 11 rendered the same protected 1429 × 339 GI image and descriptive alternative text.
+
+### Fresh responsive and accessibility sample
+
+At an explicit 720 × 900 viewport:
+
+| Surface | Document width | Result |
+|---|---:|---|
+| Student result and DI chart/table | `714 / 714` client/scroll | No document overflow; 20 DI links retained |
+| Student protected GI question | `714 / 714` | Image scaled to 598 px; labelled disabled dropdowns retained |
+| Admin protected GI question | `714 / 714` | Image scaled to 598 px; no missing image alternative |
+| Admin Question Bank | `714 / 714` | No document overflow |
+
+These sampled surfaces had zero unnamed buttons, zero missing `alt` attributes and no browser console warning/error. Temporary viewport overrides were reset after verification.
 
 ## Inherited complete-journey evidence
 
