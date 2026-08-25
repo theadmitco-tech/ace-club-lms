@@ -1,21 +1,21 @@
 import { NextResponse } from 'next/server';
 import { loadAttemptState, mutationHash } from '@/lib/server/mockAttempts';
 import { createMockAdminClient } from '@/lib/server/mockQuestionBankAdmin';
-import { getPortalIdentity } from '@/lib/server/portalAuthorization';
+import { getMockParticipantIdentity } from '@/lib/server/portalAuthorization';
 import { createClient } from '@/utils/supabase/server';
 
 const PRIVATE_NO_STORE = { 'Cache-Control': 'private, no-store' };
 
 export async function GET(_request: Request, { params }: { params: Promise<{ attemptId: string }> }) {
-  const identity = await getPortalIdentity();
-  if (!identity || identity.role !== 'student') return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: PRIVATE_NO_STORE });
+  const identity = await getMockParticipantIdentity();
+  if (!identity) return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: PRIVATE_NO_STORE });
   try { return NextResponse.json(await loadAttemptState(identity.id, (await params).attemptId), { headers: PRIVATE_NO_STORE }); }
   catch { return NextResponse.json({ error: 'Attempt not found.' }, { status: 404, headers: PRIVATE_NO_STORE }); }
 }
 
 export async function POST(request: Request, { params }: { params: Promise<{ attemptId: string }> }) {
-  const identity = await getPortalIdentity();
-  if (!identity || identity.role !== 'student') return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: PRIVATE_NO_STORE });
+  const identity = await getMockParticipantIdentity();
+  if (!identity) return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: PRIVATE_NO_STORE });
   const attemptId = (await params).attemptId;
   const body = await request.json().catch(() => null);
   if (!body || !['begin','response','navigate','bookmark','review','submit','break','timeout'].includes(body.operation)
@@ -46,8 +46,8 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
   if (process.env.VERCEL_ENV !== 'preview' && process.env.NODE_ENV !== 'development') {
     return NextResponse.json({ error: 'Not found.' }, { status: 404, headers: PRIVATE_NO_STORE });
   }
-  const identity = await getPortalIdentity();
-  if (!identity || identity.role !== 'student') return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: PRIVATE_NO_STORE });
+  const identity = await getMockParticipantIdentity();
+  if (!identity) return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: PRIVATE_NO_STORE });
   const { error } = await createMockAdminClient().rpc('reset_mock_attempt_for_testing', {
     p_attempt_id: (await params).attemptId,
     p_student_id: identity.id,

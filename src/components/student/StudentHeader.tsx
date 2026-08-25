@@ -12,25 +12,27 @@ function getInitials(name: string) {
     .toUpperCase();
 }
 
-export function StudentHeader({ studentName }: { studentName: string }) {
+export function StudentHeader({ studentName, testerMode = false }: { studentName: string; testerMode?: boolean }) {
   return (
     <header className="student-header">
       <div className="student-header-inner">
-        <Link className="student-brand" href="/dashboard" aria-label="Ace Club student home">
+        <Link className="student-brand" href={testerMode ? '/admin' : '/dashboard'} aria-label={testerMode ? 'Ace Club admin home' : 'Ace Club student home'}>
           <BrandLogo variant="light" className="student-brand-logo" preload />
         </Link>
-        <nav className="student-navigation" aria-label="Student navigation">
+        <nav className="student-navigation" aria-label={testerMode ? 'Mock tester navigation' : 'Student navigation'}>
+          {testerMode ? <><Link href="/admin">Admin</Link><Link href="/mocks">Mocks</Link></> : <>
           <Link href="/dashboard">Home</Link>
           <Link href="/schedule">Schedule</Link>
           <Link href="/resources">Resources</Link>
           <Link href="/mocks">Mocks</Link>
           <Link className="student-navigation-secondary" href="/practice">Practice log</Link>
+          </>}
         </nav>
         <div className="student-account">
           <span className="student-avatar" aria-hidden="true">{getInitials(studentName)}</span>
           <span className="student-account-copy">
             <strong>{studentName}</strong>
-            <small>Student</small>
+            <small>{testerMode ? 'Mock tester' : 'Student'}</small>
           </span>
           <SignOutButton />
         </div>

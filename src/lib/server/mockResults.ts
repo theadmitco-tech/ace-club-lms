@@ -98,11 +98,18 @@ export async function listAdminMockReporting() {
   if (error) throw error;
   const courseIds = [...new Set((assignments ?? []).map((assignment) => assignment.course_id))];
   const assignmentIds = (assignments ?? []).map((assignment) => assignment.id);
-  const [{ data: enrollments, error: enrollmentError }, { data: attempts, error: attemptError }] = await Promise.all([
+  const [{ data: enrollments, error: enrollmentError }, { data: attempts, error: attemptError }, { data: testerGrants, error: testerError }] = await Promise.all([
     courseIds.length ? db.from('enrollments').select('course_id,user_id,profiles!inner(full_name,email,is_active)').in('course_id', courseIds) : { data: [], error: null },
     assignmentIds.length ? db.from('mock_attempts').select('id,assignment_id,student_id,status,started_at,completed_at').in('assignment_id', assignmentIds) : { data: [], error: null },
+    assignmentIds.length ? db.from('mock_assignment_testers').select('assignment_id,user_id,granted_at,revoked_at').in('assignment_id', assignmentIds).is('revoked_at', null) : { data: [], error: null },
   ]);
-  if (enrollmentError || attemptError) throw enrollmentError ?? attemptError;
+  if (enrollmentError || attemptError || testerError) throw enrollmentError ?? attemptError ?? testerError;
+  const testerUserIds = [...new Set((testerGrants ?? []).map((grant) => grant.user_id))];
+  const { data: testerProfiles, error: testerProfileError } = testerUserIds.length
+    ? await db.from('profiles').select('id,full_name,email,is_active,role').in('id', testerUserIds)
+    : { data: [], error: null };
+  if (testerProfileError) throw testerProfileError;
+  const testerProfileById = new Map((testerProfiles ?? []).map((profile) => [profile.id, profile]));
   const attemptByAssignmentStudent = new Map((attempts ?? []).map((attempt) => [`${attempt.assignment_id}:${attempt.student_id}`, attempt]));
   return (assignments ?? []).map((assignment) => {
     const version = relationOne(assignment.mock_assessment_versions);
@@ -113,6 +120,11 @@ export async function listAdminMockReporting() {
       const attempt = attemptByAssignmentStudent.get(`${assignment.id}:${enrollment.user_id}`) ?? null;
       return { id: enrollment.user_id, full_name: profile?.full_name ?? 'Student', email: profile?.email ?? '', is_active: profile?.is_active ?? false, status: attempt?.status === 'completed' ? 'Completed' : attempt ? 'In Progress' : 'Not Started', attempt };
     });
-    return { ...assignment, course_name: course?.name ?? 'Batch', mock_name: assessment?.name ?? 'Mock assessment', purpose: assessment?.purpose ?? 'standard', version_number: version?.version_number ?? 1, students };
+    const testers = (testerGrants ?? []).filter((grant) => grant.assignment_id === assignment.id).map((grant) => {
+      const profile = testerProfileById.get(grant.user_id);
+      const attempt = attemptByAssignmentStudent.get(`${assignment.id}:${grant.user_id}`) ?? null;
+      return { id: grant.user_id, full_name: profile?.full_name ?? 'Tester', email: profile?.email ?? '', role: profile?.role ?? 'student', is_active: profile?.is_active ?? false, status: attempt?.status === 'completed' ? 'Completed' : attempt ? 'In Progress' : 'Not Started', attempt };
+    });
+    return { ...assignment, course_name: course?.name ?? 'Batch', mock_name: assessment?.name ?? 'Mock assessment', purpose: assessment?.purpose ?? 'standard', version_number: version?.version_number ?? 1, students, testers };
   });
 }

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { SECTION_LABELS, SECTION_ORDERS, type MockSection } from '@/lib/mockAttempt';
 
-type MockRow = { id: string; release_at: string; due_at: string | null; mock_assessment_versions: { version_number: number; mock_assessments: { name: string; purpose: string } }; attempt: { id: string; status: string; current_section_index: number } | null };
+type MockRow = { id: string; release_at: string; due_at: string | null; tester_access?: boolean; mock_assessment_versions: { version_number: number; mock_assessments: { name: string; purpose: string } }; attempt: { id: string; status: string; current_section_index: number } | null };
 
 const dueDateFormatter = new Intl.DateTimeFormat('en-IN', {
   dateStyle: 'medium',
@@ -35,11 +35,11 @@ export function MocksList({ mocks, allowTestReset = false }: { mocks: MockRow[];
     if (!response.ok) { setError(result.error ?? 'Could not reset this test attempt.'); setBusy(false); return; }
     setResetTarget(null); setBusy(false); router.refresh();
   }
-  if (!mocks.length) return <section className="student-state"><h2>No mocks released yet</h2><p>Your assigned mocks will appear here after they are released.</p></section>;
+  if (!mocks.length) return <section className="student-state"><h2>No mocks available</h2><p>Released batch mocks and active tester assignments will appear here.</p></section>;
   return <>
     <section className="mock-card-grid" aria-label="Released mocks">{mocks.map((mock) => {
       const details = mock.mock_assessment_versions.mock_assessments;
-      return <article className="mock-card" key={mock.id}><div><span className="mock-pill">{details.purpose}</span><h2>{details.name}</h2><p>3 sections · 45 minutes each · Version {mock.mock_assessment_versions.version_number}</p>{mock.due_at && <small>Due {dueDateFormatter.format(new Date(mock.due_at))}</small>}</div>
+      return <article className="mock-card" key={mock.id}><div><span className="mock-pill">{mock.tester_access ? 'Tester access' : details.purpose}</span><h2>{details.name}</h2><p>3 sections · 45 minutes each · Version {mock.mock_assessment_versions.version_number}</p>{mock.due_at && <small>Due {dueDateFormatter.format(new Date(mock.due_at))}</small>}</div>
         {mock.attempt ? <div className="mock-card-actions"><Link className="student-button" href={mock.attempt.status === 'completed' ? `/mocks/${mock.attempt.id}/results` : `/mocks/${mock.attempt.id}`}>{mock.attempt.status === 'completed' ? 'View results' : 'Resume mock'}</Link>{allowTestReset && <button className="mock-reset-button" onClick={() => { setError(''); setResetTarget(mock); }} type="button">Reset test attempt</button>}</div> : <button className="student-button" onClick={() => setSelected(mock)} type="button">Choose section order</button>}
       </article>;
     })}</section>

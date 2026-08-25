@@ -32,13 +32,20 @@ export async function listMockAssessments() {
 
 export async function loadMockAssessment(assessmentId: string) {
   const db = createMockAdminClient();
-  const [assessment, sections, items] = await Promise.all([
+  const [assessment, sections, items, assignments] = await Promise.all([
     db.from('mock_assessments').select('id,name,purpose,status,draft_version,mock_assessment_versions(id,version_number,published_at)').eq('id', assessmentId).single(),
     db.from('mock_assessment_sections').select('section,question_count,time_limit_seconds,display_order').eq('assessment_id', assessmentId).order('display_order'),
     db.from('mock_assessment_items').select('section,question_revision_id,display_order,stimulus_group_key').eq('assessment_id', assessmentId).order('section').order('display_order'),
+    db.from('mock_assessment_assignments').select('id,assessment_version_id,course_id,release_at,due_at,mock_assessment_versions!inner(assessment_id)').eq('mock_assessment_versions.assessment_id', assessmentId),
   ]);
-  if (assessment.error) throw assessment.error; if (sections.error) throw sections.error; if (items.error) throw items.error;
-  return { assessment: assessment.data, sections: sections.data ?? [], items: items.data ?? [] };
+  if (assessment.error) throw assessment.error; if (sections.error) throw sections.error; if (items.error) throw items.error; if (assignments.error) throw assignments.error;
+  const byVersion = new Map<string, typeof assignments.data>();
+  for (const assignment of assignments.data ?? []) {
+    const rows = byVersion.get(assignment.assessment_version_id) ?? [];
+    rows.push(assignment);
+    byVersion.set(assignment.assessment_version_id, rows);
+  }
+  return { assessment: { ...assessment.data, mock_assessment_versions: (assessment.data.mock_assessment_versions ?? []).map((version) => ({ ...version, mock_assessment_assignments: byVersion.get(version.id) ?? [] })) }, sections: sections.data ?? [], items: items.data ?? [] };
 }
 
 export async function loadMockBuilderReference() {
@@ -124,4 +131,44 @@ export async function assignLatestMock(assessmentId: string, courseId: string, r
   if (error) throw error;
   if (!version) throw new Error('The mock has no published version yet.');
   return assignMock(version.id, courseId, releaseAt, dueAt, userId);
+}
+
+export async function listMockAssignmentTesters(assignmentId: string) {
+  const db = createMockAdminClient();
+  const { data: grants, error } = await db.from('mock_assignment_testers')
+    .select('user_id,granted_at,revoked_at').eq('assignment_id', assignmentId).order('granted_at');
+  if (error) throw error;
+  const userIds = (grants ?? []).map((grant) => grant.user_id);
+  const { data: profiles, error: profileError } = userIds.length
+    ? await db.from('profiles').select('id,full_name,email,role,is_active').in('id', userIds)
+    : { data: [], error: null };
+  if (profileError) throw profileError;
+  const byId = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
+  return (grants ?? []).map((grant) => ({ ...grant, profile: byId.get(grant.user_id) ?? null }));
+}
+
+export async function grantMockAssignmentTester(assignmentId: string, rawEmail: string, actorId: string) {
+  const email = rawEmail.trim().toLowerCase();
+  if (!email || email.length > 254) throw new Error('Enter the tester’s exact account email.');
+  const db = createMockAdminClient();
+  const [{ data: profile, error: profileError }, { data: assignment, error: assignmentError }] = await Promise.all([
+    db.from('profiles').select('id,full_name,email,role,is_active').eq('email', email).maybeSingle(),
+    db.from('mock_assessment_assignments').select('id,assessment_version_id').eq('id', assignmentId).single(),
+  ]);
+  if (profileError || assignmentError) throw profileError ?? assignmentError;
+  if (!profile || !profile.is_active) throw new Error('No active profile matches that exact email.');
+  if (profile.role !== 'admin' && profile.role !== 'student') throw new Error('That profile cannot receive mock tester access.');
+  const { error } = await db.from('mock_assignment_testers').upsert({ assignment_id: assignmentId, user_id: profile.id, granted_by: actorId, granted_at: new Date().toISOString(), revoked_by: null, revoked_at: null }, { onConflict: 'assignment_id,user_id' });
+  if (error) throw error;
+  await db.from('mock_assessment_audit').insert({ version_id: assignment.assessment_version_id, assignment_id: assignmentId, action: 'tester_granted', actor_id: actorId, details: { testerUserId: profile.id, testerEmail: profile.email } });
+  return profile;
+}
+
+export async function revokeMockAssignmentTester(assignmentId: string, userId: string, actorId: string) {
+  const db = createMockAdminClient();
+  const { data: assignment, error: assignmentError } = await db.from('mock_assessment_assignments').select('assessment_version_id').eq('id', assignmentId).single();
+  if (assignmentError) throw assignmentError;
+  const { error } = await db.from('mock_assignment_testers').update({ revoked_by: actorId, revoked_at: new Date().toISOString() }).eq('assignment_id', assignmentId).eq('user_id', userId).is('revoked_at', null);
+  if (error) throw error;
+  await db.from('mock_assessment_audit').insert({ version_id: assignment.assessment_version_id, assignment_id: assignmentId, action: 'tester_revoked', actor_id: actorId, details: { testerUserId: userId } });
 }

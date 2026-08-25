@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 import { isSectionOrder } from '@/lib/mockAttempt';
 import { mutationHash } from '@/lib/server/mockAttempts';
-import { getPortalIdentity } from '@/lib/server/portalAuthorization';
+import { getMockParticipantIdentity } from '@/lib/server/portalAuthorization';
 import { createClient } from '@/utils/supabase/server';
 
 const PRIVATE_NO_STORE = { 'Cache-Control': 'private, no-store' };
 
 export async function POST(request: Request) {
-  const identity = await getPortalIdentity();
-  if (!identity || identity.role !== 'student') return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: PRIVATE_NO_STORE });
+  const identity = await getMockParticipantIdentity();
+  if (!identity) return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: PRIVATE_NO_STORE });
   const body = await request.json().catch(() => null);
   if (!body || typeof body.assignmentId !== 'string' || typeof body.clientMutationId !== 'string' || !isSectionOrder(body.sectionOrder)) {
     return NextResponse.json({ error: 'Invalid attempt request.' }, { status: 400, headers: PRIVATE_NO_STORE });

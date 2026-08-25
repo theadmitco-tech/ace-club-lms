@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { createMockAdminClient } from '@/lib/server/mockQuestionBankAdmin';
-import { getPortalIdentity } from '@/lib/server/portalAuthorization';
+import { getMockParticipantIdentity } from '@/lib/server/portalAuthorization';
 
 export async function GET(_request: Request, { params }: { params: Promise<{ attemptId: string; mediaId: string }> }) {
-  const identity = await getPortalIdentity();
-  if (!identity || identity.role !== 'student') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const identity = await getMockParticipantIdentity();
+  if (!identity) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const { attemptId, mediaId } = await params;
   const db = createMockAdminClient();
   const { data: attempt, error: attemptError } = await db.from('mock_attempts').select('id').eq('id', attemptId).eq('student_id', identity.id).single();

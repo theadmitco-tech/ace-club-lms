@@ -21,27 +21,39 @@ export function mutationHash(value: unknown) {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex');
 }
 
-export async function listStudentMocks(studentId: string) {
+export async function listParticipantMocks(userId: string) {
   const db = createMockAdminClient();
-  const [{ data: enrollments, error: enrollmentError }, { data: profile, error: profileError }] = await Promise.all([
-    db.from('enrollments').select('course_id').eq('user_id', studentId),
-    db.from('profiles').select('full_name').eq('id', studentId).single(),
+  const [{ data: enrollments, error: enrollmentError }, { data: profile, error: profileError }, { data: grants, error: grantError }] = await Promise.all([
+    db.from('enrollments').select('course_id').eq('user_id', userId),
+    db.from('profiles').select('full_name,role').eq('id', userId).single(),
+    db.from('mock_assignment_testers').select('assignment_id').eq('user_id', userId).is('revoked_at', null),
   ]);
   if (enrollmentError) throw enrollmentError;
   if (profileError) throw profileError;
+  if (grantError) throw grantError;
   const courseIds = (enrollments ?? []).map((row) => row.course_id);
-  if (!courseIds.length) return { studentName: profile.full_name ?? 'Student', mocks: [] };
-  const { data: assignments, error } = await db.from('mock_assessment_assignments')
-    .select('id,release_at,due_at,course_id,mock_assessment_versions!inner(id,version_number,mock_assessments!inner(name,purpose))')
-    .in('course_id', courseIds).lte('release_at', new Date().toISOString()).order('release_at', { ascending: false });
-  if (error) throw error;
+  const testerAssignmentIds = (grants ?? []).map((row) => row.assignment_id);
+  const selection = 'id,release_at,due_at,course_id,mock_assessment_versions!inner(id,version_number,mock_assessments!inner(name,purpose))';
+  const [{ data: released, error: releasedError }, { data: testerAssignments, error: testerError }] = await Promise.all([
+    profile.role === 'student' && courseIds.length
+      ? db.from('mock_assessment_assignments').select(selection).in('course_id', courseIds).lte('release_at', new Date().toISOString()).order('release_at', { ascending: false })
+      : { data: [], error: null },
+    testerAssignmentIds.length
+      ? db.from('mock_assessment_assignments').select(selection).in('id', testerAssignmentIds).order('release_at', { ascending: false })
+      : { data: [], error: null },
+  ]);
+  if (releasedError || testerError) throw releasedError ?? testerError;
+  const testerSet = new Set(testerAssignmentIds);
+  const assignmentMap = new Map<string, Record<string, unknown>>();
+  for (const assignment of [...(released ?? []), ...(testerAssignments ?? [])]) assignmentMap.set(assignment.id, assignment);
+  const assignments = [...assignmentMap.values()];
   const assignmentIds = (assignments ?? []).map((row) => row.id);
   const { data: attempts, error: attemptError } = assignmentIds.length
-    ? await db.from('mock_attempts').select('id,assignment_id,status,current_section_index,updated_at').eq('student_id', studentId).in('assignment_id', assignmentIds)
+    ? await db.from('mock_attempts').select('id,assignment_id,status,current_section_index,updated_at').eq('student_id', userId).in('assignment_id', assignmentIds)
     : { data: [], error: null };
   if (attemptError) throw attemptError;
   const byAssignment = new Map((attempts ?? []).map((attempt) => [attempt.assignment_id, attempt]));
-  return { studentName: profile.full_name ?? 'Student', mocks: (assignments ?? []).map((assignment) => ({ ...assignment, attempt: byAssignment.get(assignment.id) ?? null })) };
+  return { participantName: profile.full_name ?? 'Tester', role: profile.role, mocks: assignments.map((assignment) => ({ ...assignment, tester_access: testerSet.has(assignment.id as string), attempt: byAssignment.get(assignment.id as string) ?? null })) };
 }
 
 export async function loadAttemptState(studentId: string, attemptId: string) {

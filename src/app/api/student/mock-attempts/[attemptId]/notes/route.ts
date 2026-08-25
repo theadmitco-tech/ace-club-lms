@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
-import { getPortalIdentity } from '@/lib/server/portalAuthorization';
+import { getMockParticipantIdentity } from '@/lib/server/portalAuthorization';
 import { createClient } from '@/utils/supabase/server';
 
 const PRIVATE_NO_STORE = { 'Cache-Control': 'private, no-store' };
 
 export async function PUT(request: Request, { params }: { params: Promise<{ attemptId: string }> }) {
-  const identity = await getPortalIdentity();
-  if (!identity || identity.role !== 'student') return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: PRIVATE_NO_STORE });
+  const identity = await getMockParticipantIdentity();
+  if (!identity) return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: PRIVATE_NO_STORE });
   const { attemptId } = await params;
   const body = await request.json().catch(() => null);
   const note = typeof body?.note === 'string' ? body.note.trim() : '';

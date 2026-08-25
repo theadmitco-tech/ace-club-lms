@@ -48,7 +48,7 @@ test('every Mock Admin API authenticates an active Admin before privileged work'
   assert.match(authorization, /profile\.is_active === false/);
 });
 
-test('Student attempt APIs require an active Student identity and never cache private state', async () => {
+test('Student attempt APIs require an active mock participant identity and never cache private state', async () => {
   const routes = [
     'src/app/api/student/mock-attempts/route.ts',
     'src/app/api/student/mock-attempts/[attemptId]/route.ts',
@@ -56,8 +56,8 @@ test('Student attempt APIs require an active Student identity and never cache pr
   ];
   for (const path of routes) {
     const source = await read(path);
-    assert.match(source, /await getPortalIdentity\(\)/, `${path} must authenticate through the active-profile boundary`);
-    assert.match(source, /identity\.role !== 'student'/, `${path} must require the Student role`);
+    assert.match(source, /await getMockParticipantIdentity\(\)/, `${path} must authenticate through the mock-participant boundary`);
+    assert.match(source, /if \(!identity\)/, `${path} must reject identities without Student or assignment-scoped tester access`);
     assert.match(source, /Cache-Control['"]?:?\s*['"]private, no-store|PRIVATE_NO_STORE/, `${path} must prevent private attempt data from being cached`);
   }
 });
