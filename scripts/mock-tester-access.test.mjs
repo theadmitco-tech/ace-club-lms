@@ -58,3 +58,20 @@ test('tester Admin mutations retain Admin authorization and private caching', as
   assert.match(route, /grant-tester/);
   assert.match(route, /revoke-tester/);
 });
+
+test('Production attempt reset is visible and executable only through an active assignment tester grant', async () => {
+  const [list, page, route, resetSql] = await Promise.all([
+    read('src/app/mocks/MocksList.tsx'),
+    read('src/app/mocks/page.tsx'),
+    read('src/app/api/student/mock-attempts/[attemptId]/route.ts'),
+    read('supabase/migrations/20260823112000_add_preview_attempt_reset.sql'),
+  ]);
+  assert.match(list, /mock\.tester_access \|\| allowTestReset/);
+  assert.match(page, /VERCEL_ENV === 'preview'/);
+  assert.match(route, /VERCEL_ENV === 'production'/);
+  assert.match(route, /\.from\('mock_attempts'\)[\s\S]*\.eq\('student_id', identity\.id\)/);
+  assert.match(route, /\.from\('mock_assignment_testers'\)[\s\S]*\.eq\('user_id', identity\.id\)[\s\S]*\.is\('revoked_at', null\)/);
+  assert.match(route, /reset_mock_attempt_for_testing/);
+  assert.match(resetSql, /student_id = p_student_id/);
+  assert.match(resetSql, /grant execute on function public\.reset_mock_attempt_for_testing\(uuid, uuid\) to service_role/);
+});

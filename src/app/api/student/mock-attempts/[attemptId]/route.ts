@@ -98,13 +98,29 @@ export async function POST(request: Request, { params }: { params: Promise<{ att
 }
 
 export async function DELETE(_request: Request, { params }: { params: Promise<{ attemptId: string }> }) {
-  if (process.env.VERCEL_ENV !== 'preview' && process.env.NODE_ENV !== 'development') {
-    return NextResponse.json({ error: 'Not found.' }, { status: 404, headers: PRIVATE_NO_STORE });
-  }
   const identity = await getMockParticipantIdentity();
   if (!identity) return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: PRIVATE_NO_STORE });
-  const { error } = await createMockAdminClient().rpc('reset_mock_attempt_for_testing', {
-    p_attempt_id: (await params).attemptId,
+  const attemptId = (await params).attemptId;
+  const db = createMockAdminClient();
+  const production = process.env.VERCEL_ENV === 'production';
+  if (production) {
+    const { data: attempt } = await db.from('mock_attempts')
+      .select('assignment_id')
+      .eq('id', attemptId)
+      .eq('student_id', identity.id)
+      .maybeSingle();
+    if (!attempt) return NextResponse.json({ error: 'Not found.' }, { status: 404, headers: PRIVATE_NO_STORE });
+
+    const { data: grant } = await db.from('mock_assignment_testers')
+      .select('assignment_id')
+      .eq('assignment_id', attempt.assignment_id)
+      .eq('user_id', identity.id)
+      .is('revoked_at', null)
+      .maybeSingle();
+    if (!grant) return NextResponse.json({ error: 'Not found.' }, { status: 404, headers: PRIVATE_NO_STORE });
+  }
+  const { error } = await db.rpc('reset_mock_attempt_for_testing', {
+    p_attempt_id: attemptId,
     p_student_id: identity.id,
   });
   if (error) return NextResponse.json({ error: error.message }, { status: error.code === '42501' ? 403 : 422, headers: PRIVATE_NO_STORE });
