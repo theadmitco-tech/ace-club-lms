@@ -54,3 +54,16 @@ The change added only Mock feature schema/data and assignment-scoped tester gran
 ## Release hold
 
 The mock must remain at the 2099 release timestamp until the Product Owner supplies the intended batch release time. Tester grants can be revoked independently without changing the batch assignment.
+
+## GI rendering correction — 27 August 2026
+
+Tester feedback identified slow protected graphic loading and visibly truncated duplicate captions on Data Insights Questions 6 and 10. A read-only Production inspection established that:
+
+- both question stems were complete;
+- the optional imported stimulus captions themselves ended at `…over th` and `…applianc`;
+- the protected PNGs were only 30–47 KB and stored with their correct wide dimensions; and
+- historical attempt snapshots omitted width/height metadata, causing a tall fallback placeholder before load.
+
+Application-only correction `6e8b882` now hydrates authorized active-section media with exact dimensions and one-hour, object-scoped signed URLs from the existing private bucket. The protected attempt-media route remains the fallback. GI views suppress the redundant broken caption and continue to display the complete question stem immediately below the graphic. Images are requested eagerly at high priority. No question, answer, attempt, response, timer, assignment, tester grant or legacy Student record was updated.
+
+Verification passed all 36 V3 tests, TypeScript, focused ESLint, `git diff --check`, and the full 52-route Production build. Deployment `dpl_6VmjxeRAvK5YQ2QmwkfEiCiGPBvA` is `READY` and aliased to `https://aceclub.theadmitco.com`. Post-deploy isolation still showed exactly three eligible testers, zero unexpected eligible profiles, the same 21/23/20 order digests, and unchanged legacy counts of 19 profiles, 15 active Students, 16 enrollments, 2 courses, 36 sessions, 70 materials and 4,928 Student question logs. The two observed attempts belong to the authorized tester cohort.
