@@ -10,6 +10,7 @@ const timeoutMigrationUrl = new URL('../supabase/migrations/20260823110000_advan
 const rulesMigrationUrl = new URL('../supabase/migrations/20260823111000_enforce_gmat_player_rules.sql', import.meta.url);
 const resetMigrationUrl = new URL('../supabase/migrations/20260823112000_add_preview_attempt_reset.sql', import.meta.url);
 const playerUrl = new URL('../src/app/mocks/[attemptId]/MockPlayer.tsx', import.meta.url);
+const attemptApiUrl = new URL('../src/app/api/student/mock-attempts/[attemptId]/route.ts', import.meta.url);
 const attemptServerUrl = new URL('../src/lib/server/mockAttempts.ts', import.meta.url);
 const playerCssUrl = new URL('../src/app/mocks/mocks.css', import.meta.url);
 const builderUrl = new URL('../src/components/admin/MockBuilder.tsx', import.meta.url);
@@ -32,7 +33,10 @@ test('timer display is derived from a server deadline', () => {
 });
 
 test('student player uses sequential navigation and optimistic routine saves', async () => {
-  const player = await readFile(playerUrl, 'utf8');
+  const [player, attemptApi] = await Promise.all([
+    readFile(playerUrl, 'utf8'),
+    readFile(attemptApiUrl, 'utf8'),
+  ]);
   assert.doesNotMatch(player, /Question navigator|mock-question-grid|mock-navigator/);
   assert.doesNotMatch(player, />Previous</);
   assert.match(player, /function navigateTo/);
@@ -43,6 +47,13 @@ test('student player uses sequential navigation and optimistic routine saves', a
   assert.match(player, /Confirm your answer\?/);
   assert.match(player, /answerComplete/);
   assert.match(player, /setDraftResponses/);
+  assert.match(player, /confirm_and_navigate/);
+  assert.match(player, /includeState:options\.refreshAfter === true/);
+  assert.match(player, /result\.state\) applyFullState/);
+  assert.match(attemptApi, /body\.operation === 'confirm_and_navigate'/);
+  assert.match(attemptApi, /derivedMutationId\(body\.clientMutationId, 'response'\)/);
+  assert.match(attemptApi, /derivedMutationId\(body\.clientMutationId, 'navigate'\)/);
+  assert.match(attemptApi, /state: await loadAttemptState\(identity\.id, attemptId\)/);
 });
 
 test('GI is stacked, answer controls align, and admin review can reorder every published question', async () => {

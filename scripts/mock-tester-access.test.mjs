@@ -23,10 +23,23 @@ test('only the mock surface uses participant capability checks', async () => {
   const dashboard = await read('src/app/dashboard/page.tsx');
   const scheduleLayout = await read('src/app/schedule/layout.tsx');
   assert.match(authorization, /getMockParticipantIdentity/);
+  assert.match(authorization, /identity\.role === 'student' \|\| identity\.testerAccess/);
   assert.match(mockPage, /requireMockParticipant/);
   assert.match(attemptApi, /getMockParticipantIdentity/);
   assert.match(dashboard, /requirePortalRole\('student'\)/);
   assert.match(scheduleLayout, /requirePortalRole\('student'\)/);
+});
+
+test('portal identity projection resolves tester capability without extra request waterfalls', async () => {
+  const [sql, authorization] = await Promise.all([
+    read('supabase/migrations/20260827143000_add_portal_identity_projection.sql'),
+    read('src/lib/server/portalAuthorization.ts'),
+  ]);
+  assert.match(sql, /public\.mock_assignment_testers/);
+  assert.match(sql, /tester\.revoked_at is null/);
+  assert.match(sql, /profile\.role = 'admin'/);
+  assert.match(authorization, /rpc\('get_portal_identity'\)/);
+  assert.doesNotMatch(authorization, /\.from\('mock_assignment_testers'\)/);
 });
 
 test('tester reporting is separate from the batch denominator', async () => {

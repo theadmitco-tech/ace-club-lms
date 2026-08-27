@@ -8,7 +8,7 @@ import type { AttemptMedia, MockAttemptItem } from '@/lib/server/mockAttempts';
 
 type SectionState = { id: string; section: MockSection; sequence_index: number; status: 'pending'|'active'|'review'|'submitted'|'timed_out'; deadline_at: string|null; review_edit_count: number };
 type PlayerState = { attempt: { id:string; status:string; section_order:MockSection[]; current_section_index:number; current_item_id:string|null; break_status:string; break_deadline_at:string|null; lock_version:number; mock_attempt_sections:SectionState[] }; activeSection: SectionState|null; items: MockAttemptItem[]; reviewEditedItemIds: string[]; serverNow: string };
-type MutationResult = { lock_version?: number; status?: string; current_section_index?: number; break_status?: string };
+type MutationResult = { lock_version?: number; status?: string; current_section_index?: number; break_status?: string; state?: PlayerState };
 type OptimisticUpdate = (current: PlayerState) => PlayerState;
 
 function mutationErrorMessage(message: string) {
@@ -67,14 +67,15 @@ export function MockPlayer({ initialState }: { initialState: PlayerState }) {
   const answerComplete = responseComplete(item, draftResponse);
   const answerChanged = !responsesEqual(draftResponse, savedResponse);
 
-  const refresh = useCallback(async () => { const response = await fetch(`/api/student/mock-attempts/${state.attempt.id}`, { cache: 'no-store' }); if (response.ok) { const next = await response.json(); setState(next); setItemId(next.attempt.current_item_id ?? next.items[0]?.id ?? ''); setDraftResponses(draftsFromItems(next.items)); setReviewOverview(next.activeSection?.status === 'review'); setSeconds(remainingSeconds(next.activeSection?.deadline_at ?? null)); setBreakSeconds(remainingSeconds(next.attempt.break_deadline_at)); } }, [state.attempt.id]);
+  const applyFullState = useCallback((next: PlayerState) => { setState(next); setItemId(next.attempt.current_item_id ?? next.items[0]?.id ?? ''); setDraftResponses(draftsFromItems(next.items)); setReviewOverview(next.activeSection?.status === 'review'); setSeconds(remainingSeconds(next.activeSection?.deadline_at ?? null)); setBreakSeconds(remainingSeconds(next.attempt.break_deadline_at)); }, []);
+  const refresh = useCallback(async () => { const response = await fetch(`/api/student/mock-attempts/${state.attempt.id}`, { cache: 'no-store' }); if (response.ok) applyFullState(await response.json()); }, [applyFullState, state.attempt.id]);
   async function mutate(operation: string, payload: unknown = {}, options: { optimistic?: OptimisticUpdate; refreshAfter?: boolean; rollback?: () => void; expectedLockVersion?: number } = {}) {
     const previousState = state;
     const expectedLockVersion = options.expectedLockVersion ?? state.attempt.lock_version;
     setBusy(true); setError('');
     if (options.optimistic) setState(options.optimistic);
     try {
-      const response = await fetch(`/api/student/mock-attempts/${state.attempt.id}`, { method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({ operation, payload, expectedLockVersion, clientMutationId:crypto.randomUUID() }) });
+      const response = await fetch(`/api/student/mock-attempts/${state.attempt.id}`, { method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({ operation, payload, expectedLockVersion, clientMutationId:crypto.randomUUID(), includeState:options.refreshAfter === true }) });
       const result = await response.json() as MutationResult & { error?: string };
       if (!response.ok) {
         setError(mutationErrorMessage(result.error ?? ''));
@@ -82,7 +83,8 @@ export function MockPlayer({ initialState }: { initialState: PlayerState }) {
         if (response.status === 409) await refresh(); else setState(previousState);
         return null;
       }
-      if (options.refreshAfter) await refresh();
+      if (result.state) applyFullState(result.state);
+      else if (options.refreshAfter) await refresh();
       else setState((current) => ({ ...current, attempt: { ...current.attempt,
         lock_version: Math.max(result.lock_version ?? current.attempt.lock_version, current.attempt.lock_version),
         status: result.status ?? current.attempt.status,
@@ -116,10 +118,36 @@ export function MockPlayer({ initialState }: { initialState: PlayerState }) {
       }) }),
     });
   }
+  async function saveConfirmedResponseAndNavigate(target: MockAttemptItem, nextResponse: Record<string, string>, nextItem: MockAttemptItem) {
+    const previousItemId = itemId;
+    const targetResponse = target.mock_responses[0];
+    setItemId(nextItem.id);
+    return mutate('confirm_and_navigate', {
+      attempt_item_id: target.id,
+      response: nextResponse,
+      expected_response_version: targetResponse?.response_version ?? 1,
+      next_attempt_item_id: nextItem.id,
+    }, {
+      optimistic: (current) => ({
+        ...current,
+        attempt: { ...current.attempt, current_item_id: nextItem.id },
+        items: current.items.map((entry) => entry.id !== target.id ? entry : {
+          ...entry,
+          mock_responses: [{ ...entry.mock_responses[0], response: nextResponse, response_version: (entry.mock_responses[0]?.response_version ?? 1) + 1, answered_at: new Date().toISOString() }],
+        }),
+      }),
+      rollback: () => setItemId(previousItemId),
+    });
+  }
   async function confirmCurrentResponse() {
     if (!item || !answerComplete || (isReview && !canEditInReview)) return;
     setConfirmAnswer(false);
     let lockVersion = state.attempt.lock_version;
+    const next = state.items[item.display_order];
+    if (answerChanged && !isReview && item.display_order < state.items.length && next) {
+      await saveConfirmedResponseAndNavigate(item, draftResponse, next);
+      return;
+    }
     if (answerChanged) {
       const saved = await saveConfirmedResponse(item, draftResponse, lockVersion);
       if (!saved) return;
@@ -135,7 +163,6 @@ export function MockPlayer({ initialState }: { initialState: PlayerState }) {
       if (reviewed) setReviewOverview(true);
       return;
     }
-    const next = state.items[item.display_order];
     if (next) await navigateTo(next, lockVersion);
   }
   useEffect(() => { if (!state.activeSection?.deadline_at || state.attempt.status === 'completed') return; const timer = window.setInterval(() => { const next = remainingSeconds(state.activeSection?.deadline_at ?? null); setSeconds(next); if (next === 0) { window.clearInterval(timer); void mutate('timeout', {}, {refreshAfter:true}); } }, 1000); return () => window.clearInterval(timer); }, [state.activeSection?.deadline_at, state.attempt.status]); // eslint-disable-line react-hooks/exhaustive-deps

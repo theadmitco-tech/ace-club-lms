@@ -8,34 +8,31 @@ import { createClient } from '@/utils/supabase/server';
 type PortalIdentity = {
   id: string;
   role: UserRole;
+  fullName: string;
+  testerAccess: boolean;
 };
 
-export type MockParticipantIdentity = PortalIdentity & { testerAccess: boolean };
+export type MockParticipantIdentity = PortalIdentity;
 
 export const getPortalIdentity = cache(async (): Promise<PortalIdentity | null> => {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data, error } = await supabase.rpc('get_portal_identity');
+  if (error || !data || typeof data !== 'object' || Array.isArray(data)) return null;
 
-  if (!user) {
-    return null;
-  }
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role, is_active')
-    .eq('id', user.id)
-    .maybeSingle();
-
+  const identity = data as Record<string, unknown>;
   if (
-    !profile?.is_active ||
-    (profile.role !== 'admin' && profile.role !== 'student')
-  ) {
-    return null;
-  }
+    typeof identity.id !== 'string'
+    || (identity.role !== 'admin' && identity.role !== 'student')
+  ) return null;
 
-  return { id: user.id, role: profile.role };
+  return {
+    id: identity.id,
+    role: identity.role,
+    fullName: typeof identity.full_name === 'string' && identity.full_name.trim()
+      ? identity.full_name.trim()
+      : identity.role === 'admin' ? 'Admin' : 'Student',
+    testerAccess: identity.tester_access === true,
+  };
 });
 
 export async function requirePortalRole(role: UserRole) {
@@ -55,17 +52,7 @@ export async function requirePortalRole(role: UserRole) {
 export async function getMockParticipantIdentity(): Promise<MockParticipantIdentity | null> {
   const identity = await getPortalIdentity();
   if (!identity) return null;
-  if (identity.role === 'student') return { ...identity, testerAccess: false };
-
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from('mock_assignment_testers')
-    .select('assignment_id')
-    .eq('user_id', identity.id)
-    .is('revoked_at', null)
-    .limit(1)
-    .maybeSingle();
-  return data ? { ...identity, testerAccess: true } : null;
+  return identity.role === 'student' || identity.testerAccess ? identity : null;
 }
 
 export async function requireMockParticipant() {

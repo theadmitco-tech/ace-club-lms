@@ -5,7 +5,7 @@ import { MocksList } from './MocksList';
 
 export default async function MocksPage() {
   const identity = await requireMockParticipant();
-  const result = await listParticipantMocks(identity.id);
+  const result = await listParticipantMocks(identity.id, identity);
   const testerMode = identity.role === 'admin';
   return <div className="student-page"><StudentHeader studentName={result.participantName} testerMode={testerMode} />
     <main className="student-main"><div className="student-container mock-library">
