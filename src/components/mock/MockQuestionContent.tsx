@@ -64,7 +64,7 @@ function InlineText({ value, slotControl }: { value: unknown; slotControl?: (slo
   return children;
 }
 
-export function MockRichContent({ value, media = [], slotControl }: { value: unknown; media?: MockMediaAsset[]; slotControl?: (slotId: string) => ReactNode }) {
+export function MockRichContent({ value, media = [], slotControl, eagerMedia = false }: { value: unknown; media?: MockMediaAsset[]; slotControl?: (slotId: string) => ReactNode; eagerMedia?: boolean }) {
   if (value == null) return null;
   if (typeof value === 'string' || typeof value === 'number' || Array.isArray(value)) return <InlineText slotControl={slotControl} value={value} />;
   if (typeof value !== 'object') return null;
@@ -72,20 +72,20 @@ export function MockRichContent({ value, media = [], slotControl }: { value: unk
   const assetId = typeof node.asset_id === 'string' ? node.asset_id : typeof node.assetId === 'string' ? node.assetId : null;
   if (assetId) {
     const asset = media.find((entry) => entry.id === assetId || entry.source_external_id === assetId);
-    return asset ? <figure className="mock-graphic"><Image alt={asset.alt_text} className="mock-content-image" height={asset.height ?? 800} src={asset.url} unoptimized width={asset.width ?? 1200} /><figcaption className="sr-only">{asset.alt_text}</figcaption></figure> : <p role="status">Image unavailable in this preview.</p>;
+    return asset ? <figure className="mock-graphic"><Image alt={asset.alt_text} className="mock-content-image" fetchPriority={eagerMedia ? 'high' : undefined} height={asset.height ?? 450} loading={eagerMedia ? 'eager' : 'lazy'} src={asset.url} unoptimized width={asset.width ?? 1200} /><figcaption className="sr-only">{asset.alt_text}</figcaption></figure> : <p role="status">Image unavailable in this preview.</p>;
   }
   const blocks = Array.isArray(node.blocks) ? node.blocks : null;
-  if (blocks) return <div className="mock-rich-content">{blocks.map((block, index) => <MockContentBlock key={index} media={media} slotControl={slotControl} value={block} />)}</div>;
+  if (blocks) return <div className="mock-rich-content">{blocks.map((block, index) => <MockContentBlock eagerMedia={eagerMedia} key={index} media={media} slotControl={slotControl} value={block} />)}</div>;
   return <InlineText slotControl={slotControl} value={node} />;
 }
 
-function MockContentBlock({ value, media, slotControl }: { value: unknown; media: MockMediaAsset[]; slotControl?: (slotId: string) => ReactNode }) {
+function MockContentBlock({ value, media, slotControl, eagerMedia }: { value: unknown; media: MockMediaAsset[]; slotControl?: (slotId: string) => ReactNode; eagerMedia: boolean }) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
   const node = value as Record<string, unknown>;
   const children = <InlineText slotControl={slotControl} value={node.children ?? node.content ?? node.text} />;
   if (node.type === 'heading') return <h3>{children}</h3>;
   if (node.type === 'callout') return <aside className="mock-content-callout">{children}</aside>;
-  if (node.type === 'image' || typeof node.asset_id === 'string') return <MockRichContent media={media} value={node} />;
+  if (node.type === 'image' || typeof node.asset_id === 'string') return <MockRichContent eagerMedia={eagerMedia} media={media} value={node} />;
   if (node.type === 'list') {
     const items = Array.isArray(node.items) ? node.items : Array.isArray(node.children) ? node.children : [];
     return <ul>{items.map((item, index) => <li key={index}><InlineText slotControl={slotControl} value={item} /></li>)}</ul>;
@@ -136,9 +136,9 @@ function TabbedContent({ value, firstTabId }: { value: unknown; firstTabId?: str
   return <div className="mock-tabs"><div aria-label="Source documents" className="mock-tab-list" role="tablist">{tabs.map((tab, index) => <button aria-controls={`${baseId}-panel-${tab.id}`} aria-selected={tab.id === active.id} id={`${baseId}-tab-${tab.id}`} key={tab.id} onClick={() => setActiveId(tab.id)} onKeyDown={(event) => onKeyDown(event, index)} ref={(button) => { refs.current[index] = button; }} role="tab" tabIndex={tab.id === active.id ? 0 : -1} type="button">{tab.label}</button>)}</div><section aria-labelledby={`${baseId}-tab-${active.id}`} className="mock-tab-panel" id={`${baseId}-panel-${active.id}`} role="tabpanel"><MockRichContent value={active.content} /></section></div>;
 }
 
-export function MockStimulus({ kind, title, content, config, media = [] }: { kind?: string; title?: string | null; content: unknown; config?: unknown; media?: MockMediaAsset[] }) {
+export function MockStimulus({ kind, title, content, config, media = [], showCaption = true, eagerMedia = false }: { kind?: string; title?: string | null; content: unknown; config?: unknown; media?: MockMediaAsset[]; showCaption?: boolean; eagerMedia?: boolean }) {
   const configNode = config && typeof config === 'object' && !Array.isArray(config) ? config as Record<string, unknown> : {};
-  return <aside className={`mock-stimulus mock-stimulus-${kind ?? 'rich_text'}`}>{title && <h2>{title}</h2>}{kind === 'sortable_table' ? <SortableTable value={content} /> : kind === 'tabbed_content' ? <TabbedContent firstTabId={typeof configNode.first_tab_id === 'string' ? configNode.first_tab_id : undefined} value={content} /> : <MockRichContent media={media} value={content} />}{typeof configNode.caption === 'string' && <p className="mock-figure-caption">{configNode.caption}</p>}</aside>;
+  return <aside className={`mock-stimulus mock-stimulus-${kind ?? 'rich_text'}`}>{title && <h2>{title}</h2>}{kind === 'sortable_table' ? <SortableTable value={content} /> : kind === 'tabbed_content' ? <TabbedContent firstTabId={typeof configNode.first_tab_id === 'string' ? configNode.first_tab_id : undefined} value={content} /> : <MockRichContent eagerMedia={eagerMedia} media={media} value={content} />}{showCaption && typeof configNode.caption === 'string' && <p className="mock-figure-caption">{configNode.caption}</p>}</aside>;
 }
 
 export function MockResponseControl({ responseType, interaction, options, response, disabled = false, onChange }: { responseType?: string; interaction?: unknown; options: MockRenderOption[]; response: Record<string, string>; disabled?: boolean; onChange: (next: Record<string, string>) => void }) {

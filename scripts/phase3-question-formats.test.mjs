@@ -92,11 +92,13 @@ test('accepted fixture renders native controls for GI, TI, MSR and TPA', async (
   const gi = byType.get('GI');
   const giStimulus = stimulus(gi);
   const giHtml = renderToStaticMarkup(React.createElement(React.Fragment, null,
-    React.createElement(MockStimulus, { kind: giStimulus.stimulusType, content: giStimulus.content, config: giStimulus.config, media }),
+    React.createElement(MockStimulus, { kind: giStimulus.stimulusType, content: giStimulus.content, config: giStimulus.config, media, showCaption: false, eagerMedia: true }),
     React.createElement(MockQuestionBody, { stem: gi.stem, responseType: gi.responseType, interaction: gi.interaction, options: options(gi), response: {}, onChange() {} }),
   ));
   assert.equal((giHtml.match(/<select/g) ?? []).length, 2);
   assert.match(giHtml, new RegExp(`alt="${preview.package.assets[0].altText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
+  assert.doesNotMatch(giHtml, new RegExp(giStimulus.config.caption.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(giHtml, /fetchPriority="high"/);
 
   const ti = byType.get('TI'); const tiStimulus = stimulus(ti);
   const tiHtml = renderToStaticMarkup(React.createElement(React.Fragment, null,

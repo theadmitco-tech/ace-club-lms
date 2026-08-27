@@ -10,6 +10,7 @@ const timeoutMigrationUrl = new URL('../supabase/migrations/20260823110000_advan
 const rulesMigrationUrl = new URL('../supabase/migrations/20260823111000_enforce_gmat_player_rules.sql', import.meta.url);
 const resetMigrationUrl = new URL('../supabase/migrations/20260823112000_add_preview_attempt_reset.sql', import.meta.url);
 const playerUrl = new URL('../src/app/mocks/[attemptId]/MockPlayer.tsx', import.meta.url);
+const attemptServerUrl = new URL('../src/lib/server/mockAttempts.ts', import.meta.url);
 const playerCssUrl = new URL('../src/app/mocks/mocks.css', import.meta.url);
 const builderUrl = new URL('../src/components/admin/MockBuilder.tsx', import.meta.url);
 const builderServerUrl = new URL('../src/lib/server/mockBuilder.ts', import.meta.url);
@@ -45,13 +46,19 @@ test('student player uses sequential navigation and optimistic routine saves', a
 });
 
 test('GI is stacked, answer controls align, and admin review can reorder every published question', async () => {
-  const [player, css, builder, builderServer] = await Promise.all([
+  const [player, attemptServer, css, builder, builderServer] = await Promise.all([
     readFile(playerUrl, 'utf8'),
+    readFile(attemptServerUrl, 'utf8'),
     readFile(playerCssUrl, 'utf8'),
     readFile(builderUrl, 'utf8'),
     readFile(builderServerUrl, 'utf8'),
   ]);
   assert.match(player, /question_type === 'GI'.*mock-gi-stacked/);
+  assert.match(player, /showCaption=\{item\.question_snapshot\.question_type !== 'GI'\}/);
+  assert.match(player, /asset\.url \?\?/);
+  assert.match(attemptServer, /createSignedUrls\([^;]+3600\)/s);
+  assert.match(attemptServer, /width: media\.width_px/);
+  assert.match(attemptServer, /height: media\.height_px/);
   assert.match(css, /\.mock-gi-stacked/);
   assert.match(css, /\.mock-single-choice label\{align-items:center\}/);
   assert.match(builder, /published available/);

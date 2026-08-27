@@ -15,10 +15,40 @@ export type MockAttemptItem = {
   mock_responses: Array<{ response: unknown; response_version: number; answered_at: string | null }>;
 };
 
-export type AttemptMedia = { id: string; source_external_id: string; alt_text: string; usage: string };
+export type AttemptMedia = { id: string; source_external_id: string; alt_text: string; usage: string; width?: number; height?: number; url?: string };
 
 export function mutationHash(value: unknown) {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex');
+}
+
+async function hydrateAttemptMedia(db: ReturnType<typeof createMockAdminClient>, items: MockAttemptItem[]) {
+  const mediaIds = [...new Set(items.flatMap((item) => [
+    ...(item.question_snapshot.media ?? []),
+    ...(item.stimulus_snapshot?.media ?? []),
+  ].map((media) => media.id)))];
+  if (!mediaIds.length) return items;
+
+  const { data: mediaRows, error: mediaError } = await db.from('mock_media')
+    .select('id,storage_path,width_px,height_px,status').in('id', mediaIds).eq('status', 'ready');
+  if (mediaError || !mediaRows?.length) return items;
+  const { data: signedRows, error: signedError } = await db.storage.from('mock-media')
+    .createSignedUrls(mediaRows.map((media) => media.storage_path), 3600);
+  if (signedError) return items;
+
+  const signedByPath = new Map((signedRows ?? []).map((signed) => [signed.path, signed.signedUrl]));
+  const metadata = new Map(mediaRows.map((media) => [media.id, {
+    width: media.width_px,
+    height: media.height_px,
+    url: signedByPath.get(media.storage_path),
+  }]));
+  const hydrate = (media: AttemptMedia[] = []) => media.map((asset) => ({ ...asset, ...metadata.get(asset.id) }));
+  return items.map((item) => ({
+    ...item,
+    question_snapshot: { ...item.question_snapshot, media: hydrate(item.question_snapshot.media) },
+    stimulus_snapshot: item.stimulus_snapshot
+      ? { ...item.stimulus_snapshot, media: hydrate(item.stimulus_snapshot.media) }
+      : null,
+  }));
 }
 
 export async function listParticipantMocks(userId: string) {
@@ -71,5 +101,6 @@ export async function loadAttemptState(studentId: string, attemptId: string) {
     : [{ data: [], error: null }, { data: [], error: null }];
   if (itemError) throw itemError;
   if (reviewEditError) throw reviewEditError;
-  return { attempt, activeSection, items: (items ?? []) as unknown as MockAttemptItem[], reviewEditedItemIds: (reviewEdits ?? []).map((entry) => entry.attempt_item_id), serverNow: new Date().toISOString() };
+  const hydratedItems = await hydrateAttemptMedia(db, (items ?? []) as unknown as MockAttemptItem[]);
+  return { attempt, activeSection, items: hydratedItems, reviewEditedItemIds: (reviewEdits ?? []).map((entry) => entry.attempt_item_id), serverNow: new Date().toISOString() };
 }
