@@ -90,4 +90,12 @@ The Product Owner authorized a Production reset control for Tanya, Unnati and Is
 
 Pilot V2 passed 46/46, Pilot V3 passed 38/38, the targeted tester/player set passed 15/15, TypeScript, focused ESLint, `git diff --check` and the 52-route Production build passed. Deployment `dpl_DzZC5inr3jposbbgtkRc8WcPkeVm` is READY and aliased to `https://aceclub.theadmitco.com`. Signed-out `/mocks` continues to redirect to `/login`, with the live response executing in `sin1`.
 
-No reset was executed during deployment or verification. Read-only post-deploy isolation exactly matched the pre-deploy baseline: 2 attempts, 128 response rows, 19 profiles, 15 active Students, 16 enrollments, 4,928 Student question-log rows and exactly 3 active tester grants. No other Student data changed, and the Mock release remains held at `2099-01-01T00:00:00Z`.
+No reset was executed during deployment or verification. Read-only post-deploy isolation exactly matched the pre-deploy baseline: 2 attempts, 128 response rows, 19 profiles, 15 active Students, 16 enrollments, 4,928 Student question-log rows and exactly 3 active tester grants. No other Student data changed, and the Mock release was still held at `2099-01-01T00:00:00Z` at this checkpoint.
+
+## Batch launch scheduling — 27 August 2026
+
+The Product Owner authorized launch to every enrolled Student in the target full cohort at 8:00 AM IST on Saturday, 29 August 2026. A read-only preflight identified the existing `The Ace Club Mock 1` assignment to `Aug 7th Batch`, with 11 enrolled accounts and all 11 active Students. The assignment had the expected `2099-01-01T00:00:00Z` hold, no due date, two existing tester attempts and three active tester grants.
+
+One guarded Production transaction changed only assignment `c4c8e759-c53c-485f-bc25-d4fe41229177.release_at` to `2026-08-29T02:30:00Z`, equivalent to `2026-08-29 08:00:00 Asia/Kolkata`, and added one assignment audit row. The transaction locked the assignment and required both the exact prior timestamp and unchanged 11/11 enrollment baseline before updating. The three tester grants remain active and no due date was added.
+
+Post-change verification confirmed the release remains gated before the scheduled timestamp. Production stayed at 2 attempts, 128 response rows, 16 enrollments and 4,928 Student question-log rows, with exactly 3 active tester grants and one matching release audit row. No application deployment or Student-side action is required for launch; database-owned timestamp eligibility will expose the Mock automatically to the 11 active enrolled Students at the scheduled time.
