@@ -3,11 +3,11 @@ import { randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { createClient } from '@supabase/supabase-js';
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+let url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+let anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 let serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!serviceRoleKey && process.env.PHASE3_LOAD_SERVICE_KEY === 'supabase-cli') {
+if (process.env.PHASE3_LOAD_SERVICE_KEY === 'supabase-cli' && (!anonKey || !serviceRoleKey)) {
   const keyMetadata = JSON.parse(execFileSync('npx', [
     '--yes',
     'supabase@2.114.0',
@@ -18,6 +18,8 @@ if (!serviceRoleKey && process.env.PHASE3_LOAD_SERVICE_KEY === 'supabase-cli') {
     '--output',
     'json',
   ], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'] }));
+  url = 'https://eyphkkginlgoaxflauog.supabase.co';
+  anonKey = keyMetadata.find((key) => key.id === 'anon')?.api_key;
   serviceRoleKey = keyMetadata.find((key) => key.id === 'service_role')?.api_key;
 }
 
