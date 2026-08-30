@@ -249,3 +249,10 @@ test('worksheet-count migration persists validated counts into generated batch m
   assert.match(sql, /coalesce\(resource\.question_count, master\.question_count\)/);
   assert.match(sql, /revoke all on function public\.apply_template_resource_question_count\(\) from public, anon, authenticated/);
 });
+
+test('worksheet-count correction runs after the legacy Master worksheet linker', async () => {
+  const sql = await readFile(new URL('../supabase/migrations/20260830133001_fix_template_worksheet_question_count_trigger_order.sql', import.meta.url), 'utf8');
+  assert.match(sql, /drop trigger if exists apply_template_resource_question_count on public\.materials/);
+  assert.match(sql, /create trigger set_template_resource_question_count/);
+  assert.match(sql, /execute function public\.apply_template_resource_question_count\(\)/);
+});

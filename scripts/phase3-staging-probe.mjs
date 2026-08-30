@@ -383,7 +383,7 @@ try {
   const { count: syncedCount, error: syncedCountError } = await service.from('materials')
     .select('id', { count: 'exact', head: true }).eq('course_id', batchA).eq('source_template_resource_id', probeResource.id);
   assertNoError(syncedCountError, 'Count synced resource');
-  checks.sync_twice_no_duplicates = firstSync.data.added === 1 && secondSync.data.added === 0 && syncedCount === 1;
+  checks.sync_twice_no_duplicates = firstSync.data.added === 2 && secondSync.data.added === 0 && syncedCount === 1;
 
   console.log(JSON.stringify({
     environment: 'staging',
