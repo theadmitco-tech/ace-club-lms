@@ -79,13 +79,39 @@ test('accepts reusable Starter Pack, pre-read and worksheet content for a crash 
   const result = validateCourseTemplateDraft({
     ...validDraft,
     resources: [
-      { key: 'starter-one', title: 'Starter One', resourceType: 'starter', scope: 'template', sectionKey: null, eventKey: null, masterMaterialId: null, format: 'notion', notionUrl: 'https://ace.notion.site/starter-one', fileUrl: '', textContent: '', displayOrder: 1 },
-      { key: 'pre-one', title: 'Read One', resourceType: 'pre_read', scope: 'event', sectionKey: null, eventKey: 'cr-01-boldface-inferences', masterMaterialId: null, format: 'notion', notionUrl: 'https://ace.notion.site/read-one', fileUrl: '', textContent: '', displayOrder: 2 },
-      { key: 'worksheet-one', title: 'Worksheet One', resourceType: 'worksheet', scope: 'section', sectionKey: 'cr', eventKey: null, masterMaterialId: null, format: 'pdf', notionUrl: '', fileUrl: '/api/materials/file?path=worksheets%2F10000000-0000-4000-8000-000000000002%2F30000000-0000-4000-8000-000000000001.pdf', textContent: '', displayOrder: 3 },
+      { key: 'starter-one', title: 'Starter One', resourceType: 'starter', scope: 'template', sectionKey: null, eventKey: null, masterMaterialId: null, format: 'notion', notionUrl: 'https://ace.notion.site/starter-one', fileUrl: '', textContent: '', questionCount: null, displayOrder: 1 },
+      { key: 'pre-one', title: 'Read One', resourceType: 'pre_read', scope: 'event', sectionKey: null, eventKey: 'cr-01-boldface-inferences', masterMaterialId: null, format: 'notion', notionUrl: 'https://ace.notion.site/read-one', fileUrl: '', textContent: '', questionCount: null, displayOrder: 2 },
+      { key: 'worksheet-one', title: 'Worksheet One', resourceType: 'worksheet', scope: 'section', sectionKey: 'cr', eventKey: null, masterMaterialId: null, format: 'pdf', notionUrl: '', fileUrl: '/api/materials/file?path=worksheets%2F10000000-0000-4000-8000-000000000002%2F30000000-0000-4000-8000-000000000001.pdf', textContent: '', questionCount: 24, displayOrder: 3 },
     ],
   });
   assert.equal(result.valid, true);
-  if (result.valid) assert.equal(result.draft.resources.length, 3);
+  if (result.valid) {
+    assert.equal(result.draft.resources.length, 3);
+    assert.equal(result.draft.resources[2].questionCount, 24);
+  }
+});
+
+test('requires a positive question count for every reusable worksheet', () => {
+  const result = validateCourseTemplateDraft({
+    ...validDraft,
+    resources: [{
+      key: 'worksheet-without-count',
+      title: 'Worksheet without count',
+      resourceType: 'worksheet',
+      scope: 'event',
+      sectionKey: null,
+      eventKey: 'cr-01-boldface-inferences',
+      masterMaterialId: null,
+      format: 'pdf',
+      notionUrl: '',
+      fileUrl: '/api/materials/file?path=worksheets%2F10000000-0000-4000-8000-000000000002%2F30000000-0000-4000-8000-000000000001.pdf',
+      textContent: '',
+      questionCount: null,
+      displayOrder: 1,
+    }],
+  });
+  assert.equal(result.valid, false);
+  if (!result.valid) assert.match(result.errors.join('\n'), /positive number of questions/i);
 });
 
 test('extracts a Notion URL when the complete iframe embed code is pasted', () => {
@@ -212,4 +238,14 @@ test('Phase 3 migration adds editable template content, atomic inheritance and r
   assert.match(sql, /sync_course_template_resources/);
   assert.match(sql, /v_existing\.available_from <= statement_timestamp\(\)/);
   assert.doesNotMatch(sql, /resource_type.*(?:recording|session_material)/);
+});
+
+test('worksheet-count migration persists validated counts into generated batch materials', async () => {
+  const sql = await readFile(new URL('../supabase/migrations/20260830112501_add_template_worksheet_question_count.sql', import.meta.url), 'utf8');
+  assert.match(sql, /alter table public\.course_template_resources[\s\S]+add column question_count integer/);
+  assert.match(sql, /Reusable worksheet needs a positive number of questions/);
+  assert.match(sql, /question_count = case when v_resource->>'resourceType' = 'worksheet'/);
+  assert.match(sql, /create trigger apply_template_resource_question_count/);
+  assert.match(sql, /coalesce\(resource\.question_count, master\.question_count\)/);
+  assert.match(sql, /revoke all on function public\.apply_template_resource_question_count\(\) from public, anon, authenticated/);
 });

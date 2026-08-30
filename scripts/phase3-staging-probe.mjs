@@ -34,6 +34,7 @@ const users = [
   { label: 'enrolled', role: 'student', active: true },
   { label: 'unenrolled', role: 'student', active: true },
   { label: 'inactive', role: 'student', active: false },
+  { label: 'single', role: 'student', active: true },
 ].map((user) => ({ ...user, email: `phase3-${user.label}-${runId}@example.invalid` }));
 const createdUserIds = [];
 const courseIds = [];
@@ -74,7 +75,7 @@ async function loadTemplateDraft(revisionId) {
     service.from('course_template_revisions').select('title').eq('id', revisionId).single(),
     service.from('course_template_sections').select('id,section_key,title,display_order').eq('revision_id', revisionId).order('display_order'),
     service.from('course_template_events').select('id,section_id,event_key,title,event_type,relative_day,display_order,start_time,duration_minutes,instructor,venue,reporting_time,instructions,is_published_by_default,source_master_session_id').eq('revision_id', revisionId).order('display_order'),
-    service.from('course_template_resources').select('section_id,event_id,resource_key,title,resource_type,resource_scope,master_material_id,resource_format,notion_url,file_url,text_content,display_order').eq('revision_id', revisionId).order('display_order'),
+    service.from('course_template_resources').select('section_id,event_id,resource_key,title,resource_type,resource_scope,master_material_id,resource_format,notion_url,file_url,text_content,question_count,display_order').eq('revision_id', revisionId).order('display_order'),
   ]);
   assertNoError(revisionResult.error, 'Read template revision');
   assertNoError(sectionsResult.error, 'Read template Sections');
@@ -113,6 +114,7 @@ async function loadTemplateDraft(revisionId) {
       notionUrl: row.notion_url ?? '',
       fileUrl: row.file_url ?? '',
       textContent: row.text_content ?? '',
+      questionCount: row.question_count,
       displayOrder: row.display_order,
     })),
   };
@@ -144,6 +146,7 @@ try {
   const enrolled = await signIn(users[1].email);
   const unenrolled = await signIn(users[2].email);
   const inactive = await signIn(users[3].email);
+  const single = await signIn(users[4].email);
 
   const { data: template, error: templateError } = await service.from('course_templates')
     .select('id,current_revision_id').eq('template_key', 'di-crash-course').single();
@@ -167,8 +170,47 @@ try {
   const [batchA, batchB] = courseIds;
   assertNoError((await service.from('enrollments').insert([
     { user_id: users[1].id, course_id: batchA },
+    { user_id: users[1].id, course_id: batchB },
     { user_id: users[3].id, course_id: batchA },
+    { user_id: users[4].id, course_id: batchA },
   ])).error, 'Create access fixtures');
+  assertNoError((await service.from('courses').update({ is_active: false }).eq('id', batchB)).error, 'Make Batch B historical');
+
+  const { data: initialIdentity, error: initialIdentityError } = await enrolled.rpc('get_portal_identity');
+  assertNoError(initialIdentityError, 'Read initial multi-course identity');
+  const { data: initialOptions, error: initialOptionsError } = await enrolled.rpc('get_student_course_options');
+  assertNoError(initialOptionsError, 'Read all enrolled course options');
+  checks.multi_course_requires_choice = initialIdentity.course_count === 2
+    && initialIdentity.selected_course_id === null
+    && initialOptions.selected_course_id === null;
+  checks.historical_course_selectable = initialOptions.courses.length === 2
+    && initialOptions.courses.some((course) => course.id === batchB && course.is_active === false);
+
+  const { error: historicalSelectionError } = await enrolled.rpc('select_student_course', { p_course_id: batchB });
+  assertNoError(historicalSelectionError, 'Select historical Batch B');
+  const { data: historicalTimeline, error: historicalTimelineError } = await enrolled.rpc('get_student_timeline');
+  assertNoError(historicalTimelineError, 'Read historical Batch B timeline');
+  const { data: historicalPractice, error: historicalPracticeError } = await enrolled.rpc('get_student_practice_log');
+  assertNoError(historicalPracticeError, 'Read historical Batch B practice log');
+  checks.historical_selection_scopes_portal = historicalTimeline.course?.id === batchB
+    && historicalPractice.course?.id === batchB;
+
+  const { error: currentSelectionError } = await enrolled.rpc('select_student_course', { p_course_id: batchA });
+  assertNoError(currentSelectionError, 'Switch to Batch A');
+  const enrolledAgain = await signIn(users[1].email);
+  const { data: persistedOptions, error: persistedOptionsError } = await enrolledAgain.rpc('get_student_course_options');
+  assertNoError(persistedOptionsError, 'Read persisted course selection');
+  checks.selection_persists = persistedOptions.selected_course_id === batchA;
+
+  const { data: singleIdentity, error: singleIdentityError } = await single.rpc('get_portal_identity');
+  assertNoError(singleIdentityError, 'Read single-course identity');
+  checks.single_course_resolves_directly = singleIdentity.course_count === 1
+    && singleIdentity.selected_course_id === batchA;
+  const unauthorizedSelection = await single.rpc('select_student_course', { p_course_id: batchB });
+  checks.unenrolled_selection_denied = unauthorizedSelection.error?.code === '42501';
+  checks.preference_table_private = Boolean((await enrolled.from('student_course_preferences').select('user_id')).error);
+  checks.inactive_course_options_denied = (await inactive.rpc('get_student_course_options')).error?.code === '42501';
+  checks.anonymous_course_options_denied = (await anonymous.rpc('get_student_course_options')).error?.code === '42501';
 
   const { data: sessions, error: sessionsError } = await service.from('sessions')
     .select('id,title,session_date,session_end_at,display_order').eq('course_id', batchA).order('display_order');
@@ -252,6 +294,11 @@ try {
     && (await visibleMaterialIds(enrolled, [worksheetId])).length === 1;
 
   const probeResourceKey = `phase3-pre-read-${runId}`;
+  for (const resource of draft.resources) {
+    if (resource.resourceType === 'worksheet' && (!Number.isInteger(resource.questionCount) || resource.questionCount < 1)) {
+      resource.questionCount = 11;
+    }
+  }
   const lastEvent = draft.events.at(-1);
   draft.resources.push({
     key: probeResourceKey,
@@ -265,6 +312,24 @@ try {
     notionUrl: `https://notion.site/phase3-${runId}`,
     fileUrl: '',
     textContent: '',
+    questionCount: null,
+    displayOrder: draft.resources.length + 1,
+  });
+  const probeWorksheetKey = `phase3-worksheet-${runId}`;
+  const probeWorksheetCount = 17;
+  draft.resources.push({
+    key: probeWorksheetKey,
+    title: `Phase 3 worksheet ${runId}`,
+    resourceType: 'worksheet',
+    scope: 'event',
+    sectionKey: null,
+    eventKey: lastEvent.key,
+    masterMaterialId: null,
+    format: 'pdf',
+    notionUrl: '',
+    fileUrl: `/api/materials/file?path=worksheets%2F${templateId}%2F${randomUUID()}.pdf`,
+    textContent: '',
+    questionCount: probeWorksheetCount,
     displayOrder: draft.resources.length + 1,
   });
   const revisionResult = await admin.rpc('create_course_template_revision_v2', {
@@ -277,6 +342,25 @@ try {
   });
   assertNoError(revisionResult.error, 'Create probe template revision');
   probeRevisionId = revisionResult.data;
+  const { data: questionCountBatch, error: questionCountBatchError } = await admin.rpc('confirm_template_batch_v2', {
+    p_name: `Phase 3 question count probe ${runId}`,
+    p_template_id: templateId,
+    p_expected_revision_id: probeRevisionId,
+    p_start_date: '2028-07-01',
+    p_publication_state: 'published',
+    p_idempotency_key: randomUUID(),
+  });
+  assertNoError(questionCountBatchError, 'Create question-count batch');
+  courseIds.push(questionCountBatch.courseId);
+  const { data: probeWorksheet, error: probeWorksheetError } = await service.from('course_template_resources')
+    .select('id,question_count').eq('revision_id', probeRevisionId).eq('resource_key', probeWorksheetKey).single();
+  assertNoError(probeWorksheetError, 'Read template worksheet question count');
+  const { data: generatedWorksheet, error: generatedWorksheetError } = await service.from('materials')
+    .select('question_count').eq('course_id', questionCountBatch.courseId)
+    .eq('source_template_resource_id', probeWorksheet.id).single();
+  assertNoError(generatedWorksheetError, 'Read generated worksheet question count');
+  checks.worksheet_question_count_propagates = probeWorksheet.question_count === probeWorksheetCount
+    && generatedWorksheet.question_count === probeWorksheetCount;
   const previewResult = await admin.rpc('preview_course_template_resource_sync', { p_course_id: batchA });
   assertNoError(previewResult.error, 'Preview template resource sync');
   checks.sync_preview = previewResult.data.revisionId === probeRevisionId

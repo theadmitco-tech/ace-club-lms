@@ -26,6 +26,7 @@ export function StudentHeader({ studentName, testerMode = false }: { studentName
           <Link href="/resources">Resources</Link>
           <Link href="/mocks">Mocks</Link>
           <Link className="student-navigation-secondary" href="/practice">Practice log</Link>
+          <Link href="/courses">Switch course</Link>
           </>}
         </nav>
         <div className="student-account">

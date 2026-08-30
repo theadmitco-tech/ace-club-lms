@@ -58,20 +58,16 @@ async function hydrateAttemptMedia(db: ReturnType<typeof createMockAdminClient>,
   }));
 }
 
-export async function listParticipantMocks(userId: string, participant: { fullName: string; role: 'admin' | 'student' }) {
+export async function listParticipantMocks(userId: string, participant: { fullName: string; role: 'admin' | 'student'; selectedCourseId?: string | null }) {
   const db = createMockAdminClient();
-  const [{ data: enrollments, error: enrollmentError }, { data: grants, error: grantError }] = await Promise.all([
-    db.from('enrollments').select('course_id').eq('user_id', userId),
-    db.from('mock_assignment_testers').select('assignment_id').eq('user_id', userId).is('revoked_at', null),
-  ]);
-  if (enrollmentError) throw enrollmentError;
+  const { data: grants, error: grantError } = await db.from('mock_assignment_testers')
+    .select('assignment_id').eq('user_id', userId).is('revoked_at', null);
   if (grantError) throw grantError;
-  const courseIds = (enrollments ?? []).map((row) => row.course_id);
   const testerAssignmentIds = (grants ?? []).map((row) => row.assignment_id);
   const selection = 'id,release_at,due_at,course_id,mock_assessment_versions!inner(id,version_number,mock_assessments!inner(name,purpose))';
   const [{ data: released, error: releasedError }, { data: testerAssignments, error: testerError }] = await Promise.all([
-    participant.role === 'student' && courseIds.length
-      ? db.from('mock_assessment_assignments').select(selection).in('course_id', courseIds).lte('release_at', new Date().toISOString()).order('release_at', { ascending: false })
+    participant.role === 'student' && participant.selectedCourseId
+      ? db.from('mock_assessment_assignments').select(selection).eq('course_id', participant.selectedCourseId).lte('release_at', new Date().toISOString()).order('release_at', { ascending: false })
       : { data: [], error: null },
     testerAssignmentIds.length
       ? db.from('mock_assessment_assignments').select(selection).in('id', testerAssignmentIds).order('release_at', { ascending: false })

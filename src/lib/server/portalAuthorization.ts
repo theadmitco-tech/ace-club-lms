@@ -10,6 +10,8 @@ type PortalIdentity = {
   role: UserRole;
   fullName: string;
   testerAccess: boolean;
+  courseCount: number;
+  selectedCourseId: string | null;
 };
 
 export type MockParticipantIdentity = PortalIdentity;
@@ -32,10 +34,12 @@ export const getPortalIdentity = cache(async (): Promise<PortalIdentity | null> 
       ? identity.full_name.trim()
       : identity.role === 'admin' ? 'Admin' : 'Student',
     testerAccess: identity.tester_access === true,
+    courseCount: typeof identity.course_count === 'number' ? identity.course_count : 0,
+    selectedCourseId: typeof identity.selected_course_id === 'string' ? identity.selected_course_id : null,
   };
 });
 
-export async function requirePortalRole(role: UserRole) {
+export async function requirePortalRole(role: UserRole, options: { allowCourseSelection?: boolean } = {}) {
   const identity = await getPortalIdentity();
 
   if (!identity) {
@@ -44,6 +48,15 @@ export async function requirePortalRole(role: UserRole) {
 
   if (identity.role !== role) {
     redirect(identity.role === 'admin' ? '/admin' : '/dashboard');
+  }
+
+  if (
+    role === 'student'
+    && !options.allowCourseSelection
+    && identity.courseCount > 1
+    && !identity.selectedCourseId
+  ) {
+    redirect('/courses');
   }
 
   return identity;
@@ -61,6 +74,9 @@ export async function requireMockParticipant() {
     const portalIdentity = await getPortalIdentity();
     if (!portalIdentity) redirect('/login');
     redirect(portalIdentity.role === 'admin' ? '/admin' : '/dashboard');
+  }
+  if (identity.role === 'student' && identity.courseCount > 1 && !identity.selectedCourseId) {
+    redirect('/courses');
   }
   return identity;
 }
