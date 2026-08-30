@@ -3,28 +3,10 @@
 import { useEffect, useState } from 'react';
 import type { ExtendedRecordMap } from 'notion-types';
 import { NotionRenderer } from 'react-notion-x';
+import { getNotionEmbedUrl, getPublicNotionUrl } from '@/lib/notion';
 import 'react-notion-x/src/styles.css';
 import 'prismjs/themes/prism-tomorrow.css';
 import 'katex/dist/katex.min.css';
-
-function getNotionUrl(sourceUrl?: string | null) {
-  if (!sourceUrl) return null;
-
-  const iframeSrc = sourceUrl.match(/src=["']([^"']+)["']/i)?.[1];
-  const candidate = (iframeSrc ?? sourceUrl).replaceAll('&amp;', '&').trim();
-
-  try {
-    const url = new URL(candidate);
-    const isNotionHost = url.hostname === 'notion.so'
-      || url.hostname.endsWith('.notion.so')
-      || url.hostname === 'notion.site'
-      || url.hostname.endsWith('.notion.site');
-
-    return url.protocol === 'https:' && isNotionHost ? url.toString() : null;
-  } catch {
-    return null;
-  }
-}
 
 export function NotionReader({
   pageId,
@@ -38,10 +20,8 @@ export function NotionReader({
   const [recordMap, setRecordMap] = useState<ExtendedRecordMap | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'failed'>('loading');
   const [requestKey, setRequestKey] = useState(0);
-  const notionUrl = getNotionUrl(sourceUrl);
-  const embedUrl = notionUrl && new URL(notionUrl).pathname.split('/').includes('ebd')
-    ? notionUrl
-    : null;
+  const notionUrl = getPublicNotionUrl(sourceUrl);
+  const embedUrl = getNotionEmbedUrl(sourceUrl, pageId);
 
   useEffect(() => {
     if (embedUrl) return;
