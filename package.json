@@ -9,6 +9,7 @@
     "start": "next start",
     "test:recommendations": "node --experimental-strip-types --test scripts/student-timeline-recommendations.test.mjs",
     "test:session-materials": "node --experimental-strip-types --test scripts/session-material-files.test.mjs",
+    "test:notion-links": "node --experimental-strip-types --test scripts/notion-links.test.mjs",
     "test:templates": "node --experimental-strip-types --test scripts/course-template-validation.test.mjs",
     "test:batch-schedule": "node --experimental-strip-types --test scripts/batch-schedule.test.mjs",
     "test:flexible-resources": "node --experimental-strip-types --test scripts/flexible-resources.test.mjs",
