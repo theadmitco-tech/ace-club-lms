@@ -1,6 +1,6 @@
 # Worksheet count and course selection — rollback rehearsal
 
-Status: **Passed on Staging; Production unchanged and unauthorized**  
+Status: **Passed on Staging; Production unchanged and unauthorized**
 Date: 30 August 2026
 
 ## Scope

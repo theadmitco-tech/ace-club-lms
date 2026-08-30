@@ -1,7 +1,7 @@
 # Production release plan — worksheet counts and multi-course selection
 
-Status: **Rollback rehearsal passed; Production changes are not authorized**  
-Date: 30 August 2026  
+Status: **Rollback rehearsal passed; Production changes are not authorized**
+Date: 30 August 2026
 Owners: Product Owner, Release Owner, Engineering, QA/Security
 
 ## Decision and boundary
@@ -34,11 +34,11 @@ Do not promote the Staging-backed Preview to Production: it was built with Previ
 
 Apply only these files, in this order:
 
-1. `20260830112501_add_template_worksheet_question_count.sql`  
+1. `20260830112501_add_template_worksheet_question_count.sql`
    SHA-256: `d7e1bfc23e8637d96329e1f7db3ac6b43630943e2f142f4c6e0ff0e80fdcab2f`
-2. `20260830133000_add_student_course_selection.sql`  
+2. `20260830133000_add_student_course_selection.sql`
    SHA-256: `65441dfcff5c0cff19aae5c1bb1bfdc18778772b85b3da53d4071dfe7e7f53e3`
-3. `20260830133001_fix_template_worksheet_question_count_trigger_order.sql`  
+3. `20260830133001_fix_template_worksheet_question_count_trigger_order.sql`
    SHA-256: `52b9ebf2048ae628332d8788f62ca38ceb2951f0d820dbf51acdfd95f0ae053a`
 
 Never apply or repair the intentionally excluded historical versions:
