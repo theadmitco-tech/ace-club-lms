@@ -60,7 +60,17 @@ Post-migration acceptance:
   - `/admin/templates`: 307 to `/login`
 - Runtime log scan after smoke: no logs/errors found.
 
-## Pending final check
+## Authenticated student acceptance
 
-- Authenticated Production acceptance is paused at the Google account chooser pending action-time confirmation to transmit the selected test account identity to Production Supabase authentication.
-- No rollback threshold has been observed.
+- Signed in through Production OAuth with the explicitly approved student QA account.
+- Existing default course remained `Aug 7th Batch`; no course preference was created or changed.
+- Dashboard loaded the existing schedule, recommended worksheets, worksheet links, and update-log links without browser errors.
+- Course selection loaded `Aug 7th Batch` with both `Historical batch` and `Continue with this course`, confirming inactive/historical enrollment access.
+- The QA account has one enrollment, so the two-card selection state could not be demonstrated with this account. Multi-course RPC behavior had already passed disposable Staging acceptance and Production database invariants.
+- Practice log loaded 12 released worksheets: 3 QA, 7 VA, and 2 DI.
+- Existing progress and question totals remained visible.
+- A released worksheet opened with its PDF viewer/download action and a 30-question manual tracker.
+- The two existing Review states were preserved; no tracker control was changed during acceptance.
+- Browser console warning/error scans were empty.
+- Final Vercel runtime error scan returned no errors.
+- No rollback threshold was observed.
