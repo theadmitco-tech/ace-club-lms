@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-As of: 31 August 2026, 15:17 IST
+As of: 31 August 2026, 15:54 IST
 
 This is the single active operational handoff. Git history preserves earlier versions; do not append a growing chronological diary here.
 
@@ -37,7 +37,7 @@ Important: that deployment contains the course-selection UI but predates the fin
 | Staging Supabase | `eyphkkginlgoaxflauog` |
 | Latest Staging migration | `20260830133001_fix_template_worksheet_question_count_trigger_order` |
 | Staging migration count | 42 |
-| Accepted current application candidate | None for the next release |
+| Accepted current application candidate | `codex/release-0-reconciled-baseline` at `1b5a01e` before the Release 0 evidence commit |
 | Active disposable fixtures | None recorded by this documentation project |
 
 ### Ledger differences requiring deliberate handling
@@ -66,13 +66,14 @@ No database mutation is authorized by this record.
 - Current Production commit is available on GitHub branch `codex/pilot-v3-notion-fix`.
 - GitHub `main` is not the authoritative Production source baseline; it predates the Pilot V3 Production lineage.
 
-### Documentation working branch
+### Reconciled Release 0 candidate
 
-- Working branch: `codex/engineering-handbook`.
-- Documentation consolidation implementation commit: `704c411`.
-- GitHub branch: `codex/engineering-handbook` in `theadmitco-tech/ace-club-lms`.
-- The branch is safely backed by the authoritative GitHub repository.
-- It is not merged into `main` and has not triggered an application or Production deployment.
+- Working branch: `codex/release-0-reconciled-baseline`.
+- Candidate lineage includes accepted worksheet-question-count and course-selection work through `838b782`, documentation consolidation through `85ae2ba`, and the Production Notion fix cherry-picked as `1b5a01e`.
+- Shared ancestry was proved at `65aa63f`; no history was discarded or force-pushed.
+- The candidate contains `/courses`, the “Switch course” Student-header entry, Notion-link normalization, reusable worksheet question counts, the three August 30 migrations, rollback SQL, and the consolidated documentation set.
+- The candidate is not merged into `main`, deployed, connected to Vercel, or applied to either database.
+- Release evidence: [Release 0 source-lineage reconciliation](releases/2026-08-31-release-0-source-lineage-reconciliation.md).
 
 Release 0 must reconcile this branch with the real Production source lineage without discarding the later Production/course-selection history.
 
@@ -149,7 +150,7 @@ Consolidate documentation into:
 - Review Project Manual and Current State for Product Owner corrections.
 - Preserve all signed evidence and product-authority content during later Git reconciliation.
 - Product Owner review of the simplified two-document path and handbook rules.
-- Reconcile the documentation branch with the authoritative Production application baseline before merge.
+- Product Owner acceptance of the Release 0 candidate before any Staging-backed preview work.
 
 ### Explicit exclusions
 
@@ -162,13 +163,13 @@ Consolidate documentation into:
 
 ## 7. Exact next action
 
-> Review the Project Manual, Current State, and Draft Engineering Handbook. Correct any Product Owner interpretation, then begin Release 0 source-lineage reconciliation. Do not merge this branch into stale `main` and do not deploy it as an application release.
+> Review and accept the GitHub-backed Release 0 candidate. After acceptance, prepare Release 1 as a separate Staging-backed course-selection restoration release. Do not merge into stale `main`, deploy, or mutate a database merely because Release 0 source reconciliation passed.
 
 No application, database, access, Staging, or Production change is authorized.
 
 ## 8. Planned release sequence after documentation consolidation
 
-1. **Release 0 — Source and governance reconciliation.** Reconcile current Production, course-selection, Notion, migration, and documentation histories into one GitHub-backed baseline.
+1. **Release 0 — Source and governance reconciliation.** Candidate assembled and locally verified; GitHub publication is the remaining source-only step.
 2. **Release 1 — Course-selection restoration.** Restore the chooser and switch link, include historical enrollments, and prompt once after fresh multi-course login.
 3. **Release 2 — Admin/Super Admin foundation.** Add backward-compatible role/capability and RLS support without grants.
 4. **Release 3 — Role activation.** Confirm exact accounts and grant Admin to Tanya, Unnati, and Shan; assign approved Super Admins; verify denial boundaries.
@@ -188,6 +189,7 @@ Do not mix these documentation commits with application, database, role, access,
 - [Engineering Handbook](governance/engineering-handbook.md)
 - [Documentation Consolidation Project](governance/documentation-consolidation-project.md)
 - [Document Inventory](governance/document-inventory.csv)
+- [Release 0 source-lineage reconciliation](releases/2026-08-31-release-0-source-lineage-reconciliation.md)
 - [Course-selection Production release evidence](pilot-v3/phase-7/evidence/worksheet-count-course-selection-production-release-2026-08-30.md)
 - [Course-selection rollback rehearsal](pilot-v3/phase-7/evidence/worksheet-count-course-selection-rollback-rehearsal-2026-08-30.md)
 - [Pilot V3 mock release evidence](pilot-v3/phase-7/evidence/phase-7-production-release-2026-08-25.md)
@@ -198,5 +200,5 @@ Do not mix these documentation commits with application, database, role, access,
 - Product Owner acceptance of the Project Manual as the master front door.
 - Exact Production identities for Tanya, Unnati, and Shan.
 - Approved list of Super Admin recipients.
-- Release 0 GitHub baseline and protected-branch approach.
+- Product Owner acceptance of the Release 0 GitHub candidate and protected-branch approach.
 - Course-selection fresh-login acceptance detail: chooser once per authentication, with persistent switching during the session.

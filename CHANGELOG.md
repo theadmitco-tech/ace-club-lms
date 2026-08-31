@@ -4,6 +4,12 @@ All notable Ace Club LMS changes are recorded here. Detailed execution evidence 
 
 ## Unreleased
 
+### Release 0 source reconciliation
+
+- Reconciled the accepted worksheet-count/course-selection line, Production Notion fix, and documentation line into `codex/release-0-reconciled-baseline`.
+- Verified focused behavior, type safety, changed-file lint, documentation integrity, and a production Webpack build.
+- Preserved the database-ledger reconciliation boundary; no environment, database, access, or deployment change was made.
+
 ### Documentation consolidation
 
 - Added the Project Manual as the master documentation front door.
