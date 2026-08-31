@@ -338,19 +338,26 @@ The project is complete when:
 
 ## 11. Current status
 
-Phase D0 is in progress.
+Phases D0–D4 are implemented locally. Product Owner review and authoritative GitHub publication remain open.
 
 Completed:
 
 - initial file and line-count inventory;
+- complete 138-artifact inventory coverage after adding the canonical documents and release record;
 - identification of multiple competing continuation documents;
 - target two-document resume model;
 - target documentation tree;
 - initial disposition and safety rules;
 - future-handoff requirements.
+- Project Manual and Current State;
+- simplified documentation and instruction routers;
+- archived-continuation markers for the primary running handoffs and Pilot V2 bootstrap;
+- unique living coding/document-convention rules consolidated into the Engineering Handbook;
+- automated relative-link, living-header, Current State structure, archived-handoff, and inventory checks;
+- documentation-only release record and changelog.
 
 Next action:
 
-> Produce the document-by-document disposition inventory and link map. Do not move or delete files until that inventory is reviewed.
+> Review the Project Manual, Current State, and Draft Engineering Handbook with the Product Owner; correct any product interpretation; then publish the focused documentation branch through the authoritative GitHub repository. Do not move or delete signed evidence.
 
 This documentation project does not authorize any application, database, access, Staging, or Production change.

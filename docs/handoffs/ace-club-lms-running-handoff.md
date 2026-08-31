@@ -1,10 +1,14 @@
 # Ace Club LMS — Running Handoff
 
-Status: Active
+Status: Archived — superseded for continuation
 Owner: Product owner and Engineering
 Last updated: 31 August 2026
 
-This is the current cross-phase continuity document. Append a signed section when a phase closes; preserve earlier sections as historical snapshots instead of rewriting them to match later state.
+Superseded by: [Project Manual](../PROJECT_MANUAL.md) and [Current State](../CURRENT_STATE.md)
+
+This document is preserved as signed MVP phase history. Do not follow its historical resume instructions as the current next action and do not append new operational state here.
+
+This was the cross-phase continuity document through the signed MVP phases. Its earlier sections remain historical snapshots and must not be rewritten to match later state.
 
 ## How to use this handoff
 

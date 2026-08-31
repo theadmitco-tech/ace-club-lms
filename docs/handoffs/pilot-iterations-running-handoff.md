@@ -1,10 +1,12 @@
 # Ace Club LMS — Pilot Iterations Running Handoff
 
-Status: Signed off for Pilot V1; superseded for active work by [Pilot V2](../pilot-v2/README.md)
+Status: Archived — signed off for Pilot V1 and superseded for continuation
 Owner: Product owner and Engineering
-Last updated: 14 August 2026
+Last updated: 31 August 2026
 
-Pilot V1 is deployed and this file is preserved as its detailed running history. Start all new work from the consolidated [Pilot V2 bootstrap and running handoff](../pilot-v2/README.md). Do not append V2 implementation state here.
+Superseded by: [Project Manual](../PROJECT_MANUAL.md) and [Current State](../CURRENT_STATE.md)
+
+Pilot V1 is deployed and this file is preserved as its detailed running history. Do not use its historical resume instructions for current work and do not append later pilot state here.
 
 ## Purpose
 

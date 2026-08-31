@@ -226,6 +226,33 @@ As applicable:
 - browser acceptance smoke tests;
 - documentation link checks.
 
+### 7.4 Implementation standards
+
+#### Next.js and TypeScript
+
+- This repository uses Next.js 16. Read the relevant bundled guide under `node_modules/next/dist/docs/` before changing framework APIs or conventions.
+- Prefer Server Components by default. Use Client Components only for browser state, effects, or interaction.
+- Keep service-role clients and privileged logic in server-only modules.
+- Validate API and Server Action input. Return deliberate status codes and actionable errors.
+- Use shared domain types instead of introducing unbounded `any` values.
+- Keep release-time and programme-timezone calculations in one authoritative module and test exact boundaries.
+
+#### Interface and accessibility
+
+- Preserve the existing design system unless the accepted feature explicitly requires redesign.
+- Loading must resolve to success or an actionable error.
+- Mutations must expose saving/submitting, success, failure, and safe retry states.
+- Locked, upcoming, released, empty, and failed states must be distinguishable.
+- Support keyboard navigation and the accepted desktop/mobile browser boundary.
+- Preview or tester modes must be visibly labelled.
+
+#### Minimum touched-scope quality
+
+- Do not add new lint or type errors.
+- Run focused tests for the changed contract.
+- Run the Production build for release candidates.
+- Review the final diff for secrets, private data, generated noise, and unrelated changes.
+
 ## 8. Database and migration discipline
 
 ### 8.1 Golden rule
@@ -756,6 +783,56 @@ If Current State contradicts verified Production or is missing a release:
 3. correct Current State in a focused documentation commit;
 4. link the evidence that established the correction;
 5. resume only from the reconciled Production lineage.
+
+### 14.7 Naming, status, evidence, and link rules
+
+#### Naming
+
+- Use lowercase kebab-case for new documents, such as `release-boundary-tests.md`.
+- Use `README.md` only as a folder entry point.
+- Name decisions `adr-NNNN-short-title.md`.
+- Name release records `YYYY-MM-DD-short-release-name.md`.
+- Name evidence with its environment, subject, and date.
+- Keep file extensions accurate.
+
+#### Required living-document header
+
+```text
+# Title
+
+Status: Draft | Active | Signed off | Superseded | Archived
+Owner: Product owner | Engineering | QA | named role
+Last updated: DD Month YYYY
+```
+
+Current State uses `As of: DD Month YYYY, HH:MM TZ` instead of `Last updated`.
+
+#### Status lifecycle
+
+- **Draft:** proposed and reviewable, not yet governing.
+- **Active:** current guidance or requirement.
+- **Signed off:** accepted checkpoint; preserve it.
+- **Superseded:** replaced by a named later authority; retain for context.
+- **Archived:** no longer operationally active; retain for history.
+
+Never silently turn Signed off into Draft or rewrite historical acceptance.
+
+#### Evidence
+
+- Use Staging for destructive, identity, privacy, and fixture-based testing.
+- Production evidence is read-only unless the exact mutation is approved.
+- Evidence filenames are dated and evidence content is immutable after acceptance.
+- Correct a historical conclusion with a new evidence record, not an edit that hides the earlier result.
+- Remove secrets and private Student data before committing.
+- Put large raw output in a sanitized evidence artifact and summarize/link it from the release record.
+
+#### Links and duplication
+
+- Use relative repository links.
+- Link to the canonical owner instead of copying full explanations.
+- Keep indexes short and task-oriented.
+- Update incoming links in the same commit as any move.
+- Run `npm run test:docs` and `git diff --check` before committing documentation changes.
 
 ## 15. Operational changes and access grants
 

@@ -21,6 +21,7 @@
     "test:phase3-formats": "node --import tsx --test scripts/phase3-question-formats.test.mjs",
     "test:pilot-v3-safety": "node --import tsx --test scripts/pilot-v3-phase5-safety.test.mjs",
     "test:mock-tester-access": "node --import tsx --test scripts/mock-tester-access.test.mjs",
+    "test:docs": "node scripts/documentation-check.mjs",
     "test:pilot-v3": "node --import tsx --test scripts/mock-question-package.test.mjs scripts/mock-attempt-player.test.mjs scripts/mock-results.test.mjs scripts/phase3-question-formats.test.mjs scripts/pilot-v3-phase5-safety.test.mjs scripts/mock-tester-access.test.mjs",
     "test:pilot-v2": "node --experimental-strip-types --test scripts/course-template-validation.test.mjs scripts/batch-schedule.test.mjs scripts/flexible-resources.test.mjs scripts/student-portal.test.mjs scripts/student-course-selection.test.mjs scripts/student-timeline-recommendations.test.mjs scripts/session-material-files.test.mjs scripts/phase5-integrated-safety.test.mjs",
     "question-bank:import": "node scratch/import_question_bank_csv.js",
