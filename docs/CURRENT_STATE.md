@@ -37,7 +37,7 @@ Important: that deployment contains the course-selection UI but predates the fin
 | Staging Supabase | `eyphkkginlgoaxflauog` |
 | Latest Staging migration | `20260830133001_fix_template_worksheet_question_count_trigger_order` |
 | Staging migration count | 42 |
-| Accepted current application candidate | `codex/release-0-reconciled-baseline` at `1b5a01e` before the Release 0 evidence commit |
+| Accepted current application candidate | GitHub branch `codex/release-0-reconciled-baseline`; verified application composition at `1b5a01e`, Release 0 evidence at `e92a829` |
 | Active disposable fixtures | None recorded by this documentation project |
 
 ### Ledger differences requiring deliberate handling
@@ -69,6 +69,7 @@ No database mutation is authorized by this record.
 ### Reconciled Release 0 candidate
 
 - Working branch: `codex/release-0-reconciled-baseline`.
+- GitHub publication: complete through `e92a829`; no pull request, merge, or deployment was created.
 - Candidate lineage includes accepted worksheet-question-count and course-selection work through `838b782`, documentation consolidation through `85ae2ba`, and the Production Notion fix cherry-picked as `1b5a01e`.
 - Shared ancestry was proved at `65aa63f`; no history was discarded or force-pushed.
 - The candidate contains `/courses`, the “Switch course” Student-header entry, Notion-link normalization, reusable worksheet question counts, the three August 30 migrations, rollback SQL, and the consolidated documentation set.
@@ -169,7 +170,7 @@ No application, database, access, Staging, or Production change is authorized.
 
 ## 8. Planned release sequence after documentation consolidation
 
-1. **Release 0 — Source and governance reconciliation.** Candidate assembled and locally verified; GitHub publication is the remaining source-only step.
+1. **Release 0 — Source and governance reconciliation.** Complete: candidate assembled, locally verified, documented, and published to GitHub without merge or deployment.
 2. **Release 1 — Course-selection restoration.** Restore the chooser and switch link, include historical enrollments, and prompt once after fresh multi-course login.
 3. **Release 2 — Admin/Super Admin foundation.** Add backward-compatible role/capability and RLS support without grants.
 4. **Release 3 — Role activation.** Confirm exact accounts and grant Admin to Tanya, Unnati, and Shan; assign approved Super Admins; verify denial boundaries.

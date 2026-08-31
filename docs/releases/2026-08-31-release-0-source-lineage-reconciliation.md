@@ -1,6 +1,6 @@
 # Release 0 — Source-Lineage Reconciliation — 31 August 2026
 
-Status: Candidate verified locally; GitHub publication pending
+Status: Candidate verified and published to GitHub; Product Owner acceptance pending
 Owner: Product owner and Engineering
 Last updated: 31 August 2026
 
@@ -16,6 +16,7 @@ All relevant branches share commit `65aa63f`.
 - documentation consolidation: `0ea118f` through publication record `85ae2ba`;
 - current Production Notion fix: original commit `b5ad0e2`, cherry-picked as `1b5a01e`;
 - candidate branch: `codex/release-0-reconciled-baseline`.
+- GitHub publication record: `e92a829` before this status-only follow-up commit.
 
 The Notion fix applied without a merge conflict. `package.json` retains both the documentation and Notion test commands.
 
@@ -76,4 +77,4 @@ For the later course-selection release, the rollback unit must be a separately r
 
 ## Next gate
 
-Publish this exact verified candidate to GitHub, record its final commit, and request Product Owner acceptance. Only then prepare a separate Staging-backed Release 1 preview and acceptance run.
+Request Product Owner acceptance of the published candidate. Only then prepare a separate Staging-backed Release 1 preview and acceptance run.
