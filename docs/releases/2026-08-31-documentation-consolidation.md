@@ -1,6 +1,6 @@
 # Release — Documentation Consolidation — 31 August 2026
 
-Status: Local verification complete; GitHub publication pending
+Status: GitHub branch published; Product Owner review pending
 Owner: Product owner and Engineering
 Last updated: 31 August 2026
 
@@ -42,10 +42,12 @@ The work does not affect deployed systems. The primary risk is breaking reposito
 - Branch: `codex/engineering-handbook`
 - Initial handbook commit: `0ea118f`
 - Consolidation-plan commit: `aa1523e`
-- Final consolidation commit: pending at the time this record was drafted
-- Authoritative GitHub publication: pending
+- Consolidation implementation commit: `704c411`
+- GitHub branch: `codex/engineering-handbook`
+- Authoritative GitHub publication: complete
+- Merge to `main`: intentionally not performed because `main` is not the current Production lineage
 
-The working repository's configured `origin` points to another local repository. The branch is not considered safely published until it is pushed through the real GitHub repository.
+The working repository's configured `origin` points to another local repository, so publication used the authoritative GitHub URL explicitly. The published branch is backed up and reviewable without changing `main` or Vercel.
 
 ## Database and environment impact
 
@@ -90,7 +92,7 @@ Because no runtime or remote system changed, there is no application, database, 
 ## Remaining work
 
 - Product Owner review of the Project Manual, Current State, and Draft Engineering Handbook.
-- Commit the final consolidation diff.
-- Publish the documentation branch through the authoritative GitHub remote.
+- Product Owner review and any focused documentation corrections.
+- Reconcile the documentation branch with the authoritative Production source lineage before merge.
 - Enable branch protection/CI only during approved Release 0 source-governance work.
 - Use the new Current State handoff for the course-selection and role releases.

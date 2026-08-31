@@ -338,7 +338,7 @@ The project is complete when:
 
 ## 11. Current status
 
-Phases D0–D4 are implemented locally. Product Owner review and authoritative GitHub publication remain open.
+Phases D0–D4 are implemented and published on GitHub branch `codex/engineering-handbook`. Product Owner review and safe baseline reconciliation before merge remain open.
 
 Completed:
 
@@ -358,6 +358,6 @@ Completed:
 
 Next action:
 
-> Review the Project Manual, Current State, and Draft Engineering Handbook with the Product Owner; correct any product interpretation; then publish the focused documentation branch through the authoritative GitHub repository. Do not move or delete signed evidence.
+> Review the Project Manual, Current State, and Draft Engineering Handbook with the Product Owner; correct any product interpretation; then reconcile the branch with the authoritative Production source lineage before merge. Do not move or delete signed evidence and do not merge into stale `main`.
 
 This documentation project does not authorize any application, database, access, Staging, or Production change.

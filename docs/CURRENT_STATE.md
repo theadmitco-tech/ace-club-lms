@@ -69,11 +69,12 @@ No database mutation is authorized by this record.
 ### Documentation working branch
 
 - Working branch: `codex/engineering-handbook`.
-- Documentation consolidation commits currently exist locally in the documentation working repository.
-- That repository's configured `origin` is another local repository, not GitHub.
-- Therefore the documentation is locally version-controlled but not yet safely backed by the authoritative GitHub remote.
+- Documentation consolidation implementation commit: `704c411`.
+- GitHub branch: `codex/engineering-handbook` in `theadmitco-tech/ace-club-lms`.
+- The branch is safely backed by the authoritative GitHub repository.
+- It is not merged into `main` and has not triggered an application or Production deployment.
 
-Release 0 must push/reconcile this work through the real GitHub repository without discarding the later Production/course-selection history.
+Release 0 must reconcile this branch with the real Production source lineage without discarding the later Production/course-selection history.
 
 ## 4. Confirmed user-visible state
 
@@ -147,7 +148,8 @@ Consolidate documentation into:
 
 - Review Project Manual and Current State for Product Owner corrections.
 - Preserve all signed evidence and product-authority content during later Git reconciliation.
-- Push the documentation branch through the authoritative GitHub remote.
+- Product Owner review of the simplified two-document path and handbook rules.
+- Reconcile the documentation branch with the authoritative Production application baseline before merge.
 
 ### Explicit exclusions
 
@@ -160,7 +162,7 @@ Consolidate documentation into:
 
 ## 7. Exact next action
 
-> Commit the verified consolidation, publish `codex/engineering-handbook` through the real GitHub remote, and record the pushed commit. Do not merge into stale `main` until Release 0 reconciles the Production source baseline.
+> Review the Project Manual, Current State, and Draft Engineering Handbook. Correct any Product Owner interpretation, then begin Release 0 source-lineage reconciliation. Do not merge this branch into stale `main` and do not deploy it as an application release.
 
 No application, database, access, Staging, or Production change is authorized.
 
