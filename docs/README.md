@@ -8,6 +8,8 @@ This index routes readers to the smallest set of documents needed for a task. Pr
 
 Proposed engineering operating standard: [Ace Club LMS Engineering Handbook](governance/engineering-handbook.md). It defines source control, migrations, environments, authorization, testing, releases, rollback, evidence, documentation, and handoff rules. It remains Draft until Product Owner review.
 
+Active documentation simplification work: [Documentation Consolidation Project](governance/documentation-consolidation-project.md). Its target is one Project Manual plus one Current State file as the normal two-document resume path, while preserving signed history and evidence.
+
 Current signed history: [Ace Club LMS Running Handoff](handoffs/ace-club-lms-running-handoff.md).
 
 Current post-MVP iteration state: [Pilot V2 — Consolidated Bootstrap and Running Handoff](pilot-v2/README.md).
@@ -162,5 +164,6 @@ These stable paths are grandfathered. New multi-file feature documentation shoul
 - [Current code landscape and cleanup plan](development/current-code-landscape-and-cleanup-plan.md)
 - [Document conventions](governance/document-conventions.md)
 - [Engineering handbook](governance/engineering-handbook.md)
+- [Documentation consolidation project](governance/documentation-consolidation-project.md)
 - [Living coding rules](development/coding-rules.md)
 - [Mac setup](setup/mac-setup.md)

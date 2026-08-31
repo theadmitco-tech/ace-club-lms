@@ -661,6 +661,102 @@ A pull request cannot be closed as complete until it either:
 
 Chat summaries do not satisfy this requirement.
 
+### 14.6 Future handoff standard
+
+The active engineering handoff is `docs/CURRENT_STATE.md` once that convention is adopted. Do not create another growing “running handoff” for a new pilot, phase, or feature.
+
+#### Required update events
+
+Update Current State in the same commit or release closeout when:
+
+- Production is promoted or rolled back;
+- a Production migration is applied or its ledger is corrected;
+- an accepted Staging candidate changes;
+- a release gate passes or becomes blocked;
+- a material incident or regression is confirmed;
+- an access role is activated or revoked;
+- the exact next action changes;
+- a Product Owner decision changes scope or acceptance.
+
+#### Mandatory handoff sections
+
+```markdown
+# Ace Club LMS — Current State
+
+Status: Active
+Owner: Product owner and Engineering
+As of: YYYY-MM-DD HH:MM TZ
+
+## Production identity
+- Git commit and tag
+- Vercel deployment
+- Supabase migration boundary
+
+## Staging candidate
+- Git commit and Preview
+- Pending Staging migrations
+
+## User-visible state
+- Confirmed working journeys
+- Known regressions
+
+## Active release
+- Objective and gate
+- Completed work
+- Pending work
+- Explicit exclusions
+
+## Exact next action
+- One bounded action
+- Preconditions and required approval
+
+## Rollback
+- Application target
+- Database compatibility/recovery
+
+## Pending decisions and account confirmations
+
+## Authoritative links
+- Release record
+- Relevant ADR/feature reference
+- Acceptance evidence
+```
+
+#### Handoff quality rules
+
+1. Normal prerequisite reading is limited to the Project Manual and Current State.
+2. Use exact commit, migration, deployment, environment, and fixture identifiers.
+3. Do not use “latest,” “the branch,” “the preview,” “everything passed,” or similar language without identifiers and evidence.
+4. State one exact next action. Put later work in a linked release plan or backlog.
+5. Separate completed, pending, blocked, and excluded work.
+6. Record whether fixtures were cleaned and how that was verified.
+7. Record explicit Product Owner approval boundaries; earlier approval must not be reused for a later Production change.
+8. Link to detailed history instead of copying it.
+9. Never include secrets, private Student data, magic links, tokens, or unrestricted URLs.
+10. Verify every link and identifier before committing.
+11. Update the handoff in the same PR/commit as the state change whenever possible.
+12. Git history preserves old Current State versions; do not append years of narrative to the live file.
+
+#### Handoff example
+
+Bad:
+
+> The selector work is done and everything is on Production. Next do Admins. Read the earlier handoffs for context.
+
+Good:
+
+> Production serves commit `<sha>` through Vercel deployment `<deployment-id>`. Supabase migrations through `<version>` are applied. The two-course fixture passed current and historical selection and was removed with a zero-row cleanup check. Release 1 is closed. Release 2 has no applied migration or access grant. Next: draft and review ADR-000X for Admin/Super Admin authorization; no Production change is authorized.
+
+#### Stale handoff rule
+
+If Current State contradicts verified Production or is missing a release:
+
+1. stop feature execution;
+2. perform read-only reconciliation;
+3. correct Current State in a focused documentation commit;
+4. link the evidence that established the correction;
+5. resume only from the reconciled Production lineage.
+
 ## 15. Operational changes and access grants
 
 Operational changes require a record even when no application code changes.
