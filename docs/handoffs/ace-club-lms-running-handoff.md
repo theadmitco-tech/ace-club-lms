@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-Last updated: 10 August 2026
+Last updated: 31 August 2026
 
 This is the current cross-phase continuity document. Append a signed section when a phase closes; preserve earlier sections as historical snapshots instead of rewriting them to match later state.
 
@@ -11,15 +11,16 @@ This is the current cross-phase continuity document. Append a signed section whe
 Read:
 
 1. [`AGENTS.md`](../../AGENTS.md).
-2. The [`instruction/` register](../../instruction/README.md).
-3. This running handoff, starting with the latest signed section.
-4. The [MVP acceptance criteria](../../instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.md).
-5. The relevant phase in the [product roadmap](../../instruction/Ace_Club_LMS_Product_Roadmap.md).
-6. For post-MVP pilot changes, read the signed [Phase 8 closeout](../phase-8/README.md), [closeout evidence](../phase-8/evidence/operational-closeout-2026-08-10.md), and [verification exceptions](../phase-8/manual-verification-checklist.md).
-7. For the shipped Admin/Student tracker boundary, the [Phase 7 status](../phase-7/README.md), [Phase 7 checklist](../phase-7/manual-verification-checklist.md), [staging evidence](../phase-7/evidence/manual-staging-verification-2026-08-03.md), and [Production rollout evidence](../phase-7/evidence/production-rollout-2026-08-03.md).
-8. For historical Phase 5 interaction decisions, the [foundation plan](../phase-5/student-experience-foundation-plan.md), [decision summary](../phase-5/student-experience-foundation.md), [UI state and content matrix](../phase-5/ui-state-and-content-matrix.md), and [shared Phase 5–6 verification checklist](../phase-5/manual-verification-checklist.md).
-9. For the shipped Student tracker contract, the [Phase 6 status](../phase-6/README.md), [Phase 6 checklist](../phase-6/manual-verification-checklist.md), [staging evidence](../phase-6/evidence/manual-staging-verification-2026-08-03.md), and [Production rollout evidence](../phase-6/evidence/production-rollout-2026-08-03.md).
-10. The [approved revised course structure](../phase-3/revised-course-structure.md), without reconstructing curriculum labels from screenshots or title parsing.
+2. The [Engineering Handbook](../governance/engineering-handbook.md) for the proposed source-control, migration, release, rollback, evidence, and handoff standard.
+3. The [`instruction/` register](../../instruction/README.md).
+4. This running handoff, starting with the latest signed section.
+5. The [MVP acceptance criteria](../../instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.md).
+6. The relevant phase in the [product roadmap](../../instruction/Ace_Club_LMS_Product_Roadmap.md).
+7. For post-MVP pilot changes, read the signed [Phase 8 closeout](../phase-8/README.md), [closeout evidence](../phase-8/evidence/operational-closeout-2026-08-10.md), and [verification exceptions](../phase-8/manual-verification-checklist.md).
+8. For the shipped Admin/Student tracker boundary, the [Phase 7 status](../phase-7/README.md), [Phase 7 checklist](../phase-7/manual-verification-checklist.md), [staging evidence](../phase-7/evidence/manual-staging-verification-2026-08-03.md), and [Production rollout evidence](../phase-7/evidence/production-rollout-2026-08-03.md).
+9. For historical Phase 5 interaction decisions, the [foundation plan](../phase-5/student-experience-foundation-plan.md), [decision summary](../phase-5/student-experience-foundation.md), [UI state and content matrix](../phase-5/ui-state-and-content-matrix.md), and [shared Phase 5–6 verification checklist](../phase-5/manual-verification-checklist.md).
+10. For the shipped Student tracker contract, the [Phase 6 status](../phase-6/README.md), [Phase 6 checklist](../phase-6/manual-verification-checklist.md), [staging evidence](../phase-6/evidence/manual-staging-verification-2026-08-03.md), and [Production rollout evidence](../phase-6/evidence/production-rollout-2026-08-03.md).
+11. The [approved revised course structure](../phase-3/revised-course-structure.md), without reconstructing curriculum labels from screenshots or title parsing.
 11. The [documentation index](../README.md), [coding rules](../development/coding-rules.md), and [current code landscape and cleanup plan](../development/current-code-landscape-and-cleanup-plan.md).
 12. The relevant Next.js 16 guides under `node_modules/next/dist/docs/` before writing or changing Next.js code, then only the implementation files relevant to the immediate task.
 

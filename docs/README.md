@@ -2,9 +2,11 @@
 
 Status: Active
 Owner: Engineering
-Last updated: 20 August 2026
+Last updated: 31 August 2026
 
 This index routes readers to the smallest set of documents needed for a task. Product authority remains in [`instruction/`](../instruction/README.md).
+
+Proposed engineering operating standard: [Ace Club LMS Engineering Handbook](governance/engineering-handbook.md). It defines source control, migrations, environments, authorization, testing, releases, rollback, evidence, documentation, and handoff rules. It remains Draft until Product Owner review.
 
 Current signed history: [Ace Club LMS Running Handoff](handoffs/ace-club-lms-running-handoff.md).
 
@@ -159,5 +161,6 @@ These stable paths are grandfathered. New multi-file feature documentation shoul
 - [Pilot iterations running handoff](handoffs/pilot-iterations-running-handoff.md)
 - [Current code landscape and cleanup plan](development/current-code-landscape-and-cleanup-plan.md)
 - [Document conventions](governance/document-conventions.md)
+- [Engineering handbook](governance/engineering-handbook.md)
 - [Living coding rules](development/coding-rules.md)
 - [Mac setup](setup/mac-setup.md)
