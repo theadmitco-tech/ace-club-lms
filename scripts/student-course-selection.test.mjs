@@ -37,12 +37,15 @@ test('student projections and mocks use the saved course selection', async () =>
   assert.doesNotMatch(mockLoader, /\.in\('course_id', courseIds\)/);
 });
 
-test('multi-course students choose first and can switch later', async () => {
-  const [authorization, page, action, header] = await Promise.all([
+test('multi-course students choose first, choose again after login, and can switch later', async () => {
+  const [authorization, page, action, header, callback, login, postLogin] = await Promise.all([
     read('src/lib/server/portalAuthorization.ts'),
     read('src/app/courses/page.tsx'),
     read('src/app/courses/actions.ts'),
     read('src/components/student/StudentHeader.tsx'),
+    read('src/app/auth/callback/route.ts'),
+    read('src/app/login/page.tsx'),
+    read('src/app/post-login/page.tsx'),
   ]);
   assert.match(authorization, /identity\.courseCount > 1\s+&& !identity\.selectedCourseId/);
   assert.match(authorization, /redirect\('\/courses'\)/);
@@ -50,4 +53,7 @@ test('multi-course students choose first and can switch later', async () => {
   assert.match(page, /selectStudentCourseAction/);
   assert.match(action, /rpc\('select_student_course'/);
   assert.match(header, /href="\/courses">Switch course/);
+  assert.match(callback, /profile\.role === 'admin' \? '\/admin' : '\/post-login'/);
+  assert.match(login, /user\.role === 'admin' \? '\/admin' : '\/post-login'/);
+  assert.match(postLogin, /identity\.courseCount > 1 \? '\/courses' : '\/dashboard'/);
 });
