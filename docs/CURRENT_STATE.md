@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-As of: 1 September 2026, 10:40 IST
+As of: 1 September 2026, 10:58 IST
 
 This is the single active operational handoff. Git history preserves earlier versions; do not append a growing chronological diary here.
 
@@ -37,9 +37,9 @@ Do not use older `dpl_9zmW6EnnAgUZ1otbvB4a2WSKUB3a` as the preferred rollback be
 | Staging Supabase | `eyphkkginlgoaxflauog` |
 | Latest Staging migration | `20260830133001_fix_template_worksheet_question_count_trigger_order` |
 | Staging migration count | 42 |
-| Accepted current application candidate | `codex/release-1-course-selection-staging` at `341281b` |
-| Accepted Staging-backed Preview | `dpl_7cPfrAu9eyJuaD2vAEaKK2tFzdph` — `READY`, target Preview |
-| Preview URL | `https://ace-club-9269yusaf-theadmitco-techs-projects.vercel.app` |
+| Accepted current application candidate | `codex/release-1-1-login-course-chooser` at `682b529` |
+| Accepted Staging-backed Preview | `dpl_4NGxkx1JcX3QMLuWQeXaNrSBoka6` — `READY`, target Preview |
+| Preview URL | `https://ace-club-d4zdlf555-theadmitco-techs-projects.vercel.app` |
 | Active disposable fixtures | None; post-cleanup audit returned zero Auth users, profiles, courses, enrollments, and preferences |
 
 ### Ledger differences requiring deliberate handling
@@ -58,6 +58,8 @@ Staging instead contains:
 The similarly named answer-key migrations reflect a known ledger/version reconciliation history. Do not claim Staging/Production ledger parity and do not run a blind `db push`. Release 0 must compare committed migration files, both ledgers, and effective schema/function definitions before normal CI/CD is enabled.
 
 No migration or durable Staging data change was made for Release 1. One disposable Student, two courses, two enrollments, and one selection preference were created for acceptance and completely removed afterward.
+
+Release 1.1 reused the same environment-locked fixture pattern. Its disposable Student, two courses, enrollments, and preference were also completely removed; the cleanup audit returned zero profile and course residue and removed the private manifest.
 
 ## 3. Source-control state
 
@@ -82,6 +84,10 @@ No migration or durable Staging data change was made for Release 1. One disposab
 - Release 1 acceptance evidence: [Course-selection Staging acceptance](releases/2026-09-01-release-1-course-selection-staging-acceptance.md).
 - Release 1 Production evidence: [Course-selection Production rollout](releases/2026-09-01-release-1-course-selection-production.md).
 - Production application source is `82b5a91`; later evidence-only commits do not change the deployed application.
+- Release 1.1 branch: `codex/release-1-1-login-course-chooser`, published at application commit `682b529`.
+- Release 1.1 routes fresh Student authentication through `/post-login`: multi-course Students reach `/courses` even with a saved preference, while single-course Students reach `/dashboard` and Admins reach `/admin`.
+- Release 1.1 Staging evidence: [Login course chooser Staging acceptance](releases/2026-09-01-release-1-1-login-course-chooser-staging-acceptance.md).
+- Release 1.1 is not deployed to Production.
 
 ## 4. Confirmed user-visible state
 
@@ -107,6 +113,8 @@ The current Production application now:
 - lists both active and historical enrolled courses;
 - opens the saved selection directly when one already exists;
 - redirects a fresh multi-course Student with no preference to the chooser.
+
+Current Production still opens a saved course directly after login. The Product Owner has requested the chooser after every fresh authentication for multi-course Students. Release 1.1 implements and accepts that behavior on Staging, but Production remains unchanged pending explicit promotion authorization.
 
 The Production database still contains:
 
@@ -147,6 +155,22 @@ The Release 1 Preview passed with a fresh disposable multi-course Student:
 - fixture cleanup and the independent residue audit both returned zero rows.
 
 The Staging evidence remains the clean fresh-preference proof; Production acceptance proves the real two-enrollment account and live content path.
+
+### Staging acceptance — Release 1.1 login chooser
+
+The Release 1.1 Preview passed with a disposable multi-course Student:
+
+- first login with no preference opened `/courses`;
+- selecting a course opened its dashboard and persisted the preference;
+- after sign-out and a second fresh login, `/courses` appeared again;
+- the saved course was marked “Continue with this course”;
+- an inactive historical enrollment remained selectable and opened its dashboard;
+- “Switch course” remained available and returned to both choices;
+- the database verifier matched the browser preference;
+- browser console and Vercel Preview error-level logs were empty;
+- cleanup returned zero residue and removed the private credential manifest.
+
+No migration or Production change was made.
 
 ## 5. Role state
 
@@ -201,7 +225,7 @@ Consolidate documentation into:
 
 ## 7. Exact next action
 
-> Observe Release 1 under normal use and review the Production evidence. Then design Release 2 Admin/Super Admin capabilities and rollback boundaries before implementing schema, authorization, or grants. Do not grant access merely as part of planning.
+> Review Release 1.1 Staging evidence and explicitly authorize or decline its application-only Production promotion. Until authorized, keep Production on `dpl_53zX3axvpv7WrevwR1YoMt5ddfAC`. After Release 1.1 is resolved, continue Release 2 Admin/Super Admin capability and rollback design. Do not grant access merely as part of planning.
 
 No database, access, or role change is authorized by this handoff alone.
 
@@ -209,9 +233,10 @@ No database, access, or role change is authorized by this handoff alone.
 
 1. **Release 0 — Source and governance reconciliation.** Complete: candidate assembled, locally verified, documented, and published to GitHub without merge or deployment.
 2. **Release 1 — Course-selection restoration.** Complete in Production with authenticated Student and Admin smoke checks.
-3. **Release 2 — Admin/Super Admin foundation.** Add backward-compatible role/capability and RLS support without grants.
-4. **Release 3 — Role activation.** Confirm exact accounts and grant Admin to Tanya, Unnati, and Shan; assign approved Super Admins; verify denial boundaries.
-5. **Release 4 — Authorization contraction.** Restrict content management to Super Admin after rollback safety expires.
+3. **Release 1.1 — Login course chooser.** Staging accepted; Production authorization pending.
+4. **Release 2 — Admin/Super Admin foundation.** Add backward-compatible role/capability and RLS support without grants.
+5. **Release 3 — Role activation.** Confirm exact accounts and grant Admin to Tanya, Unnati, and Shan; assign approved Super Admins; verify denial boundaries.
+6. **Release 4 — Authorization contraction.** Restrict content management to Super Admin after rollback safety expires.
 
 Each release is separate and requires its own Staging acceptance, rollback record, Production authorization, promotion, smoke checks, tag, release record, and Current State update.
 

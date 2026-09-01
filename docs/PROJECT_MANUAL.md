@@ -197,7 +197,7 @@ The approved behavior is:
 7. Validate every selection against enrollment server-side.
 8. Use the same selected course across Home, Schedule, Resources, Practice log, Mocks, and material routes.
 
-The database support exists, but the current Production application has a known UI regression. See [Current State](CURRENT_STATE.md).
+The database and application support exists. See [Current State](CURRENT_STATE.md) for the exact Production and Staging release status.
 
 ### 6.3 Home
 
