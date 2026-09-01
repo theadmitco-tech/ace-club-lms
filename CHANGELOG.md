@@ -4,13 +4,14 @@ All notable Ace Club LMS changes are recorded here. Detailed execution evidence 
 
 ## Unreleased
 
-### Release 1.1 login course chooser — Staging accepted
+### Release 1.1 login course chooser — Production complete
 
 - Routed authenticated portal entry through `/post-login`.
 - Verified that multi-course Students see the chooser after every fresh login, including when a saved preference exists.
 - Preserved direct entry for single-course Students, `/admin` entry for Admins, historical-course selection, saved preference, and the in-session “Switch course” control.
 - Deployed and accepted an isolated Staging-backed Preview, then removed all disposable fixtures with zero residue.
-- Made no Production, migration, role, enrollment, or course-material change.
+- Promoted the accepted application to Production and verified the real multi-course Student login chooser and corrected TheAceClub Admin entry.
+- Made no migration, role, enrollment, permission, or course-material change.
 
 ### Release 1 Production rollout
 
