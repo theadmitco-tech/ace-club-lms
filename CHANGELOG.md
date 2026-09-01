@@ -4,6 +4,13 @@ All notable Ace Club LMS changes are recorded here. Detailed execution evidence 
 
 ## Unreleased
 
+### Release 1 course-selection Staging acceptance
+
+- Added an environment-locked disposable fixture workflow for multi-course Staging acceptance.
+- Verified first-login selection, active and historical courses, switching, persistence, and Student-surface navigation on a Staging-backed Preview.
+- Removed all QA fixtures and confirmed zero database residue.
+- Kept Production application, database, roles, access, and Student data unchanged.
+
 ### Release 0 source reconciliation
 
 - Reconciled the accepted worksheet-count/course-selection line, Production Notion fix, and documentation line into `codex/release-0-reconciled-baseline`.

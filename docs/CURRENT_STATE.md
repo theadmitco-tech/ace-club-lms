@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-As of: 31 August 2026, 15:54 IST
+As of: 1 September 2026, 10:25 IST
 
 This is the single active operational handoff. Git history preserves earlier versions; do not append a growing chronological diary here.
 
@@ -37,8 +37,10 @@ Important: that deployment contains the course-selection UI but predates the fin
 | Staging Supabase | `eyphkkginlgoaxflauog` |
 | Latest Staging migration | `20260830133001_fix_template_worksheet_question_count_trigger_order` |
 | Staging migration count | 42 |
-| Accepted current application candidate | GitHub branch `codex/release-0-reconciled-baseline`; verified application composition at `1b5a01e`, Release 0 evidence at `e92a829` |
-| Active disposable fixtures | None recorded by this documentation project |
+| Accepted current application candidate | `codex/release-1-course-selection-staging` at `341281b` |
+| Accepted Staging-backed Preview | `dpl_7cPfrAu9eyJuaD2vAEaKK2tFzdph` — `READY`, target Preview |
+| Preview URL | `https://ace-club-9269yusaf-theadmitco-techs-projects.vercel.app` |
+| Active disposable fixtures | None; post-cleanup audit returned zero Auth users, profiles, courses, enrollments, and preferences |
 
 ### Ledger differences requiring deliberate handling
 
@@ -55,7 +57,7 @@ Staging instead contains:
 
 The similarly named answer-key migrations reflect a known ledger/version reconciliation history. Do not claim Staging/Production ledger parity and do not run a blind `db push`. Release 0 must compare committed migration files, both ledgers, and effective schema/function definitions before normal CI/CD is enabled.
 
-No database mutation is authorized by this record.
+No migration or durable Staging data change was made for Release 1. One disposable Student, two courses, two enrollments, and one selection preference were created for acceptance and completely removed afterward.
 
 ## 3. Source-control state
 
@@ -66,7 +68,7 @@ No database mutation is authorized by this record.
 - Current Production commit is available on GitHub branch `codex/pilot-v3-notion-fix`.
 - GitHub `main` is not the authoritative Production source baseline; it predates the Pilot V3 Production lineage.
 
-### Reconciled Release 0 candidate
+### Reconciled Release 0 candidate and Release 1 Staging branch
 
 - Working branch: `codex/release-0-reconciled-baseline`.
 - GitHub publication: complete through `e92a829`; no pull request, merge, or deployment was created.
@@ -75,8 +77,9 @@ No database mutation is authorized by this record.
 - The candidate contains `/courses`, the “Switch course” Student-header entry, Notion-link normalization, reusable worksheet question counts, the three August 30 migrations, rollback SQL, and the consolidated documentation set.
 - The candidate is not merged into `main`, deployed, connected to Vercel, or applied to either database.
 - Release evidence: [Release 0 source-lineage reconciliation](releases/2026-08-31-release-0-source-lineage-reconciliation.md).
-
-Release 0 must reconcile this branch with the real Production source lineage without discarding the later Production/course-selection history.
+- Release 1 branch: `codex/release-1-course-selection-staging`, published through `341281b` before the acceptance-evidence commit.
+- Release 1 adds only a reusable, environment-locked disposable Staging fixture workflow; the application behavior is the reconciled Release 0 behavior.
+- Release 1 acceptance evidence: [Course-selection Staging acceptance](releases/2026-09-01-release-1-course-selection-staging-acceptance.md).
 
 ## 4. Confirmed user-visible state
 
@@ -110,6 +113,22 @@ The Production database still contains:
 - selected-course-aware timeline resolution.
 
 Cause: the Notion hotfix was released from commit lineage `65aa63f` plus the focused Notion change, while the accepted course-selection UI existed on later local commits beginning with `b10a7c1`. The application release therefore replaced the course-selection frontend while leaving its database support in place.
+
+### Staging acceptance — restoration candidate
+
+The Release 1 Preview passed with a fresh disposable multi-course Student:
+
+- first authenticated portal entry redirected to `/courses` because no preference existed;
+- both an active RC crash course and an inactive historical CR crash course appeared;
+- the historical inactive course opened and remained accessible;
+- Home, Schedule, Resources, Mocks, and Practice log loaded for the selected historical course;
+- “Switch course” appeared on every Student surface checked;
+- switching to the active course updated the dashboard and persisted after reload;
+- the database preference matched the browser selection;
+- browser console and Vercel Preview error/fatal logs were empty;
+- fixture cleanup and the independent residue audit both returned zero rows.
+
+This is Staging acceptance only. Production still has the regression described above.
 
 ## 5. Role state
 
@@ -151,7 +170,7 @@ Consolidate documentation into:
 - Review Project Manual and Current State for Product Owner corrections.
 - Preserve all signed evidence and product-authority content during later Git reconciliation.
 - Product Owner review of the simplified two-document path and handbook rules.
-- Product Owner acceptance of the Release 0 candidate before any Staging-backed preview work.
+- Product Owner authorization for the separately controlled Production application promotion of Release 1.
 
 ### Explicit exclusions
 
@@ -164,14 +183,14 @@ Consolidate documentation into:
 
 ## 7. Exact next action
 
-> Review and accept the GitHub-backed Release 0 candidate. After acceptance, prepare Release 1 as a separate Staging-backed course-selection restoration release. Do not merge into stale `main`, deploy, or mutate a database merely because Release 0 source reconciliation passed.
+> Review the accepted Release 1 Staging evidence and rollback boundary. If the Product Owner explicitly authorizes Production promotion, deploy the exact accepted source as an application-only release, verify the real multi-course Student, and retain the current Production deployment as rollback. Do not apply migrations or grant roles.
 
-No application, database, access, Staging, or Production change is authorized.
+No Production application, database, access, or role change is authorized by this handoff alone.
 
 ## 8. Planned release sequence after documentation consolidation
 
 1. **Release 0 — Source and governance reconciliation.** Complete: candidate assembled, locally verified, documented, and published to GitHub without merge or deployment.
-2. **Release 1 — Course-selection restoration.** Restore the chooser and switch link, include historical enrollments, and prompt once after fresh multi-course login.
+2. **Release 1 — Course-selection restoration.** Staging accepted; Production promotion awaits explicit Product Owner authorization.
 3. **Release 2 — Admin/Super Admin foundation.** Add backward-compatible role/capability and RLS support without grants.
 4. **Release 3 — Role activation.** Confirm exact accounts and grant Admin to Tanya, Unnati, and Shan; assign approved Super Admins; verify denial boundaries.
 5. **Release 4 — Authorization contraction.** Restrict content management to Super Admin after rollback safety expires.
@@ -191,6 +210,7 @@ Do not mix these documentation commits with application, database, role, access,
 - [Documentation Consolidation Project](governance/documentation-consolidation-project.md)
 - [Document Inventory](governance/document-inventory.csv)
 - [Release 0 source-lineage reconciliation](releases/2026-08-31-release-0-source-lineage-reconciliation.md)
+- [Release 1 course-selection Staging acceptance](releases/2026-09-01-release-1-course-selection-staging-acceptance.md)
 - [Course-selection Production release evidence](pilot-v3/phase-7/evidence/worksheet-count-course-selection-production-release-2026-08-30.md)
 - [Course-selection rollback rehearsal](pilot-v3/phase-7/evidence/worksheet-count-course-selection-rollback-rehearsal-2026-08-30.md)
 - [Pilot V3 mock release evidence](pilot-v3/phase-7/evidence/phase-7-production-release-2026-08-25.md)
@@ -201,5 +221,5 @@ Do not mix these documentation commits with application, database, role, access,
 - Product Owner acceptance of the Project Manual as the master front door.
 - Exact Production identities for Tanya, Unnati, and Shan.
 - Approved list of Super Admin recipients.
-- Product Owner acceptance of the Release 0 GitHub candidate and protected-branch approach.
-- Course-selection fresh-login acceptance detail: chooser once per authentication, with persistent switching during the session.
+- Explicit Product Owner authorization for Release 1 Production application promotion.
+- Exact Production identities for the post-promotion multi-course Student smoke test; `ishan.shreyash@gmail.com` is the known candidate.
