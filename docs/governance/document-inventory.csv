@@ -133,6 +133,7 @@
 "docs/releases/2026-08-31-documentation-consolidation.md","release-record","active","retain","docs/releases/2026-08-31-documentation-consolidation.md","Documentation-only consolidation release record."
 "docs/releases/2026-08-31-release-0-source-lineage-reconciliation.md","release-record","active","retain","docs/releases/2026-08-31-release-0-source-lineage-reconciliation.md","Source-only Release 0 reconciliation evidence; no runtime change."
 "docs/releases/2026-09-01-release-1-course-selection-staging-acceptance.md","release-record","active","retain","docs/releases/2026-09-01-release-1-course-selection-staging-acceptance.md","Staging-only course-selection acceptance, rollback boundary, and zero-residue cleanup evidence."
+"docs/releases/2026-09-01-release-1-course-selection-production.md","release-record","active","retain","docs/releases/2026-09-01-release-1-course-selection-production.md","Production application rollout, authenticated smoke checks, and rollback evidence."
 "docs/setup/mac-setup.md","setup-guide","active","retain","docs/setup/mac-setup.md","Stable task-specific setup guide."
 "docs/worksheet-pdf-conversion.md","feature-reference","active","move-after-link-review","docs/features/worksheets/pdf-conversion.md","Preserve stable path until redirects/links are ready."
 "instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.md","product-authority","active","retain","instruction/Ace_Club_LMS_MVP_Acceptance_Criteria.md","Binding Product Owner document."

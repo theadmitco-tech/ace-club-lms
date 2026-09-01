@@ -4,6 +4,14 @@ All notable Ace Club LMS changes are recorded here. Detailed execution evidence 
 
 ## Unreleased
 
+### Release 1 Production rollout
+
+- Promoted the Staging-accepted reconciled application to Production.
+- Restored `/courses` and “Switch course” while preserving the Notion embedding fix.
+- Verified current and historical course switching with the real multi-course test Student and restored its original RC selection.
+- Confirmed the existing Admin reporting surface remained healthy.
+- Made no migration, role, access, enrollment, or course-material change.
+
 ### Release 1 course-selection Staging acceptance
 
 - Added an environment-locked disposable fixture workflow for multi-course Staging acceptance.
