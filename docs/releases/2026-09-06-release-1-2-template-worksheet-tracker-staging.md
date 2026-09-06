@@ -1,6 +1,6 @@
 # Release 1.2 — Template worksheet tracker Staging record
 
-Status: In validation; not approved for Production
+Status: Staging accepted; awaiting explicit Production approval
 Date: 6 September 2026
 Branch: `codex/template-worksheet-tracker`
 Base: `codex/release-1-1-login-course-chooser` at `1e66549`
@@ -41,12 +41,27 @@ Restore the existing worksheet manual log and Practice Log for template-native w
 
 ## Remaining gates
 
-- Build and deploy a Preview-environment artifact.
-- Confirm that the preview resolves to Staging with the disposable QA account.
-- Run browser acceptance for login, course switching, locked DI, released RC, released template Full Course, and Master Base Full Course.
-- Check preview logs and Staging database advisors.
-- Remove every disposable fixture and record zero residue.
 - Obtain explicit Product owner approval before any Production database migration or Vercel promotion.
+
+## Accepted preview
+
+- Deployment: `dpl_B4GKdMvCZqdLrhWJPm99QxS4zfYt`
+- URL: `https://ace-club-kf3qofcht-theadmitco-techs-projects.vercel.app`
+- Target: Preview
+- Status: Ready
+- Environment validator: Preview/Production URLs correctly separated
+- Runtime error scan: no error-level logs found
+
+Authenticated deployed-page acceptance passed for:
+
+- the four-course chooser;
+- DI Practice Log empty state before release;
+- DI protected upcoming-material screen;
+- RC Practice Log card and five-row manual tracker;
+- template-based Full Course Practice Log;
+- existing Master Base Full Course Practice Log.
+
+Two disposable cycles were audited. The first detected a cleanup-order gap for unpublished template revisions; the cleanup utility was corrected and the exact residual records were removed. A complete fresh setup, database acceptance, preview acceptance, and cleanup cycle then passed. Final exact-ID audits returned zero profiles, courses, template revisions, and Master Base sessions for both cycles.
 
 ## Rollback
 

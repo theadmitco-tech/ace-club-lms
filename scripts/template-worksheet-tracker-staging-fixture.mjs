@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { chmod, readFile, unlink, writeFile } from 'node:fs/promises';
 import { createClient } from '@supabase/supabase-js';
+import { createServerClient } from '@supabase/ssr';
 
 const projectRef = 'eyphkkginlgoaxflauog';
 const stagingUrl = `https://${projectRef}.supabase.co`;
@@ -10,8 +11,8 @@ const manifestPath = process.env.TEMPLATE_WORKSHEET_FIXTURE_PATH
   ?? '/private/tmp/ace-club-template-worksheet-tracker-fixture.json';
 const mode = process.argv[2];
 
-if (!['setup', 'verify', 'cleanup'].includes(mode)) {
-  throw new Error('Use setup, verify, or cleanup.');
+if (!['setup', 'verify', 'preview', 'cleanup', 'recover-cleanup'].includes(mode)) {
+  throw new Error('Use setup, verify, preview, cleanup, or recover-cleanup.');
 }
 
 function loadApiKeys() {
@@ -115,20 +116,58 @@ async function removeFixture(service, manifest, removeManifest = true) {
   const revisionIds = Object.values(manifest.revisionIds ?? {}).filter(Boolean);
 
   if (userIds.length) {
-    await service.from('student_course_preferences').delete().in('user_id', userIds);
-    await service.from('enrollments').delete().in('user_id', userIds);
+    assertNoError(
+      (await service.from('student_course_preferences').delete().in('user_id', userIds)).error,
+      'Delete fixture course preferences',
+    );
+    assertNoError(
+      (await service.from('enrollments').delete().in('user_id', userIds)).error,
+      'Delete fixture enrollments',
+    );
   }
-  if (courseIds.length) await service.from('courses').delete().in('id', courseIds);
-  if (revisionIds.length) await service.from('course_template_revisions').delete().in('id', revisionIds);
+  if (courseIds.length) assertNoError(
+    (await service.from('courses').delete().in('id', courseIds)).error,
+    'Delete fixture courses',
+  );
+  if (revisionIds.length) {
+    assertNoError(
+      (await service.from('course_template_resources').delete().in('revision_id', revisionIds)).error,
+      'Delete fixture template resources',
+    );
+    assertNoError(
+      (await service.from('course_template_events').delete().in('revision_id', revisionIds)).error,
+      'Delete fixture template events',
+    );
+    assertNoError(
+      (await service.from('course_template_sections').delete().in('revision_id', revisionIds)).error,
+      'Delete fixture template sections',
+    );
+    assertNoError(
+      (await service.from('course_template_revisions').delete().in('id', revisionIds)).error,
+      'Delete fixture template revisions',
+    );
+  }
   if (manifest.masterMaterialId) {
-    await service.from('master_materials').delete().eq('id', manifest.masterMaterialId);
+    assertNoError(
+      (await service.from('master_materials').delete().eq('id', manifest.masterMaterialId)).error,
+      'Delete fixture Master Base worksheet',
+    );
   }
   if (manifest.masterSessionId) {
-    await service.from('master_sessions').delete().eq('id', manifest.masterSessionId);
+    assertNoError(
+      (await service.from('master_sessions').delete().eq('id', manifest.masterSessionId)).error,
+      'Delete fixture Master Base session',
+    );
   }
   for (const userId of userIds) {
-    await service.auth.admin.deleteUser(userId);
-    await service.from('profiles').delete().eq('id', userId);
+    assertNoError(
+      (await service.from('profiles').delete().eq('id', userId)).error,
+      `Delete fixture profile ${userId}`,
+    );
+    assertNoError(
+      (await service.auth.admin.deleteUser(userId)).error,
+      `Delete fixture Auth user ${userId}`,
+    );
   }
 
   if (removeManifest) {
@@ -136,6 +175,103 @@ async function removeFixture(service, manifest, removeManifest = true) {
       if (error.code !== 'ENOENT') throw error;
     });
   }
+}
+
+async function recoverCleanup() {
+  const runId = process.argv[3];
+  if (!runId) throw new Error('Provide the disposable fixture run ID.');
+  const { service } = clients();
+  const profileResult = await service.from('profiles')
+    .select('id,email')
+    .ilike('email', `%${runId}%`);
+  assertNoError(profileResult.error, 'Find residual fixture profiles');
+  const profileIds = profileResult.data.map((profile) => profile.id);
+
+  if (profileIds.length) {
+    assertNoError(
+      (await service.from('student_course_preferences').delete().in('user_id', profileIds)).error,
+      'Delete residual fixture preferences',
+    );
+    assertNoError(
+      (await service.from('enrollments').delete().in('user_id', profileIds)).error,
+      'Delete residual fixture enrollments',
+    );
+    assertNoError(
+      (await service.from('profiles').delete().in('id', profileIds)).error,
+      'Delete residual fixture profiles',
+    );
+    for (const profileId of profileIds) {
+      const authDelete = await service.auth.admin.deleteUser(profileId);
+      if (authDelete.error && !/not found/i.test(authDelete.error.message)) {
+        throw new Error(`Delete residual Auth user ${profileId}: ${authDelete.error.message}`);
+      }
+    }
+  }
+
+  assertNoError(
+    (await service.from('courses').delete()
+      .eq('description', `Disposable template tracker fixture ${runId}`)).error,
+    'Delete residual fixture courses',
+  );
+  const revisions = await service.from('course_template_revisions')
+    .select('id')
+    .eq('title', `Disposable template tracker fixture ${runId}`);
+  assertNoError(revisions.error, 'Find residual fixture template revisions');
+  const revisionIds = revisions.data.map((revision) => revision.id);
+  if (revisionIds.length) {
+    assertNoError(
+      (await service.from('course_template_resources').delete().in('revision_id', revisionIds)).error,
+      'Delete residual fixture template resources',
+    );
+    assertNoError(
+      (await service.from('course_template_events').delete().in('revision_id', revisionIds)).error,
+      'Delete residual fixture template events',
+    );
+    assertNoError(
+      (await service.from('course_template_sections').delete().in('revision_id', revisionIds)).error,
+      'Delete residual fixture template sections',
+    );
+    assertNoError(
+      (await service.from('course_template_revisions').delete().in('id', revisionIds)).error,
+      'Delete residual fixture template revisions',
+    );
+  }
+  const residualMasterSessions = await service.from('master_sessions')
+    .select('id')
+    .eq('curriculum_key', `qa-master-${runId}`);
+  assertNoError(residualMasterSessions.error, 'Find residual Master Base sessions');
+  const masterSessionIds = residualMasterSessions.data.map((session) => session.id);
+  if (masterSessionIds.length) {
+    assertNoError(
+      (await service.from('master_materials').delete().in('master_session_id', masterSessionIds)).error,
+      'Delete residual Master Base worksheets',
+    );
+    assertNoError(
+      (await service.from('master_sessions').delete().in('id', masterSessionIds)).error,
+      'Delete residual Master Base sessions',
+    );
+  }
+  const audit = await Promise.all([
+    service.from('profiles').select('id', { count: 'exact', head: true }).ilike('email', `%${runId}%`),
+    service.from('courses').select('id', { count: 'exact', head: true })
+      .eq('description', `Disposable template tracker fixture ${runId}`),
+    service.from('course_template_revisions').select('id', { count: 'exact', head: true })
+      .eq('title', `Disposable template tracker fixture ${runId}`),
+    service.from('master_sessions').select('id', { count: 'exact', head: true })
+      .eq('curriculum_key', `qa-master-${runId}`),
+  ]);
+  audit.forEach((result, index) => assertNoError(result.error, `Recovery cleanup audit ${index}`));
+  assert.deepEqual(audit.map((result) => result.count), [0, 0, 0, 0]);
+
+  console.log(JSON.stringify({
+    environment: 'staging',
+    fixture: 'recovery-cleanup-complete',
+    runId,
+    profileResidue: audit[0].count,
+    courseResidue: audit[1].count,
+    templateRevisionResidue: audit[2].count,
+    masterSessionResidue: audit[3].count,
+  }, null, 2));
 }
 
 async function setup() {
@@ -477,26 +613,143 @@ async function verify() {
   }, null, 2));
 }
 
+function protectedPreviewRequest(deployment, path, cookieHeader) {
+  return execFileSync('npx', [
+    '--yes',
+    'vercel@latest',
+    'curl',
+    path,
+    '--deployment',
+    deployment,
+    '--scope',
+    'theadmitco-techs-projects',
+    '--',
+    '--silent',
+    '--show-error',
+    '--location',
+    '--header',
+    `Cookie: ${cookieHeader}`,
+  ], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'] });
+}
+
+async function preview() {
+  const deployment = process.argv[3];
+  if (!deployment) throw new Error('Provide the approved Preview deployment ID or URL.');
+
+  const manifest = await readManifest();
+  assert.equal(manifest.projectRef, projectRef, 'Fixture must belong to approved Staging.');
+  const { anonKey, service } = clients();
+  const cookieJar = new Map();
+  const qaClient = createServerClient(stagingUrl, anonKey, {
+    cookies: {
+      getAll: () => Array.from(cookieJar, ([name, value]) => ({ name, value })),
+      setAll: (cookies) => {
+        for (const cookie of cookies) cookieJar.set(cookie.name, cookie.value);
+      },
+    },
+  });
+
+  assertNoError((await qaClient.auth.signInWithPassword({
+    email: manifest.email,
+    password: manifest.password,
+  })).error, 'Sign in QA Student for Preview');
+  const cookieHeader = Array.from(cookieJar, ([name, value]) => `${name}=${value}`).join('; ');
+  assert.ok(cookieHeader, 'Preview authentication cookies must be present.');
+
+  const coursesPage = protectedPreviewRequest(deployment, '/courses', cookieHeader);
+  for (const label of [
+    'QA Released RC Crash',
+    'QA Locked DI Crash',
+    'QA Released Full Template',
+    'QA Released Full Master',
+  ]) {
+    assert.match(coursesPage, new RegExp(label), `Preview course chooser must render ${label}.`);
+  }
+
+  await selectCourse(qaClient, manifest.courseIds.di);
+  const diPractice = protectedPreviewRequest(deployment, '/practice', cookieHeader);
+  assert.match(diPractice, /QA Locked DI Crash/);
+  assert.match(diPractice, /No released worksheets yet/);
+  assert.doesNotMatch(diPractice, /QA di Worksheet/);
+  const diMaterial = await service.from('materials')
+    .select('session_id')
+    .eq('id', manifest.materialIds.di)
+    .single();
+  assertNoError(diMaterial.error, 'Read DI fixture session');
+  const diMaterialPage = protectedPreviewRequest(
+    deployment,
+    `/session/${diMaterial.data.session_id}/material/${manifest.materialIds.di}`,
+    cookieHeader,
+  );
+  assert.match(diMaterialPage, /Upcoming material/);
+  assert.match(diMaterialPage, /Access remains protected until that release time/);
+
+  await selectCourse(qaClient, manifest.courseIds.rc);
+  const rcPractice = protectedPreviewRequest(deployment, '/practice', cookieHeader);
+  assert.match(rcPractice, /QA Released RC Crash/);
+  assert.match(rcPractice, /QA rc Worksheet/);
+  assert.match(rcPractice, />4<[^>]*> Not updated|4[^<]*Not updated/);
+  const rcMaterial = await service.from('materials')
+    .select('session_id')
+    .eq('id', manifest.materialIds.rc)
+    .single();
+  assertNoError(rcMaterial.error, 'Read RC fixture session');
+  const rcMaterialPage = protectedPreviewRequest(
+    deployment,
+    `/session/${rcMaterial.data.session_id}/material/${manifest.materialIds.rc}?focus=log`,
+    cookieHeader,
+  );
+  assert.match(rcMaterialPage, /Manual tracker/);
+  assert.match(rcMaterialPage, /Select question 5/);
+  assert.doesNotMatch(rcMaterialPage, /We couldn&#x27;t load this worksheet log/);
+
+  await selectCourse(qaClient, manifest.courseIds.fullTemplate);
+  const templateFullPractice = protectedPreviewRequest(deployment, '/practice', cookieHeader);
+  assert.match(templateFullPractice, /QA Released Full Template/);
+  assert.match(templateFullPractice, /QA fullTemplate Worksheet/);
+
+  await selectCourse(qaClient, manifest.courseIds.fullMaster);
+  const masterFullPractice = protectedPreviewRequest(deployment, '/practice', cookieHeader);
+  assert.match(masterFullPractice, /QA Released Full Master/);
+  assert.match(masterFullPractice, /QA fullMaster Worksheet/);
+
+  console.log(JSON.stringify({
+    environment: 'staging-backed-preview',
+    deployment,
+    courseChooser: true,
+    lockedDIEmptyState: true,
+    lockedDIMaterialScreen: true,
+    releasedRCPracticeCard: true,
+    releasedRCManualTracker: true,
+    releasedTemplateFullPracticeCard: true,
+    releasedMasterFullPracticeCard: true,
+  }, null, 2));
+}
+
 async function cleanup() {
   const manifest = await readManifest();
   assert.equal(manifest.projectRef, projectRef, 'Fixture must belong to approved Staging.');
   const { service } = clients();
   await removeFixture(service, manifest);
 
-  const [profiles, courses, revisions] = await Promise.all([
+  const [profiles, courses, revisions, masterSessions] = await Promise.all([
     service.from('profiles').select('id', { count: 'exact', head: true })
       .ilike('email', `%${manifest.runId}%`),
     service.from('courses').select('id', { count: 'exact', head: true })
       .eq('description', `Disposable template tracker fixture ${manifest.runId}`),
     service.from('course_template_revisions').select('id', { count: 'exact', head: true })
       .eq('title', `Disposable template tracker fixture ${manifest.runId}`),
+    service.from('master_sessions').select('id', { count: 'exact', head: true })
+      .eq('curriculum_key', `qa-master-${manifest.runId}`),
   ]);
   assertNoError(profiles.error, 'Audit profile cleanup');
   assertNoError(courses.error, 'Audit course cleanup');
   assertNoError(revisions.error, 'Audit template revision cleanup');
+  assertNoError(masterSessions.error, 'Audit Master Base fixture cleanup');
   assert.equal(profiles.count, 0);
   assert.equal(courses.count, 0);
   assert.equal(revisions.count, 0);
+  assert.equal(masterSessions.count, 0);
 
   console.log(JSON.stringify({
     environment: 'staging',
@@ -504,10 +757,13 @@ async function cleanup() {
     profileResidue: profiles.count,
     courseResidue: courses.count,
     templateRevisionResidue: revisions.count,
+    masterSessionResidue: masterSessions.count,
     manifestRemoved: true,
   }, null, 2));
 }
 
 if (mode === 'setup') await setup();
 if (mode === 'verify') await verify();
+if (mode === 'preview') await preview();
 if (mode === 'cleanup') await cleanup();
+if (mode === 'recover-cleanup') await recoverCleanup();

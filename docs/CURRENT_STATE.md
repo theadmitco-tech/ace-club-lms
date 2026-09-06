@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-As of: 1 September 2026, 11:26 IST
+As of: 6 September 2026, 20:30 IST
 
 This is the single active operational handoff. Git history preserves earlier versions; do not append a growing chronological diary here.
 
@@ -35,12 +35,12 @@ It includes the final Notion fix, worksheet counts, chooser, and “Switch cours
 | Item | Verified state |
 |---|---|
 | Staging Supabase | `eyphkkginlgoaxflauog` |
-| Latest Staging migration | `20260830133001_fix_template_worksheet_question_count_trigger_order` |
-| Staging migration count | 42 |
-| Accepted current application candidate | `codex/release-1-1-login-course-chooser` at `682b529` |
-| Accepted Staging-backed Preview | `dpl_4NGxkx1JcX3QMLuWQeXaNrSBoka6` — `READY`, target Preview |
-| Preview URL | `https://ace-club-d4zdlf555-theadmitco-techs-projects.vercel.app` |
-| Active disposable fixtures | None; post-cleanup audit returned zero Auth users, profiles, courses, enrollments, and preferences |
+| Latest Staging migration | `20260906133456_add_material_tracker_rls_policies` |
+| Staging migration count | 44 |
+| Accepted current application candidate | `codex/template-worksheet-tracker` |
+| Accepted Staging-backed Preview | `dpl_B4GKdMvCZqdLrhWJPm99QxS4zfYt` — `READY`, target Preview |
+| Preview URL | `https://ace-club-kf3qofcht-theadmitco-techs-projects.vercel.app` |
+| Active disposable fixtures | None; exact-ID audits returned zero profiles, courses, template revisions, and Master Base sessions for both QA cycles |
 
 ### Ledger differences requiring deliberate handling
 
@@ -60,6 +60,8 @@ The similarly named answer-key migrations reflect a known ledger/version reconci
 No migration or durable Staging data change was made for Release 1. One disposable Student, two courses, two enrollments, and one selection preference were created for acceptance and completely removed afterward.
 
 Release 1.1 reused the same environment-locked fixture pattern. Its disposable Student, two courses, enrollments, and preference were also completely removed; the cleanup audit returned zero profile and course residue and removed the private manifest.
+
+Release 1.2 adds a material-backed compatibility catalog for template-native worksheets while retaining the Master Base tracker unchanged. Its Staging acceptance covered released RC, locked DI, template-based Full Course, Master Base Full Course, save/reload, non-enrolled denial, Admin reporting, protected preview rendering, and zero-residue cleanup. Production has not received these migrations or this preview.
 
 ## 3. Source-control state
 
@@ -89,6 +91,10 @@ Release 1.1 reused the same environment-locked fixture pattern. Its disposable S
 - Release 1.1 Staging evidence: [Login course chooser Staging acceptance](releases/2026-09-01-release-1-1-login-course-chooser-staging-acceptance.md).
 - Release 1.1 Production source is `9117d40`; its difference from accepted application commit `682b529` is documentation only.
 - Release 1.1 Production evidence: [Login course chooser Production rollout](releases/2026-09-01-release-1-1-login-course-chooser-production.md).
+- Release 1.2 branch: `codex/template-worksheet-tracker`, based on the current Release 1.1 Production source.
+- Release 1.2 preserves the existing Student UI and RPC contracts while supplying question rows for template-native worksheets from their saved `question_count`.
+- Release 1.2 design: [ADR-0005](decisions/adr-0005-template-native-worksheet-tracking.md).
+- Release 1.2 Staging evidence: [Template worksheet tracker Staging record](releases/2026-09-06-release-1-2-template-worksheet-tracker-staging.md).
 
 ## 4. Confirmed user-visible state
 
@@ -173,6 +179,12 @@ The Release 1.1 Preview passed with a disposable multi-course Student:
 - cleanup returned zero residue and removed the private credential manifest.
 
 No migration or Production change was made.
+
+### Staging acceptance — Release 1.2 template worksheet tracker
+
+The Release 1.2 Staging-backed preview passed authenticated acceptance with disposable RC, DI, template-based Full Course, and Master Base Full Course fixtures. The deployed RC worksheet rendered its existing manual tracker with the expected five rows; the future DI worksheet remained absent from Practice Log and displayed the protected upcoming-material screen; both Full Course storage paths remained functional.
+
+Status, time, and comment persistence, Admin progress, non-enrolled denial, the four-course chooser, Preview environment separation, and runtime error scanning also passed. A complete second fixture cycle proved setup, verification, deployed-page acceptance, and zero-residue cleanup. Production remains unchanged pending explicit approval.
 
 ### Production acceptance — Release 1.1 login chooser
 
