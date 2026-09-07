@@ -1,11 +1,11 @@
 # Release 1.2 — Template worksheet tracker Staging record
 
-Status: Staging accepted; awaiting explicit Production approval
+Status: Staging accepted; Production completed on 7 September 2026
 Date: 6 September 2026
 Branch: `codex/template-worksheet-tracker`
 Base: `codex/release-1-1-login-course-chooser` at `1e66549`
 Staging Supabase project: `ace-club-lms-staging` (`eyphkkginlgoaxflauog`)
-Production changes: None
+Production state at time of this Staging record: None
 
 ## Scope
 
@@ -39,9 +39,10 @@ Restore the existing worksheet manual log and Practice Log for template-native w
 - Targeted lint for new QA scripts: passed.
 - Repository-wide lint: pre-existing failures remain in registration and worksheet curriculum files; this release did not modify those files.
 
-## Remaining gates
+## Production follow-through
 
-- Obtain explicit Product owner approval before any Production database migration or Vercel promotion.
+- Product owner approval was received and Production rollout completed on 7 September 2026.
+- See [the Release 1.2 Production rollout](2026-09-07-release-1-2-template-worksheet-tracker-production.md) for exact migration versions, deployment identity, smoke evidence, and rollback target.
 
 ## Accepted preview
 
@@ -65,10 +66,8 @@ Two disposable cycles were audited. The first detected a cleanup-order gap for u
 
 ## Rollback
 
-If Production is later approved:
+The executed Production rollback plan is:
 
-1. Record the exact current Production deployment ID.
-2. Apply the two additive migrations.
-3. Promote the exact accepted preview artifact.
-4. If rollback is needed, restore the previous Vercel deployment and apply `supabase/rollback/20260906132807_disable_material_worksheet_tracker.sql`.
-5. Do not drop the new tables; retain Student entries for recovery.
+1. Restore previous Production deployment `dpl_5YJZJx6zM5bxNJfZgr5Us8fMHvo7`.
+2. Apply `supabase/rollback/20260906132807_disable_material_worksheet_tracker.sql` if the database compatibility path must also be disabled.
+3. Do not drop the new tables; retain Student entries for recovery.

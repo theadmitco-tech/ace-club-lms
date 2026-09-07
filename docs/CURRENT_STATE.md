@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-As of: 6 September 2026, 20:30 IST
+As of: 7 September 2026, 12:35 IST
 
 This is the single active operational handoff. Git history preserves earlier versions; do not append a growing chronological diary here.
 
@@ -14,21 +14,21 @@ Stable context: [Project Manual](PROJECT_MANUAL.md). Engineering and handoff rul
 |---|---|
 | Application | [aceclub.theadmitco.com](https://aceclub.theadmitco.com) |
 | Vercel project | `ace-club-lms` / `prj_2lW0zANcAnI81eURRZrJTMSCxuLr` |
-| Current Production deployment | `dpl_5YJZJx6zM5bxNJfZgr5Us8fMHvo7` — `READY` |
-| Deployment source | `codex/release-1-1-login-course-chooser` |
-| Production Git commit | `9117d40286b12c51c450125e55644400a79ab132` |
-| Commit purpose | Show the chooser after every fresh multi-course Student authentication |
+| Current Production deployment | `dpl_DPSTQTeEcdJoTtzjF8N4ef5dz1L9` — `READY` |
+| Deployment source | `codex/template-worksheet-tracker` |
+| Production Git commit | `8e6052336f9274922ecad63c8d9772e644473c01` |
+| Commit purpose | Restore the existing worksheet tracker for template-native courses without changing the Student flow |
 | Production Supabase | `owmlxsnzogfapotmjrqk` |
-| Latest Production migration | `20260830133001_fix_template_worksheet_question_count_trigger_order` |
-| Production migration count | 45 |
+| Latest Production migration | `20260907064221_add_material_tracker_rls_policies` |
+| Production migration count | 47 |
 
-Verified from Vercel, the Supabase migration ledger, and authenticated Production smoke testing on 1 September 2026.
+Verified from Vercel, the Supabase migration ledger, Security Advisor, and authenticated read-only Production RPC smoke testing on 7 September 2026.
 
 ### Application rollback candidate
 
-The immediate application rollback is `dpl_53zX3axvpv7WrevwR1YoMt5ddfAC`, the previously live and verified Release 1 deployment.
+The immediate application rollback is `dpl_5YJZJx6zM5bxNJfZgr5Us8fMHvo7`, the previously live and verified Release 1.1 deployment.
 
-It includes the final Notion fix, worksheet counts, chooser, and “Switch course”, but opens a saved course directly after login. No database rollback accompanies an application rollback.
+It includes the final Notion fix, worksheet counts, the login chooser, and “Switch course”, but not the template-native worksheet tracker. If Release 1.2 database behavior must also be disabled, use the documented non-destructive rollback SQL; do not drop the new tables.
 
 ## 2. Staging state
 
@@ -61,7 +61,7 @@ No migration or durable Staging data change was made for Release 1. One disposab
 
 Release 1.1 reused the same environment-locked fixture pattern. Its disposable Student, two courses, enrollments, and preference were also completely removed; the cleanup audit returned zero profile and course residue and removed the private manifest.
 
-Release 1.2 adds a material-backed compatibility catalog for template-native worksheets while retaining the Master Base tracker unchanged. Its Staging acceptance covered released RC, locked DI, template-based Full Course, Master Base Full Course, save/reload, non-enrolled denial, Admin reporting, protected preview rendering, and zero-residue cleanup. Production has not received these migrations or this preview.
+Release 1.2 adds a material-backed compatibility catalog for template-native worksheets while retaining the Master Base tracker unchanged. Its Staging acceptance covered released RC, locked DI, template-based Full Course, Master Base Full Course, save/reload, non-enrolled denial, Admin reporting, protected preview rendering, and zero-residue cleanup. Production received the two verified migrations and a fresh Production-environment build on 7 September 2026; the Staging-backed Preview itself was not promoted.
 
 ## 3. Source-control state
 
@@ -95,6 +95,7 @@ Release 1.2 adds a material-backed compatibility catalog for template-native wor
 - Release 1.2 preserves the existing Student UI and RPC contracts while supplying question rows for template-native worksheets from their saved `question_count`.
 - Release 1.2 design: [ADR-0005](decisions/adr-0005-template-native-worksheet-tracking.md).
 - Release 1.2 Staging evidence: [Template worksheet tracker Staging record](releases/2026-09-06-release-1-2-template-worksheet-tracker-staging.md).
+- Release 1.2 Production evidence: [Template worksheet tracker Production rollout](releases/2026-09-07-release-1-2-template-worksheet-tracker-production.md).
 
 ## 4. Confirmed user-visible state
 
@@ -104,14 +105,17 @@ Release 1.2 adds a material-backed compatibility catalog for template-native wor
 - The active selected course can load its dashboard, schedule, resources, mocks, and practice surfaces subject to their own content state.
 - The public Notion pre-read normalization/embed fix is deployed.
 - Template worksheet question-count and course-selection database migrations remain applied.
+- Released template-native RC worksheets now expose the existing Practice Log/manual tracker; future DI worksheets remain locked until their configured release times.
+- Existing Master Base Full Course worksheets continue through the unchanged tracker store.
 - Historical enrollment is preserved in the database.
 
 ### Resolved — multi-course selection UI
 
-For `ishan.shreyash@gmail.com`, Production data contains two enrollments:
+The designated multi-course Production test Student currently has three enrollments:
 
 - historical/inactive `Aug 7th Batch`;
-- active `Reading Comprehension - CC`.
+- `Reading Comprehension - CC`;
+- `Data Interpretation - CC`.
 
 The current Production application now:
 
@@ -133,9 +137,9 @@ The Production database still contains:
 
 The prior cause was a split Git lineage: the Notion hotfix was released without the later course-selection frontend. Release 0 reconciled the lineages and Release 1 promoted the combined source.
 
-### Production acceptance
+### Release 1.1 Production acceptance
 
-Authenticated smoke testing as `ishan.shreyash@gmail.com` passed:
+Authenticated smoke testing as the designated multi-course test Student passed:
 
 - the existing RC selection opened `Reading Comprehension - CC`;
 - “Switch course” was visible;
@@ -147,6 +151,17 @@ Authenticated smoke testing as `ishan.shreyash@gmail.com` passed:
 - no browser console errors were observed.
 
 One error-level Vercel log was caused deliberately by the signed-out smoke browser presenting an expired refresh cookie. The request correctly redirected to `/login`; after Google sign-in, the authenticated journey produced no browser error and no fatal Production log was recorded.
+
+### Release 1.2 Production acceptance
+
+- Production generated 147 of 147 configured RC tracker rows and 80 of 80 configured DI tracker rows, with zero mismatches.
+- No Student material-log row was created by the rollout or smoke tests.
+- The released RC `RC: Intro 2` worksheet returned 42 questions for the enrolled test Student.
+- Existing Master Base Full Course `CR: Inferences` continued to return 30 questions.
+- The Student's saved `Aug 7th Batch` Practice Log continued to return 14 released worksheets.
+- DI `Worksheet 1` remained inaccessible before its configured release time.
+- Master Base row baselines remained 548 questions and 6,576 Student logs.
+- Four explicit RLS policies were present, direct client table privileges were absent, Security Advisor returned zero errors, and the new Vercel deployment emitted no error-level logs during rollout.
 
 ### Staging acceptance — restoration candidate
 
@@ -190,7 +205,7 @@ Status, time, and comment persistence, Admin progress, non-enrolled denial, the 
 
 Authenticated Production smoke testing passed:
 
-- `ishan.shreyash@gmail.com` landed on `/courses` after a fresh Google login despite having an existing RC preference;
+- the designated multi-course test Student landed on `/courses` after a fresh Google login despite having an existing RC preference;
 - current RC and historical `Aug 7th Batch` both appeared;
 - RC was marked “Continue with this course” and opened its dashboard;
 - “Switch course” remained visible;
