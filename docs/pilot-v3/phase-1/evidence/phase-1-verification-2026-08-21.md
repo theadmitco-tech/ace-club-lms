@@ -43,7 +43,7 @@ New direct dependencies are pinned (`exceljs` 4.4.0 and `jszip` 3.10.1), and tra
 
 ## Staging-backed Preview acceptance
 
-The active Admin `theaceclub.tac@gmail.com` was explicitly granted the `UNNATI` namespace membership for this synthetic acceptance run. No identity was inferred from workbook content.
+The designated active Admin was explicitly granted the `UNNATI` namespace membership for this synthetic acceptance run. No identity was inferred from workbook content.
 
 - Text-only XLSX: dry-run passed with one question, zero stimuli and zero errors. A direct pre-confirmation database count showed zero imports, questions, revisions, protected keys and Storage objects, proving dry-run is write-free. Confirmed import created one ready Draft question, one protected answer key and one completed audit row.
 - Import transaction failure: the first confirm exposed an unsupported `jsonb_object_length(jsonb)` call in the answer-key check. The transaction rolled back completely (all relevant counts remained zero). Staging migration `20260821105003` corrected the deployed function; repository migration `20260821113000_fix_mock_answer_key_slot_count.sql` preserves the fix for future environments.

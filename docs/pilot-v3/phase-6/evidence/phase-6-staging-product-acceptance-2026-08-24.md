@@ -33,7 +33,7 @@ The inherited Node module-type warnings in the Pilot V2 suite remain unchanged a
 
 ## Exact Preview authenticated read-only check
 
-The exact Preview loaded with no browser console warning/error. The existing Staging Student session reached `/dashboard` and `/mocks` successfully. A separately authenticated active Admin session reached the exact deployment using the approved `theaceclub.tac@gmail.com` account. An initial attempt with `theadmitco@gmail.com` correctly failed closed at the inactive-access boundary.
+The exact Preview loaded with no browser console warning/error. The existing Staging Student session reached `/dashboard` and `/mocks` successfully. A separately authenticated active Admin session reached the exact deployment using the designated active Admin account. An initial attempt with a designated inactive account correctly failed closed at the inactive-access boundary.
 
 The Mock library displayed all required assignment states through existing records:
 

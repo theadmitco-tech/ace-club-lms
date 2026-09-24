@@ -69,7 +69,7 @@ The signed-out browser contained an expired Supabase refresh cookie, producing o
 
 ### Real multi-course Student
 
-Authenticated through Google as `ishan.shreyash@gmail.com`:
+Authenticated through Google as the designated multi-course test Student:
 
 1. Existing saved selection opened `Reading Comprehension - CC` directly.
 2. Student header displayed “Switch course”.

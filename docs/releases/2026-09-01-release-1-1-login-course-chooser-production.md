@@ -59,7 +59,7 @@ If rollback is required, restore that deployment. Do not change or roll back the
 
 ### Real multi-course Student
 
-Authenticated through Google as `ishan.shreyash@gmail.com`:
+Authenticated through Google as the designated multi-course test Student:
 
 1. Fresh authentication landed on `/courses`, not directly on the saved dashboard.
 2. `Reading Comprehension - CC` appeared as the current crash course.
@@ -71,7 +71,7 @@ Authenticated through Google as `ishan.shreyash@gmail.com`:
 
 ### Existing Admin non-regression
 
-Authenticated through Google using the Product Owner-corrected Admin identity `theaceclub.tac@gmail.com`:
+Authenticated through Google using the Product Owner-confirmed active Admin account:
 
 - `/admin` opened directly;
 - the Admin dashboard, navigation, session summary, Student summary, batch summary, and enrollment summary rendered;

@@ -210,7 +210,7 @@ Authenticated Production smoke testing passed:
 - RC was marked “Continue with this course” and opened its dashboard;
 - “Switch course” remained visible;
 - the account remained on its original RC preference;
-- the corrected Admin account `theaceclub.tac@gmail.com` opened `/admin` directly and rendered the operational dashboard;
+- the designated active Admin account opened `/admin` directly and rendered the operational dashboard;
 - both sessions signed out;
 - `/post-login` redirected a signed-out browser to the Google-only login;
 - browser console and Production deployment error-level logs were empty.
