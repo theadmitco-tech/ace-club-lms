@@ -9,15 +9,15 @@ alter table public.mock_attempt_items
   add column if not exists category_key text;
 
 -- Existing compositions remain full parent sections; new compositions may use granular keys.
-update public.mock_assessment_items i
-set category_key = case
-  when q.question_type = 'RC' then 'rc'
-  when q.question_type = 'CR' then 'cr'
-  when q.question_type in ('PS', 'DS') then 'qa'
+-- Preserve the item's stored parent section here because earlier releases can route DS
+-- questions into Data Insights, and legacy Verbal compositions must remain one VA section.
+update public.mock_assessment_items
+set category_key = case section
+  when 'quant' then 'qa'
+  when 'verbal' then 'va'
   else 'di'
 end
-from public.mock_question_revisions q
-where q.id = i.question_revision_id and i.category_key is null;
+where category_key is null;
 
 update public.mock_assessment_sections set category_key = case section when 'quant' then 'qa' when 'verbal' then 'va' else 'di' end where category_key is null;
 update public.mock_attempt_sections set category_key = section where category_key is null;
