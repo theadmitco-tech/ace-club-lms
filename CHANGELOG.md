@@ -4,6 +4,14 @@ All notable Ace Club LMS changes are recorded here. Detailed execution evidence 
 
 ## Unreleased
 
+### Next.js security patch — Preview accepted
+
+- Updated `next` and `eslint-config-next` from `16.2.4` to `16.3.6` on an isolated patch branch.
+- Reduced the Production dependency audit to zero vulnerabilities.
+- Passed the tracker, Pilot V2, Pilot V3, documentation, build, route-smoke, and Preview runtime-log gates.
+- Limited the application commit to package metadata and its lockfile; no application flow, database, role, course, enrollment, or Student-data change was made.
+- Kept the patch pull request in Draft and made no `main` or Production change pending explicit approval.
+
 ### Documentation continuation bootstrap
 
 - Activated the Engineering Handbook after Product Owner approval.
