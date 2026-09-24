@@ -231,6 +231,7 @@ The live alias remained on the new `READY` deployment. No rollback condition was
 ### Flexible sectional GMAT mocks — local implementation complete (24 September 2026)
 
 - Work is isolated on branch `codex/flexible-sectional-mocks`, based on `codex/template-worksheet-tracker`; PR #21 and its security-patch worktree remain unchanged.
+- Application and migration implementation commit: `b62e65ef489c63871764bdb8d16bbe1ba0708ec0`.
 - The isolated branch implements category-level sectional mocks with any non-empty subset of QA, RC, CR, VA, and DI, positive per-category question counts, proportional published timing inherited from Quant/Verbal/Data Insights baselines, and dynamic Student section flow. VA may combine RC and CR questions; the narrower RC-only and CR-only forms remain available.
 - Published snapshots retain `category_key`, parent GMAT section, question count, display order, and calculated seconds. Existing snapshots without `category_key` retain their full Quant/Verbal/Data Insights behavior through a compatibility fallback.
 - Local verification passed: TypeScript, touched-file lint, the complete Pilot V3 suite (39 tests), the Next.js 16.2.4 Production build with all 54 static pages, documentation checks, and `git diff --check`.
