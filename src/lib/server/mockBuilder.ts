@@ -1,5 +1,6 @@
 import 'server-only';
 import { createMockAdminClient } from './mockQuestionBankAdmin';
+import { categoryForQuestionType, CATEGORY_PARENT, sectionTimeSeconds, type MockCategory } from '@/lib/mockAttempt';
 
 export const DEFAULT_SECTIONS = [
   { section: 'quant', question_count: 21, time_limit_seconds: 2700, display_order: 1 },
@@ -34,8 +35,8 @@ export async function loadMockAssessment(assessmentId: string) {
   const db = createMockAdminClient();
   const [assessment, sections, items, assignments] = await Promise.all([
     db.from('mock_assessments').select('id,name,purpose,status,draft_version,mock_assessment_versions(id,version_number,published_at)').eq('id', assessmentId).single(),
-    db.from('mock_assessment_sections').select('section,question_count,time_limit_seconds,display_order').eq('assessment_id', assessmentId).order('display_order'),
-    db.from('mock_assessment_items').select('section,question_revision_id,display_order,stimulus_group_key').eq('assessment_id', assessmentId).order('section').order('display_order'),
+    db.from('mock_assessment_sections').select('section,category_key,question_count,time_limit_seconds,display_order').eq('assessment_id', assessmentId).order('display_order'),
+    db.from('mock_assessment_items').select('section,category_key,question_revision_id,display_order,stimulus_group_key').eq('assessment_id', assessmentId).order('category_key').order('display_order'),
     db.from('mock_assessment_assignments').select('id,assessment_version_id,course_id,release_at,due_at,mock_assessment_versions!inner(assessment_id)').eq('mock_assessment_versions.assessment_id', assessmentId),
   ]);
   if (assessment.error) throw assessment.error; if (sections.error) throw sections.error; if (items.error) throw items.error; if (assignments.error) throw assignments.error;
@@ -63,26 +64,30 @@ export async function createMockAssessment(userId: string, name: string, purpose
   const db = createMockAdminClient();
   const { data, error } = await db.from('mock_assessments').insert({ name, purpose, created_by: userId }).select('id').single();
   if (error) throw error;
-  const { error: sectionError } = await db.from('mock_assessment_sections').insert(DEFAULT_SECTIONS.map((section) => ({ ...section, assessment_id: data.id })));
-  if (sectionError) throw sectionError;
   await db.from('mock_assessment_audit').insert({ assessment_id: data.id, action: 'created', actor_id: userId });
   return data.id as string;
 }
 
-export async function saveMockItems(assessmentId: string, items: Array<{ section: string; question_revision_id: string; display_order: number; stimulus_group_key?: string | null }>, userId: string) {
+export async function saveMockItems(assessmentId: string, items: Array<{ section: string; category_key?: string; question_revision_id: string; display_order: number; stimulus_group_key?: string | null }>, userId: string) {
   const db = createMockAdminClient();
   const ids = items.map((item) => item.question_revision_id);
   if (new Set(ids).size !== ids.length) throw new Error('A question revision may only appear once in a mock.');
   if (items.some((item) => !['quant', 'verbal', 'data_insights'].includes(item.section) || !Number.isInteger(item.display_order) || item.display_order < 1)) throw new Error('Invalid section or question order.');
   if (ids.length) {
-    const { data: revisions, error: revisionError } = await db.from('mock_question_revisions').select('id,section,status').in('id', ids);
+    const { data: revisions, error: revisionError } = await db.from('mock_question_revisions').select('id,section,question_type,status').in('id', ids);
     if (revisionError) throw revisionError;
     const byId = new Map((revisions ?? []).map((revision) => [revision.id, revision]));
-    for (const item of items) { const revision = byId.get(item.question_revision_id); if (!revision || revision.status !== 'published') throw new Error('Only Published question revisions may be added.'); if (revision.section !== item.section) throw new Error('Question section does not match its composition section.'); }
+    for (const item of items) { const revision = byId.get(item.question_revision_id); if (!revision || revision.status !== 'published') throw new Error('Only Published question revisions may be added.'); if (revision.section !== item.section) throw new Error('Question section does not match its composition section.'); const naturalCategory = categoryForQuestionType(revision.question_type); const requestedCategory = item.category_key as MockCategory | undefined; if (!requestedCategory || (requestedCategory !== naturalCategory && !(requestedCategory === 'va' && revision.section === 'verbal'))) throw new Error('Question category does not match its composition section.'); item.category_key = requestedCategory; }
   }
   const { error: deleteError } = await db.from('mock_assessment_items').delete().eq('assessment_id', assessmentId);
   if (deleteError) throw deleteError;
   if (items.length) { const { error } = await db.from('mock_assessment_items').insert(items.map((item) => ({ ...item, assessment_id: assessmentId }))); if (error) throw error; }
+  const counts = new Map<MockCategory, number>();
+  for (const item of items) counts.set(item.category_key as MockCategory, (counts.get(item.category_key as MockCategory) ?? 0) + 1);
+  const { error: sectionDeleteError } = await db.from('mock_assessment_sections').delete().eq('assessment_id', assessmentId);
+  if (sectionDeleteError) throw sectionDeleteError;
+  const sections = [...counts.entries()].map(([category_key, question_count], index) => ({ assessment_id: assessmentId, category_key, section: CATEGORY_PARENT[category_key], question_count, time_limit_seconds: sectionTimeSeconds(CATEGORY_PARENT[category_key], question_count), display_order: index + 1 }));
+  if (sections.length) { const { error } = await db.from('mock_assessment_sections').insert(sections); if (error) throw error; }
   const { data: current, error: currentError } = await db.from('mock_assessments').select('draft_version,status').eq('id', assessmentId).single();
   if (currentError) throw currentError;
   await db.from('mock_assessments').update({ updated_at: new Date().toISOString(), status: 'draft', draft_version: current.status === 'published' ? current.draft_version + 1 : current.draft_version }).eq('id', assessmentId);
@@ -93,18 +98,18 @@ export async function validateMock(assessmentId: string) {
   const db = createMockAdminClient();
   const [{ data: assessment, error: ae }, { data: sections, error: se }, { data: items, error: ie }] = await Promise.all([
     db.from('mock_assessments').select('id,name,purpose,status').eq('id', assessmentId).single(),
-    db.from('mock_assessment_sections').select('section,question_count,time_limit_seconds,display_order').eq('assessment_id', assessmentId).order('display_order'),
-    db.from('mock_assessment_items').select('id,section,display_order,stimulus_group_key,question_revision_id,mock_question_revisions!inner(status,section,stimulus_revision_id)').eq('assessment_id', assessmentId).order('section').order('display_order'),
+    db.from('mock_assessment_sections').select('section,category_key,question_count,time_limit_seconds,display_order').eq('assessment_id', assessmentId).order('display_order'),
+    db.from('mock_assessment_items').select('id,section,category_key,display_order,stimulus_group_key,question_revision_id,mock_question_revisions!inner(status,section,stimulus_revision_id)').eq('assessment_id', assessmentId).order('category_key').order('display_order'),
   ]);
   if (ae || se || ie) throw ae ?? se ?? ie;
   const errors: string[] = [];
-  for (const expected of DEFAULT_SECTIONS) {
-    const section = (sections ?? []).find((row) => row.section === expected.section);
-    const selected = (items ?? []).filter((row) => row.section === expected.section);
-    if (!section) errors.push(`Missing ${expected.section} section.`);
-    else { if (section.question_count !== selected.length) errors.push(`${expected.section} requires ${section.question_count} questions; ${selected.length} selected.`); if (section.time_limit_seconds !== 2700) errors.push(`${expected.section} must be timed for 45 minutes.`); }
-    for (let index = 1; index < selected.length; index += 1) if (selected[index].stimulus_group_key && selected[index].stimulus_group_key === selected[index - 1].stimulus_group_key && selected[index].display_order !== selected[index - 1].display_order + 1) errors.push(`${expected.section} stimulus group is split.`);
+  for (const section of sections ?? []) {
+    const selected = (items ?? []).filter((row) => row.category_key === section.category_key);
+    if (section.question_count !== selected.length) errors.push(`${section.section} requires ${section.question_count} questions; ${selected.length} selected.`);
+    if (section.time_limit_seconds < 60) errors.push(`${section.section} must have a positive time limit.`);
+    for (let index = 1; index < selected.length; index += 1) if (selected[index].stimulus_group_key && selected[index].stimulus_group_key === selected[index - 1].stimulus_group_key && selected[index].display_order !== selected[index - 1].display_order + 1) errors.push(`${section.section} stimulus group is split.`);
   }
+  if (!(sections ?? []).length) errors.push('Select at least one question.');
   if ((items ?? []).some((row) => (row.mock_question_revisions as unknown as { status: string } | null)?.status !== 'published')) errors.push('Only Published question revisions can be included.');
   return { valid: errors.length === 0, errors, assessment, sections: sections ?? [], items: items ?? [] };
 }

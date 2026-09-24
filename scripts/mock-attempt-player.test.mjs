@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import mockAttempt from '../src/lib/mockAttempt.ts';
 
-const { formatClock, isSectionOrder, remainingSeconds, SECTION_ORDERS } = mockAttempt;
+const { categoryForQuestionType, formatClock, isSectionOrder, remainingSeconds, SECTION_ORDERS, sectionTimeSeconds, sectionOrders } = mockAttempt;
 
 const migrationUrl = new URL('../supabase/migrations/20260822213000_add_mock_attempt_player.sql', import.meta.url);
 const timeoutMigrationUrl = new URL('../supabase/migrations/20260823110000_advance_expired_mock_sections.sql', import.meta.url);
@@ -16,13 +16,40 @@ const playerCssUrl = new URL('../src/app/mocks/mocks.css', import.meta.url);
 const builderUrl = new URL('../src/components/admin/MockBuilder.tsx', import.meta.url);
 const builderServerUrl = new URL('../src/lib/server/mockBuilder.ts', import.meta.url);
 const vercelConfigUrl = new URL('../vercel.json', import.meta.url);
+const flexibleMigrationUrl = new URL('../supabase/migrations/20260924120000_add_mock_category_snapshots.sql', import.meta.url);
 
 test('exposes all six and only six three-section permutations', () => {
   assert.equal(SECTION_ORDERS.length, 6);
   assert.equal(new Set(SECTION_ORDERS.map((order) => order.join('|'))).size, 6);
   for (const order of SECTION_ORDERS) assert.equal(isSectionOrder(order), true);
   assert.equal(isSectionOrder(['quant', 'verbal', 'quant']), false);
-  assert.equal(isSectionOrder(['quant', 'verbal']), false);
+assert.equal(isSectionOrder(['quant', 'verbal']), true);
+assert.equal(isSectionOrder(['verbal']), true);
+assert.equal(isSectionOrder(['quant', 'quant']), false);
+assert.equal(sectionTimeSeconds('quant', 1), 129);
+assert.equal(sectionTimeSeconds('verbal', 23), 2700);
+assert.equal(sectionTimeSeconds('data_insights', 10), 1350);
+assert.equal(sectionOrders(['verbal']).length, 1);
+assert.equal(sectionOrders(['quant', 'verbal']).length, 2);
+});
+
+test('supports RC-only, mixed sectional and full mocks with proportional timing', async () => {
+  assert.equal(categoryForQuestionType('RC'), 'rc');
+  assert.equal(categoryForQuestionType('CR'), 'cr');
+  assert.equal(categoryForQuestionType('PS'), 'qa');
+  assert.equal(categoryForQuestionType('GI'), 'di');
+  assert.deepEqual(sectionOrders(['rc']), [['rc']]);
+  assert.equal(sectionOrders(['rc', 'cr']).length, 2);
+  assert.equal(isSectionOrder(['va']), true);
+  assert.equal(sectionOrders(['quant', 'verbal', 'data_insights']).length, 6);
+  assert.equal(sectionTimeSeconds('verbal', 11), 1291);
+  assert.equal(sectionTimeSeconds('quant', 21), 2700);
+  assert.equal(sectionTimeSeconds('data_insights', 20), 2700);
+  const sql = await readFile(flexibleMigrationUrl, 'utf8');
+  assert.match(sql, /category_key.*'qa','rc','cr','va','di'/s);
+  assert.match(sql, /v_item\.time_limit_seconds/);
+  assert.match(sql, /jsonb_array_length\(snapshot->'sections'\)/);
+  assert.match(sql, /category_key = coalesce\(v_item\.category_key, v_item\.section\)/);
 });
 
 test('timer display is derived from a server deadline', () => {
