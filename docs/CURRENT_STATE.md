@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-As of: 7 September 2026, 12:35 IST
+As of: 24 September 2026, 11:02 IST
 
 This is the single active operational handoff. Git history preserves earlier versions; do not append a growing chronological diary here.
 
@@ -22,7 +22,7 @@ Stable context: [Project Manual](PROJECT_MANUAL.md). Engineering and handoff rul
 | Latest Production migration | `20260907064221_add_material_tracker_rls_policies` |
 | Production migration count | 47 |
 
-Verified from Vercel, the Supabase migration ledger, Security Advisor, and authenticated read-only Production RPC smoke testing on 7 September 2026.
+The deployment identity and migration boundary were reverified read-only on 24 September 2026. Security Advisor and authenticated read-only Production RPC acceptance were last run on 7 September 2026.
 
 ### Application rollback candidate
 
@@ -239,7 +239,7 @@ Consolidate documentation into:
 
 ### Completed
 
-- Engineering Handbook drafted.
+- Engineering Handbook activated by the Product Owner on 24 September 2026.
 - Documentation Consolidation Project created.
 - Initial structural inventory completed.
 - 134 documentation/instruction artifacts classified with no unclassified paths.
@@ -251,12 +251,12 @@ Consolidate documentation into:
 - Reusable coding/document-convention rules consolidated into the Engineering Handbook.
 - Automated documentation checks pass for the current documentation corpus and inventory; see the latest command output in the active release evidence commit.
 - Documentation release record and changelog created.
+- Root `AGENTS.md` now requires every future engineering chat or agent to read Project Manual and Current State before acting, follow the Engineering Handbook, maintain the single-handoff model, preserve privacy, and close changes with verification and rollback evidence.
+- Product Owner accepted the two-document continuation path and requested its automatic repository bootstrap.
 
 ### Pending
 
-- Review Project Manual and Current State for Product Owner corrections.
 - Preserve all signed evidence and product-authority content during later Git reconciliation.
-- Product Owner review of the simplified two-document path and handbook rules.
 - Product Owner review of the completed Release 1 Production evidence.
 - Product Owner review of the completed Release 1.1 Production evidence.
 
@@ -271,7 +271,7 @@ Consolidate documentation into:
 
 ## 7. Exact next action
 
-> Monitor Release 1.1 under normal use. Then design Release 2 Admin/Super Admin capabilities, schema/RLS boundaries, and rollback before implementing or granting access. Do not grant access merely as part of planning.
+> Monitor Release 1.2 under normal use. Then design Release 2 Admin/Super Admin capabilities, schema/RLS boundaries, and rollback before implementing or granting access. Do not grant access merely as part of planning.
 
 No database, access, or role change is authorized by this handoff alone.
 
@@ -280,9 +280,10 @@ No database, access, or role change is authorized by this handoff alone.
 1. **Release 0 — Source and governance reconciliation.** Complete: candidate assembled, locally verified, documented, and published to GitHub without merge or deployment.
 2. **Release 1 — Course-selection restoration.** Complete in Production with authenticated Student and Admin smoke checks.
 3. **Release 1.1 — Login course chooser.** Complete in Production with authenticated Student and corrected Admin smoke checks.
-4. **Release 2 — Admin/Super Admin foundation.** Add backward-compatible role/capability and RLS support without grants.
-5. **Release 3 — Role activation.** Confirm exact accounts and grant Admin to Tanya, Unnati, and Shan; assign approved Super Admins; verify denial boundaries.
-6. **Release 4 — Authorization contraction.** Restrict content management to Super Admin after rollback safety expires.
+4. **Release 1.2 — Template-native worksheet tracker.** Complete in Production with RC, DI lock, Master Base compatibility, RLS, security, and rollback verification.
+5. **Release 2 — Admin/Super Admin foundation.** Add backward-compatible role/capability and RLS support without grants.
+6. **Release 3 — Role activation.** Confirm exact accounts and grant Admin to Tanya, Unnati, and Shan; assign approved Super Admins; verify denial boundaries.
+7. **Release 4 — Authorization contraction.** Restrict content management to Super Admin after rollback safety expires.
 
 Each release is separate and requires its own Staging acceptance, rollback record, Production authorization, promotion, smoke checks, tag, release record, and Current State update.
 
@@ -309,8 +310,6 @@ Do not mix these documentation commits with application, database, role, access,
 
 ## 11. Pending decisions and confirmations
 
-- Product Owner review/activation of the Draft Engineering Handbook.
-- Product Owner acceptance of the Project Manual as the master front door.
 - Exact Production identities for Tanya, Unnati, and Shan.
 - Approved list of Super Admin recipients.
 - Product Owner review of Release 1 Production acceptance evidence.

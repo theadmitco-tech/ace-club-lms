@@ -1,8 +1,8 @@
 # Ace Club LMS — Engineering Handbook
 
-Status: Draft
+Status: Active
 Owner: Product owner and Engineering
-Last updated: 31 August 2026
+Last updated: 24 September 2026
 
 ## 1. Purpose
 

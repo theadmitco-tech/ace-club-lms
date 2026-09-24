@@ -4,6 +4,14 @@ All notable Ace Club LMS changes are recorded here. Detailed execution evidence 
 
 ## Unreleased
 
+### Documentation continuation bootstrap
+
+- Activated the Engineering Handbook after Product Owner approval.
+- Added repository-level `AGENTS.md` bootstrap rules so future engineering chats begin with Project Manual and Current State instead of reconstructing history from chat.
+- Required future agents to maintain Current State, preserve privacy, use Staging and explicit Production gates, record rollback, and run documentation checks.
+- Reverified the current Production deployment and Supabase migration boundary read-only before updating Current State.
+- Made no application, database, role, access, or deployment change.
+
 ### Release 1.1 login course chooser — Production complete
 
 - Routed authenticated portal entry through `/post-login`.
