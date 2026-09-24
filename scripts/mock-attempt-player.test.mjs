@@ -52,6 +52,14 @@ test('supports RC-only, mixed sectional and full mocks with proportional timing'
   assert.match(sql, /category_key = coalesce\(v_item\.category_key, v_item\.section\)/);
 });
 
+test('mock builder isolates composition state while switching assessments', async () => {
+  const builder = await readFile(builderUrl, 'utf8');
+  assert.match(builder, /const chooseRequest=useRef\(0\)/);
+  assert.match(builder, /setSelectedId\(id\); setSelected\(next\); setItems\(\[\]\)/);
+  assert.match(builder, /if\(request!==chooseRequest\.current\)return/);
+  assert.match(builder, /current\?\.id===id/);
+});
+
 test('timer display is derived from a server deadline', () => {
   assert.equal(remainingSeconds('2026-08-22T10:05:00.000Z', Date.parse('2026-08-22T10:00:00.000Z')), 300);
   assert.equal(remainingSeconds('2026-08-22T09:59:59.000Z', Date.parse('2026-08-22T10:00:00.000Z')), 0);

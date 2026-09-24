@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { MockRichContent } from './MockRichContent';
 import { categoryForQuestionType, CATEGORY_LABELS, CATEGORY_PARENT, sectionTimeSeconds, type MockCategory } from '@/lib/mockAttempt';
 
@@ -35,6 +35,7 @@ export function MockBuilder({initialAssessments,reference}:{initialAssessments:A
   const [courseId,setCourseId]=useState(''); const [releaseAt,setReleaseAt]=useState(''); const [dueAt,setDueAt]=useState('');
   const [testerAssignmentId,setTesterAssignmentId]=useState(''); const [testerEmail,setTesterEmail]=useState(''); const [testers,setTesters]=useState<Tester[]>([]);
   const [draggedId,setDraggedId]=useState<string|null>(null); const [activeTab,setActiveTab]=useState<'build'|'review'>('build');
+  const chooseRequest=useRef(0);
   const sections=useMemo<MockCategory[]>(()=>['qa','rc','cr','va','di'],[]);
 
   async function call(body:Record<string,unknown>) {
@@ -46,9 +47,20 @@ export function MockBuilder({initialAssessments,reference}:{initialAssessments:A
     catch(error){setMessage(error instanceof Error?error.message:'Unable to create mock.');} finally{setBusy(false);}
   }
   async function choose(id:string) {
-    const next=assessments.find(row=>row.id===id)??null; setSelectedId(id); setSelected(next); setActiveTab('build'); setMessage('');
-    if(!next){setItems([]);return;} try { const response=await fetch(`/api/admin/mock-builder?assessmentId=${id}`); const data=await response.json(); if(!response.ok)throw new Error(data.error); setSelected(current=>current?{...current,...data.assessment}:current); setItems(data.items??[]); }
-    catch(error){setMessage(error instanceof Error?error.message:'Unable to load composition.');}
+    const request=++chooseRequest.current;
+    const next=assessments.find(row=>row.id===id)??null;
+    setSelectedId(id); setSelected(next); setItems([]); setActiveTab('build'); setMessage('');
+    setCourseId(''); setReleaseAt(''); setDueAt(''); setTesterAssignmentId(''); setTesterEmail(''); setTesters([]);
+    if(!next)return;
+    try {
+      const response=await fetch(`/api/admin/mock-builder?assessmentId=${id}`);
+      const data=await response.json();
+      if(!response.ok)throw new Error(data.error);
+      if(request!==chooseRequest.current)return;
+      setSelected(current=>current?.id===id?{...current,...data.assessment}:current);
+      setItems(data.items??[]);
+    }
+    catch(error){if(request===chooseRequest.current)setMessage(error instanceof Error?error.message:'Unable to load composition.');}
   }
   function toggleQuestion(question:Question, category_key:MockCategory) {
     if(!selected)return; setItems(current=>{ const exists=current.some(item=>item.question_revision_id===question.id); if(exists)return current.filter(item=>item.question_revision_id!==question.id); const sectionItems=current.filter(item=>item.category_key===category_key); return [...current,{section:question.section,category_key,question_revision_id:question.id,display_order:sectionItems.length+1}]; });
