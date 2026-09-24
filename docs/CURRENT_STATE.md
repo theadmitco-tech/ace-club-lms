@@ -40,6 +40,9 @@ It includes the final Notion fix, worksheet counts, the login chooser, and “Sw
 | Accepted current application candidate | `codex/template-worksheet-tracker` |
 | Accepted Staging-backed Preview | `dpl_B4GKdMvCZqdLrhWJPm99QxS4zfYt` — `READY`, target Preview |
 | Preview URL | `https://ace-club-kf3qofcht-theadmitco-techs-projects.vercel.app` |
+| Accepted security-patch candidate | `codex/next-security-patch` at `9437533` |
+| Security-patch Preview | `dpl_5KmtqCLpqPMk6WnrwHk7u1YnQFez` — `READY`, target Preview |
+| Security-patch Preview URL | `https://ace-club-3d0r47j07-theadmitco-techs-projects.vercel.app` |
 | Active disposable fixtures | None; exact-ID audits returned zero profiles, courses, template revisions, and Master Base sessions for both QA cycles |
 
 ### Ledger differences requiring deliberate handling
@@ -96,6 +99,10 @@ Release 1.2 adds a material-backed compatibility catalog for template-native wor
 - Release 1.2 design: [ADR-0005](decisions/adr-0005-template-native-worksheet-tracking.md).
 - Release 1.2 Staging evidence: [Template worksheet tracker Staging record](releases/2026-09-06-release-1-2-template-worksheet-tracker-staging.md).
 - Release 1.2 Production evidence: [Template worksheet tracker Production rollout](releases/2026-09-07-release-1-2-template-worksheet-tracker-production.md).
+- Security patch branch: `codex/next-security-patch`, based on the documented Release 1.2 branch head.
+- Its application commit changes only `package.json` and `package-lock.json`, updating Next.js and its ESLint configuration from `16.2.4` to `16.3.6`.
+- Production dependency audit, regression suites, Preview build, route smoke checks, and runtime-log scan passed. Pull request #21 remains Draft; `main` and Production are unchanged.
+- Security patch evidence: [Next.js security patch Preview acceptance](releases/2026-09-24-next-security-patch-staging.md).
 
 ## 4. Confirmed user-visible state
 
@@ -271,7 +278,9 @@ Consolidate documentation into:
 
 ## 7. Exact next action
 
-> Monitor Release 1.2 under normal use. Then design Release 2 Admin/Super Admin capabilities, schema/RLS boundaries, and rollback before implementing or granting access. Do not grant access merely as part of planning.
+> Review pull request #21 and its Preview evidence. Merge it into `codex/template-worksheet-tracker` only after explicit approval, then refresh pull request #20 checks. Do not merge to `main` or promote to Production without a separate explicit approval and Production release gate.
+
+After the framework patch is resolved, resume Release 1.2 monitoring and design Release 2 Admin/Super Admin capabilities, schema/RLS boundaries, and rollback before implementing or granting access.
 
 No database, access, or role change is authorized by this handoff alone.
 
@@ -304,6 +313,7 @@ Do not mix these documentation commits with application, database, role, access,
 - [Release 1 course-selection Production rollout](releases/2026-09-01-release-1-course-selection-production.md)
 - [Release 1.1 login course chooser Staging acceptance](releases/2026-09-01-release-1-1-login-course-chooser-staging-acceptance.md)
 - [Release 1.1 login course chooser Production rollout](releases/2026-09-01-release-1-1-login-course-chooser-production.md)
+- [Next.js security patch Preview acceptance](releases/2026-09-24-next-security-patch-staging.md)
 - [Course-selection Production release evidence](pilot-v3/phase-7/evidence/worksheet-count-course-selection-production-release-2026-08-30.md)
 - [Course-selection rollback rehearsal](pilot-v3/phase-7/evidence/worksheet-count-course-selection-rollback-rehearsal-2026-08-30.md)
 - [Pilot V3 mock release evidence](pilot-v3/phase-7/evidence/phase-7-production-release-2026-08-25.md)
