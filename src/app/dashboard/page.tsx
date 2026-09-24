@@ -19,7 +19,7 @@ import './dashboard.css';
 
 export default async function DashboardPage() {
   const identity = await requirePortalRole('student');
-  const result = await loadStudentTimeline(identity.id);
+  const result = await loadStudentTimeline(identity.id, identity.fullName);
 
   if (result.status === 'failed') {
     return (

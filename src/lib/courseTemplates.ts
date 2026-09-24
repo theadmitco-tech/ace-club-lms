@@ -47,6 +47,7 @@ export type CourseTemplateResource = {
   notionUrl: string;
   fileUrl: string;
   textContent: string;
+  questionCount: number | null;
   displayOrder: number;
 };
 
@@ -220,6 +221,7 @@ export function validateCourseTemplateDraft(input: unknown): TemplateValidationR
     const fileUrl = cleanOptional(resource?.fileUrl);
     const textContent = cleanOptional(resource?.textContent);
     const masterMaterialId = typeof resource?.masterMaterialId === 'string' ? resource.masterMaterialId : null;
+    const questionCount = resourceType === 'worksheet' ? Number(resource?.questionCount) : null;
     if (!KEY_PATTERN.test(key)) errors.push(`${label} needs a stable lowercase key.`);
     if (resourceKeys.has(key)) errors.push(`Resource key “${key}” is duplicated.`);
     if (!resourceTitle || resourceTitle.length > 160) errors.push(`${label} needs a title of 160 characters or fewer.`);
@@ -229,6 +231,9 @@ export function validateCourseTemplateDraft(input: unknown): TemplateValidationR
     if (resourceType === 'starter' && format !== 'notion') errors.push(`${label} Starter Pack must use Notion.`);
     if (resourceType === 'pre_read' && format !== 'notion') errors.push(`${label} Pre-read must use Notion.`);
     if (resourceType === 'worksheet' && format !== 'pdf') errors.push(`${label} Worksheet must use a protected PDF.`);
+    if (resourceType === 'worksheet' && (questionCount === null || !Number.isInteger(questionCount) || questionCount < 1)) {
+      errors.push(`${label} Worksheet needs a positive number of questions.`);
+    }
     if (format === 'notion' && !masterMaterialId && !/^https:\/\/([a-z0-9-]+\.)?notion\.(so|site)\//i.test(notionUrl)) errors.push(`${label} needs a valid Notion HTTPS link.`);
     if (format === 'pdf' && !masterMaterialId && !/^\/api\/materials\/file\?path=worksheets%2F/i.test(fileUrl)) errors.push(`${label} needs a protected worksheet PDF.`);
     if (format === 'text' && (!textContent || textContent.length > 2000)) errors.push(`${label} needs text of 2,000 characters or fewer.`);
@@ -248,6 +253,7 @@ export function validateCourseTemplateDraft(input: unknown): TemplateValidationR
       notionUrl: format === 'notion' ? notionUrl : '',
       fileUrl: format === 'pdf' ? fileUrl : '',
       textContent: format === 'text' ? textContent : '',
+      questionCount,
       displayOrder,
     };
   });

@@ -15,12 +15,15 @@ const v2MigrationPaths = [
 ];
 
 test('Student and Admin route groups enforce active role authorization', async () => {
-  const guards = await Promise.all([
+  const [guards, identityMigration] = await Promise.all([
+    Promise.all([
     read('src/app/dashboard/layout.tsx'),
     read('src/app/schedule/layout.tsx'),
     read('src/app/resources/layout.tsx'),
     read('src/app/session/layout.tsx'),
     read('src/app/admin/layout.tsx'),
+    ]),
+    read('supabase/migrations/20260827143000_add_portal_identity_projection.sql'),
   ]);
 
   for (const guard of guards.slice(0, 4)) {
@@ -29,10 +32,14 @@ test('Student and Admin route groups enforce active role authorization', async (
   assert.match(guards[4], /requirePortalRole\('admin'\)/);
 
   const authorization = await read('src/lib/server/portalAuthorization.ts');
-  assert.match(authorization, /supabase\.auth\.getUser\(\)/);
-  assert.match(authorization, /!profile\?\.is_active/);
-  assert.match(authorization, /profile\.role !== 'admin' && profile\.role !== 'student'/);
+  assert.match(authorization, /rpc\('get_portal_identity'\)/);
+  assert.doesNotMatch(authorization, /supabase\.auth\.getUser\(\)/);
   assert.match(authorization, /identity\.role !== role/);
+  assert.match(identityMigration, /profile\.id = auth\.uid\(\)/);
+  assert.match(identityMigration, /profile\.is_active = true/);
+  assert.match(identityMigration, /profile\.role in \('admin', 'student'\)/);
+  assert.match(identityMigration, /revoke all on function public\.get_portal_identity\(\) from public, anon/);
+  assert.match(identityMigration, /grant execute on function public\.get_portal_identity\(\) to authenticated/);
 });
 
 test('every Pilot V2 Admin mutation entry point re-authorizes the caller', async () => {

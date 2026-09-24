@@ -1,8 +1,12 @@
 # Ace Club LMS — Document Conventions
 
-Status: Active
+Status: Superseded
 Owner: Product owner and Engineering
-Last updated: 1 August 2026
+Last updated: 31 August 2026
+
+Superseded by: [Engineering Handbook](engineering-handbook.md)
+
+This file is retained as the original documentation convention record. Current naming, status, evidence, link, privacy, handoff, and maintenance rules live in the Engineering Handbook.
 
 ## 1. Objectives
 
