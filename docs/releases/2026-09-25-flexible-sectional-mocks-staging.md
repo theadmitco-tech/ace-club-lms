@@ -30,7 +30,7 @@ Allow an immutable published mock to contain any non-empty subset of QA, RC, CR,
 - Branch: `codex/flexible-sectional-mocks`.
 - Published implementation commits before this correction: `b62e65e`, `b2932a7`, `98c1869`, and `e9b20df`.
 - Accepted sectional-flow correction commit: `09a52ee`.
-- Request-recovery correction commit: `65464bd` (local verification complete; Preview refresh pending).
+- Request-recovery correction commit: `65464bd`.
 
 ## Staging schema and package state
 
@@ -86,13 +86,14 @@ During Product Owner review on 25 September 2026, the RC-only reset dialog remai
 
 The client now bounds start and reset requests at 20 seconds, tolerates non-JSON error responses, reports a retryable connection error, and always clears the busy state. The mock-attempt test suite includes a regression check for this recovery path. TypeScript, touched-file lint, the 14 mock-attempt-player tests, and `git diff --check` passed locally. No database or migration change was required.
 
+The corrected Preview `dpl_EnqC5waqKdBjvc1BJWFKa4GKxhmF` is `READY` at `https://ace-club-m4tg32yxy-theadmitco-techs-projects.vercel.app`. Authenticated Student verification first reproduced a transient failed start and confirmed that the card recovered after 20 seconds with a visible retry message and enabled controls. A retry then created RC-only attempt `bfae46a5-8255-4fc5-8d8f-0709714fdea0` directly at section 1 of 1. Resetting that attempt completed normally and returned the card to `Start mock`; the verification attempt was removed.
+
 ## Deployment note
 
 The first CLI deployment attempt created a separate empty Vercel project named `ace-club-flexible-mocks`. Deployment `dpl_H1hiCpiFchzAgvaTpZ7aWu1CsjPN` failed during prebuild because that project had no environment variables, so no application was deployed there. The worktree was then explicitly linked to the existing `ace-club-lms` project before the accepted Preview was created. The empty project remains pending explicit cleanup approval and has no Production alias or Production data connection.
 
 ## Remaining work
 
-- Refresh and verify the Preview with request-recovery commit `65464bd`.
 - Product Owner reviews the refreshed Preview.
 - Decide whether to retain or remove the exact Staging assignments, tester grants, and attempts.
 - Decide whether to delete the empty accidental Vercel project.

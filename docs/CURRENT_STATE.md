@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-As of: 25 September 2026, 11:03 IST
+As of: 25 September 2026, 11:09 IST
 
 This is the single active operational handoff. Git history preserves earlier versions; do not append a growing chronological diary here.
 
@@ -37,12 +37,12 @@ It includes the final Notion fix, worksheet counts, the login chooser, and “Sw
 | Staging Supabase | `eyphkkginlgoaxflauog` |
 | Latest Staging migration | `20260925100000_scope_mock_attempt_order_by_category` |
 | Staging migration count | 46 |
-| Flexible-mock candidate | `codex/flexible-sectional-mocks` at `65464bd`; sectional flow accepted, reset-request recovery locally verified |
-| Accepted Staging-backed Preview | `dpl_5bCDP34CkcHDMnz45JdXg1WrNZTY` — `READY`, target Preview |
-| Preview URL | `https://ace-club-7m2icw0iv-theadmitco-techs-projects.vercel.app` |
+| Flexible-mock candidate | `codex/flexible-sectional-mocks`; accepted application correction at `65464bd` |
+| Accepted Staging-backed Preview | `dpl_EnqC5waqKdBjvc1BJWFKa4GKxhmF` — `READY`, target Preview |
+| Preview URL | `https://ace-club-m4tg32yxy-theadmitco-techs-projects.vercel.app` |
 | Active Staging fixtures | One imported RC package and two published/assigned acceptance mocks remain active; see the flexible-mock release record |
 
-The RC-only tester attempt was reset successfully during review after a transient browser request failure. The application correction at `65464bd` prevents start/reset dialogs from remaining permanently busy after a failed or stalled request; it does not change the database. The accepted Preview listed above still serves `09a52ee` until the correction is redeployed and reverified.
+The RC-only tester attempt was reset successfully during review after a transient browser request failure. The application correction at `65464bd` prevents start/reset dialogs from remaining permanently busy after a failed or stalled request; it does not change the database. The refreshed Preview reproduced and visibly recovered from a transient failed start, then passed a direct RC-only start and successful reset. Both RC verification attempts were removed, leaving the tester card ready to start.
 
 ### Ledger differences requiring deliberate handling
 
