@@ -90,7 +90,9 @@ The corrected Preview `dpl_EnqC5waqKdBjvc1BJWFKa4GKxhmF` is `READY` at `https://
 
 ## Security integration follow-up
 
-The Product Owner approved a separate integration branch from security PR #21 head `fcbd42f` and directed that completed manual acceptance not be repeated. Automated integration checks and the legacy full-mock six-order check passed. The focused RC-only result check found that the completed-results tabs still listed all three parent sections. Commit `8ad5756` now derives result tabs, diagnostics, question filtering, labels, and links from only the attempt categories included in its snapshot. Focused automated verification passes; refreshed Preview acceptance is pending. The mixed QA + CR + DI manual journey remains accepted and will not be repeated unless a related failure appears.
+The Product Owner approved a separate integration branch from security PR #21 head `fcbd42f` and directed that completed manual acceptance not be repeated. Automated integration checks and the legacy full-mock six-order check passed. The focused RC-only result check found that the completed-results tabs still listed all three parent sections. Commit `8ad5756` now derives result tabs, diagnostics, question filtering, labels, and links from only the attempt categories included in its snapshot.
+
+Refreshed Preview `dpl_G91Rg5sd1VzZMuWSfKgG4FyTEhLL` passed: the RC-only result showed only Overall and RC / Reading Comprehension, its diagnostic row used Reading Comprehension, the legacy full mock retained all six order choices, and browser/Vercel error scans were empty. The integrated 43-test Pilot V3 suite and Next.js 16.3.6 build passed. Direct start, reset, and the mixed QA + CR + DI journey were not manually repeated; accepted feature evidence and integrated automated tests remain authoritative. No Staging attempt was deleted or reset during this integration check.
 
 ## Deployment note
 

@@ -1,6 +1,6 @@
 # Flexible sectional mocks — Production readiness plan
 
-Status: Integration approved; result-scope correction verification pending, Production not authorized
+Status: Integrated Staging candidate accepted; Production not authorized
 Owner: Engineering
 Last updated: 25 September 2026
 
@@ -24,7 +24,8 @@ Acceptance evidence is in [Flexible sectional mocks — Staging](2026-09-25-flex
 | Accepted flexible-mock Preview | `dpl_EnqC5waqKdBjvc1BJWFKa4GKxhmF`, `READY`, Staging-backed |
 | Security patch PR | [#21](https://github.com/theadmitco-tech/ace-club-lms/pull/21), head `fcbd42ffd6a6b06645ab5819fcf6c403347d4d00`, mergeable and checks successful |
 | Security application commit | `9437533c8ced217b02c9b9d5d0fa1846dd391457`, Next.js `16.3.6` |
-| Integration branch | `codex/flexible-mocks-security-integration`, created from PR #21 head; verification pending |
+| Integration branch | `codex/flexible-mocks-security-integration`; result-scope application correction `8ad5756` |
+| Accepted integrated Preview | `dpl_G91Rg5sd1VzZMuWSfKgG4FyTEhLL`, Next.js `16.3.6`, `READY`, Staging-backed |
 
 The flexible-mock and security branches share base `096f5b392876635498da2da2a3cd988982aa09df`. The isolated flexible branch remains preserved on Next.js `16.2.4`. The integration branch combines the accepted feature with Next.js `16.3.6` without modifying or merging PR #21.
 
@@ -52,6 +53,8 @@ On 25 September 2026, the Product Owner approved source integration and explicit
 This scoped decision is durable for this release: a dependency-lineage integration does not invalidate completed feature acceptance when the feature code and Staging schema are unchanged. The existing Preview remains valid feature evidence; the compact check validates only the combined source.
 
 The compact check did identify one previously omitted surface: RC-only completed results still rendered hard-coded DI, QA, and VA tabs. Commit `8ad5756` replaces those tabs and related diagnostics/question copy with the attempt's included category snapshots. This correction requires only a focused RC-only results verification; it does not reopen the already accepted mixed journey.
+
+Focused acceptance passed on `dpl_G91Rg5sd1VzZMuWSfKgG4FyTEhLL`: the RC-only result contained only Overall and RC / Reading Comprehension, its diagnostic row used Reading Comprehension, and the legacy full mock retained all six order choices. The 43-test Pilot V3 suite, Next.js 16.3.6 build, TypeScript, touched-file lint, documentation checks, diff check, and Production dependency audit passed. Browser and Vercel error scans were empty. Direct start and reset recovery were not manually repeated or used to delete another Staging attempt; their accepted feature evidence and integrated automated tests remain authoritative.
 
 ## Production migration plan
 
@@ -107,4 +110,4 @@ Separate explicit approvals are required for:
 
 ## Exact next action
 
-Complete the compact integration checks and Staging Preview verification, document the result, and stop for separate Production migration/deployment approval. Production remains unchanged.
+Product Owner approves or rejects the two named Production migrations and integrated application deployment as separate gates. No Production test fixture, publication, assignment, attempt, reset, merge to `main`, or PR #21 merge is included.

@@ -42,7 +42,9 @@ It includes the final Notion fix, worksheet counts, the login chooser, and “Sw
 | Flexible-mock Preview URL | `https://ace-club-m4tg32yxy-theadmitco-techs-projects.vercel.app` |
 | Accepted security-patch candidate | `codex/next-security-patch` at `fcbd42f`; application commit `9437533` |
 | Security-patch Preview | `dpl_5KmtqCLpqPMk6WnrwHk7u1YnQFez` — `READY`, target Preview |
-| Integration candidate | `codex/flexible-mocks-security-integration`; compact Staging verification pending |
+| Accepted integration candidate | `codex/flexible-mocks-security-integration`; application correction `8ad5756` |
+| Accepted integrated Preview | `dpl_G91Rg5sd1VzZMuWSfKgG4FyTEhLL` — `READY`, target Preview |
+| Integrated Preview URL | `https://ace-club-4ema4l08t-theadmitco-techs-projects.vercel.app` |
 | Active Staging fixtures | One imported RC package and two published/assigned acceptance mocks remain active; see the flexible-mock release record |
 
 The RC-only tester attempt was reset successfully during review after a transient browser request failure. The application correction at `65464bd` prevents start/reset dialogs from remaining permanently busy after a failed or stalled request; it does not change the database. The refreshed Preview reproduced and visibly recovered from a transient failed start, then passed a direct RC-only start and successful reset. Both RC verification attempts were removed, leaving the tester card ready to start.
@@ -259,7 +261,9 @@ The live alias remained on the new `READY` deployment. No rollback condition was
 - Once the category migrations are applied, the prior Admin Mock Builder cannot create/save mocks because it omits non-null `category_key`. An approved rollout therefore requires a mock-authoring freeze and immediate integrated application deployment; application rollback keeps mock authoring frozen pending a forward correction.
 - One empty Vercel project named `ace-club-flexible-mocks` was created accidentally during the first CLI deployment attempt. Its deployment `dpl_H1hiCpiFchzAgvaTpZ7aWu1CsjPN` failed before application deployment because no environment variables existed. It is separate from `ace-club-lms`, has no effect on Production, and has not been deleted without explicit approval.
 - The Product Owner approved the separate integration branch and explicitly directed that accepted manual Staging work not be repeated. Integration acceptance is therefore delta-based: automated checks/build plus RC-only direct start, legacy full-mock ordering, reset recovery, and runtime logs. The mixed QA + CR + DI journey is repeated only if an integration failure affects it. No Production or merge action is authorized.
-- The compact integrated Preview check exposed one omitted dynamic surface: an RC-only completed result still showed hard-coded DI, QA, and VA tabs. Commit `8ad5756` now derives result tabs, diagnostics, question filtering, labels, and links from the attempt's included `category_key` values. Focused tests, TypeScript, lint, and diff checks pass; refreshed Preview verification is pending.
+- The compact integrated Preview check exposed one omitted dynamic surface: an RC-only completed result still showed hard-coded DI, QA, and VA tabs. Commit `8ad5756` now derives result tabs, diagnostics, question filtering, labels, and links from the attempt's included `category_key` values.
+- Integrated acceptance passed on Preview `dpl_G91Rg5sd1VzZMuWSfKgG4FyTEhLL`: the RC-only result showed only Overall and RC / Reading Comprehension, its diagnostic row used Reading Comprehension, and the legacy full mock retained all six order choices. All 43 Pilot V3 tests, Next.js 16.3.6 build, TypeScript, touched-file lint, documentation checks, `git diff --check`, and the Production dependency audit passed; browser and Vercel error logs were empty.
+- Per the Product Owner's no-repeat direction, the accepted mixed journey was not rerun. Direct-start and reset recovery remain covered by their accepted feature evidence and the integrated automated suite; no Staging attempt was deleted or reset for this integration check.
 
 ### Objective
 
@@ -304,7 +308,7 @@ Consolidate documentation into:
 
 ## 7. Exact next action
 
-> Refresh the integrated Preview with result-scope correction `8ad5756`, verify that the RC-only result shows only Overall and RC, then complete reset/direct-start recovery and runtime-log review. The legacy full-mock six-order check already passed. Do not repeat the accepted mixed sectional journey, merge PR #21, merge to `main`, or promote any deployment or migration to Production.
+> Product Owner decides whether to authorize the two named Production migrations and the integrated Production application deployment described in the readiness plan. This handoff does not authorize either action, any Production test data, merging PR #21, or merging to `main`.
 
 No database, access, or role change is authorized by this handoff alone.
 
