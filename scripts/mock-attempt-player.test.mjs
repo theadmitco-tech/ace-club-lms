@@ -81,9 +81,11 @@ test('sectional mocks start in published order while only full mocks offer order
 });
 
 test('attempt rows scope category order independently inside a parent section', async () => {
-  const sql = await readFile(categoryOrderMigrationUrl, 'utf8');
-  assert.match(sql, /drop constraint if exists mock_attempt_sections_attempt_id_section_key/);
-  assert.match(sql, /unique \(attempt_id, category_key\)/);
+  const [categorySql, sql] = await Promise.all([
+    readFile(flexibleMigrationUrl, 'utf8'),
+    readFile(categoryOrderMigrationUrl, 'utf8'),
+  ]);
+  assert.match(categorySql, /mock_attempt_sections add unique \(attempt_id, category_key\)/);
   assert.match(sql, /drop constraint if exists mock_attempt_items_attempt_id_display_order_section_key/);
   assert.match(sql, /unique \(attempt_id, display_order, category_key\)/);
   assert.doesNotMatch(sql, /delete from|drop table|truncate/i);

@@ -66,7 +66,7 @@ The local correction:
 - starts sectional mocks directly using the immutable snapshot order;
 - keeps the chooser only when the snapshot consists of legacy `quant`, `verbal`, and `data_insights` units;
 - updates Student and reset copy;
-- adds a forward migration that scopes attempt-section and attempt-item uniqueness to `category_key`;
+- adds a forward migration that scopes the remaining attempt-item display-order uniqueness to `category_key` (attempt-section uniqueness was already converted by `20260924120000`);
 - adds automated checks for RC-only, mixed, full, direct-start, proportional timing, and non-destructive constraint replacement.
 
 ## Pending Staging verification
@@ -84,7 +84,7 @@ Local correction checks completed on 25 September: TypeScript, touched-file lint
 ## Rollback and recovery
 
 - Application rollback: restore Preview to commit `e9b20df` or the previously accepted Preview deployment.
-- Database recovery: the category-key constraints are compatible with existing full mocks and may remain if the application is rolled back. Prefer a reviewed forward correction over restoring the parent-section constraints.
+- Database recovery: the category-key item constraint is compatible with existing full mocks and may remain if the application is rolled back. Prefer a reviewed forward correction over restoring the parent-section constraint.
 - Fixture containment: unrelease or remove only the exact Staging assignments if requested; do not delete attempts or imported package history merely to simplify rollback.
 - Production rollback: none required because Production is unchanged.
 
