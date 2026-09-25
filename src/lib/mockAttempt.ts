@@ -34,6 +34,17 @@ export const SECTION_ORDERS: MockSection[][] = [
 ];
 
 export type MockUnit = MockSection | MockCategory;
+export type PublishedMockSection = { section: MockUnit; category_key?: MockUnit | null };
+
+export function publishedSectionOrder(sections: PublishedMockSection[]): MockUnit[] {
+  return sections.map((section) => section.category_key ?? section.section);
+}
+
+export function allowsSectionOrderSelection(sections: PublishedMockSection[]): boolean {
+  const order = publishedSectionOrder(sections);
+  return order.length === MOCK_SECTIONS.length && MOCK_SECTIONS.every((section) => order.includes(section));
+}
+
 export function isSectionOrder(value: unknown): value is MockUnit[] {
   return Array.isArray(value) && value.length > 0 && value.every((item) => [...MOCK_SECTIONS, ...MOCK_CATEGORIES].includes(item as never))
     && new Set(value).size === value.length;

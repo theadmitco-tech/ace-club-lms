@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-As of: 24 September 2026, 11:02 IST
+As of: 25 September 2026, 10:34 IST
 
 This is the single active operational handoff. Git history preserves earlier versions; do not append a growing chronological diary here.
 
@@ -35,12 +35,12 @@ It includes the final Notion fix, worksheet counts, the login chooser, and “Sw
 | Item | Verified state |
 |---|---|
 | Staging Supabase | `eyphkkginlgoaxflauog` |
-| Latest Staging migration | `20260906133456_add_material_tracker_rls_policies` |
-| Staging migration count | 44 |
-| Accepted current application candidate | `codex/template-worksheet-tracker` |
-| Accepted Staging-backed Preview | `dpl_B4GKdMvCZqdLrhWJPm99QxS4zfYt` — `READY`, target Preview |
-| Preview URL | `https://ace-club-kf3qofcht-theadmitco-techs-projects.vercel.app` |
-| Active disposable fixtures | None; exact-ID audits returned zero profiles, courses, template revisions, and Master Base sessions for both QA cycles |
+| Latest Staging migration | `20260924120000_add_mock_category_snapshots` |
+| Staging migration count | 45 |
+| Current flexible-mock candidate | `codex/flexible-sectional-mocks` at `e9b20df` before the pending 25 September direct-start fix |
+| Staging-backed Preview under test | `dpl_FSu3UMxkVEZSUz3U1Rre4JB7tEYF` — `READY`, target Preview |
+| Preview URL | `https://ace-club-94nnyu52x-theadmitco-techs-projects.vercel.app` |
+| Active Staging fixtures | One imported RC package and two published/assigned acceptance mocks remain active; see the flexible-mock release record |
 
 ### Ledger differences requiring deliberate handling
 
@@ -228,19 +228,22 @@ The live alias remained on the new `READY` deployment. No rollback condition was
 
 ## 6. Active documentation release
 
-### Flexible sectional GMAT mocks — local implementation complete (24 September 2026)
+### Flexible sectional GMAT mocks — Staging correction in progress (25 September 2026)
 
 - Work is isolated on branch `codex/flexible-sectional-mocks`, based on `codex/template-worksheet-tracker`; PR #21 and its security-patch worktree remain unchanged.
 - Application and migration implementation commit: `b62e65ef489c63871764bdb8d16bbe1ba0708ec0`.
 - The isolated branch implements category-level sectional mocks with any non-empty subset of QA, RC, CR, VA, and DI, positive per-category question counts, proportional published timing inherited from Quant/Verbal/Data Insights baselines, and dynamic Student section flow. VA may combine RC and CR questions; the narrower RC-only and CR-only forms remain available.
 - Published snapshots retain `category_key`, parent GMAT section, question count, display order, and calculated seconds. Existing snapshots without `category_key` retain their full Quant/Verbal/Data Insights behavior through a compatibility fallback.
-- Local verification passed: TypeScript, touched-file lint, the complete Pilot V3 suite (39 tests), the Next.js 16.2.4 Production build with all 54 static pages, documentation checks, and `git diff --check`.
+- Local verification for commits through `e9b20df` passed: TypeScript, touched-file lint, the complete Pilot V3 suite (40 tests), the Next.js 16.2.4 Production build with all 54 static pages, documentation checks, and `git diff --check`.
 - The first Staging transaction attempt on 24 September rolled back automatically before ledgering because the legacy item backfill derived categories from question type and collided where an earlier release had routed Data Sufficiency into Data Insights. The migration now preserves each legacy item's stored parent section (`qa`, `va`, or `di`); no durable Staging schema or data change resulted from the failed transaction.
 - The first Preview builder pass then exposed stale client composition while switching directly from one assessment to another. The target draft had zero persisted items; the builder now clears composition and assignment/tester controls immediately and ignores out-of-order assessment responses before any later mock can be saved or published.
-- Staging's ledger still differs from the committed migration directory, so a blind `supabase db push --include-all` remains prohibited. This release applies only `20260924120000_add_mock_category_snapshots.sql` as an explicit transaction and verifies its single ledger record.
+- Staging's ledger still differs from the committed migration directory, so a blind `supabase db push --include-all` remains prohibited. Migration `20260924120000_add_mock_category_snapshots.sql` was applied as an explicit transaction and its single ledger record was verified.
 - The dependency audit still reports the known Next.js 16.2.4 security findings fixed by separate PR #21. This branch deliberately does not absorb or merge that patch; it must be rebased onto the accepted security-patch lineage before any Preview candidate is approved.
-- No mock was published or assigned, no Preview or Production deployment was made, no Supabase environment was modified, and no student/course data was changed.
-- Next gate: review the migration and application diff, then apply the new migration to Staging and run disposable RC-only, multi-section, VA-only, and full-mock acceptance. Rollback before publication is application revert plus dropping only the new category columns/constraints after confirming no category-based version or attempt exists.
+- Staging imported the approved RC package exactly once and published two acceptance fixtures: RC-only version 1 (`510d2350-b886-4bce-8da7-b5fd4fdae567`) and QA + CR + DI version 2 (`0568d9c3-8d0c-4934-867e-306613e0f91f`). Both are assigned to the Staging-only `DI Test batch`; assignment-scoped tester copies also remain visible. Production is unchanged.
+- Authenticated Student acceptance proved that the RC-only fixture exposes one section, one question, and 1.95 minutes. The mixed fixture exposed only QA, CR, and DI in the order dialog, but attempt creation failed on the legacy parent-section display-order uniqueness constraint.
+- Product direction on 25 September removes order selection from every sectional mock. Sectional mocks now start in their immutable published order; only legacy full Quant/Verbal/Data Insights mocks retain the six-order chooser. A forward migration changes attempt-section and attempt-item uniqueness to `category_key`; it is not yet applied to Staging.
+- The 25 September correction passes TypeScript, touched-file lint, all 42 Pilot V3 tests, the 54-page Next.js production build, documentation checks, and `git diff --check`.
+- Next gate: complete local checks and documentation for the direct-start fix, push the exact commit, deploy its Staging-backed Preview, apply only `20260925100000_scope_mock_attempt_order_by_category.sql` to Staging, and rerun RC-only, mixed, and full-mock Student acceptance. Do not merge or promote to Production.
 
 ### Objective
 
@@ -285,7 +288,7 @@ Consolidate documentation into:
 
 ## 7. Exact next action
 
-> Monitor Release 1.2 under normal use. Then design Release 2 Admin/Super Admin capabilities, schema/RLS boundaries, and rollback before implementing or granting access. Do not grant access merely as part of planning.
+> Complete and push the flexible-mock direct-start correction, then apply only migration `20260925100000_scope_mock_attempt_order_by_category.sql` to Staging and rerun RC-only, mixed, and full-mock Student acceptance. Do not merge PR #21, merge to `main`, or promote any deployment or migration to Production.
 
 No database, access, or role change is authorized by this handoff alone.
 
@@ -321,6 +324,7 @@ Do not mix these documentation commits with application, database, role, access,
 - [Course-selection Production release evidence](pilot-v3/phase-7/evidence/worksheet-count-course-selection-production-release-2026-08-30.md)
 - [Course-selection rollback rehearsal](pilot-v3/phase-7/evidence/worksheet-count-course-selection-rollback-rehearsal-2026-08-30.md)
 - [Pilot V3 mock release evidence](pilot-v3/phase-7/evidence/phase-7-production-release-2026-08-25.md)
+- [Flexible sectional mocks Staging record](releases/2026-09-25-flexible-sectional-mocks-staging.md)
 
 ## 11. Pending decisions and confirmations
 

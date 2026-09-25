@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import mockAttempt from '../src/lib/mockAttempt.ts';
 
-const { categoryForQuestionType, formatClock, isSectionOrder, remainingSeconds, SECTION_ORDERS, sectionTimeSeconds, sectionOrders } = mockAttempt;
+const { allowsSectionOrderSelection, categoryForQuestionType, formatClock, isSectionOrder, publishedSectionOrder, remainingSeconds, SECTION_ORDERS, sectionTimeSeconds, sectionOrders } = mockAttempt;
 
 const migrationUrl = new URL('../supabase/migrations/20260822213000_add_mock_attempt_player.sql', import.meta.url);
 const timeoutMigrationUrl = new URL('../supabase/migrations/20260823110000_advance_expired_mock_sections.sql', import.meta.url);
@@ -17,6 +17,8 @@ const builderUrl = new URL('../src/components/admin/MockBuilder.tsx', import.met
 const builderServerUrl = new URL('../src/lib/server/mockBuilder.ts', import.meta.url);
 const vercelConfigUrl = new URL('../vercel.json', import.meta.url);
 const flexibleMigrationUrl = new URL('../supabase/migrations/20260924120000_add_mock_category_snapshots.sql', import.meta.url);
+const categoryOrderMigrationUrl = new URL('../supabase/migrations/20260925100000_scope_mock_attempt_order_by_category.sql', import.meta.url);
+const mocksListUrl = new URL('../src/app/mocks/MocksList.tsx', import.meta.url);
 
 test('exposes all six and only six three-section permutations', () => {
   assert.equal(SECTION_ORDERS.length, 6);
@@ -50,6 +52,41 @@ test('supports RC-only, mixed sectional and full mocks with proportional timing'
   assert.match(sql, /v_item\.time_limit_seconds/);
   assert.match(sql, /jsonb_array_length\(snapshot->'sections'\)/);
   assert.match(sql, /category_key = coalesce\(v_item\.category_key, v_item\.section\)/);
+});
+
+test('sectional mocks start in published order while only full mocks offer order selection', async () => {
+  const rcOnly = [{ section: 'verbal', category_key: 'rc' }];
+  const mixed = [
+    { section: 'quant', category_key: 'qa' },
+    { section: 'verbal', category_key: 'cr' },
+    { section: 'data_insights', category_key: 'di' },
+  ];
+  const full = [
+    { section: 'quant', category_key: 'quant' },
+    { section: 'verbal', category_key: 'verbal' },
+    { section: 'data_insights', category_key: 'data_insights' },
+  ];
+
+  assert.deepEqual(publishedSectionOrder(rcOnly), ['rc']);
+  assert.deepEqual(publishedSectionOrder(mixed), ['qa', 'cr', 'di']);
+  assert.equal(allowsSectionOrderSelection(rcOnly), false);
+  assert.equal(allowsSectionOrderSelection(mixed), false);
+  assert.equal(allowsSectionOrderSelection(full), true);
+
+  const list = await readFile(mocksListUrl, 'utf8');
+  assert.match(list, /allowsSectionOrderSelection\(sections\)/);
+  assert.match(list, /'Start mock'/);
+  assert.match(list, /start\(mock, publishedSectionOrder\(sections\)\)/);
+  assert.match(list, />Choose section order</);
+});
+
+test('attempt rows scope category order independently inside a parent section', async () => {
+  const sql = await readFile(categoryOrderMigrationUrl, 'utf8');
+  assert.match(sql, /drop constraint if exists mock_attempt_sections_attempt_id_section_key/);
+  assert.match(sql, /unique \(attempt_id, category_key\)/);
+  assert.match(sql, /drop constraint if exists mock_attempt_items_attempt_id_display_order_section_key/);
+  assert.match(sql, /unique \(attempt_id, display_order, category_key\)/);
+  assert.doesNotMatch(sql, /delete from|drop table|truncate/i);
 });
 
 test('mock builder isolates composition state while switching assessments', async () => {
