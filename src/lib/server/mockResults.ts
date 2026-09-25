@@ -1,5 +1,5 @@
 import 'server-only';
-import { SECTION_LABELS, type MockSection } from '@/lib/mockAttempt';
+import { mockUnitLabel, type MockSection, type MockUnit } from '@/lib/mockAttempt';
 import { answerMap, buildMockResultSummary, resultOutcome, type MockResultItemInput } from '@/lib/mockResults';
 import { createMockAdminClient } from './mockQuestionBankAdmin';
 
@@ -8,6 +8,7 @@ type AttemptItemRow = {
   id: string;
   question_revision_id: string;
   section: MockSection;
+  category_key: MockUnit;
   display_order: number;
   time_spent_ms: number;
   bookmarked: boolean;
@@ -41,8 +42,8 @@ export async function loadMockResult(attemptId: string, access: { studentId?: st
   const [{ data: assignment, error: assignmentError }, { data: student, error: studentError }, { data: sections, error: sectionError }, { data: itemRows, error: itemError }] = await Promise.all([
     db.from('mock_assessment_assignments').select('id,course_id,mock_assessment_versions!inner(version_number,mock_assessments!inner(name,purpose))').eq('id', attempt.assignment_id).single(),
     db.from('profiles').select('id,full_name,email').eq('id', attempt.student_id).single(),
-    db.from('mock_attempt_sections').select('id,section,sequence_index,status,started_at,submitted_at,time_limit_seconds').eq('attempt_id', attempt.id).order('sequence_index'),
-    db.from('mock_attempt_items').select('id,question_revision_id,section,display_order,time_spent_ms,bookmarked,question_snapshot,stimulus_snapshot,response_config_snapshot,mock_responses(response)').eq('attempt_id', attempt.id).order('section').order('display_order'),
+    db.from('mock_attempt_sections').select('id,section,category_key,sequence_index,status,started_at,submitted_at,time_limit_seconds').eq('attempt_id', attempt.id).order('sequence_index'),
+    db.from('mock_attempt_items').select('id,question_revision_id,section,category_key,display_order,time_spent_ms,bookmarked,question_snapshot,stimulus_snapshot,response_config_snapshot,mock_responses(response)').eq('attempt_id', attempt.id).order('category_key').order('display_order'),
   ]);
   if (assignmentError || studentError || sectionError || itemError) throw assignmentError ?? studentError ?? sectionError ?? itemError;
 
@@ -63,7 +64,7 @@ export async function loadMockResult(attemptId: string, access: { studentId?: st
   const noteByItem = new Map((notes ?? []).map((note) => [note.attempt_item_id, note.note]));
   const revisionById = new Map((revisions ?? []).map((revision) => [revision.id, revision]));
   const topicById = new Map((topics ?? []).map((topic) => [topic.id, topic.label]));
-  const sectionSequence = new Map((sections ?? []).map((section) => [section.section, section.sequence_index]));
+  const sectionSequence = new Map((sections ?? []).map((section) => [section.category_key, section.sequence_index]));
   const resultItems: MockResultItem[] = items.map((item) => {
     const revision = revisionById.get(item.question_revision_id);
     const selected = answerMap(item.mock_responses[0]?.response);
@@ -77,14 +78,14 @@ export async function loadMockResult(attemptId: string, access: { studentId?: st
       subtopic: item.question_snapshot.subtopic ?? topicById.get(revision?.subtopic_id ?? '') ?? null,
       note: noteByItem.get(item.id) ?? '',
     };
-  }).sort((left, right) => (sectionSequence.get(left.section) ?? 0) - (sectionSequence.get(right.section) ?? 0) || left.display_order - right.display_order);
-  const input: MockResultItemInput[] = resultItems.map((item) => ({ id: item.id, section: item.section, timeSpentMs: item.time_spent_ms, selectedAnswer: item.selected_answer, correctAnswer: item.correct_answer, topic: item.topic, subtopic: item.subtopic }));
+  }).sort((left, right) => (sectionSequence.get(left.category_key) ?? 0) - (sectionSequence.get(right.category_key) ?? 0) || left.display_order - right.display_order);
+  const input: MockResultItemInput[] = resultItems.map((item) => ({ id: item.id, section: item.category_key, timeSpentMs: item.time_spent_ms, selectedAnswer: item.selected_answer, correctAnswer: item.correct_answer, topic: item.topic, subtopic: item.subtopic }));
   const version = relationOne(assignment.mock_assessment_versions);
   const assessment = relationOne(version?.mock_assessments);
   return {
     attempt: { ...attempt, mock_name: assessment?.name ?? 'Mock assessment', purpose: assessment?.purpose ?? 'standard', version_number: version?.version_number ?? 1 },
     student,
-    sections: (sections ?? []).map((section) => ({ ...section, label: SECTION_LABELS[section.section as MockSection], time_spent_ms: resultItems.filter((item) => item.section === section.section).reduce((sum, item) => sum + item.time_spent_ms, 0) })),
+    sections: (sections ?? []).map((section) => ({ ...section, label: mockUnitLabel(section.category_key as MockUnit), time_spent_ms: resultItems.filter((item) => item.category_key === section.category_key).reduce((sum, item) => sum + item.time_spent_ms, 0) })),
     items: resultItems,
     summary: buildMockResultSummary(input),
   };

@@ -18,7 +18,7 @@ test('derives reconciled counts and time from attempt items', () => {
   const items = [
     { id: '1', section: 'quant', topic: 'Arithmetic', subtopic: 'Factors', timeSpentMs: 61000, selectedAnswer: { a: '1' }, correctAnswer: { a: '1' } },
     { id: '2', section: 'quant', topic: 'Arithmetic', subtopic: 'Averages', timeSpentMs: 30000, selectedAnswer: { a: '2' }, correctAnswer: { a: '1' } },
-    { id: '3', section: 'verbal', topic: 'Critical Reasoning', subtopic: null, timeSpentMs: 0, selectedAnswer: null, correctAnswer: { a: '1' } },
+    { id: '3', section: 'rc', topic: 'Reading Comprehension', subtopic: null, timeSpentMs: 0, selectedAnswer: null, correctAnswer: { a: '1' } },
   ];
   const summary = buildMockResultSummary(items);
   assert.deepEqual({ total: summary.overall.total, correct: summary.overall.correct, incorrect: summary.overall.incorrect, unanswered: summary.overall.unanswered, time: summary.overall.timeSpentMs }, { total: 3, correct: 1, incorrect: 1, unanswered: 1, time: 91000 });
@@ -48,10 +48,9 @@ test('results renderer owns its interactive client boundary', async () => {
   assert.match(view, /^'use client';/);
   assert.match(view, /<MockQuestionBody disabled/);
   assert.match(view, /onChange=\{\(\) => undefined\}/);
-  assert.match(view, /label: 'Overall'/);
-  assert.match(view, /label: 'DI'/);
-  assert.match(view, /label: 'QA'/);
-  assert.match(view, /label: 'VA'/);
+  assert.match(view, /result\.sections\.map/);
+  assert.match(view, /item\.category_key === activeTab/);
+  assert.doesNotMatch(view, /const RESULT_TABS/);
   assert.match(view, /Average time\/question/);
   assert.match(view, /function PacingChart/);
   assert.match(view, /Question-wise breakdown/);

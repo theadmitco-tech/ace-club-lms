@@ -1,11 +1,11 @@
-import type { MockSection } from './mockAttempt';
+import type { MockUnit } from './mockAttempt';
 
 export type AnswerMap = Record<string, string>;
 export type MockResultOutcome = 'correct' | 'incorrect' | 'unanswered';
 
 export type MockResultItemInput = {
   id: string;
-  section: MockSection;
+  section: MockUnit;
   timeSpentMs: number;
   selectedAnswer: unknown;
   correctAnswer: unknown;
