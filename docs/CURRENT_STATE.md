@@ -264,6 +264,7 @@ The live alias remained on the new `READY` deployment. No rollback condition was
 - The compact integrated Preview check exposed one omitted dynamic surface: an RC-only completed result still showed hard-coded DI, QA, and VA tabs. Commit `8ad5756` now derives result tabs, diagnostics, question filtering, labels, and links from the attempt's included `category_key` values.
 - Integrated acceptance passed on Preview `dpl_G91Rg5sd1VzZMuWSfKgG4FyTEhLL`: the RC-only result showed only Overall and RC / Reading Comprehension, its diagnostic row used Reading Comprehension, and the legacy full mock retained all six order choices. All 43 Pilot V3 tests, Next.js 16.3.6 build, TypeScript, touched-file lint, documentation checks, `git diff --check`, and the Production dependency audit passed; browser and Vercel error logs were empty.
 - Per the Product Owner's no-repeat direction, the accepted mixed journey was not rerun. Direct-start and reset recovery remain covered by their accepted feature evidence and the integrated automated suite; no Staging attempt was deleted or reset for this integration check.
+- The supplied RC mock is intended to go live only for the **RC CC batch**. Before importing, creating, publishing, assigning, or releasing that mock in Production, stop and obtain a fresh explicit Product Owner approval naming the RC mock and RC CC batch. Application or migration deployment approval does not include this mock-data action, and the already uploaded source package must not be imported a second time without separate confirmation.
 
 ### Objective
 
@@ -308,7 +309,7 @@ Consolidate documentation into:
 
 ## 7. Exact next action
 
-> Product Owner decides whether to authorize the two named Production migrations and the integrated Production application deployment described in the readiness plan. This handoff does not authorize either action, any Production test data, merging PR #21, or merging to `main`.
+> Product Owner decides whether to authorize the two named Production migrations and the integrated Production application deployment described in the readiness plan. Separately, ask again before making the supplied RC mock live for the RC CC batch. This handoff does not authorize any of those actions, any Production test data, merging PR #21, or merging to `main`.
 
 No database, access, or role change is authorized by this handoff alone.
 

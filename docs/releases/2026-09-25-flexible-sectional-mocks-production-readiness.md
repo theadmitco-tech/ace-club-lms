@@ -84,6 +84,8 @@ Without additional data-mutation approval, checks are limited to existing data a
 
 A true flexible-mock Production start requires an exact Production assessment version, assignment/tester grant, and attempt. Creating, publishing, assigning, starting, resetting, or cleaning such a fixture is a separate Production-data mutation and requires explicit approval with exact targets.
 
+The Product Owner has identified the supplied RC mock as a future live mock for the **RC CC batch**, but has not authorized that data operation. Before importing, creating, publishing, assigning, or releasing it in Production, Engineering must ask again and receive explicit approval for that named mock and batch. Do not re-import the already uploaded source package without separate confirmation. Approval for the two migrations or application deployment does not authorize the RC mock release.
+
 ## Rollback and recovery
 
 ### Before either migration
@@ -105,9 +107,10 @@ Separate explicit approvals are required for:
 1. creating the integrated security-plus-flexible release branch and Preview;
 2. applying the two named Production migrations;
 3. deploying the integrated application to Production;
-4. any Production tester fixture, mock publication/assignment, attempt, reset, or cleanup;
-5. merging PR #21 or merging any branch to `main`.
+4. importing, creating, publishing, assigning, or releasing the supplied RC mock to the RC CC batch;
+5. any other Production tester fixture, mock publication/assignment, attempt, reset, or cleanup;
+6. merging PR #21 or merging any branch to `main`.
 
 ## Exact next action
 
-Product Owner approves or rejects the two named Production migrations and integrated application deployment as separate gates. No Production test fixture, publication, assignment, attempt, reset, merge to `main`, or PR #21 merge is included.
+Product Owner approves or rejects the two named Production migrations and integrated application deployment as separate gates. After those decisions, Engineering must still ask again before making the supplied RC mock live for the RC CC batch. No Production test fixture, publication, assignment, attempt, reset, merge to `main`, or PR #21 merge is included.
