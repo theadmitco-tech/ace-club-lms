@@ -29,7 +29,8 @@ Allow an immutable published mock to contain any non-empty subset of QA, RC, CR,
 
 - Branch: `codex/flexible-sectional-mocks`.
 - Published implementation commits before this correction: `b62e65e`, `b2932a7`, `98c1869`, and `e9b20df`.
-- Accepted correction commit: `09a52ee`.
+- Accepted sectional-flow correction commit: `09a52ee`.
+- Request-recovery correction commit: `65464bd` (local verification complete; Preview refresh pending).
 
 ## Staging schema and package state
 
@@ -79,13 +80,20 @@ The local correction:
 - Full compatibility: the existing 135-minute `Phase 3 Student Rendering Acceptance — 2026-08-23` card retained `Choose section order` and displayed all six permutations of Quantitative Reasoning, Verbal Reasoning, and Data Insights.
 - Staging attempt evidence: completed mixed attempt `b9174a94-d0a4-49b4-91cb-8b774912e10f`; in-progress RC-only tester attempt `d352d774-25f1-4471-b636-b2e56051f4f6`.
 
+## Reset recovery correction
+
+During Product Owner review on 25 September 2026, the RC-only reset dialog remained on `Resetting…` after the browser reported `TypeError: Failed to fetch`. Vercel request logs contained no corresponding `DELETE`, confirming that the transient failure occurred before the reset reached the application route. After reloading, the same RC-only reset completed successfully and the card returned to `Start mock`; attempt `d352d774-25f1-4471-b636-b2e56051f4f6` was therefore removed as requested.
+
+The client now bounds start and reset requests at 20 seconds, tolerates non-JSON error responses, reports a retryable connection error, and always clears the busy state. The mock-attempt test suite includes a regression check for this recovery path. TypeScript, touched-file lint, the 14 mock-attempt-player tests, and `git diff --check` passed locally. No database or migration change was required.
+
 ## Deployment note
 
 The first CLI deployment attempt created a separate empty Vercel project named `ace-club-flexible-mocks`. Deployment `dpl_H1hiCpiFchzAgvaTpZ7aWu1CsjPN` failed during prebuild because that project had no environment variables, so no application was deployed there. The worktree was then explicitly linked to the existing `ace-club-lms` project before the accepted Preview was created. The empty project remains pending explicit cleanup approval and has no Production alias or Production data connection.
 
 ## Remaining work
 
-- Product Owner reviews the accepted Preview.
+- Refresh and verify the Preview with request-recovery commit `65464bd`.
+- Product Owner reviews the refreshed Preview.
 - Decide whether to retain or remove the exact Staging assignments, tester grants, and attempts.
 - Decide whether to delete the empty accidental Vercel project.
 - Any Production migration or deployment requires a new explicit approval.

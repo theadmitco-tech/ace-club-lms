@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-As of: 25 September 2026, 10:34 IST
+As of: 25 September 2026, 11:03 IST
 
 This is the single active operational handoff. Git history preserves earlier versions; do not append a growing chronological diary here.
 
@@ -37,10 +37,12 @@ It includes the final Notion fix, worksheet counts, the login chooser, and “Sw
 | Staging Supabase | `eyphkkginlgoaxflauog` |
 | Latest Staging migration | `20260925100000_scope_mock_attempt_order_by_category` |
 | Staging migration count | 46 |
-| Accepted flexible-mock candidate | `codex/flexible-sectional-mocks` at `09a52ee` |
+| Flexible-mock candidate | `codex/flexible-sectional-mocks` at `65464bd`; sectional flow accepted, reset-request recovery locally verified |
 | Accepted Staging-backed Preview | `dpl_5bCDP34CkcHDMnz45JdXg1WrNZTY` — `READY`, target Preview |
 | Preview URL | `https://ace-club-7m2icw0iv-theadmitco-techs-projects.vercel.app` |
 | Active Staging fixtures | One imported RC package and two published/assigned acceptance mocks remain active; see the flexible-mock release record |
+
+The RC-only tester attempt was reset successfully during review after a transient browser request failure. The application correction at `65464bd` prevents start/reset dialogs from remaining permanently busy after a failed or stalled request; it does not change the database. The accepted Preview listed above still serves `09a52ee` until the correction is redeployed and reverified.
 
 ### Ledger differences requiring deliberate handling
 
