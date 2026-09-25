@@ -1,12 +1,12 @@
 # Flexible sectional mocks — Production readiness plan
 
-Status: Integrated Staging candidate accepted; Production not authorized
+Status: Production application and schema deployed; RC CC mock not authorized
 Owner: Engineering
 Last updated: 25 September 2026
 
 ## Decision boundary
 
-This record prepares a release path only. It does not authorize a merge, Production migration, Production deployment, mock publication or assignment, tester grant, attempt reset, course change, or Student-data mutation. PR #21 remains open and unchanged.
+The Product Owner authorized and Engineering completed the two named Production migrations, integrated application deployment, and non-mutating smoke checks on 25 September 2026. This record still does not authorize a merge, RC mock import/publication/assignment, tester grant, attempt reset, course change, or Student-data mutation. PR #21 remains unmerged and unchanged by this rollout.
 
 ## Accepted behavior
 
@@ -18,8 +18,8 @@ Acceptance evidence is in [Flexible sectional mocks — Staging](2026-09-25-flex
 
 | Boundary | Verified state |
 |---|---|
-| Current Production application | `dpl_DPSTQTeEcdJoTtzjF8N4ef5dz1L9`, commit `8e6052336f9274922ecad63c8d9772e644473c01` |
-| Current Production database | `owmlxsnzogfapotmjrqk`; latest remote migration `20260907064221` |
+| Current Production application | `dpl_Hk1X2tMnSUU8rzDGgs9u3ewt96Ds`, source commit `3681f6b5a645a3cbf5c9f682d430b469911e550c` |
+| Current Production database | `owmlxsnzogfapotmjrqk`; latest remote migration `20260925100000` |
 | Flexible-mock branch | `codex/flexible-sectional-mocks`; application correction through `65464bd` |
 | Accepted flexible-mock Preview | `dpl_EnqC5waqKdBjvc1BJWFKa4GKxhmF`, `READY`, Staging-backed |
 | Security patch PR | [#21](https://github.com/theadmitco-tech/ace-club-lms/pull/21), head `fcbd42ffd6a6b06645ab5819fcf6c403347d4d00`, mergeable and checks successful |
@@ -113,4 +113,4 @@ Separate explicit approvals are required for:
 
 ## Exact next action
 
-Product Owner approves or rejects the two named Production migrations and integrated application deployment as separate gates. After those decisions, Engineering must still ask again before making the supplied RC mock live for the RC CC batch. No Production test fixture, publication, assignment, attempt, reset, merge to `main`, or PR #21 merge is included.
+Engineering asks the Product Owner for fresh explicit approval before importing the supplied RC package, publishing its questions, creating the 11-question RC mock, or assigning/releasing it to the RC CC batch. No Production test fixture, attempt, reset, merge to `main`, or PR #21 merge is included.

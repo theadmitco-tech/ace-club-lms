@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-As of: 25 September 2026, 16:32 IST
+As of: 25 September 2026, 18:07 IST
 
 This is the single active operational handoff. Git history preserves earlier versions; do not append a growing chronological diary here.
 
@@ -14,21 +14,21 @@ Stable context: [Project Manual](PROJECT_MANUAL.md). Engineering and handoff rul
 |---|---|
 | Application | [aceclub.theadmitco.com](https://aceclub.theadmitco.com) |
 | Vercel project | `ace-club-lms` / `prj_2lW0zANcAnI81eURRZrJTMSCxuLr` |
-| Current Production deployment | `dpl_DPSTQTeEcdJoTtzjF8N4ef5dz1L9` — `READY` |
-| Deployment source | `codex/template-worksheet-tracker` |
-| Production Git commit | `8e6052336f9274922ecad63c8d9772e644473c01` |
-| Commit purpose | Restore the existing worksheet tracker for template-native courses without changing the Student flow |
+| Current Production deployment | `dpl_Hk1X2tMnSUU8rzDGgs9u3ewt96Ds` — `READY` |
+| Deployment source | `codex/flexible-mocks-security-integration` |
+| Production Git commit | `3681f6b5a645a3cbf5c9f682d430b469911e550c` |
+| Commit purpose | Deploy flexible sectional mocks with the accepted Next.js 16.3.6 security integration |
 | Production Supabase | `owmlxsnzogfapotmjrqk` |
-| Latest Production migration | `20260907064221_add_material_tracker_rls_policies` |
-| Production migration count | 47 |
+| Latest Production migration | `20260925100000_scope_mock_attempt_order_by_category` |
+| Production migration count | 49 |
 
-The deployment identity and migration boundary were reverified read-only on 24 September 2026. Security Advisor and authenticated read-only Production RPC acceptance were last run on 7 September 2026.
+The deployment identity, migration boundary, authenticated Student/Admin smoke, runtime logs, and Security Advisor were verified on 25 September 2026. Flexible sectional mock schema and application support are live; the supplied RC mock is not imported or released in Production.
 
 ### Application rollback candidate
 
-The immediate application rollback is `dpl_5YJZJx6zM5bxNJfZgr5Us8fMHvo7`, the previously live and verified Release 1.1 deployment.
+The immediate application rollback is `dpl_DPSTQTeEcdJoTtzjF8N4ef5dz1L9`, the previously live and verified Release 1.2 deployment.
 
-It includes the final Notion fix, worksheet counts, the login chooser, and “Switch course”, but not the template-native worksheet tracker. If Release 1.2 database behavior must also be disabled, use the documented non-destructive rollback SQL; do not drop the new tables.
+It includes the template-native worksheet tracker but not flexible sectional mock authoring or the Next.js 16.3.6 integration. Because the prior Mock Builder cannot author against the new non-null category schema, keep mock authoring frozen during application rollback and prefer a reviewed forward correction. Do not drop category columns or restore the old uniqueness constraints.
 
 ## 2. Staging state
 
@@ -76,7 +76,7 @@ Release 1.2 adds a material-backed compatibility catalog for template-native wor
 
 - GitHub repository: `theadmitco-tech/ace-club-lms`.
 - GitHub `main`: `be1a6ccba4e1ba896b059051fbf712708c70fafb`.
-- Current Production commit is available on GitHub branch `codex/pilot-v3-notion-fix`.
+- Current Production commit is available on GitHub branch `codex/flexible-mocks-security-integration`.
 - GitHub `main` is not the authoritative Production source baseline; it predates the Pilot V3 Production lineage.
 
 ### Reconciled Release 0 candidate and Release 1 Staging branch
@@ -105,8 +105,9 @@ Release 1.2 adds a material-backed compatibility catalog for template-native wor
 - Release 1.2 Production evidence: [Template worksheet tracker Production rollout](releases/2026-09-07-release-1-2-template-worksheet-tracker-production.md).
 - Security patch branch: `codex/next-security-patch`, based on the documented Release 1.2 branch head.
 - Its application commit changes only `package.json` and `package-lock.json`, updating Next.js and its ESLint configuration from `16.2.4` to `16.3.6`.
-- Production dependency audit, regression suites, Preview build, route smoke checks, and runtime-log scan passed. Pull request #21 remains Draft; `main` and Production are unchanged.
+- Production dependency audit, regression suites, Preview build, route smoke checks, and runtime-log scan passed. Pull request #21 remains Draft and unmerged; its accepted dependency change reached Production only through the separately approved integration branch. `main` remains unchanged.
 - Security patch evidence: [Next.js security patch Preview acceptance](releases/2026-09-24-next-security-patch-staging.md).
+- Flexible sectional mock Production evidence: [Flexible sectional mocks Production rollout](releases/2026-09-25-flexible-sectional-mocks-production.md).
 
 ## 4. Confirmed user-visible state
 
@@ -239,7 +240,7 @@ The live alias remained on the new `READY` deployment. No rollback condition was
 
 ## 6. Active documentation release
 
-### Flexible sectional GMAT mocks — Staging accepted (25 September 2026)
+### Flexible sectional GMAT mocks — Production application/schema accepted (25 September 2026)
 
 - Work is isolated on branch `codex/flexible-sectional-mocks`, based on `codex/template-worksheet-tracker`; PR #21 and its security-patch worktree remain unchanged.
 - Application and migration implementation commit: `b62e65ef489c63871764bdb8d16bbe1ba0708ec0`.
@@ -250,13 +251,13 @@ The live alias remained on the new `READY` deployment. No rollback condition was
 - The first Preview builder pass then exposed stale client composition while switching directly from one assessment to another. The target draft had zero persisted items; the builder now clears composition and assignment/tester controls immediately and ignores out-of-order assessment responses before any later mock can be saved or published.
 - Staging's ledger still differs from the committed migration directory, so a blind `supabase db push --include-all` remains prohibited. Migration `20260924120000_add_mock_category_snapshots.sql` was applied as an explicit transaction and its single ledger record was verified.
 - The isolated flexible branch remains preserved on its accepted feature lineage. The separate integration branch now combines it with PR #21 head `fcbd42f` without modifying or merging PR #21.
-- Staging imported the approved RC package exactly once and published two acceptance fixtures: RC-only version 1 (`510d2350-b886-4bce-8da7-b5fd4fdae567`) and QA + CR + DI version 2 (`0568d9c3-8d0c-4934-867e-306613e0f91f`). Both are assigned to the Staging-only `DI Test batch`; assignment-scoped tester copies also remain visible. Production is unchanged.
+- Staging imported the approved RC package exactly once and published two acceptance fixtures: RC-only version 1 (`510d2350-b886-4bce-8da7-b5fd4fdae567`) and QA + CR + DI version 2 (`0568d9c3-8d0c-4934-867e-306613e0f91f`). Both are assigned to the Staging-only `DI Test batch`; assignment-scoped tester copies also remain visible.
 - Authenticated Student acceptance proved that the RC-only fixture exposes one section, one question, and 1.95 minutes. The mixed fixture exposed only QA, CR, and DI in the order dialog, but attempt creation failed on the legacy parent-section display-order uniqueness constraint.
 - Product direction on 25 September removes order selection from every sectional mock. Sectional mocks now start in their immutable published order; only legacy full Quant/Verbal/Data Insights mocks retain the six-order chooser. Migration `20260925100000_scope_mock_attempt_order_by_category` now scopes the remaining attempt-item display-order constraint to `category_key` on Staging.
 - The 25 September correction passes TypeScript, touched-file lint, all 42 Pilot V3 tests, the 54-page Next.js production build, documentation checks, and `git diff --check`.
 - Staging verification passed on Preview `dpl_5bCDP34CkcHDMnz45JdXg1WrNZTY`: RC-only started directly as section 1 of 1 with a 1:57 timer; QA + CR + DI started directly, used 2:09 / 1:57 / 2:15 timers, offered breaks only between those three sections, and completed; the existing 135-minute full mock retained all six orders.
 - Reset-request recovery is accepted on Preview `dpl_EnqC5waqKdBjvc1BJWFKa4GKxhmF`: a transient failed start recovered with visible retry copy and enabled controls; retry, direct RC-only start, and reset then passed.
-- Production readiness preparation is documented in [the flexible-mock Production readiness plan](releases/2026-09-25-flexible-sectional-mocks-production-readiness.md). Fresh read-only checks confirm Production lacks the two flexible-mock migrations and has a small affected mock-table footprint. A blind migration push remains prohibited.
+- Production readiness preparation is documented in [the flexible-mock Production readiness plan](releases/2026-09-25-flexible-sectional-mocks-production-readiness.md). The two reviewed migrations are now applied and ledgered exactly once in Production. Historical ledger differences remain, so a blind migration push remains prohibited.
 - The integration candidate uses Next.js 16.3.6 from PR #21 and the accepted flexible-mock changes. PR #21 remains open, mergeable, green, and unchanged.
 - Once the category migrations are applied, the prior Admin Mock Builder cannot create/save mocks because it omits non-null `category_key`. An approved rollout therefore requires a mock-authoring freeze and immediate integrated application deployment; application rollback keeps mock authoring frozen pending a forward correction.
 - One empty Vercel project named `ace-club-flexible-mocks` was created accidentally during the first CLI deployment attempt. Its deployment `dpl_H1hiCpiFchzAgvaTpZ7aWu1CsjPN` failed before application deployment because no environment variables existed. It is separate from `ace-club-lms`, has no effect on Production, and has not been deleted without explicit approval.
@@ -265,6 +266,8 @@ The live alias remained on the new `READY` deployment. No rollback condition was
 - Integrated acceptance passed on Preview `dpl_G91Rg5sd1VzZMuWSfKgG4FyTEhLL`: the RC-only result showed only Overall and RC / Reading Comprehension, its diagnostic row used Reading Comprehension, and the legacy full mock retained all six order choices. All 43 Pilot V3 tests, Next.js 16.3.6 build, TypeScript, touched-file lint, documentation checks, `git diff --check`, and the Production dependency audit passed; browser and Vercel error logs were empty.
 - Per the Product Owner's no-repeat direction, the accepted mixed journey was not rerun. Direct-start and reset recovery remain covered by their accepted feature evidence and the integrated automated suite; no Staging attempt was deleted or reset for this integration check.
 - The supplied RC mock is intended to go live only for the **RC CC batch**. Before importing, creating, publishing, assigning, or releasing that mock in Production, stop and obtain a fresh explicit Product Owner approval naming the RC mock and RC CC batch. Application or migration deployment approval does not include this mock-data action, and the already uploaded source package must not be imported a second time without separate confirmation.
+- The Product Owner authorized the two Production migrations and integrated application deployment as separate gates. Both migrations are ledgered once, Production deployment `dpl_Hk1X2tMnSUU8rzDGgs9u3ewt96Ds` is `READY`, and the authenticated Student/Admin smoke, browser/Vercel logs, Supabase health, Security Advisor, and final isolation checks passed. Full evidence is in [the Production rollout record](releases/2026-09-25-flexible-sectional-mocks-production.md).
+- Production still has zero imports for RC package `1f14b21e-df4f-4f5d-9eff-b972497a9da2`; no RC mock was created, published, assigned, or released.
 
 ### Objective
 
@@ -309,7 +312,7 @@ Consolidate documentation into:
 
 ## 7. Exact next action
 
-> Product Owner decides whether to authorize the two named Production migrations and the integrated Production application deployment described in the readiness plan. Separately, ask again before making the supplied RC mock live for the RC CC batch. This handoff does not authorize any of those actions, any Production test data, merging PR #21, or merging to `main`.
+> Ask the Product Owner for fresh explicit approval before importing the supplied RC package into Production, publishing its questions, creating the 11-question RC mock, or assigning/releasing it to the RC CC batch. This handoff does not authorize those actions, any other Production test data, merging PR #21, or merging to `main`.
 
 No database, access, or role change is authorized by this handoff alone.
 
@@ -348,6 +351,7 @@ Do not mix these documentation commits with application, database, role, access,
 - [Pilot V3 mock release evidence](pilot-v3/phase-7/evidence/phase-7-production-release-2026-08-25.md)
 - [Flexible sectional mocks Staging record](releases/2026-09-25-flexible-sectional-mocks-staging.md)
 - [Flexible sectional mocks Production readiness plan](releases/2026-09-25-flexible-sectional-mocks-production-readiness.md)
+- [Flexible sectional mocks Production rollout](releases/2026-09-25-flexible-sectional-mocks-production.md)
 
 ## 11. Pending decisions and confirmations
 
@@ -355,4 +359,5 @@ Do not mix these documentation commits with application, database, role, access,
 - Approved list of Super Admin recipients.
 - Product Owner review of Release 1 Production acceptance evidence.
 - Product Owner review of Release 1.1 Production acceptance evidence.
+- Explicit approval for importing, publishing, and assigning the supplied 11-question RC mock to the RC CC batch.
 - Release 2 capability matrix and approved Super Admin recipients.
