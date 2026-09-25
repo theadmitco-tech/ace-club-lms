@@ -24,18 +24,45 @@ export function MocksList({ mocks, allowTestReset = false }: { mocks: MockRow[];
   async function start(mock: MockRow, sectionOrder: MockUnit[]) {
     if (!sectionOrder.length) return;
     setBusy(true); setError('');
-    const response = await fetch('/api/student/mock-attempts', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ assignmentId: mock.id, sectionOrder, clientMutationId: crypto.randomUUID() }) });
-    const result = await response.json();
-    if (!response.ok) { setError(result.error ?? 'Could not start this mock.'); setBusy(false); return; }
-    router.push(`/mocks/${result.attempt_id}`);
+    try {
+      const response = await fetch('/api/student/mock-attempts', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ assignmentId: mock.id, sectionOrder, clientMutationId: crypto.randomUUID() }),
+        signal: AbortSignal.timeout(20_000),
+      });
+      const result = await response.json().catch(() => ({})) as { attempt_id?: string; error?: string };
+      if (!response.ok || !result.attempt_id) {
+        setError(result.error ?? 'Could not start this mock. Please try again.');
+        return;
+      }
+      router.push(`/mocks/${result.attempt_id}`);
+    } catch {
+      setError('The request did not complete. Check your connection and try again.');
+    } finally {
+      setBusy(false);
+    }
   }
   async function resetAttempt() {
     if (!resetTarget?.attempt) return;
     setBusy(true); setError('');
-    const response = await fetch(`/api/student/mock-attempts/${resetTarget.attempt.id}`, { method:'DELETE' });
-    const result = await response.json();
-    if (!response.ok) { setError(result.error ?? 'Could not reset this test attempt.'); setBusy(false); return; }
-    setResetTarget(null); setBusy(false); router.refresh();
+    try {
+      const response = await fetch(`/api/student/mock-attempts/${resetTarget.attempt.id}`, {
+        method: 'DELETE',
+        signal: AbortSignal.timeout(20_000),
+      });
+      const result = await response.json().catch(() => ({})) as { reset?: boolean; error?: string };
+      if (!response.ok || result.reset !== true) {
+        setError(result.error ?? 'Could not reset this test attempt. Please try again.');
+        return;
+      }
+      setResetTarget(null);
+      router.refresh();
+    } catch {
+      setError('The reset did not complete. Check your connection and try again.');
+    } finally {
+      setBusy(false);
+    }
   }
   if (!mocks.length) return <section className="student-state"><h2>No mocks available</h2><p>Released batch mocks and active tester assignments will appear here.</p></section>;
   return <>

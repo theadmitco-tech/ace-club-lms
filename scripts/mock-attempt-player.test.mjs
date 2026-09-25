@@ -80,6 +80,14 @@ test('sectional mocks start in published order while only full mocks offer order
   assert.match(list, />Choose section order</);
 });
 
+test('mock start and reset requests recover from network failures', async () => {
+  const list = await readFile(mocksListUrl, 'utf8');
+  assert.match(list, /signal: AbortSignal\.timeout\(20_000\)/);
+  assert.match(list, /The request did not complete\. Check your connection and try again\./);
+  assert.match(list, /The reset did not complete\. Check your connection and try again\./);
+  assert.match(list, /finally \{\s*setBusy\(false\);\s*\}/);
+});
+
 test('attempt rows scope category order independently inside a parent section', async () => {
   const [categorySql, sql] = await Promise.all([
     readFile(flexibleMigrationUrl, 'utf8'),
