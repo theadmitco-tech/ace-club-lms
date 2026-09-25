@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-As of: 25 September 2026, 11:09 IST
+As of: 25 September 2026, 12:04 IST
 
 This is the single active operational handoff. Git history preserves earlier versions; do not append a growing chronological diary here.
 
@@ -246,8 +246,12 @@ The live alias remained on the new `READY` deployment. No rollback condition was
 - Product direction on 25 September removes order selection from every sectional mock. Sectional mocks now start in their immutable published order; only legacy full Quant/Verbal/Data Insights mocks retain the six-order chooser. Migration `20260925100000_scope_mock_attempt_order_by_category` now scopes the remaining attempt-item display-order constraint to `category_key` on Staging.
 - The 25 September correction passes TypeScript, touched-file lint, all 42 Pilot V3 tests, the 54-page Next.js production build, documentation checks, and `git diff --check`.
 - Staging verification passed on Preview `dpl_5bCDP34CkcHDMnz45JdXg1WrNZTY`: RC-only started directly as section 1 of 1 with a 1:57 timer; QA + CR + DI started directly, used 2:09 / 1:57 / 2:15 timers, offered breaks only between those three sections, and completed; the existing 135-minute full mock retained all six orders.
+- Reset-request recovery is accepted on Preview `dpl_EnqC5waqKdBjvc1BJWFKa4GKxhmF`: a transient failed start recovered with visible retry copy and enabled controls; retry, direct RC-only start, and reset then passed.
+- Production readiness preparation is documented in [the flexible-mock Production readiness plan](releases/2026-09-25-flexible-sectional-mocks-production-readiness.md). Fresh read-only checks confirm Production lacks the two flexible-mock migrations and has a small affected mock-table footprint. A blind migration push remains prohibited.
+- The current flexible branch still uses Next.js 16.2.4. PR #21 is open, mergeable, and green at `fcbd42f`; the feature must be replayed onto that accepted security lineage and pass a new Staging Preview before any Production approval can be considered.
+- Once the category migrations are applied, the prior Admin Mock Builder cannot create/save mocks because it omits non-null `category_key`. An approved rollout therefore requires a mock-authoring freeze and immediate integrated application deployment; application rollback keeps mock authoring frozen pending a forward correction.
 - One empty Vercel project named `ace-club-flexible-mocks` was created accidentally during the first CLI deployment attempt. Its deployment `dpl_H1hiCpiFchzAgvaTpZ7aWu1CsjPN` failed before application deployment because no environment variables existed. It is separate from `ace-club-lms`, has no effect on Production, and has not been deleted without explicit approval.
-- Next gate: Product Owner review of the accepted Staging Preview and a separate decision on fixture and accidental-project cleanup. No Production or merge action is authorized.
+- Next gate: explicit approval to create a separate integrated release branch from security PR #21 head `fcbd42f`, replay the accepted flexible-mock changes, and repeat Staging acceptance. No Production or merge action is authorized.
 
 ### Objective
 
@@ -292,7 +296,7 @@ Consolidate documentation into:
 
 ## 7. Exact next action
 
-> Product Owner reviews `https://ace-club-7m2icw0iv-theadmitco-techs-projects.vercel.app` and decides whether to clean up the retained Staging fixtures and the empty accidental Vercel project. Do not merge PR #21, merge to `main`, or promote any deployment or migration to Production.
+> Product Owner approves or rejects only the source-integration gate: create a new release branch from security PR #21 head `fcbd42f`, replay the accepted flexible-mock changes, and run a fresh Staging-backed Preview. Do not merge PR #21, merge to `main`, or promote any deployment or migration to Production.
 
 No database, access, or role change is authorized by this handoff alone.
 
@@ -329,6 +333,7 @@ Do not mix these documentation commits with application, database, role, access,
 - [Course-selection rollback rehearsal](pilot-v3/phase-7/evidence/worksheet-count-course-selection-rollback-rehearsal-2026-08-30.md)
 - [Pilot V3 mock release evidence](pilot-v3/phase-7/evidence/phase-7-production-release-2026-08-25.md)
 - [Flexible sectional mocks Staging record](releases/2026-09-25-flexible-sectional-mocks-staging.md)
+- [Flexible sectional mocks Production readiness plan](releases/2026-09-25-flexible-sectional-mocks-production-readiness.md)
 
 ## 11. Pending decisions and confirmations
 
