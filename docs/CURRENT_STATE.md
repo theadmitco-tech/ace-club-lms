@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-As of: 25 September 2026, 12:08 IST
+As of: 25 September 2026, 16:32 IST
 
 This is the single active operational handoff. Git history preserves earlier versions; do not append a growing chronological diary here.
 
@@ -259,6 +259,7 @@ The live alias remained on the new `READY` deployment. No rollback condition was
 - Once the category migrations are applied, the prior Admin Mock Builder cannot create/save mocks because it omits non-null `category_key`. An approved rollout therefore requires a mock-authoring freeze and immediate integrated application deployment; application rollback keeps mock authoring frozen pending a forward correction.
 - One empty Vercel project named `ace-club-flexible-mocks` was created accidentally during the first CLI deployment attempt. Its deployment `dpl_H1hiCpiFchzAgvaTpZ7aWu1CsjPN` failed before application deployment because no environment variables existed. It is separate from `ace-club-lms`, has no effect on Production, and has not been deleted without explicit approval.
 - The Product Owner approved the separate integration branch and explicitly directed that accepted manual Staging work not be repeated. Integration acceptance is therefore delta-based: automated checks/build plus RC-only direct start, legacy full-mock ordering, reset recovery, and runtime logs. The mixed QA + CR + DI journey is repeated only if an integration failure affects it. No Production or merge action is authorized.
+- The compact integrated Preview check exposed one omitted dynamic surface: an RC-only completed result still showed hard-coded DI, QA, and VA tabs. Commit `8ad5756` now derives result tabs, diagnostics, question filtering, labels, and links from the attempt's included `category_key` values. Focused tests, TypeScript, lint, and diff checks pass; refreshed Preview verification is pending.
 
 ### Objective
 
@@ -303,7 +304,7 @@ Consolidate documentation into:
 
 ## 7. Exact next action
 
-> Complete the approved compact integration gate on `codex/flexible-mocks-security-integration`: automated checks and build, then one RC-only direct start, one legacy full-mock order check, reset recovery, and runtime-log review on a new Staging-backed Preview. Do not repeat the already accepted mixed sectional journey unless an integration failure affects it. Do not merge PR #21, merge to `main`, or promote any deployment or migration to Production.
+> Refresh the integrated Preview with result-scope correction `8ad5756`, verify that the RC-only result shows only Overall and RC, then complete reset/direct-start recovery and runtime-log review. The legacy full-mock six-order check already passed. Do not repeat the accepted mixed sectional journey, merge PR #21, merge to `main`, or promote any deployment or migration to Production.
 
 No database, access, or role change is authorized by this handoff alone.
 

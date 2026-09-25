@@ -1,6 +1,6 @@
 # Flexible sectional mocks — Production readiness plan
 
-Status: Integration approved; compact Staging verification pending, Production not authorized
+Status: Integration approved; result-scope correction verification pending, Production not authorized
 Owner: Engineering
 Last updated: 25 September 2026
 
@@ -50,6 +50,8 @@ On 25 September 2026, the Product Owner approved source integration and explicit
 6. Do not repeat the mixed QA + CR + DI manual journey unless an integration failure or code change affects that flow.
 
 This scoped decision is durable for this release: a dependency-lineage integration does not invalidate completed feature acceptance when the feature code and Staging schema are unchanged. The existing Preview remains valid feature evidence; the compact check validates only the combined source.
+
+The compact check did identify one previously omitted surface: RC-only completed results still rendered hard-coded DI, QA, and VA tabs. Commit `8ad5756` replaces those tabs and related diagnostics/question copy with the attempt's included category snapshots. This correction requires only a focused RC-only results verification; it does not reopen the already accepted mixed journey.
 
 ## Production migration plan
 

@@ -88,6 +88,10 @@ The client now bounds start and reset requests at 20 seconds, tolerates non-JSON
 
 The corrected Preview `dpl_EnqC5waqKdBjvc1BJWFKa4GKxhmF` is `READY` at `https://ace-club-m4tg32yxy-theadmitco-techs-projects.vercel.app`. Authenticated Student verification first reproduced a transient failed start and confirmed that the card recovered after 20 seconds with a visible retry message and enabled controls. A retry then created RC-only attempt `bfae46a5-8255-4fc5-8d8f-0709714fdea0` directly at section 1 of 1. Resetting that attempt completed normally and returned the card to `Start mock`; the verification attempt was removed.
 
+## Security integration follow-up
+
+The Product Owner approved a separate integration branch from security PR #21 head `fcbd42f` and directed that completed manual acceptance not be repeated. Automated integration checks and the legacy full-mock six-order check passed. The focused RC-only result check found that the completed-results tabs still listed all three parent sections. Commit `8ad5756` now derives result tabs, diagnostics, question filtering, labels, and links from only the attempt categories included in its snapshot. Focused automated verification passes; refreshed Preview acceptance is pending. The mixed QA + CR + DI manual journey remains accepted and will not be repeated unless a related failure appears.
+
 ## Deployment note
 
 The first CLI deployment attempt created a separate empty Vercel project named `ace-club-flexible-mocks`. Deployment `dpl_H1hiCpiFchzAgvaTpZ7aWu1CsjPN` failed during prebuild because that project had no environment variables, so no application was deployed there. The worktree was then explicitly linked to the existing `ace-club-lms` project before the accepted Preview was created. The empty project remains pending explicit cleanup approval and has no Production alias or Production data connection.
