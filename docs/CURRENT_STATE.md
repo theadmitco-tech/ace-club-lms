@@ -35,11 +35,11 @@ It includes the final Notion fix, worksheet counts, the login chooser, and “Sw
 | Item | Verified state |
 |---|---|
 | Staging Supabase | `eyphkkginlgoaxflauog` |
-| Latest Staging migration | `20260924120000_add_mock_category_snapshots` |
-| Staging migration count | 45 |
-| Current flexible-mock candidate | `codex/flexible-sectional-mocks` at `e9b20df` before the pending 25 September direct-start fix |
-| Staging-backed Preview under test | `dpl_FSu3UMxkVEZSUz3U1Rre4JB7tEYF` — `READY`, target Preview |
-| Preview URL | `https://ace-club-94nnyu52x-theadmitco-techs-projects.vercel.app` |
+| Latest Staging migration | `20260925100000_scope_mock_attempt_order_by_category` |
+| Staging migration count | 46 |
+| Accepted flexible-mock candidate | `codex/flexible-sectional-mocks` at `09a52ee` |
+| Accepted Staging-backed Preview | `dpl_5bCDP34CkcHDMnz45JdXg1WrNZTY` — `READY`, target Preview |
+| Preview URL | `https://ace-club-7m2icw0iv-theadmitco-techs-projects.vercel.app` |
 | Active Staging fixtures | One imported RC package and two published/assigned acceptance mocks remain active; see the flexible-mock release record |
 
 ### Ledger differences requiring deliberate handling
@@ -228,7 +228,7 @@ The live alias remained on the new `READY` deployment. No rollback condition was
 
 ## 6. Active documentation release
 
-### Flexible sectional GMAT mocks — Staging correction in progress (25 September 2026)
+### Flexible sectional GMAT mocks — Staging accepted (25 September 2026)
 
 - Work is isolated on branch `codex/flexible-sectional-mocks`, based on `codex/template-worksheet-tracker`; PR #21 and its security-patch worktree remain unchanged.
 - Application and migration implementation commit: `b62e65ef489c63871764bdb8d16bbe1ba0708ec0`.
@@ -241,9 +241,11 @@ The live alias remained on the new `READY` deployment. No rollback condition was
 - The dependency audit still reports the known Next.js 16.2.4 security findings fixed by separate PR #21. This branch deliberately does not absorb or merge that patch; it must be rebased onto the accepted security-patch lineage before any Preview candidate is approved.
 - Staging imported the approved RC package exactly once and published two acceptance fixtures: RC-only version 1 (`510d2350-b886-4bce-8da7-b5fd4fdae567`) and QA + CR + DI version 2 (`0568d9c3-8d0c-4934-867e-306613e0f91f`). Both are assigned to the Staging-only `DI Test batch`; assignment-scoped tester copies also remain visible. Production is unchanged.
 - Authenticated Student acceptance proved that the RC-only fixture exposes one section, one question, and 1.95 minutes. The mixed fixture exposed only QA, CR, and DI in the order dialog, but attempt creation failed on the legacy parent-section display-order uniqueness constraint.
-- Product direction on 25 September removes order selection from every sectional mock. Sectional mocks now start in their immutable published order; only legacy full Quant/Verbal/Data Insights mocks retain the six-order chooser. The applied category migration already scopes attempt sections to `category_key`; a forward migration changes the remaining attempt-item display-order constraint to `category_key` and is not yet applied to Staging.
+- Product direction on 25 September removes order selection from every sectional mock. Sectional mocks now start in their immutable published order; only legacy full Quant/Verbal/Data Insights mocks retain the six-order chooser. Migration `20260925100000_scope_mock_attempt_order_by_category` now scopes the remaining attempt-item display-order constraint to `category_key` on Staging.
 - The 25 September correction passes TypeScript, touched-file lint, all 42 Pilot V3 tests, the 54-page Next.js production build, documentation checks, and `git diff --check`.
-- Next gate: complete local checks and documentation for the direct-start fix, push the exact commit, deploy its Staging-backed Preview, apply only `20260925100000_scope_mock_attempt_order_by_category.sql` to Staging, and rerun RC-only, mixed, and full-mock Student acceptance. Do not merge or promote to Production.
+- Staging verification passed on Preview `dpl_5bCDP34CkcHDMnz45JdXg1WrNZTY`: RC-only started directly as section 1 of 1 with a 1:57 timer; QA + CR + DI started directly, used 2:09 / 1:57 / 2:15 timers, offered breaks only between those three sections, and completed; the existing 135-minute full mock retained all six orders.
+- One empty Vercel project named `ace-club-flexible-mocks` was created accidentally during the first CLI deployment attempt. Its deployment `dpl_H1hiCpiFchzAgvaTpZ7aWu1CsjPN` failed before application deployment because no environment variables existed. It is separate from `ace-club-lms`, has no effect on Production, and has not been deleted without explicit approval.
+- Next gate: Product Owner review of the accepted Staging Preview and a separate decision on fixture and accidental-project cleanup. No Production or merge action is authorized.
 
 ### Objective
 
@@ -288,7 +290,7 @@ Consolidate documentation into:
 
 ## 7. Exact next action
 
-> Complete and push the flexible-mock direct-start correction, then apply only migration `20260925100000_scope_mock_attempt_order_by_category.sql` to Staging and rerun RC-only, mixed, and full-mock Student acceptance. Do not merge PR #21, merge to `main`, or promote any deployment or migration to Production.
+> Product Owner reviews `https://ace-club-7m2icw0iv-theadmitco-techs-projects.vercel.app` and decides whether to clean up the retained Staging fixtures and the empty accidental Vercel project. Do not merge PR #21, merge to `main`, or promote any deployment or migration to Production.
 
 No database, access, or role change is authorized by this handoff alone.
 

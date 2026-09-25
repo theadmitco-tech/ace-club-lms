@@ -1,6 +1,6 @@
 # Release — Flexible sectional GMAT mocks — 2026-09-25
 
-Status: Staging correction in progress
+Status: Staging accepted
 Owner: Engineering
 Last updated: 25 September 2026
 
@@ -29,13 +29,13 @@ Allow an immutable published mock to contain any non-empty subset of QA, RC, CR,
 
 - Branch: `codex/flexible-sectional-mocks`.
 - Published implementation commits before this correction: `b62e65e`, `b2932a7`, `98c1869`, and `e9b20df`.
-- The 25 September direct-start and category-order correction is pending a verified commit.
+- Accepted correction commit: `09a52ee`.
 
 ## Staging schema and package state
 
 - Supabase project: `eyphkkginlgoaxflauog`.
 - Applied migration: `20260924120000_add_mock_category_snapshots`.
-- Pending Staging migration: `20260925100000_scope_mock_attempt_order_by_category`.
+- Applied migration: `20260925100000_scope_mock_attempt_order_by_category`.
 - Approved RC workbook package was uploaded exactly once as package `1f14b21e-df4f-4f5d-9eff-b972497a9da2`; its recorded fingerprint begins `5f800341`.
 - Import result: 11 RC questions and 3 stimuli, with no import errors, warnings, or duplicate rows.
 
@@ -69,17 +69,26 @@ The local correction:
 - adds a forward migration that scopes the remaining attempt-item display-order uniqueness to `category_key` (attempt-section uniqueness was already converted by `20260924120000`);
 - adds automated checks for RC-only, mixed, full, direct-start, proportional timing, and non-destructive constraint replacement.
 
-## Pending Staging verification
+## Accepted correction verification
 
-1. Commit and push the exact correction.
-2. Deploy a Staging-backed Preview from that commit.
-3. Apply only `20260925100000_scope_mock_attempt_order_by_category.sql` to Staging and verify the migration ledger and constraints.
-4. Confirm RC-only starts directly with its 117-second section.
-5. Confirm QA + CR + DI starts directly in published order with 129-, 117-, and 135-second sections and breaks only between included sections.
-6. Confirm the existing full mock still presents six orders and retains 45-minute sections.
-7. Record browser/runtime evidence and decide fixture cleanup separately.
+- Local checks: TypeScript, touched-file lint, all 42 Pilot V3 tests, the Next.js production build with 54 generated pages, documentation checks, and `git diff --check` passed.
+- Accepted Preview: `dpl_5bCDP34CkcHDMnz45JdXg1WrNZTY` at `https://ace-club-7m2icw0iv-theadmitco-techs-projects.vercel.app`.
+- Staging ledger: `20260925100000` exists; the category-key item constraint count is 1 and the retired parent-section item constraint count is 0.
+- RC-only tester assignment: the card showed `Start mock`, opened section 1 of 1 directly with no chooser, and displayed 1:57 for its one RC question.
+- Mixed standard assignment: the card showed `Start mock`, opened QA directly as section 1 of 3, and displayed 2:09. After submission, the flow offered a break and opened CR as section 2 of 3 with 1:57. After submission, it offered a break and opened DI as section 3 of 3 with 2:15. Final submission produced `Mock completed` and a results link.
+- Full compatibility: the existing 135-minute `Phase 3 Student Rendering Acceptance — 2026-08-23` card retained `Choose section order` and displayed all six permutations of Quantitative Reasoning, Verbal Reasoning, and Data Insights.
+- Staging attempt evidence: completed mixed attempt `b9174a94-d0a4-49b4-91cb-8b774912e10f`; in-progress RC-only tester attempt `d352d774-25f1-4471-b636-b2e56051f4f6`.
 
-Local correction checks completed on 25 September: TypeScript, touched-file lint, all 42 Pilot V3 tests, the Next.js production build with 54 generated pages, documentation checks, and `git diff --check` all passed.
+## Deployment note
+
+The first CLI deployment attempt created a separate empty Vercel project named `ace-club-flexible-mocks`. Deployment `dpl_H1hiCpiFchzAgvaTpZ7aWu1CsjPN` failed during prebuild because that project had no environment variables, so no application was deployed there. The worktree was then explicitly linked to the existing `ace-club-lms` project before the accepted Preview was created. The empty project remains pending explicit cleanup approval and has no Production alias or Production data connection.
+
+## Remaining work
+
+- Product Owner reviews the accepted Preview.
+- Decide whether to retain or remove the exact Staging assignments, tester grants, and attempts.
+- Decide whether to delete the empty accidental Vercel project.
+- Any Production migration or deployment requires a new explicit approval.
 
 ## Rollback and recovery
 
