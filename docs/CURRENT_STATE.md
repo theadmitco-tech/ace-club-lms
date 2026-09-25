@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-As of: 25 September 2026, 18:07 IST
+As of: 25 September 2026, 21:55 IST
 
 This is the single active operational handoff. Git history preserves earlier versions; do not append a growing chronological diary here.
 
@@ -22,7 +22,7 @@ Stable context: [Project Manual](PROJECT_MANUAL.md). Engineering and handoff rul
 | Latest Production migration | `20260925100000_scope_mock_attempt_order_by_category` |
 | Production migration count | 49 |
 
-The deployment identity, migration boundary, authenticated Student/Admin smoke, runtime logs, and Security Advisor were verified on 25 September 2026. Flexible sectional mock schema and application support are live; the supplied RC mock is not imported or released in Production.
+The deployment identity, migration boundary, authenticated Student/Admin smoke, runtime logs, and Security Advisor were verified on 25 September 2026. Flexible sectional mock schema and application support are live. The approved 11-question `RC CC End-of-Course Mock` is released only to `Reading Comprehension - CC`; its immutable one-section snapshot stores 1,291 seconds.
 
 ### Application rollback candidate
 
@@ -265,9 +265,9 @@ The live alias remained on the new `READY` deployment. No rollback condition was
 - The compact integrated Preview check exposed one omitted dynamic surface: an RC-only completed result still showed hard-coded DI, QA, and VA tabs. Commit `8ad5756` now derives result tabs, diagnostics, question filtering, labels, and links from the attempt's included `category_key` values.
 - Integrated acceptance passed on Preview `dpl_G91Rg5sd1VzZMuWSfKgG4FyTEhLL`: the RC-only result showed only Overall and RC / Reading Comprehension, its diagnostic row used Reading Comprehension, and the legacy full mock retained all six order choices. All 43 Pilot V3 tests, Next.js 16.3.6 build, TypeScript, touched-file lint, documentation checks, `git diff --check`, and the Production dependency audit passed; browser and Vercel error logs were empty.
 - Per the Product Owner's no-repeat direction, the accepted mixed journey was not rerun. Direct-start and reset recovery remain covered by their accepted feature evidence and the integrated automated suite; no Staging attempt was deleted or reset for this integration check.
-- The supplied RC mock is intended to go live only for the **RC CC batch**. Before importing, creating, publishing, assigning, or releasing that mock in Production, stop and obtain a fresh explicit Product Owner approval naming the RC mock and RC CC batch. Application or migration deployment approval does not include this mock-data action, and the already uploaded source package must not be imported a second time without separate confirmation.
+- The Product Owner supplied fresh approval for the exact RC workbook and immediate RC CC release. Production import `b2e25cdb-2e1c-4649-8e22-515c31b24841` completed once; do not import package `1f14b21e-df4f-4f5d-9eff-b972497a9da2` again.
 - The Product Owner authorized the two Production migrations and integrated application deployment as separate gates. Both migrations are ledgered once, Production deployment `dpl_Hk1X2tMnSUU8rzDGgs9u3ewt96Ds` is `READY`, and the authenticated Student/Admin smoke, browser/Vercel logs, Supabase health, Security Advisor, and final isolation checks passed. Full evidence is in [the Production rollout record](releases/2026-09-25-flexible-sectional-mocks-production.md).
-- Production still has zero imports for RC package `1f14b21e-df4f-4f5d-9eff-b972497a9da2`; no RC mock was created, published, assigned, or released.
+- Production assessment `c8af4540-d653-4320-a780-1774baf3ba2e`, version `a85a3fdd-b57b-4692-929a-9b210d65de30`, and assignment `618d2a28-3843-49fc-af63-a59f5ce77c51` release 11 passage-grouped RC questions only to course `4763d048-9cbe-4488-95dc-3df25d873299`. The released Student card was verified without starting an attempt. Its duration copy currently displays a raw fractional minute value even though the stored timer is correctly 1,291 seconds.
 
 ### Objective
 
@@ -312,7 +312,7 @@ Consolidate documentation into:
 
 ## 7. Exact next action
 
-> Ask the Product Owner for fresh explicit approval before importing the supplied RC package into Production, publishing its questions, creating the 11-question RC mock, or assigning/releasing it to the RC CC batch. This handoff does not authorize those actions, any other Production test data, merging PR #21, or merging to `main`.
+> Monitor the first real RC CC starts and timer transitions without modifying Student work. Prepare and Preview-test a focused copy fix so the Student mock card formats 1,291 seconds cleanly instead of showing `21.516666666666666 minutes`. Obtain fresh approval before deploying that code change to Production. This handoff does not authorize any other Production test data, merging PR #21, or merging to `main`.
 
 No database, access, or role change is authorized by this handoff alone.
 
@@ -359,5 +359,5 @@ Do not mix these documentation commits with application, database, role, access,
 - Approved list of Super Admin recipients.
 - Product Owner review of Release 1 Production acceptance evidence.
 - Product Owner review of Release 1.1 Production acceptance evidence.
-- Explicit approval for importing, publishing, and assigning the supplied 11-question RC mock to the RC CC batch.
+- Production approval for a focused fix to the fractional-minute mock-card copy after Preview acceptance.
 - Release 2 capability matrix and approved Super Admin recipients.
