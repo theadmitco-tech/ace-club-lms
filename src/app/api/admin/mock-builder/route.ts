@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   try {
     const action = body.action;
     if (action === 'create') return NextResponse.json({ id: await createMockAssessment(auth.userId, String(body.name ?? '').trim(), body.purpose === 'diagnostic' ? 'diagnostic' : 'standard') }, { headers });
-    if (action === 'items') { const raw = Array.isArray(body.items) ? body.items : []; await saveMockItems(String(body.assessmentId), raw as Array<{ section: string; question_revision_id: string; display_order: number; stimulus_group_key?: string | null }>, auth.userId); return NextResponse.json({ saved: raw.length }, { headers }); }
+    if (action === 'items') { const raw = Array.isArray(body.items) ? body.items : []; await saveMockItems(String(body.assessmentId), raw as Array<{ section: string; category_key?: string; question_revision_id: string; display_order: number; stimulus_group_key?: string | null }>, auth.userId); return NextResponse.json({ saved: raw.length }, { headers }); }
     if (action === 'validate') return NextResponse.json(await validateMock(String(body.assessmentId)), { headers });
     if (action === 'publish') return NextResponse.json({ version: await publishMock(String(body.assessmentId), auth.userId) }, { headers });
     if (action === 'assign') { const courseId = String(body.courseId); const releaseAt = String(body.releaseAt); const dueAt = body.dueAt ? String(body.dueAt) : null; const id = body.versionId ? await assignMock(String(body.versionId), courseId, releaseAt, dueAt, auth.userId) : await assignLatestMock(String(body.assessmentId), courseId, releaseAt, dueAt, auth.userId); return NextResponse.json({ id }, { headers }); }

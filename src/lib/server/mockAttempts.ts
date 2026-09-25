@@ -64,7 +64,7 @@ export async function listParticipantMocks(userId: string, participant: { fullNa
     .select('assignment_id').eq('user_id', userId).is('revoked_at', null);
   if (grantError) throw grantError;
   const testerAssignmentIds = (grants ?? []).map((row) => row.assignment_id);
-  const selection = 'id,release_at,due_at,course_id,mock_assessment_versions!inner(id,version_number,mock_assessments!inner(name,purpose))';
+  const selection = 'id,release_at,due_at,course_id,mock_assessment_versions!inner(id,version_number,snapshot,mock_assessments!inner(name,purpose))';
   const [{ data: released, error: releasedError }, { data: testerAssignments, error: testerError }] = await Promise.all([
     participant.role === 'student' && participant.selectedCourseId
       ? db.from('mock_assessment_assignments').select(selection).eq('course_id', participant.selectedCourseId).lte('release_at', new Date().toISOString()).order('release_at', { ascending: false })
@@ -90,7 +90,7 @@ export async function listParticipantMocks(userId: string, participant: { fullNa
 export async function loadAttemptState(studentId: string, attemptId: string) {
   const db = createMockAdminClient();
   const { data: attempt, error } = await db.from('mock_attempts')
-    .select('id,assignment_id,status,section_order,current_section_index,current_item_id,break_status,break_deadline_at,lock_version,started_at,completed_at,mock_attempt_sections(id,section,sequence_index,status,time_limit_seconds,started_at,deadline_at,submitted_at,review_edit_count)')
+    .select('id,assignment_id,status,section_order,current_section_index,current_item_id,break_status,break_deadline_at,lock_version,started_at,completed_at,mock_attempt_sections(id,section,category_key,sequence_index,status,time_limit_seconds,started_at,deadline_at,submitted_at,review_edit_count)')
     .eq('id', attemptId).eq('student_id', studentId).single();
   if (error) throw error;
   const activeSection = (attempt.mock_attempt_sections ?? []).find((section) => section.sequence_index === attempt.current_section_index) ?? null;

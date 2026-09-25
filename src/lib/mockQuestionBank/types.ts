@@ -5,6 +5,8 @@ export const MOCK_DIFFICULTIES = ['easy', 'medium', 'hard'] as const;
 
 export type MockQuestionType = (typeof MOCK_QUESTION_TYPES)[number];
 export type MockSection = (typeof MOCK_SECTIONS)[number];
+export const MOCK_CATEGORIES = ['qa', 'rc', 'cr', 'va', 'di'] as const;
+export type MockCategory = (typeof MOCK_CATEGORIES)[number];
 export type MockResponseType = (typeof MOCK_RESPONSE_TYPES)[number];
 export type MockDifficulty = (typeof MOCK_DIFFICULTIES)[number];
 
