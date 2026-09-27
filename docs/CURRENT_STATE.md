@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-As of: 25 September 2026, 21:55 IST
+As of: 27 September 2026, 14:51 IST
 
 This is the single active operational handoff. Git history preserves earlier versions; do not append a growing chronological diary here.
 
@@ -268,6 +268,7 @@ The live alias remained on the new `READY` deployment. No rollback condition was
 - The Product Owner supplied fresh approval for the exact RC workbook and immediate RC CC release. Production import `b2e25cdb-2e1c-4649-8e22-515c31b24841` completed once; do not import package `1f14b21e-df4f-4f5d-9eff-b972497a9da2` again.
 - The Product Owner authorized the two Production migrations and integrated application deployment as separate gates. Both migrations are ledgered once, Production deployment `dpl_Hk1X2tMnSUU8rzDGgs9u3ewt96Ds` is `READY`, and the authenticated Student/Admin smoke, browser/Vercel logs, Supabase health, Security Advisor, and final isolation checks passed. Full evidence is in [the Production rollout record](releases/2026-09-25-flexible-sectional-mocks-production.md).
 - Production assessment `c8af4540-d653-4320-a780-1774baf3ba2e`, version `a85a3fdd-b57b-4692-929a-9b210d65de30`, and assignment `618d2a28-3843-49fc-af63-a59f5ce77c51` release 11 passage-grouped RC questions only to course `4763d048-9cbe-4488-95dc-3df25d873299`. The released Student card was verified without starting an attempt. Its duration copy currently displays a raw fractional minute value even though the stored timer is correctly 1,291 seconds.
+- A focused 27 September candidate fixes that duration copy and preserves the workbook's two question-specific passage highlights. The exact workbook contains both highlight instructions; the prior importer ignored `stimulus_display_config_json`. Local TypeScript, lint, all 44 Pilot V3 tests, exact-workbook parsing, and the 54-page Production build pass. Production currently has two completed attempts for the RC assignment; their immutable snapshots will not be rewritten. See [the focused correction record](releases/2026-09-27-mock-time-and-passage-highlights.md).
 
 ### Objective
 
@@ -312,7 +313,7 @@ Consolidate documentation into:
 
 ## 7. Exact next action
 
-> Monitor the first real RC CC starts and timer transitions without modifying Student work. Prepare and Preview-test a focused copy fix so the Student mock card formats 1,291 seconds cleanly instead of showing `21.516666666666666 minutes`. Obtain fresh approval before deploying that code change to Production. This handoff does not authorize any other Production test data, merging PR #21, or merging to `main`.
+> Commit and push the focused duration/highlight candidate, deploy it against Staging, and verify the 21-minute-31-second copy plus both workbook-declared passage highlights with the existing Staging package and a resettable tester attempt. Record cleanup and rollback, then stop for fresh Production application-and-data approval. This handoff does not authorize rewriting completed attempts, merging PR #21, or merging to `main`.
 
 No database, access, or role change is authorized by this handoff alone.
 
@@ -352,6 +353,7 @@ Do not mix these documentation commits with application, database, role, access,
 - [Flexible sectional mocks Staging record](releases/2026-09-25-flexible-sectional-mocks-staging.md)
 - [Flexible sectional mocks Production readiness plan](releases/2026-09-25-flexible-sectional-mocks-production-readiness.md)
 - [Flexible sectional mocks Production rollout](releases/2026-09-25-flexible-sectional-mocks-production.md)
+- [Mock time copy and passage highlights](releases/2026-09-27-mock-time-and-passage-highlights.md)
 
 ## 11. Pending decisions and confirmations
 

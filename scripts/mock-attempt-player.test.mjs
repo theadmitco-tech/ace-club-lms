@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import mockAttempt from '../src/lib/mockAttempt.ts';
 
-const { allowsSectionOrderSelection, categoryForQuestionType, formatClock, isSectionOrder, publishedSectionOrder, remainingSeconds, SECTION_ORDERS, sectionTimeSeconds, sectionOrders } = mockAttempt;
+const { allowsSectionOrderSelection, categoryForQuestionType, formatClock, formatDuration, isSectionOrder, publishedSectionOrder, remainingSeconds, SECTION_ORDERS, sectionTimeSeconds, sectionOrders, stimulusHighlightsForBlock } = mockAttempt;
 
 const migrationUrl = new URL('../supabase/migrations/20260822213000_add_mock_attempt_player.sql', import.meta.url);
 const timeoutMigrationUrl = new URL('../supabase/migrations/20260823110000_advance_expired_mock_sections.sql', import.meta.url);
@@ -47,6 +47,8 @@ test('supports RC-only, mixed sectional and full mocks with proportional timing'
   assert.equal(sectionTimeSeconds('verbal', 11), 1291);
   assert.equal(sectionTimeSeconds('quant', 21), 2700);
   assert.equal(sectionTimeSeconds('data_insights', 20), 2700);
+  assert.equal(formatDuration(1291), '21 minutes 31 seconds');
+  assert.equal(formatDuration(8100), '135 minutes');
   const sql = await readFile(flexibleMigrationUrl, 'utf8');
   assert.match(sql, /category_key.*'qa','rc','cr','va','di'/s);
   assert.match(sql, /v_item\.time_limit_seconds/);
@@ -78,6 +80,26 @@ test('sectional mocks start in published order while only full mocks offer order
   assert.match(list, /'Start mock'/);
   assert.match(list, /start\(mock, publishedSectionOrder\(sections\)\)/);
   assert.match(list, />Choose section order</);
+  assert.match(list, /formatDuration\(sections\.reduce/);
+});
+
+test('question-scoped passage highlights target only their declared block', async () => {
+  const config = { highlights: [
+    { block_id: 'p1', text: 'the learning curve' },
+    { block_id: 'p2', text: 'other phrase' },
+    { block_id: 'p1', text: 'the learning curve' },
+  ] };
+  assert.deepEqual(stimulusHighlightsForBlock(config, 'p1'), ['the learning curve']);
+  assert.deepEqual(stimulusHighlightsForBlock(config, 'p2'), ['other phrase']);
+  assert.deepEqual(stimulusHighlightsForBlock(config, 'p3'), []);
+  const [player, content, css] = await Promise.all([
+    readFile(playerUrl, 'utf8'),
+    readFile(new URL('../src/components/mock/MockQuestionContent.tsx', import.meta.url), 'utf8'),
+    readFile(playerCssUrl, 'utf8'),
+  ]);
+  assert.match(player, /displayConfig=\{stimulusDisplayConfig\(item\.response_config_snapshot\.interaction\)\}/);
+  assert.match(content, /<mark className="mock-passage-highlight"/);
+  assert.match(css, /\.mock-passage-highlight/);
 });
 
 test('mock start and reset requests recover from network failures', async () => {

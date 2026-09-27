@@ -56,6 +56,7 @@ async function buildPackage({ badResponse = false, includeAsset = true, prefixed
     source_stimulus_id: index < 2 || (standaloneTpa && type === 'TPA') ? '' : `STIM-${uuids[Math.min(index - 2, 5)]}`,
     stimulus_group_order: index < 2 || (standaloneTpa && type === 'TPA') ? '' : 1,
     question_content_json: JSON.stringify(rich(`${type} question`)), interaction_config_json: JSON.stringify({ slots: [{ id: 'answer' }] }),
+    stimulus_display_config_json: type === 'RC' ? JSON.stringify({ highlights: [{ block_id: 'p1', text: 'passage content' }] }) : '{}',
     source_reference: 'founder-source.pdf', answer_confirmation: 'FOUNDER_CONFIRMED', conflict_action: 'reject', answer_check: 'PASS',
     asset_check: type === 'GI' ? 'PASS' : 'NOT_APPLICABLE', validation_status: 'READY', validation_notes: '',
   }));
@@ -90,6 +91,7 @@ test('valid ZIP round-trips all eight question types and private answer declarat
   assert.deepEqual(Object.keys(result.preview.byQuestionType).sort(), [...types].sort());
   assert.equal(result.preview.package.questions.every((question) => Object.keys(question.answer).length >= 1), true);
   assert.equal(result.preview.package.questions.find((question) => question.questionType === 'DS')?.section, 'data_insights');
+  assert.deepEqual(result.preview.package.questions.find((question) => question.questionType === 'RC')?.interaction.stimulus_display_config, { highlights: [{ block_id: 'p1', text: 'passage content' }] });
   const msr = result.preview.package.questions.find((question) => question.questionType === 'MSR');
   assert.equal(msr?.responseType, 'binary_matrix');
   assert.deepEqual(Object.keys(msr?.answer ?? {}), ['statement-1', 'statement-2', 'statement-3']);

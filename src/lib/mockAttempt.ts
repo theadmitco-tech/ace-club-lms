@@ -65,3 +65,26 @@ export function formatClock(totalSeconds: number) {
   const safe = Math.max(0, totalSeconds);
   return `${Math.floor(safe / 60).toString().padStart(2, '0')}:${(safe % 60).toString().padStart(2, '0')}`;
 }
+
+function durationPart(value: number, unit: 'minute' | 'second') {
+  return `${value} ${unit}${value === 1 ? '' : 's'}`;
+}
+
+export function formatDuration(totalSeconds: number) {
+  const safe = Math.max(0, Math.round(totalSeconds));
+  const minutes = Math.floor(safe / 60);
+  const seconds = safe % 60;
+  return seconds ? `${durationPart(minutes, 'minute')} ${durationPart(seconds, 'second')}` : durationPart(minutes, 'minute');
+}
+
+export function stimulusHighlightsForBlock(value: unknown, blockId: string): string[] {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return [];
+  const highlights = (value as Record<string, unknown>).highlights;
+  if (!Array.isArray(highlights)) return [];
+  return [...new Set(highlights.flatMap((entry) => {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return [];
+    const record = entry as Record<string, unknown>;
+    const text = typeof record.text === 'string' ? record.text.trim() : '';
+    return record.block_id === blockId && text ? [text] : [];
+  }))];
+}

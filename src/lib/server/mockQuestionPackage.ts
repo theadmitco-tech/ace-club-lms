@@ -320,6 +320,29 @@ function validateOptionShape(question: NormalizedQuestion, issues: PackageIssue[
   if (question.responseType === 'two_part_matrix' && slots.size !== 2) addIssue(issues, 'Questions', 'TPA requires exactly two response slots.', 'Provide the two declared TPA columns.', row, 'response_type');
 }
 
+function validateStimulusDisplayConfig(value: unknown, issues: PackageIssue[], row: number): Record<string, unknown> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    addIssue(issues, 'Questions', 'stimulus_display_config_json must be a JSON object.', 'Use an object such as {"highlights":[]}.', row, 'stimulus_display_config_json');
+    return {};
+  }
+  const config = value as Record<string, unknown>;
+  if (config.highlights === undefined) return config;
+  if (!Array.isArray(config.highlights)) {
+    addIssue(issues, 'Questions', 'highlights must be an array.', 'List each highlight with block_id and text.', row, 'stimulus_display_config_json');
+    return config;
+  }
+  config.highlights.forEach((entry, index) => {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+      addIssue(issues, 'Questions', `Highlight ${index + 1} must be an object.`, 'Use {"block_id":"p1","text":"exact passage text"}.', row, 'stimulus_display_config_json');
+      return;
+    }
+    const highlight = entry as Record<string, unknown>;
+    if (typeof highlight.block_id !== 'string' || !highlight.block_id.trim()) addIssue(issues, 'Questions', `Highlight ${index + 1} needs block_id.`, 'Use the target passage block ID, for example p1.', row, 'stimulus_display_config_json');
+    if (typeof highlight.text !== 'string' || !highlight.text.trim()) addIssue(issues, 'Questions', `Highlight ${index + 1} needs text.`, 'Use the exact phrase from the target passage block.', row, 'stimulus_display_config_json');
+  });
+  return config;
+}
+
 function parseStimuli(rows: WorkbookRow[], namespace: string, issues: PackageIssue[], context: ParseQuestionPackageContext) {
   const stimuli: NormalizedStimulus[] = [];
   const seen = new Set<string>();
@@ -483,12 +506,19 @@ function parseQuestions(
     const stemRaw = jsonField(row, 'question_content_json', 'Questions', issues);
     const stem = validateRichContent(stemRaw);
     for (const error of stem.errors) addIssue(issues, 'Questions', error, 'Use only RichContentV1 allowlisted nodes.', row.__row, 'question_content_json');
-    const interaction = jsonField(row, 'interaction_config_json', 'Questions', issues) as Record<string, unknown> | null;
+    const interactionRaw = jsonField(row, 'interaction_config_json', 'Questions', issues);
+    const interaction = interactionRaw && typeof interactionRaw === 'object' && !Array.isArray(interactionRaw) ? interactionRaw as Record<string, unknown> : null;
+    if (interactionRaw !== null && !interaction) addIssue(issues, 'Questions', 'interaction_config_json must be a JSON object.', 'Use an object containing the response slots.', row.__row, 'interaction_config_json');
+    const stimulusDisplayRaw = jsonField(row, 'stimulus_display_config_json', 'Questions', issues, false) ?? {};
+    const stimulusDisplayConfig = validateStimulusDisplayConfig(stimulusDisplayRaw, issues, row.__row);
+    const storedInteraction = interaction && Object.keys(stimulusDisplayConfig).length
+      ? { ...interaction, stimulus_display_config: stimulusDisplayConfig }
+      : interaction;
     const explanationRaw = jsonField(row, 'explanation_json', 'Questions', issues, false);
     const explanationResult = explanationRaw === null ? { value: null as RichContentV1 | null, errors: [] } : validateRichContent(explanationRaw);
     for (const error of explanationResult.errors) addIssue(issues, 'Questions', error, 'Use only RichContentV1 allowlisted nodes.', row.__row, 'explanation_json');
     const options = optionsByQuestion.get(sourceQuestionId) ?? [];
-    const fingerprint = sha256(stableStringify({ section, questionType, responseType, topic, subtopic, stem: stemRaw, interaction, sourceStimulusId, options: options.map((option) => ({ slotId: option.slotId, optionId: option.optionId, displayOrder: option.displayOrder, content: option.content })) }));
+    const fingerprint = sha256(stableStringify({ section, questionType, responseType, topic, subtopic, stem: stemRaw, interaction: storedInteraction, sourceStimulusId, options: options.map((option) => ({ slotId: option.slotId, optionId: option.optionId, displayOrder: option.displayOrder, content: option.content })) }));
     const existing = context.existing.questions.get(key);
     if (existing) {
       duplicateKeys.push(key);
@@ -505,11 +535,11 @@ function parseQuestions(
     for (const option of options.filter((candidate) => candidate.isCorrect)) answer[option.slotId] = option.optionId;
     const canCreate = sourceNamespace === namespace && QUESTION_ID.test(sourceQuestionId) && MOCK_QUESTION_TYPES.includes(questionType)
       && section && responseType && responseTypeAllowed(questionType, responseType) && MOCK_DIFFICULTIES.includes(difficulty)
-      && stem.value && interaction && ALLOWED_ACTIONS.has(action);
+      && stem.value && storedInteraction && ALLOWED_ACTIONS.has(action);
     if (canCreate) {
       const question: NormalizedQuestion = {
         sourceNamespace, sourceQuestionId, section, questionType, responseType, topic, subtopic, difficulty,
-        sourceStimulusId, stimulusGroupOrder, stem: stem.value!, interaction, explanation: explanationResult.value,
+        sourceStimulusId, stimulusGroupOrder, stem: stem.value!, interaction: storedInteraction!, explanation: explanationResult.value,
         sourceReference: text(row, 'source_reference'), answerConfirmation: answerConfirmation as NormalizedQuestion['answerConfirmation'],
         answerCheck: answerCheck as NormalizedQuestion['answerCheck'], assetCheck: assetCheck as NormalizedQuestion['assetCheck'],
         validationStatus: validationStatus as NormalizedQuestion['validationStatus'], validationNotes: text(row, 'validation_notes') || null,

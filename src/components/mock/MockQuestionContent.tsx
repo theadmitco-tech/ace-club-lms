@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useId, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { stimulusHighlightsForBlock } from '@/lib/mockAttempt';
 
 export type MockMediaAsset = {
   id: string;
@@ -42,20 +43,28 @@ export function mockContentText(value: unknown): string {
   return mockContentText(node.children ?? node.blocks ?? node.content ?? '');
 }
 
-function InlineText({ value, slotControl }: { value: unknown; slotControl?: (slotId: string) => ReactNode }) {
+function HighlightedString({ highlights = [], text }: { highlights?: string[]; text: string }) {
+  if (!highlights.length) return text;
+  const terms = [...new Set(highlights)].sort((left, right) => right.length - left.length);
+  const pattern = new RegExp(`(${terms.map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'g');
+  const highlighted = new Set(terms);
+  return <>{text.split(pattern).map((part, index) => highlighted.has(part) ? <mark className="mock-passage-highlight" key={index}>{part}</mark> : part)}</>;
+}
+
+function InlineText({ highlights, value, slotControl }: { highlights?: string[]; value: unknown; slotControl?: (slotId: string) => ReactNode }) {
   if (typeof value === 'string' || typeof value === 'number') {
     const text = String(value);
     const parts = text.split(/(\{\{slot:[A-Za-z0-9_-]+\}\})/g);
     return <>{parts.map((part, index) => {
       const match = part.match(/^\{\{slot:([A-Za-z0-9_-]+)\}\}$/);
-      return match && slotControl ? <span className="mock-inline-slot" key={`${match[1]}-${index}`}>{slotControl(match[1])}</span> : part;
+      return match && slotControl ? <span className="mock-inline-slot" key={`${match[1]}-${index}`}>{slotControl(match[1])}</span> : <HighlightedString highlights={highlights} key={index} text={part} />;
     })}</>;
   }
-  if (Array.isArray(value)) return <>{value.map((entry, index) => <InlineText key={index} slotControl={slotControl} value={entry} />)}</>;
+  if (Array.isArray(value)) return <>{value.map((entry, index) => <InlineText highlights={highlights} key={index} slotControl={slotControl} value={entry} />)}</>;
   if (!value || typeof value !== 'object') return null;
   const node = value as Record<string, unknown>;
-  if (typeof node.text === 'string') return <InlineText slotControl={slotControl} value={node.text} />;
-  const children = <InlineText slotControl={slotControl} value={node.children ?? node.content ?? null} />;
+  if (typeof node.text === 'string') return <InlineText highlights={highlights} slotControl={slotControl} value={node.text} />;
+  const children = <InlineText highlights={highlights} slotControl={slotControl} value={node.children ?? node.content ?? null} />;
   if (node.type === 'strong') return <strong>{children}</strong>;
   if (node.type === 'emphasis') return <em>{children}</em>;
   if (node.type === 'subscript') return <sub>{children}</sub>;
@@ -64,7 +73,7 @@ function InlineText({ value, slotControl }: { value: unknown; slotControl?: (slo
   return children;
 }
 
-export function MockRichContent({ value, media = [], slotControl, eagerMedia = false }: { value: unknown; media?: MockMediaAsset[]; slotControl?: (slotId: string) => ReactNode; eagerMedia?: boolean }) {
+export function MockRichContent({ value, media = [], slotControl, eagerMedia = false, stimulusDisplayConfig }: { value: unknown; media?: MockMediaAsset[]; slotControl?: (slotId: string) => ReactNode; eagerMedia?: boolean; stimulusDisplayConfig?: unknown }) {
   if (value == null) return null;
   if (typeof value === 'string' || typeof value === 'number' || Array.isArray(value)) return <InlineText slotControl={slotControl} value={value} />;
   if (typeof value !== 'object') return null;
@@ -75,14 +84,15 @@ export function MockRichContent({ value, media = [], slotControl, eagerMedia = f
     return asset ? <figure className="mock-graphic"><Image alt={asset.alt_text} className="mock-content-image" fetchPriority={eagerMedia ? 'high' : undefined} height={asset.height ?? 450} loading={eagerMedia ? 'eager' : 'lazy'} src={asset.url} unoptimized width={asset.width ?? 1200} /><figcaption className="sr-only">{asset.alt_text}</figcaption></figure> : <p role="status">Image unavailable in this preview.</p>;
   }
   const blocks = Array.isArray(node.blocks) ? node.blocks : null;
-  if (blocks) return <div className="mock-rich-content">{blocks.map((block, index) => <MockContentBlock eagerMedia={eagerMedia} key={index} media={media} slotControl={slotControl} value={block} />)}</div>;
+  if (blocks) return <div className="mock-rich-content">{blocks.map((block, index) => <MockContentBlock eagerMedia={eagerMedia} key={index} media={media} slotControl={slotControl} stimulusDisplayConfig={stimulusDisplayConfig} value={block} />)}</div>;
   return <InlineText slotControl={slotControl} value={node} />;
 }
 
-function MockContentBlock({ value, media, slotControl, eagerMedia }: { value: unknown; media: MockMediaAsset[]; slotControl?: (slotId: string) => ReactNode; eagerMedia: boolean }) {
+function MockContentBlock({ value, media, slotControl, eagerMedia, stimulusDisplayConfig }: { value: unknown; media: MockMediaAsset[]; slotControl?: (slotId: string) => ReactNode; eagerMedia: boolean; stimulusDisplayConfig?: unknown }) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
   const node = value as Record<string, unknown>;
-  const children = <InlineText slotControl={slotControl} value={node.children ?? node.content ?? node.text} />;
+  const highlights = stimulusHighlightsForBlock(stimulusDisplayConfig, typeof node.id === 'string' ? node.id : '');
+  const children = <InlineText highlights={highlights} slotControl={slotControl} value={node.children ?? node.content ?? node.text} />;
   if (node.type === 'heading') return <h3>{children}</h3>;
   if (node.type === 'callout') return <aside className="mock-content-callout">{children}</aside>;
   if (node.type === 'image' || typeof node.asset_id === 'string') return <MockRichContent eagerMedia={eagerMedia} media={media} value={node} />;
@@ -136,9 +146,9 @@ function TabbedContent({ value, firstTabId }: { value: unknown; firstTabId?: str
   return <div className="mock-tabs"><div aria-label="Source documents" className="mock-tab-list" role="tablist">{tabs.map((tab, index) => <button aria-controls={`${baseId}-panel-${tab.id}`} aria-selected={tab.id === active.id} id={`${baseId}-tab-${tab.id}`} key={tab.id} onClick={() => setActiveId(tab.id)} onKeyDown={(event) => onKeyDown(event, index)} ref={(button) => { refs.current[index] = button; }} role="tab" tabIndex={tab.id === active.id ? 0 : -1} type="button">{tab.label}</button>)}</div><section aria-labelledby={`${baseId}-tab-${active.id}`} className="mock-tab-panel" id={`${baseId}-panel-${active.id}`} role="tabpanel"><MockRichContent value={active.content} /></section></div>;
 }
 
-export function MockStimulus({ kind, title, content, config, media = [], showCaption = true, eagerMedia = false }: { kind?: string; title?: string | null; content: unknown; config?: unknown; media?: MockMediaAsset[]; showCaption?: boolean; eagerMedia?: boolean }) {
+export function MockStimulus({ kind, title, content, config, displayConfig, media = [], showCaption = true, eagerMedia = false }: { kind?: string; title?: string | null; content: unknown; config?: unknown; displayConfig?: unknown; media?: MockMediaAsset[]; showCaption?: boolean; eagerMedia?: boolean }) {
   const configNode = config && typeof config === 'object' && !Array.isArray(config) ? config as Record<string, unknown> : {};
-  return <aside className={`mock-stimulus mock-stimulus-${kind ?? 'rich_text'}`}>{title && <h2>{title}</h2>}{kind === 'sortable_table' ? <SortableTable value={content} /> : kind === 'tabbed_content' ? <TabbedContent firstTabId={typeof configNode.first_tab_id === 'string' ? configNode.first_tab_id : undefined} value={content} /> : <MockRichContent eagerMedia={eagerMedia} media={media} value={content} />}{showCaption && typeof configNode.caption === 'string' && <p className="mock-figure-caption">{configNode.caption}</p>}</aside>;
+  return <aside className={`mock-stimulus mock-stimulus-${kind ?? 'rich_text'}`}>{title && <h2>{title}</h2>}{kind === 'sortable_table' ? <SortableTable value={content} /> : kind === 'tabbed_content' ? <TabbedContent firstTabId={typeof configNode.first_tab_id === 'string' ? configNode.first_tab_id : undefined} value={content} /> : <MockRichContent eagerMedia={eagerMedia} media={media} stimulusDisplayConfig={displayConfig} value={content} />}{showCaption && typeof configNode.caption === 'string' && <p className="mock-figure-caption">{configNode.caption}</p>}</aside>;
 }
 
 export function MockResponseControl({ responseType, interaction, options, response, disabled = false, onChange }: { responseType?: string; interaction?: unknown; options: MockRenderOption[]; response: Record<string, string>; disabled?: boolean; onChange: (next: Record<string, string>) => void }) {

@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { allowsSectionOrderSelection, mockUnitLabel, publishedSectionOrder, sectionOrders, type MockUnit } from '@/lib/mockAttempt';
+import { allowsSectionOrderSelection, formatDuration, mockUnitLabel, publishedSectionOrder, sectionOrders, type MockUnit } from '@/lib/mockAttempt';
 
 type MockRow = { id: string; release_at: string; due_at: string | null; tester_access?: boolean; mock_assessment_versions: { version_number: number; snapshot: { sections: Array<{ section: MockUnit; category_key?: MockUnit; question_count: number; time_limit_seconds: number }> }; mock_assessments: { name: string; purpose: string } }; attempt: { id: string; status: string; current_section_index: number } | null };
 
@@ -70,7 +70,7 @@ export function MocksList({ mocks, allowTestReset = false }: { mocks: MockRow[];
     <section className="mock-card-grid" aria-label="Released mocks">{mocks.map((mock) => {
       const details = mock.mock_assessment_versions.mock_assessments;
       const sections = mock.mock_assessment_versions.snapshot.sections;
-      return <article className="mock-card" key={mock.id}><div><span className="mock-pill">{mock.tester_access ? 'Tester access' : details.purpose}</span><h2>{details.name}</h2><p>{sections.length} section{sections.length === 1 ? '' : 's'} · {sections.reduce((total, section) => total + section.time_limit_seconds, 0) / 60} minutes total · Version {mock.mock_assessment_versions.version_number}</p>{mock.due_at && <small>Due {dueDateFormatter.format(new Date(mock.due_at))}</small>}</div>
+      return <article className="mock-card" key={mock.id}><div><span className="mock-pill">{mock.tester_access ? 'Tester access' : details.purpose}</span><h2>{details.name}</h2><p>{sections.length} section{sections.length === 1 ? '' : 's'} · {formatDuration(sections.reduce((total, section) => total + section.time_limit_seconds, 0))} total · Version {mock.mock_assessment_versions.version_number}</p>{mock.due_at && <small>Due {dueDateFormatter.format(new Date(mock.due_at))}</small>}</div>
         {mock.attempt ? <div className="mock-card-actions"><Link className="student-button" href={mock.attempt.status === 'completed' ? `/mocks/${mock.attempt.id}/results` : `/mocks/${mock.attempt.id}`}>{mock.attempt.status === 'completed' ? 'View results' : 'Resume mock'}</Link>{(mock.tester_access || allowTestReset) && <button className="mock-reset-button" onClick={() => { setError(''); setResetTarget(mock); }} type="button">Reset test attempt</button>}</div> : allowsSectionOrderSelection(sections) ? <button className="student-button" disabled={busy} onClick={() => { setError(''); setSelected(mock); setOrder(ordersFor(mock)[0] ?? []); }} type="button">Choose section order</button> : <button className="student-button" disabled={busy} onClick={() => void start(mock, publishedSectionOrder(sections))} type="button">{busy ? 'Starting…' : 'Start mock'}</button>}
       </article>;
     })}</section>
