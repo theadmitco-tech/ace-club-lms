@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-As of: 27 September 2026, 14:51 IST
+As of: 27 September 2026, 15:07 IST
 
 This is the single active operational handoff. Git history preserves earlier versions; do not append a growing chronological diary here.
 
@@ -45,9 +45,14 @@ It includes the template-native worksheet tracker but not flexible sectional moc
 | Accepted integration candidate | `codex/flexible-mocks-security-integration`; application correction `8ad5756` |
 | Accepted integrated Preview | `dpl_G91Rg5sd1VzZMuWSfKgG4FyTEhLL` — `READY`, target Preview |
 | Integrated Preview URL | `https://ace-club-4ema4l08t-theadmitco-techs-projects.vercel.app` |
+| Duration/highlight candidate | `codex/flexible-mocks-security-integration` at `6b78948`; draft PR #22 |
+| Duration/highlight Preview | GitHub deployment `6690461094` — successful, target Preview |
+| Duration/highlight Preview URL | `https://ace-club-zu7f495p5-theadmitco-techs-projects.vercel.app` |
 | Active Staging fixtures | One imported RC package and two published/assigned acceptance mocks remain active; see the flexible-mock release record |
 
 The RC-only tester attempt was reset successfully during review after a transient browser request failure. The application correction at `65464bd` prevents start/reset dialogs from remaining permanently busy after a failed or stalled request; it does not change the database. The refreshed Preview reproduced and visibly recovered from a transient failed start, then passed a direct RC-only start and successful reset. Both RC verification attempts were removed, leaving the tester card ready to start.
+
+The focused duration/highlight candidate passed Staging snapshot acceptance with all 11 RC questions at 1,291 seconds and exactly two workbook-declared highlight configurations. Staging now points those two source questions to supported new Published revisions `038ba249-f7f4-4510-8450-83a0849a8f11` and `5f812d6d-ddd8-44fe-bc58-780dcf3ec32e`; the original Published revisions were not edited. Disposable assessment, assignment, attempt, enrollment, and Student records were removed. Two provenance-only Admin auth identities remain because the immutable revisions reference their creators; their portal profiles and namespace memberships were removed. Production remains unchanged.
 
 ### Ledger differences requiring deliberate handling
 
@@ -268,7 +273,7 @@ The live alias remained on the new `READY` deployment. No rollback condition was
 - The Product Owner supplied fresh approval for the exact RC workbook and immediate RC CC release. Production import `b2e25cdb-2e1c-4649-8e22-515c31b24841` completed once; do not import package `1f14b21e-df4f-4f5d-9eff-b972497a9da2` again.
 - The Product Owner authorized the two Production migrations and integrated application deployment as separate gates. Both migrations are ledgered once, Production deployment `dpl_Hk1X2tMnSUU8rzDGgs9u3ewt96Ds` is `READY`, and the authenticated Student/Admin smoke, browser/Vercel logs, Supabase health, Security Advisor, and final isolation checks passed. Full evidence is in [the Production rollout record](releases/2026-09-25-flexible-sectional-mocks-production.md).
 - Production assessment `c8af4540-d653-4320-a780-1774baf3ba2e`, version `a85a3fdd-b57b-4692-929a-9b210d65de30`, and assignment `618d2a28-3843-49fc-af63-a59f5ce77c51` release 11 passage-grouped RC questions only to course `4763d048-9cbe-4488-95dc-3df25d873299`. The released Student card was verified without starting an attempt. Its duration copy currently displays a raw fractional minute value even though the stored timer is correctly 1,291 seconds.
-- A focused 27 September candidate fixes that duration copy and preserves the workbook's two question-specific passage highlights. The exact workbook contains both highlight instructions; the prior importer ignored `stimulus_display_config_json`. Local TypeScript, lint, all 44 Pilot V3 tests, exact-workbook parsing, and the 54-page Production build pass. Production currently has two completed attempts for the RC assignment; their immutable snapshots will not be rewritten. See [the focused correction record](releases/2026-09-27-mock-time-and-passage-highlights.md).
+- A focused 27 September candidate fixes that duration copy and preserves the workbook's two question-specific passage highlights. The exact workbook contains both highlight instructions; the prior importer ignored `stimulus_display_config_json`. Local TypeScript, lint, all 44 Pilot V3 tests, exact-workbook parsing, the 54-page Production build, the `ace-club-lms` Preview, and a disposable 11-question Staging snapshot test pass. Production currently has two completed attempts for the RC assignment; their immutable snapshots will not be rewritten. See [the focused correction record](releases/2026-09-27-mock-time-and-passage-highlights.md).
 
 ### Objective
 
@@ -313,7 +318,7 @@ Consolidate documentation into:
 
 ## 7. Exact next action
 
-> Commit and push the focused duration/highlight candidate, deploy it against Staging, and verify the 21-minute-31-second copy plus both workbook-declared passage highlights with the existing Staging package and a resettable tester attempt. Record cleanup and rollback, then stop for fresh Production application-and-data approval. This handoff does not authorize rewriting completed attempts, merging PR #21, or merging to `main`.
+> Obtain fresh explicit approval for the Production application deployment and the supported immutable-revision/new-assessment-version correction for the two highlighted RC questions. Recheck the two completed Production attempts immediately before release and leave their snapshots unchanged. Do not merge PR #21, merge PR #22, or merge to `main` without separate explicit approval.
 
 No database, access, or role change is authorized by this handoff alone.
 
@@ -361,5 +366,5 @@ Do not mix these documentation commits with application, database, role, access,
 - Approved list of Super Admin recipients.
 - Product Owner review of Release 1 Production acceptance evidence.
 - Product Owner review of Release 1.1 Production acceptance evidence.
-- Production approval for a focused fix to the fractional-minute mock-card copy after Preview acceptance.
+- Production approval for the accepted duration/highlight application plus the supported two-question revision/new-assessment-version correction.
 - Release 2 capability matrix and approved Super Admin recipients.

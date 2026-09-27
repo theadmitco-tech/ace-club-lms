@@ -1,6 +1,6 @@
 # Mock time copy and passage highlights
 
-Status: Local candidate verified; Staging pending
+Status: Staging accepted; Production approval pending
 Owner: Engineering
 Date: 27 September 2026
 
@@ -30,16 +30,23 @@ Production assignment `618d2a28-3843-49fc-af63-a59f5ce77c51` currently has two c
 - The Next.js 16.3.6 Production build compiled, typechecked, and generated all 54 pages.
 - `git diff --check` passed before documentation closeout.
 
-## Staging plan
+## Staging acceptance
 
-Deploy the candidate as a Staging-backed Preview. Use the existing imported RC package rather than importing it again. Add the two display configurations only to the matching Staging question revisions, verify the 21-minute-31-second list copy and both highlighted phrases in a disposable/resettable tester attempt, inspect browser/Vercel logs, and record the exact inverse update.
+- Candidate commit: `6b78948` on `codex/flexible-mocks-security-integration`.
+- Separate draft pull request: [#22](https://github.com/theadmitco-tech/ace-club-lms/pull/22). Pull request #21 remains unchanged and unmerged.
+- The `ace-club-lms` Git integration produced a successful Preview for commit `6b78948` at `https://ace-club-zu7f495p5-theadmitco-techs-projects.vercel.app`; its stable branch alias is `https://ace-club-lms-git-codex-flexibl-a78ea8-theadmitco-techs-projects.vercel.app`.
+- A direct edit of the two original Published Staging revisions was correctly rejected by the immutable-revision guard. No original Published row was modified.
+- The supported revision lifecycle produced current Published revisions `038ba249-f7f4-4510-8450-83a0849a8f11` for `the learning curve` and `5f812d6d-ddd8-44fe-bc58-780dcf3ec32e` for `nonfunctional features`.
+- A disposable Staging assessment used all 11 RC questions with a 1,291-second section. Starting it as a disposable enrolled Student produced 11 attempt-item snapshots and exactly two `stimulus_display_config` snapshots. The expected card copy is `21 minutes 31 seconds`; the component regression test exercises that exact value.
+- The disposable assessment, version, assignment, enrollment, attempt, and Student were removed. Two short-lived Admin auth identities could not be deleted because immutable revision provenance references them; their profile and namespace-membership rows were removed, so they cannot access the portal. Two duplicate revision-2 rows created during the interrupted acceptance rerun were retired; the verified revision-3 rows are the current Published pointers.
+- The unrelated empty Vercel project `ace-club-flexible-mocks` again reported a failed check because it has no environment variables. The authoritative `ace-club-lms` Preview check passed and no Production alias changed.
 
 ## Production boundary and rollback
 
 No Production application or data correction is authorized by this record. After Staging acceptance, obtain explicit approval for both the application deployment and the two exact published-question updates. Recheck attempts before release. Do not rewrite completed attempt snapshots.
 
-Application rollback is the currently live deployment `dpl_Hk1X2tMnSUU8rzDGgs9u3ewt96Ds`. The two question updates are backward-compatible because the current application ignores the nested key. Their data inverse removes only `interaction_json.stimulus_display_config` from the two exact revision IDs.
+Application rollback is the currently live deployment `dpl_Hk1X2tMnSUU8rzDGgs9u3ewt96Ds`. Production data correction must follow the immutable revision lifecycle: create and publish one new revision for each of the two exact source question IDs, then use those revisions in a newly published assessment version. Do not edit an existing Published revision or rewrite either completed attempt snapshot. Before Production approval, record the exact new revision, assessment-version, and assignment targets and their retirement/release inverse.
 
 ## Exact next action
 
-Commit and push the locally verified candidate, deploy a Staging-backed Preview, and perform the bounded time-copy and two-question highlight acceptance. Stop before Production.
+Obtain fresh explicit approval for the Production application deployment and the supported two-question revision/new-assessment-version release. Recheck the Production attempt count immediately before release. Stop before Production, `main`, or pull-request merge without that approval.
