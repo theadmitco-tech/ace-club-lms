@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-As of: 27 September 2026, 15:07 IST
+As of: 27 September 2026, 15:37 IST
 
 This is the single active operational handoff. Git history preserves earlier versions; do not append a growing chronological diary here.
 
@@ -14,21 +14,21 @@ Stable context: [Project Manual](PROJECT_MANUAL.md). Engineering and handoff rul
 |---|---|
 | Application | [aceclub.theadmitco.com](https://aceclub.theadmitco.com) |
 | Vercel project | `ace-club-lms` / `prj_2lW0zANcAnI81eURRZrJTMSCxuLr` |
-| Current Production deployment | `dpl_Hk1X2tMnSUU8rzDGgs9u3ewt96Ds` — `READY` |
+| Current Production deployment | `dpl_FDJi63kvpBJX8HAc5vbVe5fKYsfY` — `READY` |
 | Deployment source | `codex/flexible-mocks-security-integration` |
-| Production Git commit | `3681f6b5a645a3cbf5c9f682d430b469911e550c` |
-| Commit purpose | Deploy flexible sectional mocks with the accepted Next.js 16.3.6 security integration |
+| Production Git commit | `f2e67cbb07a956b78693592fa0f889c10ab9a905` |
+| Commit purpose | Correct proportional mock-duration copy and render workbook-declared RC passage highlights |
 | Production Supabase | `owmlxsnzogfapotmjrqk` |
 | Latest Production migration | `20260925100000_scope_mock_attempt_order_by_category` |
 | Production migration count | 49 |
 
-The deployment identity, migration boundary, authenticated Student/Admin smoke, runtime logs, and Security Advisor were verified on 25 September 2026. Flexible sectional mock schema and application support are live. The approved 11-question `RC CC End-of-Course Mock` is released only to `Reading Comprehension - CC`; its immutable one-section snapshot stores 1,291 seconds.
+The duration/highlight release was verified on 27 September 2026. The approved 11-question `RC CC End-of-Course Mock` remains released only to `Reading Comprehension - CC`; version 2 `67707f60-1141-4243-be42-872baf9a6d1e` keeps its immutable one-section snapshot at 1,291 seconds and adds only the two workbook-declared passage highlights. Authenticated Student smoke showed `21 minutes 31 seconds` and Version 2. The two completed attempts remain unchanged on version 1.
 
 ### Application rollback candidate
 
-The immediate application rollback is `dpl_DPSTQTeEcdJoTtzjF8N4ef5dz1L9`, the previously live and verified Release 1.2 deployment.
+The immediate application rollback is `dpl_Hk1X2tMnSUU8rzDGgs9u3ewt96Ds`, the previously live and verified flexible-sectional/security-integration deployment.
 
-It includes the template-native worksheet tracker but not flexible sectional mock authoring or the Next.js 16.3.6 integration. Because the prior Mock Builder cannot author against the new non-null category schema, keep mock authoring frozen during application rollback and prefer a reviewed forward correction. Do not drop category columns or restore the old uniqueness constraints.
+It includes flexible sectional mock authoring and the Next.js 16.3.6 integration, but not the duration/highlight renderer. The added interaction metadata is backward-compatible because the prior app ignores it. If data rollback is also required, run the reviewed `scripts/production-mock-highlight-rollback.sql`; it restores version-1 pointers without deleting immutable versions or attempts.
 
 ## 2. Staging state
 
@@ -52,7 +52,7 @@ It includes the template-native worksheet tracker but not flexible sectional moc
 
 The RC-only tester attempt was reset successfully during review after a transient browser request failure. The application correction at `65464bd` prevents start/reset dialogs from remaining permanently busy after a failed or stalled request; it does not change the database. The refreshed Preview reproduced and visibly recovered from a transient failed start, then passed a direct RC-only start and successful reset. Both RC verification attempts were removed, leaving the tester card ready to start.
 
-The focused duration/highlight candidate passed Staging snapshot acceptance with all 11 RC questions at 1,291 seconds and exactly two workbook-declared highlight configurations. Staging now points those two source questions to supported new Published revisions `038ba249-f7f4-4510-8450-83a0849a8f11` and `5f812d6d-ddd8-44fe-bc58-780dcf3ec32e`; the original Published revisions were not edited. Disposable assessment, assignment, attempt, enrollment, and Student records were removed. Two provenance-only Admin auth identities remain because the immutable revisions reference their creators; their portal profiles and namespace memberships were removed. Production remains unchanged.
+The focused duration/highlight candidate passed Staging snapshot acceptance with all 11 RC questions at 1,291 seconds and exactly two workbook-declared highlight configurations. Staging now points those two source questions to supported new Published revisions `038ba249-f7f4-4510-8450-83a0849a8f11` and `5f812d6d-ddd8-44fe-bc58-780dcf3ec32e`; the original Published revisions were not edited. Disposable assessment, assignment, attempt, enrollment, and Student records were removed. Two provenance-only Admin auth identities remain because the immutable revisions reference their creators; their portal profiles and namespace memberships were removed.
 
 ### Ledger differences requiring deliberate handling
 
@@ -273,7 +273,7 @@ The live alias remained on the new `READY` deployment. No rollback condition was
 - The Product Owner supplied fresh approval for the exact RC workbook and immediate RC CC release. Production import `b2e25cdb-2e1c-4649-8e22-515c31b24841` completed once; do not import package `1f14b21e-df4f-4f5d-9eff-b972497a9da2` again.
 - The Product Owner authorized the two Production migrations and integrated application deployment as separate gates. Both migrations are ledgered once, Production deployment `dpl_Hk1X2tMnSUU8rzDGgs9u3ewt96Ds` is `READY`, and the authenticated Student/Admin smoke, browser/Vercel logs, Supabase health, Security Advisor, and final isolation checks passed. Full evidence is in [the Production rollout record](releases/2026-09-25-flexible-sectional-mocks-production.md).
 - Production assessment `c8af4540-d653-4320-a780-1774baf3ba2e`, version `a85a3fdd-b57b-4692-929a-9b210d65de30`, and assignment `618d2a28-3843-49fc-af63-a59f5ce77c51` release 11 passage-grouped RC questions only to course `4763d048-9cbe-4488-95dc-3df25d873299`. The released Student card was verified without starting an attempt. Its duration copy currently displays a raw fractional minute value even though the stored timer is correctly 1,291 seconds.
-- A focused 27 September candidate fixes that duration copy and preserves the workbook's two question-specific passage highlights. The exact workbook contains both highlight instructions; the prior importer ignored `stimulus_display_config_json`. Local TypeScript, lint, all 44 Pilot V3 tests, exact-workbook parsing, the 54-page Production build, the `ace-club-lms` Preview, and a disposable 11-question Staging snapshot test pass. Production currently has two completed attempts for the RC assignment; their immutable snapshots will not be rewritten. See [the focused correction record](releases/2026-09-27-mock-time-and-passage-highlights.md).
+- The focused 27 September duration/highlight correction is live in Production. The exact workbook contained both highlight instructions; the prior importer ignored `stimulus_display_config_json`. Published question revisions `9e704cef-bea9-40cd-8fc5-9eafd6ad8339` and `f8762a64-6552-4dc4-95e7-27e5806de998` feed assessment version 2 `67707f60-1141-4243-be42-872baf9a6d1e`. Existing assignment `618d2a28-3843-49fc-af63-a59f5ce77c51` retains its course and immediate release. Both completed attempts remain on version 1 with unchanged snapshots. See [the focused correction record](releases/2026-09-27-mock-time-and-passage-highlights.md).
 
 ### Objective
 
@@ -318,7 +318,7 @@ Consolidate documentation into:
 
 ## 7. Exact next action
 
-> Obtain fresh explicit approval for the Production application deployment and the supported immutable-revision/new-assessment-version correction for the two highlighted RC questions. Recheck the two completed Production attempts immediately before release and leave their snapshots unchanged. Do not merge PR #21, merge PR #22, or merge to `main` without separate explicit approval.
+> Product Owner may perform visual verification of the Production Version 2 card and a future unstarted attempt. No further Production mutation is required. Do not merge PR #21, merge PR #22, or merge to `main` without separate explicit approval.
 
 No database, access, or role change is authorized by this handoff alone.
 
@@ -366,5 +366,5 @@ Do not mix these documentation commits with application, database, role, access,
 - Approved list of Super Admin recipients.
 - Product Owner review of Release 1 Production acceptance evidence.
 - Product Owner review of Release 1.1 Production acceptance evidence.
-- Production approval for the accepted duration/highlight application plus the supported two-question revision/new-assessment-version correction.
+- Product Owner visual verification of the Version 2 passage highlights when an eligible account starts a fresh attempt.
 - Release 2 capability matrix and approved Super Admin recipients.

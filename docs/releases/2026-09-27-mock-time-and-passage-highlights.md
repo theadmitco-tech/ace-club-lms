@@ -1,6 +1,6 @@
 # Mock time copy and passage highlights
 
-Status: Staging accepted; Production approval pending
+Status: Production complete
 Owner: Engineering
 Date: 27 September 2026
 
@@ -43,10 +43,14 @@ Production assignment `618d2a28-3843-49fc-af63-a59f5ce77c51` currently has two c
 
 ## Production boundary and rollback
 
-No Production application or data correction is authorized by this record. After Staging acceptance, obtain explicit approval for both the application deployment and the two exact published-question updates. Recheck attempts before release. Do not rewrite completed attempt snapshots.
+The Product Owner explicitly approved Production deployment on 27 September 2026. Application commit `f2e67cb` deployed successfully as `dpl_FDJi63kvpBJX8HAc5vbVe5fKYsfY`; `aceclub.theadmitco.com` and the stable Vercel aliases point to that `READY` deployment. The build validated Production/Staging environment separation, compiled Next.js 16.3.6, and generated all 54 pages.
 
-Application rollback is the currently live deployment `dpl_Hk1X2tMnSUU8rzDGgs9u3ewt96Ds`. Production data correction must follow the immutable revision lifecycle: create and publish one new revision for each of the two exact source question IDs, then use those revisions in a newly published assessment version. Do not edit an existing Published revision or rewrite either completed attempt snapshot. Before Production approval, record the exact new revision, assessment-version, and assignment targets and their retirement/release inverse.
+The committed transactional operation `scripts/production-mock-highlight-release.sql` passed a fail-closed Staging rehearsal and then completed against Production project `owmlxsnzogfapotmjrqk`. It created Published revision `9e704cef-bea9-40cd-8fc5-9eafd6ad8339` for `the learning curve` and Published revision `f8762a64-6552-4dc4-95e7-27e5806de998` for `nonfunctional features`. It published assessment version 2 as `67707f60-1141-4243-be42-872baf9a6d1e` and moved existing assignment `618d2a28-3843-49fc-af63-a59f5ce77c51` to that version without changing its course, release time, due date, or identity.
+
+The two pre-existing completed attempts remain on immutable version 1 `a85a3fdd-b57b-4692-929a-9b210d65de30`; no attempt, answer, timing, or Student record was rewritten. An authenticated Production Student smoke showed `RC CC End-of-Course Mock`, one section, `21 minutes 31 seconds`, and Version 2. Root and login returned 200, protected `/mocks` redirected signed-out traffic to login, and the post-release Vercel error/5xx scans were empty.
+
+Application rollback is `dpl_Hk1X2tMnSUU8rzDGgs9u3ewt96Ds`. Data rollback is the committed, fail-closed `scripts/production-mock-highlight-rollback.sql`: restore the assignment to version 1, restore the two assessment-item/current-question pointers, retire the two version-2 question revisions, preserve both immutable assessment versions and all attempts, and append rollback audit rows. Do not delete version 2 or rewrite attempt snapshots.
 
 ## Exact next action
 
-Obtain fresh explicit approval for the Production application deployment and the supported two-question revision/new-assessment-version release. Recheck the Production attempt count immediately before release. Stop before Production, `main`, or pull-request merge without that approval.
+Product Owner may visually inspect the card and future unstarted Version 2 journey in Production. No further Production mutation is required. Pull requests #21 and #22 remain unmerged, and `main` remains unchanged.
