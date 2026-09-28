@@ -274,6 +274,7 @@ The live alias remained on the new `READY` deployment. No rollback condition was
 - The Product Owner authorized the two Production migrations and integrated application deployment as separate gates. Both migrations are ledgered once, Production deployment `dpl_Hk1X2tMnSUU8rzDGgs9u3ewt96Ds` is `READY`, and the authenticated Student/Admin smoke, browser/Vercel logs, Supabase health, Security Advisor, and final isolation checks passed. Full evidence is in [the Production rollout record](releases/2026-09-25-flexible-sectional-mocks-production.md).
 - Production assessment `c8af4540-d653-4320-a780-1774baf3ba2e`, version `a85a3fdd-b57b-4692-929a-9b210d65de30`, and assignment `618d2a28-3843-49fc-af63-a59f5ce77c51` release 11 passage-grouped RC questions only to course `4763d048-9cbe-4488-95dc-3df25d873299`. The released Student card was verified without starting an attempt. Its duration copy currently displays a raw fractional minute value even though the stored timer is correctly 1,291 seconds.
 - The focused 27 September duration/highlight correction is live in Production. The exact workbook contained both highlight instructions; the prior importer ignored `stimulus_display_config_json`. Published question revisions `9e704cef-bea9-40cd-8fc5-9eafd6ad8339` and `f8762a64-6552-4dc4-95e7-27e5806de998` feed assessment version 2 `67707f60-1141-4243-be42-872baf9a6d1e`. Existing assignment `618d2a28-3843-49fc-af63-a59f5ce77c51` retains its course and immediate release. Both completed attempts remain on version 1 with unchanged snapshots. See [the focused correction record](releases/2026-09-27-mock-time-and-passage-highlights.md).
+- On 28 September, the Product Owner approved one assignment-scoped Production tester grant for the exact active account tied to completed attempt `eabe0c25-4be6-40ef-b035-59383deaf236`. The account role and completed attempt remain unchanged. The refreshed RC CC card is labelled `Tester access` and exposes `Reset test attempt`; the control has not been clicked. Apply/audit/revoke is bounded by `scripts/production-rc-mock-tester-access.mjs`.
 
 ### Objective
 
@@ -318,9 +319,9 @@ Consolidate documentation into:
 
 ## 7. Exact next action
 
-> Product Owner may perform visual verification of the Production Version 2 card and a future unstarted attempt. No further Production mutation is required. Do not merge PR #21, merge PR #22, or merge to `main` without separate explicit approval.
+> Product Owner may now use `Reset test attempt` on the Production RC CC card and inspect the separate Version 2 tester journey. Do not merge PR #21, merge PR #22, or merge to `main` without separate explicit approval.
 
-No database, access, or role change is authorized by this handoff alone.
+No additional database, access, or role change is authorized by this handoff alone.
 
 ## 8. Planned release sequence after documentation consolidation
 

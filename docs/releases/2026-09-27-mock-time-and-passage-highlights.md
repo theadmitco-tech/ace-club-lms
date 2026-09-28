@@ -49,8 +49,10 @@ The committed transactional operation `scripts/production-mock-highlight-release
 
 The two pre-existing completed attempts remain on immutable version 1 `a85a3fdd-b57b-4692-929a-9b210d65de30`; no attempt, answer, timing, or Student record was rewritten. An authenticated Production Student smoke showed `RC CC End-of-Course Mock`, one section, `21 minutes 31 seconds`, and Version 2. Root and login returned 200, protected `/mocks` redirected signed-out traffic to login, and the post-release Vercel error/5xx scans were empty.
 
+On 28 September 2026, the Product Owner explicitly approved assignment-scoped tester access for the exact active Production account identified by completed attempt `eabe0c25-4be6-40ef-b035-59383deaf236`. The idempotent operation `scripts/production-rc-mock-tester-access.mjs apply` activated one grant for assignment `618d2a28-3843-49fc-af63-a59f5ce77c51`; it did not change the account role or rewrite the completed version-1 attempt. A refreshed authenticated Production card was labelled `Tester access`, retained Version 2 and `21 minutes 31 seconds`, and exposed `Reset test attempt`. The control was not clicked. Revoke only this grant with `node scripts/production-rc-mock-tester-access.mjs revoke`.
+
 Application rollback is `dpl_Hk1X2tMnSUU8rzDGgs9u3ewt96Ds`. Data rollback is the committed, fail-closed `scripts/production-mock-highlight-rollback.sql`: restore the assignment to version 1, restore the two assessment-item/current-question pointers, retire the two version-2 question revisions, preserve both immutable assessment versions and all attempts, and append rollback audit rows. Do not delete version 2 or rewrite attempt snapshots.
 
 ## Exact next action
 
-Product Owner may visually inspect the card and future unstarted Version 2 journey in Production. No further Production mutation is required. Pull requests #21 and #22 remain unmerged, and `main` remains unchanged.
+Product Owner may click `Reset test attempt` on the Production RC CC card and start the separate tester journey to inspect Version 2. Pull requests #21 and #22 remain unmerged, and `main` remains unchanged.
