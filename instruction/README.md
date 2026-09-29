@@ -2,63 +2,89 @@
 
 Status: Active
 Owner: Product owner
-Last updated: 17 August 2026
+Last updated: 31 August 2026
 
-This folder contains the documents that define product intent, scope, phase boundaries, acceptance, and signed checkpoints. Read this register before starting product or engineering work.
+This folder contains binding product intent, scope, delivery gates, and signed Product Owner checkpoints.
 
-Current delivery state: Phases 1–7 are signed off and deployed to Production. Phase 8 is signed off with explicit evidence exceptions after the Product Owner confirmed on 10 August 2026 that the MVP is live with real Students. Pilot V1 was deployed on 13 August 2026 and is preserved in its [Production evidence](../docs/pilot-v1/evidence/production-rollout-2026-08-13.md). Pilot V2 Phase 1 through Phase 6 are accepted against the exact immutable Preview. Its Phase 7 conditional plan, read-only preflight and tested manual snapshot recovery are complete, but every merge, Production migration, deployment and Production-changing check remains unauthorized. Continue from the [consolidated Pilot V2 bootstrap and running handoff](../docs/pilot-v2/README.md).
+For normal continuation:
+
+1. Read the [Project Manual](../docs/PROJECT_MANUAL.md).
+2. Read [Current State](../docs/CURRENT_STATE.md).
+3. Read the binding requirement or decision relevant to the immediate task.
+
+Do not use a historical handoff or phase plan as the current operational state.
 
 ## Authority order
 
 When documents conflict, use this order:
 
-1. [MVP Acceptance Criteria](Ace_Club_LMS_MVP_Acceptance_Criteria.md) — binding product behaviour and launch acceptance.
-2. [Product Roadmap](Ace_Club_LMS_Product_Roadmap.md) — delivery phases, sequencing, ownership, risks, and exit gates.
-3. [Running Handoff](../docs/handoffs/ace-club-lms-running-handoff.md) — current signed continuity state and next-phase bootstrap.
-4. [Repository instructions](../AGENTS.md) — repository-specific operating constraints.
-5. [Living coding rules](../docs/development/coding-rules.md) — implementation and verification conventions.
+1. Explicit Product Owner instruction and accepted amendment.
+2. [MVP Acceptance Criteria](Ace_Club_LMS_MVP_Acceptance_Criteria.md).
+3. [Product Roadmap](Ace_Club_LMS_Product_Roadmap.md).
+4. Accepted architecture decision records under [`docs/decisions/`](../docs/decisions/).
+5. [Project Manual](../docs/PROJECT_MANUAL.md) for stable consolidated context.
+6. [Engineering Handbook](../docs/governance/engineering-handbook.md) for engineering and release rules.
+7. [Current State](../docs/CURRENT_STATE.md) for verified operational facts and the next action.
+8. Feature, release, and historical evidence records.
 
-Code is evidence of the current implementation, not authority for product scope.
+Code is evidence of implementation. It does not silently redefine product scope.
 
-## Document register
+When a conflict is found:
 
-| Document | Type | Status | Purpose | Update rule |
-|---|---|---|---|---|
-| `Ace_Club_LMS_MVP_Acceptance_Criteria.md` | Product requirements | Active | Defines required MVP behaviour and exclusions | Change only with product-owner approval |
-| `Ace_Club_LMS_Product_Roadmap.md` | Delivery roadmap | Active | Defines phases, order, dependencies, and gates | Change only with product-owner approval |
-| `Phase_0.5_Setup_Recovery_Signoff.md` | Historical signed checkpoint | Signed off | Preserves the immutable Phase 0.5 state | Do not rewrite accepted history |
-| `docs/handoffs/ace-club-lms-running-handoff.md` | Running cross-phase handoff | Active | Preserves signed phase sections and the latest continuation state | Append a new signed section at each phase close |
-| `docs/handoffs/pilot-iterations-running-handoff.md` | Signed pilot handoff | Signed off for V1 | Preserves detailed Pilot V1 execution and release history | Do not append V2 working state |
-| `docs/pilot-v2/README.md` | Version bootstrap and status | Active | Single active entry point for approved V2 scope, planning and later working state | Update after each V2 decision, phase or ownership transfer |
-| `docs/pilot-v2/acceptance-criteria.md` | Pilot V2 product requirements | Phase 4 and Phase 5 accepted | Defines V2 outcomes, exclusions, running-batch rules and staging journeys | Preserve approved decisions; amend transparently with Product Owner approval |
-| `docs/pilot-v2/product-roadmap.md` | Pilot V2 phase roadmap | Phase 4 and Phase 5 accepted; Phase 6 not started | Defines approved internal product phases and exit gates | Preserve the approved sequence; amend transparently with Product Owner approval |
+1. stop the affected change;
+2. identify the conflicting statements and authority;
+3. obtain Product Owner clarification when required;
+4. update or supersede the lower-authority document;
+5. commit the reconciliation with the related change.
+
+## Binding product documents
+
+| Document | Status | Purpose | Update rule |
+|---|---|---|---|
+| [MVP Acceptance Criteria](Ace_Club_LMS_MVP_Acceptance_Criteria.md) | Active | Required product behavior and exclusions | Product Owner approval required |
+| [Product Roadmap](Ace_Club_LMS_Product_Roadmap.md) | Active signed history | Approved delivery phases, gates, and ownership | Amend transparently with Product Owner approval |
+| [Phase 0.5 Setup/Recovery Sign-off](Phase_0.5_Setup_Recovery_Signoff.md) | Signed off | Historical recovery checkpoint | Immutable; do not rewrite |
+
+## Operational and engineering documents
+
+| Document | Purpose |
+|---|---|
+| [Project Manual](../docs/PROJECT_MANUAL.md) | Master explanation and documentation map |
+| [Current State](../docs/CURRENT_STATE.md) | Exact deployments, migration ledgers, issues, approvals, rollback, and next action |
+| [Engineering Handbook](../docs/governance/engineering-handbook.md) | Source control, migrations, authorization, testing, releases, rollback, documentation, and handoffs |
+| [Documentation Index](../docs/README.md) | Short task-oriented router |
 
 ## Reading paths
 
 ### Starting or resuming work
 
 1. Read `AGENTS.md`.
-2. Read this register.
-3. Read the latest section of the running handoff.
-4. Read the Markdown acceptance criteria and relevant roadmap phase.
-5. Read `docs/README.md`.
-6. For post-MVP pilot changes, read the signed Phase 8 closeout, its explicit evidence exceptions, the [Pilot Iterations Running Handoff](../docs/handoffs/pilot-iterations-running-handoff.md), and the active cleanup register.
-7. For Pilot V2, use the [Pilot V2 consolidated bootstrap and running handoff](../docs/pilot-v2/README.md) as the single active entry point and follow its tiered reading map.
-8. Read only the implementation files relevant to the immediate task.
+2. Read the Project Manual.
+3. Read Current State.
+4. Read only the relevant requirement, ADR, feature guide, release record, or evidence linked from those documents.
+5. Verify Git/deployment/database facts read-only when the immediate task depends on them.
 
 ### Making a product decision
 
-Read the acceptance criteria first, then the roadmap. Record an approved decision under `docs/decisions/` when it changes scope, architecture, security, data, or operations.
+1. Read the affected acceptance requirement.
+2. Review existing ADRs and stable feature contracts.
+3. Record an approved structural/security/data decision as a new ADR.
+4. Do not rewrite an accepted ADR; supersede it.
 
-### Closing a phase
+### Releasing
 
-Use the roadmap exit gate and acceptance criteria. Store the signed result under the relevant `docs/phase-N/` folder, with immutable evidence under `docs/phase-N/evidence/`.
+Follow the Engineering Handbook. Every release needs explicit scope, Staging evidence, fixture cleanup, rollback, Production authorization, deployment/migration identifiers, and a Current State update.
+
+### Investigating history
+
+Use the [historical map in the Project Manual](../docs/PROJECT_MANUAL.md#113-historical-map). Phase, pilot, handoff, and evidence documents remain preserved but are not prerequisite reading.
 
 ## Folder rules
 
-- `instruction/` contains authoritative product intent and immutable source artifacts.
-- `docs/handoffs/` contains the active running handoff with preserved signed phase sections.
-- `docs/` otherwise contains implementation guidance, setup, decisions, active phase records, and evidence.
-- Markdown is the sole repository format for the MVP acceptance criteria and product roadmap. Do not create parallel Word copies that can drift from product authority.
-- Do not store secrets, credentials, private student data, or live magic links in either folder.
-- Follow [document conventions](../docs/governance/document-conventions.md) for new files.
+- `instruction/` owns binding product intent and signed Product Owner checkpoints.
+- `docs/PROJECT_MANUAL.md` owns stable consolidated context.
+- `docs/CURRENT_STATE.md` owns the active handoff.
+- `docs/governance/` owns engineering and documentation rules.
+- `docs/decisions/` owns accepted architecture decisions.
+- Dated evidence remains immutable.
+- Never store secrets, credentials, private Student data, magic links, or unrestricted signed URLs.

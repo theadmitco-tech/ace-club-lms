@@ -138,4 +138,5 @@ test('Student surfaces keep Home compact and use Day/Week plus contextual resour
   assert.match(resources, /Starter Packs and standalone resources remain under All Sections and All Topics/);
   assert.match(loader, /\.from\('materials'\)/);
   assert.match(loader, /category, resource_scope, resource_format/);
+  assert.match(loader, /knownStudentName/);
 });

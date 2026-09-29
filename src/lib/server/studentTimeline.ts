@@ -7,17 +7,16 @@ type StudentTimelineResult =
   | { status: 'ready'; studentName: string; timeline: StudentTimelinePayload }
   | { status: 'failed'; studentName: string; message: string };
 
-export async function loadStudentTimeline(studentId: string): Promise<StudentTimelineResult> {
+export async function loadStudentTimeline(studentId: string, knownStudentName?: string): Promise<StudentTimelineResult> {
   const supabase = await createClient();
+  const profileRequest = knownStudentName
+    ? Promise.resolve({ data: null })
+    : supabase.from('profiles').select('full_name').eq('id', studentId).maybeSingle();
   const [{ data: profile }, { data, error }] = await Promise.all([
-    supabase
-      .from('profiles')
-      .select('full_name')
-      .eq('id', studentId)
-      .maybeSingle(),
+    profileRequest,
     supabase.rpc('get_student_timeline'),
   ]);
-  const studentName = profile?.full_name?.trim() || 'Student';
+  const studentName = knownStudentName?.trim() || profile?.full_name?.trim() || 'Student';
 
   if (error || !data) {
     console.error('Student timeline load failed:', error);

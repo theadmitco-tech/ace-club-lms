@@ -28,7 +28,7 @@ const JOURNEY_STEPS: Array<{
 
 export default async function SessionPage({ params }: { params: Promise<{ id: string }> }) {
   const [{ id: sessionId }, identity] = await Promise.all([params, requirePortalRole('student')]);
-  const result = await loadStudentTimeline(identity.id);
+  const result = await loadStudentTimeline(identity.id, identity.fullName);
 
   if (result.status === 'failed') {
     return (

@@ -27,7 +27,7 @@ function firstValue(value: string | string[] | undefined) {
 
 export default async function ResourcesPage({ searchParams }: { searchParams: ResourceSearchParams }) {
   const identity = await requirePortalRole('student');
-  const [query, result] = await Promise.all([searchParams, loadStudentTimeline(identity.id)]);
+  const [query, result] = await Promise.all([searchParams, loadStudentTimeline(identity.id, identity.fullName)]);
 
   if (result.status === 'failed') {
     return <div className="student-page"><StudentHeader studentName={result.studentName} />
