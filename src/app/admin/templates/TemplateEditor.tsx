@@ -67,6 +67,7 @@ function newResource(): CourseTemplateResource {
     notionUrl: '',
     fileUrl: '',
     textContent: '',
+    questionCount: null,
     displayOrder: 1,
   };
 }
@@ -431,13 +432,24 @@ export default function TemplateEditor({
                     <label>Type<select className="form-select" value={resource.resourceType} onChange={(event) => {
                       const resourceType = event.target.value as CourseTemplateResource['resourceType'];
                       const format = resourceType === 'worksheet' ? 'pdf' : resourceType === 'pre_read' ? 'notion' : 'notion';
-                      updateResource(resource.key, { resourceType, format, notionUrl: '', fileUrl: '', textContent: '' });
+                      updateResource(resource.key, {
+                        resourceType,
+                        format,
+                        notionUrl: '',
+                        fileUrl: '',
+                        textContent: '',
+                        questionCount: resourceType === 'worksheet' ? resource.questionCount : null,
+                      });
                     }}><option value="starter">Starter Pack</option><option value="pre_read">Pre-read</option><option value="worksheet">Worksheet</option></select></label>
                     <label>Association<select className="form-select" value={resource.scope} onChange={(event) => updateResource(resource.key, { scope: event.target.value as CourseTemplateResource['scope'], sectionKey: null, eventKey: null })}><option value="template">Whole template</option><option value="section">One Section</option><option value="event">One event</option><option value="standalone">Standalone</option></select></label>
                     <label>Format<select className="form-select" disabled value={resource.format}>{resource.resourceType === 'worksheet' ? <option value="pdf">Protected PDF</option> : <option value="notion">Notion link</option>}</select></label>
                   </div>
                   {resource.scope === 'section' && <label>Section<select className="form-select" value={resource.sectionKey ?? ''} onChange={(event) => updateResource(resource.key, { sectionKey: event.target.value || null })}><option value="">Choose a Section</option>{draft.sections.map((section) => <option key={section.key} value={section.key}>{section.title}</option>)}</select></label>}
                   {resource.scope === 'event' && <label>Event<select className="form-select" value={resource.eventKey ?? ''} onChange={(event) => updateResource(resource.key, { eventKey: event.target.value || null })}><option value="">Choose an event</option>{draft.events.map((event) => <option key={event.key} value={event.key}>{event.displayOrder}. {event.title}</option>)}</select></label>}
+                  {resource.resourceType === 'worksheet' && <label>Number of questions<input className="form-input" type="number" min={1} step={1} required value={resource.questionCount ?? ''} onChange={(event) => {
+                    const value = Number(event.target.value);
+                    updateResource(resource.key, { questionCount: Number.isInteger(value) && value > 0 ? value : null });
+                  }} /><span className="master-content-empty">Required to create the worksheet log for future batches.</span></label>}
                   {resource.format === 'notion' && !resource.masterMaterialId && <label>Notion link or embed code<textarea className="form-input" rows={3} placeholder="Paste a Notion HTTPS link or the complete iframe embed code" value={resource.notionUrl} onChange={(event) => updateResource(resource.key, { notionUrl: normalizeNotionInput(event.target.value) })} /></label>}
                   {resource.format === 'text' && <label>Instructions<textarea className="form-input" maxLength={2000} rows={4} value={resource.textContent} onChange={(event) => updateResource(resource.key, { textContent: event.target.value })} /></label>}
                   {resource.format === 'pdf' && !resource.masterMaterialId && <label>Protected worksheet PDF<input accept="application/pdf,.pdf" className="form-input" disabled={uploadingResourceKey === resource.key} type="file" onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadWorksheet(resource.key, file); }} /><span className="master-content-empty">{uploadingResourceKey === resource.key ? 'Uploading…' : resource.fileUrl ? 'Protected PDF uploaded.' : 'PDF only, up to 50 MB.'}</span></label>}

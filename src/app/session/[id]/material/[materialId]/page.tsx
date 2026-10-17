@@ -26,7 +26,7 @@ export default async function MaterialViewerPage({
   ]);
   const supabase = await createClient();
   const [timelineResult, { data: materialData, error: materialError }] = await Promise.all([
-    loadStudentTimeline(identity.id),
+    loadStudentTimeline(identity.id, identity.fullName),
     supabase
       .from('materials')
       .select('*')

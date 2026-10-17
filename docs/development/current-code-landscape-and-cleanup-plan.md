@@ -1,8 +1,12 @@
 # Ace Club LMS — Current Code Landscape and Cleanup Plan
 
-Status: Historical audit with an active cleanup register
+Status: Archived — historical audit and cleanup snapshot
 Owner: Engineering
-Last updated: 10 August 2026
+Last updated: 31 August 2026
+
+Superseded for current system orientation by: [Project Manual](../PROJECT_MANUAL.md) and [Current State](../CURRENT_STATE.md)
+
+The audit below remains useful historical evidence. Its Git state, lint counts, continuation instructions, and cleanup priorities are not current authorization.
 
 ## Purpose and boundary
 

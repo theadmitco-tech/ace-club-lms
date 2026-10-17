@@ -50,6 +50,7 @@ type ResourceRow = {
   notion_url: string | null;
   file_url: string | null;
   text_content: string | null;
+  question_count: number | null;
   display_order: number;
 };
 
@@ -69,7 +70,7 @@ export async function listCourseTemplates(): Promise<CourseTemplate[]> {
     supabase.from('course_template_revisions').select('id, template_id, revision_number, title, created_at').in('template_id', templates.map((template) => template.id)).order('revision_number', { ascending: false }),
     supabase.from('course_template_sections').select('id, revision_id, section_key, title, display_order').in('revision_id', revisionIds).order('display_order'),
     supabase.from('course_template_events').select('id, revision_id, section_id, event_key, title, event_type, relative_day, display_order, start_time, duration_minutes, instructor, venue, reporting_time, instructions, is_published_by_default, source_master_session_id').in('revision_id', revisionIds).order('display_order'),
-    supabase.from('course_template_resources').select('revision_id, section_id, event_id, resource_key, title, resource_type, resource_scope, master_material_id, resource_format, notion_url, file_url, text_content, display_order').in('revision_id', revisionIds).order('display_order'),
+    supabase.from('course_template_resources').select('revision_id, section_id, event_id, resource_key, title, resource_type, resource_scope, master_material_id, resource_format, notion_url, file_url, text_content, question_count, display_order').in('revision_id', revisionIds).order('display_order'),
   ]);
 
   const loadError = revisionsResult.error ?? sectionsResult.error ?? eventsResult.error ?? resourcesResult.error;
@@ -133,6 +134,7 @@ export async function listCourseTemplates(): Promise<CourseTemplate[]> {
         notionUrl: resource.notion_url ?? '',
         fileUrl: resource.file_url ?? '',
         textContent: resource.text_content ?? '',
+        questionCount: resource.question_count,
         displayOrder: resource.display_order,
       })),
       revisionHistory: revisions

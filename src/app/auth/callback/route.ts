@@ -36,5 +36,5 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/login/access-denied`);
   }
 
-  return NextResponse.redirect(`${origin}${profile.role === 'admin' ? '/admin' : '/dashboard'}`);
+  return NextResponse.redirect(`${origin}${profile.role === 'admin' ? '/admin' : '/post-login'}`);
 }
