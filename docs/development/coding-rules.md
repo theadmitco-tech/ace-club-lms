@@ -1,6 +1,14 @@
-# Ace Club LMS — Living Coding Rules
+# Ace Club LMS — Historical Coding Rules
 
-Update this document when an architectural or workflow decision changes. It supplements `AGENTS.md`; it does not override the product roadmap or MVP acceptance criteria.
+Status: Superseded
+Owner: Engineering
+Last updated: 31 August 2026
+
+Superseded by: [Engineering Handbook](../governance/engineering-handbook.md)
+
+This file is retained to preserve the earlier operating baseline. Do not treat its historical role exclusions, reading order, test list, or continuation rules as current.
+
+The historical rules below supplemented `AGENTS.md`; they did not override the product roadmap or MVP acceptance criteria. Update the Engineering Handbook, not this file, when an architectural or workflow rule changes.
 
 ## Sources of truth
 

@@ -1,8 +1,12 @@
 # Pilot V2 — Consolidated Bootstrap and Running Handoff
 
-Status: Active — Phase 1–6 accepted; Phase 7 preflight/recovery complete; Production unauthorized
+Status: Archived — accepted Pilot V2 bootstrap and execution history
 Owner: Product owner and Engineering
-Last updated: 20 August 2026
+Last updated: 31 August 2026
+
+Superseded for continuation by: [Project Manual](../PROJECT_MANUAL.md) and [Current State](../CURRENT_STATE.md)
+
+This document preserves Pilot V2 requirements, decisions, staged execution, and evidence links. Its “exact resume” and tiered prerequisite sections are historical and must not be treated as the current operational instruction.
 
 ## Purpose
 

@@ -9,6 +9,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
+  loginWithPassword: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   toasts: Toast[];
   addToast: (type: Toast['type'], message: string) => void;
@@ -183,6 +184,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { success: true };
   }, [supabase]);
 
+  const loginWithPassword = useCallback(async (email: string, password: string) => {
+    if (!supabase || process.env.NEXT_PUBLIC_ENABLE_LOCAL_PASSWORD_LOGIN !== 'true') {
+      return { success: false, error: 'Local password login is disabled.' };
+    }
+    setIsLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setIsLoading(false);
+    return error ? { success: false, error: error.message } : { success: true };
+  }, [supabase]);
+
   const logout = useCallback(async () => {
     if (!supabase) return;
 
@@ -203,7 +214,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return isSupabaseConfigured ? (
-    <AuthContext.Provider value={{ user, isLoading, loginWithGoogle, logout, toasts, addToast, removeToast }}>
+    <AuthContext.Provider value={{ user, isLoading, loginWithGoogle, loginWithPassword, logout, toasts, addToast, removeToast }}>
       {children}
       <div className="toast-container" aria-label="Notifications" aria-live="polite">
         {toasts.map((toast) => (

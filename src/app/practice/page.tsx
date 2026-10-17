@@ -4,18 +4,13 @@ import { ResourceCard } from '@/components/student/ResourceCard';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { loadStudentPracticeOverview } from '@/lib/server/studentPractice';
 import { formatProgrammeDateTime } from '@/lib/studentTimeline';
-import { createClient } from '@/utils/supabase/server';
 import '../dashboard/dashboard.css';
 import './practice.css';
 
 export default async function PracticeLogPage() {
   const identity = await requirePortalRole('student');
-  const supabase = await createClient();
-  const [result, { data: profile }] = await Promise.all([
-    loadStudentPracticeOverview(),
-    supabase.from('profiles').select('full_name').eq('id', identity.id).maybeSingle(),
-  ]);
-  const studentName = profile?.full_name?.trim() || 'Student';
+  const result = await loadStudentPracticeOverview();
+  const studentName = identity.fullName;
 
   if (result.status === 'failed') {
     return (
