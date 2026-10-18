@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getErrorMessage } from '@/lib/errorMessage';
 import {
   createRazorpayOrder,
   getSeatCounts,
@@ -103,8 +104,8 @@ export async function POST(request: NextRequest) {
         },
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Create Razorpay order failed:', error);
-    return NextResponse.json({ error: error.message || 'Failed to create payment order.' }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error, 'Failed to create payment order.') }, { status: 500 });
   }
 }

@@ -14,6 +14,13 @@ The implementation contract is [Acceptance Criteria](review/acceptance-criteria.
 
 The delivery sequence is [Product Roadmap](review/product-roadmap.md). It divides the work into reviewable phases with explicit exit gates.
 
+## Current engineering work
+
+[Phase 1 — Product catalogue and access](phase-1/README.md) records the local
+implementation scope, the requested Phase 0 sequencing exception, compatibility
+boundaries, and outstanding verification. It does not authorize migration
+application or release.
+
 ## Confirmed direction so far
 
 - V2 is online-first with two product types: Full Batch and Crash Course.

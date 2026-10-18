@@ -2,7 +2,7 @@
 
 Status: Draft for Product Owner review
 Owner: Product owner and Engineering
-Last updated: 11 October 2026
+Last updated: 18 October 2026
 
 This document converts the approved V2 product direction into testable outcomes for implementation and intern handoff. It does not authorize code changes, Supabase changes, merging, or Production deployment.
 
@@ -32,9 +32,13 @@ The launch catalogue uses:
 |---|---:|
 | One Crash Course | ₹10,000 |
 | Two Crash Courses | ₹18,000 |
+| All three Crash Courses | ₹25,000 |
 | Full Batch — all three sections | ₹25,000 |
 
 Pricing is stored as commercial configuration and is not hard-coded into presentation components.
+
+The all-three Crash Course bundle is included as already approved in V2-DEC-03.
+It grants the three separate Crash Course products, not Full Batch entitlement.
 
 ### AC-V2-PRODUCT-06 — Six-month access
 

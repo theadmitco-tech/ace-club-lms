@@ -2,7 +2,7 @@
 
 Status: Draft for Product Owner review
 Owner: Product owner and Engineering
-Last updated: 11 October 2026
+Last updated: 18 October 2026
 
 This roadmap sequences the V2 acceptance criteria into intern-sized delivery phases. It is a planning document only. It does not authorize application changes, database migrations, merging, Production deployment, or changes to student/course data.
 
@@ -17,6 +17,7 @@ Launch pricing:
 
 - One Crash Course: ₹10,000.
 - Two Crash Courses: ₹18,000.
+- All three Crash Courses: ₹25,000, as approved in V2-DEC-03; this remains distinct from Full Batch.
 - Full Batch: ₹25,000.
 
 Full Batch cannot be assembled by purchasing Crash Courses in parts. Students receive six months of access from successful payment. Live attendance is optional; recordings and website materials remain available.

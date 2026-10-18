@@ -1,0 +1,66 @@
+name: Verify
+
+on:
+  pull_request:
+    branches: [main, codex/v2-integration]
+  push:
+    branches: [main, codex/v2-integration]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_TELEMETRY_DISABLED: '1'
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run lint -- --max-warnings=0
+
+  test-build:
+    name: Tests and build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Locate disposable PostgreSQL tools
+        shell: bash
+        run: |
+          pg_tools_dir="$(pg_config --bindir)"
+          test -x "$pg_tools_dir/initdb"
+          test -x "$pg_tools_dir/pg_ctl"
+          test -x "$pg_tools_dir/psql"
+          echo "$pg_tools_dir" >> "$GITHUB_PATH"
+          "$pg_tools_dir/postgres" --version
+      # The database suite creates its own cluster with TCP disabled.
+      # No Supabase credentials, app server, shared DB, or deployment is used.
+      - run: npm run test:v2-products
+      - run: npm run test:v2-readers
+      - run: npm run test:release-safety
+      - run: npm run test:pilot-v2
+      - run: ./node_modules/.bin/tsc --noEmit --incremental false
+      - run: npm run build
+      - name: Verify the locked installation leaves manifests unchanged
+        run: git diff --exit-code -- package.json package-lock.json

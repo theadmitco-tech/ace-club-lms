@@ -3,11 +3,13 @@
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { PublicBatch } from '@/lib/registration';
+import type { RazorpayCheckoutConstructor } from '@/lib/razorpayCheckout';
+import { getErrorMessage } from '@/lib/errorMessage';
 import '../public.css';
 
 declare global {
   interface Window {
-    Razorpay?: any;
+    Razorpay?: RazorpayCheckoutConstructor;
   }
 }
 
@@ -120,7 +122,7 @@ function RegisterContent() {
         order_id: orderPayload.order.id,
         prefill: orderPayload.checkout.prefill,
         theme: { color: '#003b30' },
-        handler: async (response: any) => {
+        handler: async (response) => {
           const verifyResponse = await fetch('/api/register/verify-payment', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -141,15 +143,15 @@ function RegisterContent() {
         },
       });
 
-      checkout.on('payment.failed', (response: any) => {
+      checkout.on('payment.failed', (response) => {
         const message = response?.error?.description || response?.error?.reason || 'Payment failed. Please try again.';
         setError(message);
         setIsSubmitting(false);
       });
 
       checkout.open();
-    } catch (err: any) {
-      setError(err.message || 'Payment could not be started.');
+    } catch (err) {
+      setError(getErrorMessage(err, 'Payment could not be started.'));
       setIsSubmitting(false);
     }
   };
