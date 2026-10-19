@@ -214,11 +214,15 @@ If V2 purchases have begun, rollback requires a separate plan preserving paid ac
   LMS Preview used for the reported Admin/Student browser checks. The separate
   flexible-mocks Preview still fails. See the [dated evidence](evidence/preview-and-access-2026-10-19.md).
 - Designated Google Admin and Student accounts work for basic navigation. A second
-  Student fixture, the exact staging database target, deployed migration state,
-  entitlement checks and legacy compatibility remain unverified.
-- Next action: obtain owner/operator confirmation of that Preview's staging target
-  and the proposed migration's status before further database tests or writes.
-  Migration approval, product acceptance, merge and release remain separate gates.
+  Student fixture, deployed migration state, entitlement checks and legacy
+  compatibility remain unverified. The manual tester subsequently confirmed that
+  browser requests use the documented staging hostname; server runtime configuration
+  and the migration ledger are still unverified.
+- Next action: execute the [public catalogue browser check](manual-verification-checklist.md#public-catalogue-browser-check).
+  The local helper needs no credentials to be shared and changes no application
+  routes. Its ten synthetic safety tests, repository lint and production build
+  pass; no hosted probe result is claimed. Shared writes remain blocked until operator-approved staging
+  setup. Product acceptance, merge and release remain separate gates.
 
 ## Previous handoff — 18 October 2026
 

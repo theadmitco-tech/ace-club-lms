@@ -19,6 +19,51 @@ navigation using designated Google test accounts. The current Preview's database
 target and migration state still require confirmation. Entitlement, API, RLS and
 content-access testing remains pending.
 
+**19 October browser-connection update:** The manual tester confirmed that the
+Preview's browser request hostname is `eyphkkginlgoaxflauog.supabase.co`, matching
+the repository's staging mapping. This verifies the reported browser target only;
+server runtime configuration, deployed migration definitions and the migration
+ledger remain unverified. No keys, headers or session tokens were supplied.
+
+## Public catalogue browser check
+
+Run this next on the exact PR Preview identified in the evidence:
+`https://ace-club-1vr3qxhtk-theadmitco-techs-projects.vercel.app`.
+
+1. Reload the Preview's Admin dashboard so its browser requests are recorded.
+2. Open [the browser probe](../../../scripts/v2-staging-catalogue-probe.browser.js)
+   in the editor and copy the complete file.
+3. Open Developer Tools → Console on that Preview, paste the file and run it.
+4. Record only the resulting JSON object headed `phase1_public_catalogue`. Do not
+   export a HAR, copy request headers or provide credentials.
+
+The probe reads already-loaded first-party JavaScript to find the app's public
+anonymous API key. It accepts only the fixed Preview origin and observed staging
+traffic. It never reads session cookies/storage or executes downloaded scripts.
+It makes GET requests for the four product scopes and one Full Batch price quote;
+no grant, purchase, profile or migration writes are attempted. Public keys remain
+in memory and are omitted from output. See the [Supabase API-key reference](https://supabase.com/docs/guides/getting-started/api-keys)
+for the distinction between public keys and user authentication.
+
+| Result | Interpretation |
+|---|---|
+| `PUBLIC_CHECKS_PASSED` | Four expected product scopes and the INR 25,000 Full Batch quote are exposed correctly through the public API. |
+| `CATALOGUE_UNAVAILABLE` with `PGRST205` or `42P01` | The table is unavailable through REST; a missing migration, schema-cache state or exposure issue needs investigation. |
+| `QUOTE_UNAVAILABLE` with `PGRST202` | The expected function signature is unavailable through REST; migration/cache state needs investigation. |
+| `REVIEW_CATALOGUE_CONFIGURATION` or `REVIEW_PRICE_CONFIGURATION` | Public data differs from the expected launch configuration. |
+| HTTP 401/403, `42501`, `READ_FAILED` or other configuration result | The check is inconclusive; inspect the sanitized result before retrying. |
+
+A pass does not establish the complete migration checksum/ledger, other bundle
+prices, authenticated access, isolation, expiry, or legacy compatibility. The
+browser run remains pending. Local safety tests use synthetic responses only:
+`node scripts/v2-staging-catalogue-probe.test.mjs`.
+
+Local verification on 19 October: all ten probe safety tests passed, repository
+lint passed with zero warnings, and the production build passed including
+TypeScript. Deployment-environment validation was skipped outside Vercel, so the
+build adds no hosted configuration evidence. No app server was started and no
+database request was made during these local checks.
+
 ## Observed role navigation
 
 - [x] Dedicated Student sign-in opens the Student interface (manual report).

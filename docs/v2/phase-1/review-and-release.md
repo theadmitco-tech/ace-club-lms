@@ -58,6 +58,12 @@ available. Manual reports and screenshots show Student sign-in, Student redirect
 the PR-specific Preview's staging target, deployed schema and V2 entitlement rules
 remain unverified. A second Student identity is needed for isolation checks.
 
+**Subsequent browser observation:** The manual tester confirmed that browser
+requests use `eyphkkginlgoaxflauog.supabase.co`, the documented staging hostname.
+The [public catalogue browser probe](manual-verification-checklist.md#public-catalogue-browser-check)
+is prepared for the next read-only check. Server runtime configuration and the
+deployed migration ledger are not established by the browser hostname.
+
 Phase 0 remains deferred for the current work. Neither Phase 0 nor Phase 1 is
 accepted, and the deferral does not authorize a release.
 
