@@ -1,17 +1,18 @@
 # V2 Phase 1 — Review and release gates
 
-Status: Draft — rewritten head awaiting publication/checks; staging and acceptance pending
+Status: Draft — matching Preview and basic role navigation verified; database verification and acceptance pending
 Owner: Engineering and product owner
-Last updated: 18 October 2026
+Last updated: 19 October 2026
 
 [PR #23](https://github.com/theadmitco-tech/ace-club-lms/pull/23) is a draft from
 `intern/v2-onboarding` into `codex/v2-integration`, based on
-`940ea7835734a8fb22a6451a30b31084b11d5c97`. The five task commits are consolidated
-into one replacement commit with neutral documentation. All recorded implementation,
-test, and workflow hashes remain unchanged. The previously published and tested head
-was `f97d5939c728dc467668b557650bd9eb77abc93d`; its results do not establish checks
-for the rewritten head. Publication and fresh hosted checks remain pending here.
-No shared migration or Production change has been performed as part of this work.
+`940ea7835734a8fb22a6451a30b31084b11d5c97`. Its current published head is
+`3207cba41b0561ef78c0adf5a44302d753d48bdb`. Fresh GitHub metadata confirms passing
+lint, tests/build and an LMS Preview for that head. The PR remains unmerged and
+the separate flexible-mocks deployment still fails. The
+[19 October verification record](evidence/preview-and-access-2026-10-19.md) supersedes
+earlier publication/account-status notes. No shared migration or Production change
+has been performed by the development agent; the deployed migration state is unknown.
 
 ## Baseline decision before merge and release
 
@@ -51,9 +52,11 @@ GitHub collaborator access and shared Preview access are available. The workflow
 is task branch → PR → Preview → staging → review. Direct main pushes, Production
 access/data changes, real student test data, and committed credentials are excluded.
 
-Designated test Admin and Student accounts have not been provided. The PR-specific
-Preview's staging target and deployed schema remain unverified. The proposed
-migration has not been applied to a shared database.
+**19 October update:** Designated Google test Admin and Student accounts are now
+available. Manual reports and screenshots show Student sign-in, Student redirection from `/admin` to
+`/dashboard`, and Admin dashboard access. These are basic navigation observations;
+the PR-specific Preview's staging target, deployed schema and V2 entitlement rules
+remain unverified. A second Student identity is needed for isolation checks.
 
 Phase 0 remains deferred for the current work. Neither Phase 0 nor Phase 1 is
 accepted, and the deferral does not authorize a release.
@@ -65,16 +68,17 @@ establish the missing documents' versions. Exact paths/versions remain pending.
 
 ## GitHub verification
 
-[Verify run 39116800666](https://github.com/theadmitco-tech/ace-club-lms/actions/runs/39116800666)
-passed for `f97d593`: `Lint` and `Tests and build` completed successfully. Job
+[Verify run 39117796992](https://github.com/theadmitco-tech/ace-club-lms/actions/runs/39117796992)
+passed for `3207cba`: `Lint` and `Tests and build` completed successfully. Job
 steps include the disposable PostgreSQL suite, reader tests, cleanup tests,
 existing Pilot V2 tests, TypeScript, build, and unchanged manifest verification.
 The workflow does not deploy or apply shared migrations.
 
-[Deployment results](https://github.com/theadmitco-tech/ace-club-lms/pull/23#issuecomment-6248418639)
-record an LMS Preview success and a flexible-mocks deployment failure for the same
-commit. The [PR Preview](https://ace-club-lms-git-intern-v2-onboarding-theadmitco-techs-projects.vercel.app)
-requires staging-target confirmation before authenticated tests or data writes.
+[Deployment metadata](evidence/preview-and-access-2026-10-19.md#independently-verified-github-metadata)
+records an LMS Preview success and a flexible-mocks deployment failure for the same
+commit. The [exact Preview](https://ace-club-1vr3qxhtk-theadmitco-techs-projects.vercel.app)
+matches the browser observations. Its staging target still requires confirmation
+before further database tests or test-data writes.
 The failed deployment requires sanitized build logs and an explicit scope decision;
 its cause has not been established. Copilot did not review the PR because its
 review quota was exhausted. Vercel Preview Comments success is not a code review.
@@ -86,22 +90,14 @@ and verification. Workflow YAML alone does not enforce merge protection.
 
 ## Publishing handoff
 
-PR #23 already exists. The authorized history replacement updates only
-`intern/v2-onboarding`, with a lease pinned to the last verified remote head:
+The history replacement is complete: public GitHub reads confirm `3207cba` on
+PR #23. The former force-push instruction is obsolete and must not be repeated.
 
-```bash
-git push --force-with-lease=refs/heads/intern/v2-onboarding:f97d5939c728dc467668b557650bd9eb77abc93d origin intern/v2-onboarding:refs/heads/intern/v2-onboarding
-```
-
-The lease rejects publication if that remote branch has changed. Such a rejection
-requires inspecting the new remote work; the lease must not be bypassed with an
-unconditional force push. Main and integration are excluded from this update.
-
-The previous agent-session dry-run push failed because GitHub authentication was
-unavailable. Public GitHub reads do not establish authenticated write access.
-Credentials belong in the authentication flow, never in chat or repository files.
-After any push, the actual PR head and its checks require verification. A new draft
-PR is unnecessary. The pre-existing untracked root SOP is excluded from this change.
+The current evidence update is local on `intern/v2-phase-1-verification`, based on
+that candidate. No further publication is authorized. The Phase 2 branch is
+preserved separately. After any future authorized PR update, verify the resulting
+head, checks and Preview again. Public metadata reads do not establish authenticated
+write access. The pre-existing untracked root SOP remains excluded.
 
 ## Staging and acceptance
 
@@ -135,9 +131,10 @@ require product acceptance. Release approval remains separate from phase accepta
 - [x] Local lint, TypeScript, tests, and production build pass.
 - [x] Reviewed implementation and matching source hashes recorded.
 - [x] PR #23 published as a draft against integration.
-- [x] Hosted `Lint` and `Tests and build` pass at `f97d593`.
+- [x] Hosted `Lint` and `Tests and build` pass at `3207cba`.
 - [x] LMS Preview deployment succeeds for that commit.
-- [ ] Rewritten PR head published and its hosted checks and Preview verified.
+- [x] Rewritten PR head published and its hosted checks and Preview verified.
+- [x] Basic Admin/Student sign-in and Student-to-Admin redirect observed manually.
 - [ ] Flexible-mocks deployment failure investigated and disposition recorded.
 - [ ] Intended V2 source baseline confirmed.
 - [ ] Required checks and branch protection verified.
@@ -161,11 +158,10 @@ handling and worksheet loading, adds regression tests, and introduces PR checks.
 Payment fulfillment and material-route enforcement remain later-phase work.
 
 Local verification passed 17 PostgreSQL scenarios, 67 application tests, lint,
-TypeScript, and build. The previous PR head passed hosted `Lint` and `Tests and build`,
-and its LMS Preview deployed successfully. The replacement commit preserves the
-tested code and requires fresh hosted checks. The flexible-mocks deployment failure
-remains under investigation.
+TypeScript, and build. The current PR head `3207cba` passed hosted `Lint` and
+`Tests and build`, and its LMS Preview deployed successfully. Basic role navigation
+was observed manually. The flexible-mocks deployment failure remains unresolved.
 
 The PR remains a draft pending confirmation of the intended existing code version,
 staging verification, and product acceptance. The database migration is included
-for review and has not been applied to staging or Production.
+for review; its application to the Preview's database has not been verified.

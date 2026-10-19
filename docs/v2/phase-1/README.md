@@ -1,8 +1,8 @@
 # Ace Club LMS V2 — Phase 1: Product catalogue and access
 
-Status: Active — rewritten head awaiting publication/checks; staging and acceptance pending
+Status: Active — matching Preview and basic role navigation verified; database verification and acceptance pending
 Owner: Engineering and product owner
-Last updated: 18 October 2026
+Last updated: 19 October 2026
 
 ## Scope and authority
 
@@ -101,8 +101,9 @@ represented as V2 protection already applied to existing material routes.
 - [x] Pricing summaries aligned with the approved V2-DEC-03 bundle.
 - [x] Repository lint passes with zero errors and warnings; cleanup regression tests pass.
 - [ ] Intended source baseline confirmed; PR #20 documents a newer deployed lineage than main/integration.
-- [x] Hosted GitHub checks pass for PR #23 at `f97d593`.
-- [ ] Rewritten PR head published and its hosted checks verified.
+- [x] Hosted GitHub checks pass for PR #23 at `3207cba`.
+- [x] Rewritten PR head published and its hosted checks and matching LMS Preview verified.
+- [x] Basic Admin/Student sign-in and Student-to-Admin redirect observed manually.
 - [ ] Required checks and branch protection verified.
 - [ ] Exact expiry convention reviewed in product acceptance.
 - [ ] Staging schema, RLS, access boundaries, and legacy compatibility verified.
@@ -126,15 +127,18 @@ represented as V2 protection already applied to existing material routes.
   Supabase responses and transport failures.
 - [PR verification workflow](../../../.github/workflows/verify.yml): separate
   lint and test/build jobs, no deployment or application secrets. Both jobs passed
-  before history consolidation at `f97d593`; the rewritten head requires fresh
-  hosted checks, and branch protection remains pending. Lint rejects warnings
-  as well as errors, and the test job includes the cleanup regression suite.
+  for the current head `3207cba`; branch protection verification remains pending.
+  Lint rejects warnings as well as errors, and the test job includes the cleanup
+  regression suite.
 - [Cleanup regression tests](../../../scripts/release-safety.test.mjs): run with
   `npm run test:release-safety`; exercise actual payment route handlers and
   worksheet reads with synthetic external dependencies.
 - [Local verification evidence](evidence/local-verification-2026-10-18.md) records
   passed checks, the resolved lint baseline, and remaining verification limits.
-- [Staging checklist](manual-verification-checklist.md) remains entirely pending.
+- [Staging checklist](manual-verification-checklist.md) records basic role navigation;
+  database rules and legacy browser journeys remain pending.
+- [Preview and access evidence](evidence/preview-and-access-2026-10-19.md) links the
+  current PR head, passing jobs, exact Preview, manual observations and remaining gates.
 - [Review and release gates](review-and-release.md) records the proposed GitHub,
   staging, and recovery sequence. It is a checklist, not release approval.
 
@@ -200,7 +204,26 @@ If V2 purchases have begun, rollback requires a separate plan preserving paid ac
 - Provider/DB calls are stubbed in cleanup tests. Staging must still verify the
   actual worksheet editor lifecycle and any enabled registration/payment journey.
 
-## Current handoff — 18 October 2026
+## Current handoff — 19 October 2026
+
+- Application candidate: `3207cba41b0561ef78c0adf5a44302d753d48bdb` on
+  `intern/v2-onboarding`. PR #23 remains a draft into `codex/v2-integration`.
+- Documentation follow-up: local `intern/v2-phase-1-verification`, based on that
+  candidate. Phase 2 is paused and preserved on its separate local branch.
+- Public GitHub metadata confirms passing lint/tests/build and identifies the exact
+  LMS Preview used for the reported Admin/Student browser checks. The separate
+  flexible-mocks Preview still fails. See the [dated evidence](evidence/preview-and-access-2026-10-19.md).
+- Designated Google Admin and Student accounts work for basic navigation. A second
+  Student fixture, the exact staging database target, deployed migration state,
+  entitlement checks and legacy compatibility remain unverified.
+- Next action: obtain owner/operator confirmation of that Preview's staging target
+  and the proposed migration's status before further database tests or writes.
+  Migration approval, product acceptance, merge and release remain separate gates.
+
+## Previous handoff — 18 October 2026
+
+The snapshot below is retained for history. Its account, publication and hosted-check
+statuses are superseded by the current handoff and 19 October evidence above.
 
 - Branch: `intern/v2-onboarding`; starting commit:
   `940ea7835734a8fb22a6451a30b31084b11d5c97`. The five task commits are consolidated

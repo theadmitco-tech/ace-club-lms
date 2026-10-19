@@ -1,8 +1,8 @@
 # V2 Phase 1 — Staging verification checklist
 
-Status: Draft — not executed
+Status: Draft — basic role navigation observed; database verification pending
 Owner: Engineering and product owner
-Last updated: 18 October 2026
+Last updated: 19 October 2026
 
 This checklist is not permission to apply a migration or change shared data.
 Use designated synthetic staging identities only. Do not copy production data,
@@ -12,15 +12,29 @@ The 18 October access decision permits Preview review while keeping Vercel
 team/project access restricted. Use the [Preview-only collaboration workflow](review-and-release.md#preview-only-collaboration-decision--18-october-2026).
 Deployment/configuration evidence is supplied by the project owner. Dashboard
 membership is not a checklist requirement; a Preview invitation does not establish LMS roles.
-The product owner confirmed that this shared Preview connects to staging Supabase.
-That owner confirmation is recorded in the [access update](review-and-release.md#access-and-onboarding-update--18-october-2026);
-the exact target and the Preview for the reviewed Phase 1 commit still need evidence.
-No designated test Admin or Student accounts have been provided.
-Authenticated staging journeys and permission checks have not been executed.
+The product owner confirmed that an earlier shared Preview connects to staging
+Supabase. The [19 October evidence](evidence/preview-and-access-2026-10-19.md)
+identifies the current PR Preview at `3207cba` and records basic Admin/Student
+navigation using designated Google test accounts. The current Preview's database
+target and migration state still require confirmation. Entitlement, API, RLS and
+content-access testing remains pending.
+
+## Observed role navigation
+
+- [x] Dedicated Student sign-in opens the Student interface (manual report).
+- [x] Student navigation to `/admin` ends at `/dashboard` (manual report).
+- [x] Dedicated Admin sign-in opens the Admin dashboard (screenshot evidence).
+- [ ] Signed-out and cross-role privileged API access denied.
+- [ ] Synthetic legacy enrollment permits the affected content journeys; the
+  observed Student dashboard currently reports no course assigned.
+
+These observations establish basic navigation only. They do not satisfy the V2
+catalogue, grant, expiry or isolation checks below.
 
 ## Before execution
 
-- [ ] Confirm the exact reviewed source commit and record the new migration checksum.
+- [x] Record the candidate source commit and new migration checksum in the
+  [verification evidence](evidence/preview-and-access-2026-10-19.md#source-and-scope).
 - [ ] Obtain a Preview for that commit and project-owner confirmation of the
   staging Supabase target. Confirm the designated test Admin and Student identities; do
   not use real student accounts for probes. Request sanitized build logs if needed.
