@@ -308,7 +308,7 @@ test('template save failures retain warnings, retries retain their token, succes
   assert.equal(app.state.refreshes, 1);
 });
 
-test('batch field edits warn on shared navigation and meeting links use onNavigate', () => {
+test('meeting links respect unsaved batch edits and other mounted draft guards', () => {
   const app = harness();
   const draft = batch();
   const { default: Editor } = app.component('src/app/admin/v2/batches/BatchDraftEditor.tsx', {
@@ -325,10 +325,18 @@ test('batch field edits warn on shared navigation and meeting links use onNaviga
   const link = element(tree, (node) => node.props.href?.endsWith('/meeting'));
   assert.equal(link.props.onClick, undefined);
   const navigation = event();
-  link.props.onNavigate(navigation);
+  app.navigation.AdminDraftLink(link.props).props.onNavigate(navigation);
   assert.equal(navigation.prevented, true);
   app.unmount('editor');
   assert.equal(app.guard.confirmLeave(), true);
+  app.render('publication', () => app.navigation.useAdminDraftGuard(true));
+  const publicationNavigation = event();
+  app.navigation.AdminDraftLink(link.props).props.onNavigate(publicationNavigation);
+  assert.equal(publicationNavigation.prevented, true);
+  app.unmount('publication');
+  const cleanNavigation = event();
+  app.navigation.AdminDraftLink(link.props).props.onNavigate(cleanNavigation);
+  assert.equal(cleanNavigation.prevented, false);
 });
 
 test('private meeting edits warn on shared navigation and clear on unmount', () => {

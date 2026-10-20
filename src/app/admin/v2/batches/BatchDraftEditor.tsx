@@ -1,8 +1,7 @@
 'use client';
 
 import { useRef, useState, type FormEvent } from 'react';
-import { useAdminDraftGuard } from '@/components/AdminDraftNavigation';
-import Link from 'next/link';
+import { AdminDraftLink as Link, useAdminDraftGuard } from '@/components/AdminDraftNavigation';
 import { useRouter } from 'next/navigation';
 import { V2_TEMPLATE_PRODUCTS, type V2TemplateDraft } from '@/lib/v2Templates';
 import { editableV2BatchEvents, validateV2BatchInput, V2_BATCH_TIME_ZONE,
@@ -118,7 +117,7 @@ export default function BatchDraftEditor({ drafts, templates }: { drafts: V2Batc
           {batch.title} · {V2_TEMPLATE_PRODUCTS[batch.productCode].label} · revision {batch.revision}
         </button>
         <Link href={`/admin/v2/batches/${batch.id}/meeting`} prefetch={false} onNavigate={(event) => {
-          if (busy.current || (dirty && !window.confirm('Discard unsaved batch edits?'))) event.preventDefault();
+          if (busy.current) event.preventDefault();
         }}>Private meeting drafts for {batch.title}</Link>
       </li>)}</ul> : <p>No batch drafts have been saved.</p>}
       <button type="button" className="btn btn-primary" disabled={!!pending || !liveTemplates.length} onClick={() => begin(null)}>New batch draft</button>

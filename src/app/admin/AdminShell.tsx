@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { BrandLogo } from '@/components/BrandLogo';
 import { AdminDraftNavigationProvider, useAdminDraftNavigation } from '@/components/AdminDraftNavigation';
@@ -17,6 +17,18 @@ function AdminShellContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const sidebarToggle = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setSidebarOpen(false);
+      sidebarToggle.current?.focus();
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [sidebarOpen]);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -48,7 +60,7 @@ function AdminShellContent({ children }: { children: React.ReactNode }) {
   return (
     <div className="admin-layout">
       {/* Sidebar */}
-      <aside className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
+      <aside id="admin-navigation" className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-brand">
             <BrandLogo
@@ -94,7 +106,12 @@ function AdminShellContent({ children }: { children: React.ReactNode }) {
 
       {/* Mobile Sidebar Toggle */}
       <button
+        ref={sidebarToggle}
+        type="button"
         className="admin-sidebar-toggle"
+        aria-label={sidebarOpen ? 'Close admin navigation' : 'Open admin navigation'}
+        aria-expanded={sidebarOpen}
+        aria-controls="admin-navigation"
         onClick={() => setSidebarOpen(!sidebarOpen)}
       >
         {sidebarOpen ? '✕' : '☰'}
