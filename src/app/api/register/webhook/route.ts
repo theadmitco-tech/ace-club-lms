@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getErrorMessage } from '@/lib/errorMessage';
 import {
   enrollPaidRegistration,
   getSupabaseAdmin,
@@ -76,8 +77,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ received: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Razorpay webhook failed:', error);
-    return NextResponse.json({ error: error.message || 'Webhook failed.' }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error, 'Webhook failed.') }, { status: 500 });
   }
 }
