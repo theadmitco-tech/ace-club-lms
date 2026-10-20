@@ -3,10 +3,16 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { BrandLogo } from '@/components/BrandLogo';
+import { AdminDraftNavigationProvider, useAdminDraftNavigation } from '@/components/AdminDraftNavigation';
 import { useAuth } from '@/lib/AuthContext';
 import './admin.css';
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
+  return <AdminDraftNavigationProvider><AdminShellContent>{children}</AdminShellContent></AdminDraftNavigationProvider>;
+}
+
+function AdminShellContent({ children }: { children: React.ReactNode }) {
+  const { confirmLeave } = useAdminDraftNavigation();
   const { user, isLoading, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -61,6 +67,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
               key={item.href}
               className={`sidebar-nav-item ${pathname === item.href ? 'active' : ''}`}
               onClick={() => {
+                if (!confirmLeave()) return;
                 router.push(item.href);
                 setSidebarOpen(false);
               }}
@@ -79,7 +86,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
               <span className="sidebar-user-email">{user.email}</span>
             </div>
           </div>
-          <button className="btn btn-ghost btn-sm" onClick={logout}>
+          <button className="btn btn-ghost btn-sm" onClick={() => { if (confirmLeave()) void logout(); }}>
             Sign Out
           </button>
         </div>
