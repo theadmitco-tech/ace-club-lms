@@ -1,8 +1,8 @@
 # V2 Phase 1 — Staging verification checklist
 
-Status: Draft — basic role navigation observed; database verification pending
+Status: Draft — basic role navigation observed; V2 catalogue unavailable in staging API
 Owner: Engineering and product owner
-Last updated: 19 October 2026
+Last updated: 20 October 2026
 
 This checklist is not permission to apply a migration or change shared data.
 Use designated synthetic staging identities only. Do not copy production data,
@@ -27,8 +27,13 @@ ledger remain unverified. No keys, headers or session tokens were supplied.
 
 ## Public catalogue browser check
 
-Run this next on the exact PR Preview identified in the evidence:
+The probe was run manually on the exact PR Preview identified in the evidence:
 `https://ace-club-1vr3qxhtk-theadmitco-techs-projects.vercel.app`.
+
+**20 October result:** `CATALOGUE_UNAVAILABLE`, HTTP 404, `PGRST205`; the quote
+check did not run. See the [sanitized result and next action](evidence/catalogue-probe-2026-10-20.md).
+Inspect the actual staging schema/ledger before selecting a fix or rerunning the
+probe. The procedure below is retained for verification after the cause is resolved.
 
 1. Reload the Preview's Admin dashboard so its browser requests are recorded.
 2. Open [the browser probe](../../../scripts/v2-staging-catalogue-probe.browser.js)
@@ -55,7 +60,7 @@ for the distinction between public keys and user authentication.
 
 A pass does not establish the complete migration checksum/ledger, other bundle
 prices, authenticated access, isolation, expiry, or legacy compatibility. The
-browser run remains pending. Local safety tests use synthetic responses only:
+current browser result is a failed catalogue check. Local safety tests use synthetic responses only:
 `node scripts/v2-staging-catalogue-probe.test.mjs`.
 
 Local verification on 19 October: all ten probe safety tests passed, repository

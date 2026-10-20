@@ -1,8 +1,8 @@
 # V2 Phase 1 — Review and release gates
 
-Status: Draft — matching Preview and basic role navigation verified; database verification and acceptance pending
+Status: Draft — V2 catalogue unavailable in staging API; database inspection and acceptance pending
 Owner: Engineering and product owner
-Last updated: 19 October 2026
+Last updated: 20 October 2026
 
 [PR #23](https://github.com/theadmitco-tech/ace-club-lms/pull/23) is a draft from
 `intern/v2-onboarding` into `codex/v2-integration`, based on
@@ -61,8 +61,12 @@ remain unverified. A second Student identity is needed for isolation checks.
 **Subsequent browser observation:** The manual tester confirmed that browser
 requests use `eyphkkginlgoaxflauog.supabase.co`, the documented staging hostname.
 The [public catalogue browser probe](manual-verification-checklist.md#public-catalogue-browser-check)
-is prepared for the next read-only check. Server runtime configuration and the
-deployed migration ledger are not established by the browser hostname.
+returned HTTP 404 / `PGRST205` on 20 October; the quote check did not run.
+The [dated result](evidence/catalogue-probe-2026-10-20.md) records the unresolved
+schema/migration blocker. Server runtime configuration and the deployed migration
+ledger are not established by the browser hostname or this API error.
+Preview-only access was reconfirmed; database inspection requires the authorized
+staging operator or a separate staging-only access grant.
 
 Phase 0 remains deferred for the current work. Neither Phase 0 nor Phase 1 is
 accepted, and the deferral does not authorize a release.

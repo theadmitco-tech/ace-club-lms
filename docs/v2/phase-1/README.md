@@ -1,8 +1,8 @@
 # Ace Club LMS V2 — Phase 1: Product catalogue and access
 
-Status: Active — matching Preview and basic role navigation verified; database verification and acceptance pending
+Status: Active — V2 catalogue unavailable in staging API; database inspection and acceptance pending
 Owner: Engineering and product owner
-Last updated: 19 October 2026
+Last updated: 20 October 2026
 
 ## Scope and authority
 
@@ -139,6 +139,8 @@ represented as V2 protection already applied to existing material routes.
   database rules and legacy browser journeys remain pending.
 - [Preview and access evidence](evidence/preview-and-access-2026-10-19.md) links the
   current PR head, passing jobs, exact Preview, manual observations and remaining gates.
+- [Catalogue probe result](evidence/catalogue-probe-2026-10-20.md) records the manual
+  staging API response: HTTP 404 / `PGRST205`; price verification did not run.
 - [Review and release gates](review-and-release.md) records the proposed GitHub,
   staging, and recovery sequence. It is a checklist, not release approval.
 
@@ -204,13 +206,13 @@ If V2 purchases have begun, rollback requires a separate plan preserving paid ac
 - Provider/DB calls are stubbed in cleanup tests. Staging must still verify the
   actual worksheet editor lifecycle and any enabled registration/payment journey.
 
-## Current handoff — 19 October 2026
+## Current handoff — 20 October 2026
 
 - Application candidate: `3207cba41b0561ef78c0adf5a44302d753d48bdb` on
   `intern/v2-onboarding`. PR #23 remains a draft into `codex/v2-integration`.
 - Documentation follow-up: local `intern/v2-phase-1-verification`, based on that
   candidate. Phase 2 is paused and preserved on its separate local branch.
-- Public GitHub metadata confirms passing lint/tests/build and identifies the exact
+- Public GitHub metadata inspected on 19 October confirms passing lint/tests/build and identifies the exact
   LMS Preview used for the reported Admin/Student browser checks. The separate
   flexible-mocks Preview still fails. See the [dated evidence](evidence/preview-and-access-2026-10-19.md).
 - Designated Google Admin and Student accounts work for basic navigation. A second
@@ -218,11 +220,15 @@ If V2 purchases have begun, rollback requires a separate plan preserving paid ac
   compatibility remain unverified. The manual tester subsequently confirmed that
   browser requests use the documented staging hostname; server runtime configuration
   and the migration ledger are still unverified.
-- Next action: execute the [public catalogue browser check](manual-verification-checklist.md#public-catalogue-browser-check).
-  The local helper needs no credentials to be shared and changes no application
-  routes. Its ten synthetic safety tests, repository lint and production build
-  pass; no hosted probe result is claimed. Shared writes remain blocked until operator-approved staging
-  setup. Product acceptance, merge and release remain separate gates.
+- The [manual catalogue probe](evidence/catalogue-probe-2026-10-20.md) returned
+  `CATALOGUE_UNAVAILABLE` / HTTP 404 / `PGRST205`. The table was not resolved through
+  the staging API; the price check was skipped. Missing migration and stale schema
+  metadata remain hypotheses until the actual database is inspected.
+- Access is confirmed as Preview-only. Next action: obtain authorized staging
+  schema/ledger inspection, or staging-only access to perform that inspection.
+  The helper's ten synthetic tests, lint and build passed on 19 October; those
+  results do not override the hosted failure. Shared writes remain blocked until
+  operator-approved staging setup. Acceptance, merge and release remain separate gates.
 
 ## Previous handoff — 18 October 2026
 
