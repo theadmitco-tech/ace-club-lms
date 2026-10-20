@@ -1,8 +1,26 @@
 # Ace Club LMS V2 — Phase 1: Product catalogue and access
 
-Status: Active — V2 catalogue unavailable in staging API; database inspection and acceptance pending
+Status: Active — isolated Phase 1 candidate verified locally; staging acceptance pending
 Owner: Engineering and product owner
 Last updated: 20 October 2026
+
+## Current isolated candidate
+
+Branch: `intern/v2-phase-1-completion`.
+Application commit: `529391fd5bc402831914a60418c0cfef4cec66da`.
+The [completion report](completion-report.md) is the current handoff for scope,
+files, tests, risks and remaining operator actions. Phase 2 remains on its
+separate saved branch; it is not included in this candidate.
+
+The [expiry confirmation](../decisions/phase-1-expiry-confirmation-2026-10-20.md)
+resolves denial after six months. Database checks enforce that rule without a
+cleanup job or deletion of purchase history. UTC/calendar-month details below
+are the retained implementation convention for staging review.
+
+The [isolated verification](evidence/isolated-candidate-2026-10-20.md) passed
+102 tests across 11 files, lint, TypeScript and build. Earlier hosted/Preview
+results below apply only to their recorded commits. The new candidate has not
+been pushed or tested on staging; no shared migration was applied.
 
 ## Scope and authority
 
@@ -12,8 +30,8 @@ accepted; shared migrations, merge, and release require separate decisions.
 
 Implement the [Phase 1 scope](../review/product-roadmap.md#phase-1--product-catalogue-and-entitlement-foundation)
 against [product acceptance criteria](../review/acceptance-criteria.md#1-product-model).
-The baseline is `940ea7835734a8fb22a6451a30b31084b11d5c97` on
-`intern/v2-onboarding`; the integration target is `codex/v2-integration`.
+The original baseline was `940ea7835734a8fb22a6451a30b31084b11d5c97` on
+`intern/v2-onboarding`; the proposed integration target is `codex/v2-integration`.
 Existing signed MVP and Pilot V2 history remains unchanged.
 
 The scope includes pre-merge safety checks and the bounded cleanup of existing
@@ -64,9 +82,9 @@ represented as V2 protection already applied to existing material routes.
 - Decision V2-DEC-03 explicitly approves all three Crash Courses at INR 25,000.
   AC-V2-PRODUCT-05 and the roadmap price summary omitted that bundle. Both summaries
   now include the existing approved decision. It does not grant Full Batch access.
-- Six calendar months and the exact UTC boundary above are implementation
-  proposals. The product documents specify six months but do not define
-  end-of-month behavior or timestamp precision.
+- Denial after six months is confirmed. Six calendar months and the UTC boundary
+  above are the retained engineering convention, with explicit month-end and
+  timestamp test cases. Notifications remain outside this phase.
 - Existing-student mapping and their access start/expiry require a later explicit
   migration decision. Preserve current access in the meantime.
 - Confirm the deployed schema and migration ledger when staging access arrives.
@@ -101,11 +119,13 @@ represented as V2 protection already applied to existing material routes.
 - [x] Pricing summaries aligned with the approved V2-DEC-03 bundle.
 - [x] Repository lint passes with zero errors and warnings; cleanup regression tests pass.
 - [ ] Intended source baseline confirmed; PR #20 documents a newer deployed lineage than main/integration.
-- [x] Hosted GitHub checks pass for PR #23 at `3207cba`.
-- [x] Rewritten PR head published and its hosted checks and matching LMS Preview verified.
+- [x] Historical hosted GitHub checks passed for PR #23 at `3207cba`.
+- [x] Historical rewritten PR head and matching LMS Preview verified.
+- [ ] Isolated candidate published as a draft update with matching CI and Preview.
 - [x] Basic Admin/Student sign-in and Student-to-Admin redirect observed manually.
 - [ ] Required checks and branch protection verified.
-- [ ] Exact expiry convention reviewed in product acceptance.
+- [x] Six-month access denial confirmed in the subsequent decision record.
+- [ ] Expiry boundaries and calendar convention verified on the accepted staging candidate.
 - [ ] Staging schema, RLS, access boundaries, and legacy compatibility verified.
 - [ ] Product owner accepts Phase 1 against recorded evidence.
 
@@ -127,7 +147,7 @@ represented as V2 protection already applied to existing material routes.
   Supabase responses and transport failures.
 - [PR verification workflow](../../../.github/workflows/verify.yml): separate
   lint and test/build jobs, no deployment or application secrets. Both jobs passed
-  for the current head `3207cba`; branch protection verification remains pending.
+  for the earlier head `3207cba`; new candidate CI and branch protection verification remain pending.
   Lint rejects warnings as well as errors, and the test job includes the cleanup
   regression suite.
 - [Cleanup regression tests](../../../scripts/release-safety.test.mjs): run with

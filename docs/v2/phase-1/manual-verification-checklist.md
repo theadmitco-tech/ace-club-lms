@@ -4,6 +4,15 @@ Status: Draft — basic role navigation observed; V2 catalogue unavailable in st
 Owner: Engineering and product owner
 Last updated: 20 October 2026
 
+## Current candidate
+
+Use `intern/v2-phase-1-completion` and application commit
+`529391fd5bc402831914a60418c0cfef4cec66da`, described in the
+[completion report](completion-report.md). Six-month access denial is now
+[confirmed](../decisions/phase-1-expiry-confirmation-2026-10-20.md).
+All earlier browser observations below are historical and must be repeated where
+relevant for the exact candidate. No new staging checklist item is marked passed.
+
 This checklist is not permission to apply a migration or change shared data.
 Use designated synthetic staging identities only. Do not copy production data,
 record secrets, or run the complete historical migration directory.
@@ -34,6 +43,10 @@ The probe was run manually on the exact PR Preview identified in the evidence:
 check did not run. See the [sanitized result and next action](evidence/catalogue-probe-2026-10-20.md).
 Inspect the actual staging schema/ledger before selecting a fix or rerunning the
 probe. The procedure below is retained for verification after the cause is resolved.
+
+The probe is intentionally pinned to the earlier Preview. For a new deployment,
+first confirm its source and staging target, then review the allowlist update.
+Do not weaken the origin check or treat an old Preview as the new candidate.
 
 1. Reload the Preview's Admin dashboard so its browser requests are recorded.
 2. Open [the browser probe](../../../scripts/v2-staging-catalogue-probe.browser.js)
@@ -83,8 +96,8 @@ catalogue, grant, expiry or isolation checks below.
 
 ## Before execution
 
-- [x] Record the candidate source commit and new migration checksum in the
-  [verification evidence](evidence/preview-and-access-2026-10-19.md#source-and-scope).
+- [x] Record the local candidate source and unchanged Phase 1 migration checksum
+  in the [isolated evidence](evidence/isolated-candidate-2026-10-20.md).
 - [ ] Obtain a Preview for that commit and project-owner confirmation of the
   staging Supabase target. Confirm the designated test Admin and Student identities; do
   not use real student accounts for probes. Request sanitized build logs if needed.
@@ -92,10 +105,14 @@ catalogue, grant, expiry or isolation checks below.
   existing lint errors; verify that branch protection actually requires checks and
   PR review before merging. The workflow file alone does not enforce protection.
 - [ ] Confirm the target is Staging and reconcile the deployed schema/migration ledger.
+  The [Phase 1 metadata inspection](../../../scripts/v2-phase-1-schema-preflight.sql)
+  checks only four Phase 1 tables/RPCs in a read-only transaction; presence and
+  privileges do not prove equivalent definitions or migration approval.
 - [ ] Review `20261018090000_add_v2_product_entitlements.sql`, backup and recovery
   arrangements; obtain separate approval before the authorized operator applies it.
-- [ ] Confirm six-calendar-month UTC expiry and destination-month clamping with
-  the product owner using examples: 31 August 2026 at 10:00 UTC expires
+- [x] Record confirmation that access is denied after six months.
+- [ ] Verify six-calendar-month UTC expiry and destination-month clamping on
+  staging using examples: 31 August 2026 at 10:00 UTC expires
   28 February 2027 at 10:00 UTC. Existing MVP students are not assigned this expiry automatically.
 - [ ] Confirm the price-table correction reflects the already approved three–Crash
   Course bundle, which never grants Full Batch access.
@@ -122,6 +139,9 @@ catalogue, grant, expiry or isolation checks below.
   Batch. A separate Full Batch purchase grants Quant, Verbal, and DI together.
 - [ ] Signed-out, inactive, expired, and revoked identities/purchases are denied.
   Confirm the exact start-inclusive, expiry-exclusive boundary.
+- [ ] Expired access is denied on a later request without a cleanup job or
+  browser logout. Purchase/grant history remains; duplicate fulfillment does not
+  restart expiry, and another independently valid purchase retains its access.
 - [ ] With synthetic failures, verify loss of session or RPC connectivity cannot
   grant access. Revoking one of two valid purchases must preserve the other.
 - [ ] Active Admins can inspect history but cannot issue grants through their browser session.

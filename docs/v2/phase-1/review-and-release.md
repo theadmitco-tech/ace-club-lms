@@ -1,177 +1,134 @@
 # V2 Phase 1 — Review and release gates
 
-Status: Draft — V2 catalogue unavailable in staging API; database inspection and acceptance pending
+Status: Active — isolated local candidate verified; hosted review and acceptance pending
 Owner: Engineering and product owner
 Last updated: 20 October 2026
 
-[PR #23](https://github.com/theadmitco-tech/ace-club-lms/pull/23) is a draft from
-`intern/v2-onboarding` into `codex/v2-integration`, based on
-`940ea7835734a8fb22a6451a30b31084b11d5c97`. Its current published head is
-`3207cba41b0561ef78c0adf5a44302d753d48bdb`. Fresh GitHub metadata confirms passing
-lint, tests/build and an LMS Preview for that head. The PR remains unmerged and
-the separate flexible-mocks deployment still fails. The
-[19 October verification record](evidence/preview-and-access-2026-10-19.md) supersedes
-earlier publication/account-status notes. No shared migration or Production change
-has been performed by the development agent; the deployed migration state is unknown.
+Start with the [Phase 1 completion report](completion-report.md). Current branch:
+`intern/v2-phase-1-completion`; verified application commit:
+`529391fd5bc402831914a60418c0cfef4cec66da`.
+The [expiry confirmation](../decisions/phase-1-expiry-confirmation-2026-10-20.md)
+approves denial after six months. Notifications and later upgrade expiry are not
+part of this phase. Phase 2 remains separately committed at `208ceaa` and has not
+been added to this candidate.
 
 ## Baseline decision before merge and release
 
-The [earlier GitHub review](evidence/github-review-2026-10-18.md) found that main
-and integration match, while PR #20 contains a different Release 1.2 lineage and
-identifies it as the deployed source. A later
-[deployment-metadata check](evidence/github-deployment-followup-2026-10-18.md)
-found a successful Production-labelled LMS deployment of main on 11 October.
-Neither observation independently establishes the current canonical-domain source.
+[Read-only GitHub metadata](evidence/remote-candidate-review-2026-10-20.md) confirms
+main and integration at `940ea78`, and PR #23 open/draft at `3207cba` targeting
+integration. The local candidate descends from that existing PR head. It can be
+reviewed as a fast-forward update without rewriting published history, after
+publication authorization. No push or PR update has been performed here.
 
-The PR retains the existing integration target. Product-owner and engineering
-confirmation of the intended source remains required before merge or release.
-The draft does not authorize merging PR #20 or rebasing onto another release.
-This draft-review workflow supersedes the publication hold in the earlier snapshot.
+PR #20 remains a separate open draft with another release lineage. Earlier
+[deployment evidence](evidence/github-deployment-followup-2026-10-18.md) does not
+establish today's canonical-domain source. The authorized owner must confirm the
+intended application baseline before merge or any shared migration. Main and
+integration report `protected: false`; required review/check enforcement must be
+configured and verified. Do not treat repository workflow YAML as protection.
 
 ## Preview-only collaboration decision — 18 October 2026
 
-Preview deployment access is available; Vercel team/project dashboard access
-remains restricted. Review uses the shared Preview and GitHub checks. The project
-owner supplies sanitized build logs and deployment/configuration evidence.
-Dashboard membership is not a prerequisite for this workflow.
+Preview access remains the collaboration model. Vercel dashboard membership is
+not required. Engineering prepares the candidate and browser checks; the project
+owner supplies deployment/configuration evidence and sanitized logs. The
+separately authorized operator handles staging schema inspection and any approved
+migration. Production and real Student data remain outside this task.
 
-- Engineering prepares code, tests, PR evidence, and staging browser checks.
-- The project owner confirms deployment source and the staging Supabase target.
-- The authorized database operator supplies schema/ledger evidence and applies
-  the reviewed staging migration after separate approval.
-- The product owner reviews product behavior and phase acceptance. Product
-  acceptance does not constitute independent technical verification.
-
-The earlier shared `git-codex-pilot-v` Preview was confirmed by the product owner
-as staging-backed. That confirmation does not establish the database target of
-the new PR-specific Preview or successful authenticated staging tests.
-
-## Access and onboarding update — 18 October 2026
-
-GitHub collaborator access and shared Preview access are available. The workflow
-is task branch → PR → Preview → staging → review. Direct main pushes, Production
-access/data changes, real student test data, and committed credentials are excluded.
-
-**19 October update:** Designated Google test Admin and Student accounts are now
-available. Manual reports and screenshots show Student sign-in, Student redirection from `/admin` to
-`/dashboard`, and Admin dashboard access. These are basic navigation observations;
-the PR-specific Preview's staging target, deployed schema and V2 entitlement rules
-remain unverified. A second Student identity is needed for isolation checks.
-
-**Subsequent browser observation:** The manual tester confirmed that browser
-requests use `eyphkkginlgoaxflauog.supabase.co`, the documented staging hostname.
-The [public catalogue browser probe](manual-verification-checklist.md#public-catalogue-browser-check)
-returned HTTP 404 / `PGRST205` on 20 October; the quote check did not run.
-The [dated result](evidence/catalogue-probe-2026-10-20.md) records the unresolved
-schema/migration blocker. Server runtime configuration and the deployed migration
-ledger are not established by the browser hostname or this API error.
-Preview-only access was reconfirmed; database inspection requires the authorized
-staging operator or a separate staging-only access grant.
-
-Phase 0 remains deferred for the current work. Neither Phase 0 nor Phase 1 is
-accepted, and the deferral does not authorize a release.
-
-The local workspace and complete main/integration Git trees at `940ea783` did not
-contain `intern-onboarding.md` or the separately referenced SOP v1.0. The root
-`intern-collaboration-sop.md` is a pre-existing untracked file; its contents do not
-establish the missing documents' versions. Exact paths/versions remain pending.
-
-## GitHub verification
-
-[Verify run 39117796992](https://github.com/theadmitco-tech/ace-club-lms/actions/runs/39117796992)
-passed for `3207cba`: `Lint` and `Tests and build` completed successfully. Job
-steps include the disposable PostgreSQL suite, reader tests, cleanup tests,
-existing Pilot V2 tests, TypeScript, build, and unchanged manifest verification.
-The workflow does not deploy or apply shared migrations.
-
-[Deployment metadata](evidence/preview-and-access-2026-10-19.md#independently-verified-github-metadata)
-records an LMS Preview success and a flexible-mocks deployment failure for the same
-commit. The [exact Preview](https://ace-club-1vr3qxhtk-theadmitco-techs-projects.vercel.app)
-matches the browser observations. Its staging target still requires confirmation
-before further database tests or test-data writes.
-The failed deployment requires sanitized build logs and an explicit scope decision;
-its cause has not been established. Copilot did not review the PR because its
-review quota was exhausted. Vercel Preview Comments success is not a code review.
-
-The earlier public inspection found no active protection rules on main/integration.
-Required PR review, `Lint`, `Tests and build`, branch freshness, and restrictions on
-force pushes, deletion, and routine bypasses require administrator configuration
-and verification. Workflow YAML alone does not enforce merge protection.
+Earlier [role navigation](evidence/preview-and-access-2026-10-19.md) and
+[browser staging-target observations](manual-verification-checklist.md) establish
+only the recorded Preview behavior. The public catalogue probe returned 404 /
+`PGRST205`; its quote check did not run. The cause has not been verified.
+The supplied decision record reports a ledger ending at `20260925100000`; this
+is supplied evidence, not an independently inspected database.
 
 ## Publishing handoff
 
-The history replacement is complete: public GitHub reads confirm `3207cba` on
-PR #23. The former force-push instruction is obsolete and must not be repeated.
+1. Confirm the exact Phase 1 branch/PR scope and review baseline. Do not push the
+   combined Phase 2 branch into PR #23. Existing Phase 1 history is preserved.
+2. Publish the reviewed Phase 1 candidate through a draft PR update when
+   authorized. Verify the remote head, CI and Preview for that exact commit.
+3. Keep the PR in draft until staging verification and product acceptance are
+   recorded. No auto-merge, integration merge or main push is authorized.
 
-The current evidence update is local on `intern/v2-phase-1-verification`, based on
-that candidate. No further publication is authorized. The Phase 2 branch is
-preserved separately. After any future authorized PR update, verify the resulting
-head, checks and Preview again. Public metadata reads do not establish authenticated
-write access. The pre-existing untracked root SOP remains excluded.
+The root untracked collaboration SOP remains unchanged and excluded. Phase 0 is
+still deferred. The previously referenced `intern-onboarding.md` and separate
+SOP v1.0 remain unavailable in this checkout; their versions are unconfirmed.
+The earlier handoff is retained in Git at `ed4c317`.
 
 ## Staging and acceptance
 
-The [staging checklist](manual-verification-checklist.md) requires a Preview tied
-to the reviewed commit and the separate staging Supabase project. Evidence must
-record the application SHA, migration checksum, schema/ledger reconciliation,
-synthetic identities, expected/actual outcomes, and restored fixture state.
-Existing student journeys and the worksheet/payment surfaces affected by lint
-cleanup require browser verification. Stubbed tests do not verify live providers.
+The [manual checklist](manual-verification-checklist.md) is the execution record.
+The operator first verifies staging identity, reads
+[`v2-phase-1-schema-preflight.sql`](../../../scripts/v2-phase-1-schema-preflight.sql),
+and reconciles actual definitions and the migration ledger. The script is
+read-only and reports four tables/four RPCs; it does not inspect private rows or
+repair drift. Missing objects are reported without claiming permission to migrate.
 
-The authorized operator reviews and applies only the proposed new migration after
-backup and recovery arrangements are confirmed. Historical migrations must not be
-replayed indiscriminately. Six-calendar-month UTC expiry and month-end clamping
-require product acceptance. Release approval remains separate from phase acceptance.
+Only [20261018090000_add_v2_product_entitlements.sql](../../../supabase/migrations/20261018090000_add_v2_product_entitlements.sql)
+is proposed for this phase. Its checksum is in the
+[local evidence](evidence/isolated-candidate-2026-10-20.md#migration-artifact).
+After baseline review, backup/recovery preparation and separate staging approval,
+the authorized operator can apply that reviewed artifact. Do not replay the
+historical directory or apply later-phase migrations.
+
+Then use designated Admin/Student A/Student B identities and separately approved
+synthetic purchase fixtures to verify prices, grants, isolation, expiry, retries,
+legacy content/worksheet journeys and relevant existing checkout regressions.
+The existing catalogue probe is pinned to the old deployment: review its origin
+allowlist only after the candidate Preview identity is known.
+
+Record exact source, schema/migration result, expected/actual outcomes and
+sanitized evidence. No passwords, tokens, database exports or student rows belong
+in reports. Product acceptance is separate from Production release approval.
 
 ## Recovery plan to confirm before release
 
-- The current deployed application SHA and authorized rollback operator are recorded;
-  the task's base commit is not assumed to be the live Production source.
-- A recoverable database backup and isolated restoration evidence precede migration approval.
-- Failed migration execution requires schema/ledger inspection before retrying.
-- Failed application smoke tests trigger restoration of the recorded prior deployment.
-  The additive V2 tables can remain unused while no existing routes consume them.
-- Purchase/grant history is preserved. Table deletion or blind backup restoration
-  over new writes is not a general rollback procedure.
-- Sign-in, authorization, material-access, payment, or data-integrity regressions
-  stop rollout until failure and recovery evidence has been reviewed.
+- Record the currently deployed application SHA and authorized rollback operator.
+- Confirm recoverable staging backup and an isolated restoration procedure before
+  any migration approval. Inspect schema/ledger after a failed migration.
+- Keep the additive V2 foundation unused if checks fail; the current candidate
+  does not connect legacy routes or payment fulfillment to V2 grants.
+- Preserve purchase/grant history. Do not drop tables or restore a whole database
+  over subsequent writes as a routine rollback.
+- Sign-in, privacy, payment, data integrity or legacy-access regressions stop
+  acceptance until resolved and retested.
 
 ## Current gates
 
-- [x] Local lint, TypeScript, tests, and production build pass.
-- [x] Reviewed implementation and matching source hashes recorded.
-- [x] PR #23 published as a draft against integration.
-- [x] Hosted `Lint` and `Tests and build` pass at `3207cba`.
-- [x] LMS Preview deployment succeeds for that commit.
-- [x] Rewritten PR head published and its hosted checks and Preview verified.
-- [x] Basic Admin/Student sign-in and Student-to-Admin redirect observed manually.
-- [ ] Flexible-mocks deployment failure investigated and disposition recorded.
-- [ ] Intended V2 source baseline confirmed.
-- [ ] Required checks and branch protection verified.
-- [ ] PR Preview staging target, schema, test identities, and browser journeys verified.
-- [ ] Expiry convention and Phase 1 acceptance recorded.
-- [ ] Release target, recovery baseline, and release approval recorded.
+- [x] Phase 1 separated from Phase 2 without rewriting either saved branch.
+- [x] Six-month access denial decision recorded; history-preserving expiry tested.
+- [x] 102 local tests, lint, TypeScript and production build pass.
+- [x] Exact application commit, changed files and migration checksum recorded.
+- [x] Public branch/PR metadata inspected without remote mutation.
+- [ ] Intended application baseline and exact candidate PR scope accepted.
+- [ ] Candidate published as a draft update; matching CI and staging Preview verified.
+- [ ] Required checks, review and branch protection enforced.
+- [ ] Actual staging schema/ledger inspected; exact migration/setup separately approved.
+- [ ] Authenticated staging access, direct permissions, expiry and legacy journeys pass.
+- [ ] Product owner records Phase 1 acceptance.
+- [ ] Separate release/recovery decision before any main merge or Production operation.
 
 ## Prepared draft PR summary
 
-Title: **Add V2 product entitlements and pre-merge verification**
+Title: **Add isolated V2 products and six-month access enforcement**
 
-Existing course enrollment does not represent separately purchased V2 products or
-six-month expiry. This change adds an isolated product catalogue, versioned INR
-prices, payment-linked grants, database-enforced product/section access and expiry,
-and server-only readers. Full Batch remains distinct from the three Crash Courses.
-Legacy enrollment and material authorization remain in use; existing pages and
-payment routes are not connected to V2 grants by this change.
+Existing enrollment does not represent independently purchased V2 products. This
+Phase 1 candidate adds four product scopes, configured INR pricing, atomic
+payment-linked grants and six-month expiry checked using database time. Expiry
+preserves purchase history; duplicate delivery cannot restart access. Hardened
+caller-session readers reject malformed/overbroad responses. Existing MVP
+permissions remain unchanged. The earlier Phase 1 lint/worksheet/checkout cleanup
+and its regression tests remain included.
 
-The change also resolves existing lint failures through typed checkout/error
-handling and worksheet loading, adds regression tests, and introduces PR checks.
-Payment fulfillment and material-route enforcement remain later-phase work.
+Phase 2 authoring/publication, live registration allocation, V2 checkout and
+content-reader integration are excluded. The only proposed migration is
+`20261018090000_add_v2_product_entitlements.sql`.
 
-Local verification passed 17 PostgreSQL scenarios, 67 application tests, lint,
-TypeScript, and build. The current PR head `3207cba` passed hosted `Lint` and
-`Tests and build`, and its LMS Preview deployed successfully. Basic role navigation
-was observed manually. The flexible-mocks deployment failure remains unresolved.
-
-The PR remains a draft pending confirmation of the intended existing code version,
-staging verification, and product acceptance. The database migration is included
-for review; its application to the Preview's database has not been verified.
+Local verification: 102 tests across 11 files, lint with zero warnings, TypeScript
+and production build passed at `529391f`. The complete file list, risks and staged
+verification plan are in `docs/v2/phase-1/completion-report.md`. Earlier hosted
+checks apply to `3207cba`, not this candidate. Keep the PR in draft while the
+baseline, exact-candidate Preview/CI, staging setup and acceptance remain pending.
+No shared migration, Production operation or existing student/course-data change
+was performed by the development task.

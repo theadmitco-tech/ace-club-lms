@@ -1,42 +1,39 @@
-# Ace Club LMS V2 — Planning Review
+# Ace Club LMS V2 — Delivery index
 
-Status: Draft
+Status: Active
 Owner: Product owner and Engineering
-Last updated: 1 October 2026
+Last updated: 20 October 2026
 
-This folder contains planning material for the next major product version after the MVP. It is separate from `docs/pilot-v2/`, which describes the unrelated Version 1.2 initiative.
+V2 is separate from the older MVP/Pilot V2 initiative. Preserve signed historical
+evidence and existing Student access while developing the new product model.
 
-## Review entry point
+## Current work
 
-Start with [Product and Business Decisions](review/product-and-business-decisions.md). It is intentionally formatted for inline comments and decision-by-decision sign-off.
+This branch is dedicated to **Phase 1: product catalogue and entitlement foundation**.
+Start with the [completion report](phase-1/completion-report.md), then the
+[staging checklist](phase-1/manual-verification-checklist.md) and
+[review/release handoff](phase-1/review-and-release.md).
 
-The implementation contract is [Acceptance Criteria](review/acceptance-criteria.md). It converts the reviewed product direction into testable outcomes for the intern and engineering review.
+Branch: `intern/v2-phase-1-completion`.
+Verified application commit: `529391fd5bc402831914a60418c0cfef4cec66da`.
+Local result: 102 tests across 11 files, lint, TypeScript and build passed.
+Shared staging verification and product acceptance remain pending.
 
-The delivery sequence is [Product Roadmap](review/product-roadmap.md). It divides the work into reviewable phases with explicit exit gates.
+Phase 2 is preserved on `intern/v2-approved-phase-1-2` at `208ceaa`.
+Its implementation and later migrations are absent from this candidate. Earlier
+phase numbers in the legacy application do not mean V2 roadmap phases are complete.
 
-## Current engineering work
+## Requirements and decisions
 
-[Phase 1 — Product catalogue and access](phase-1/README.md) records the local
-implementation scope, the requested Phase 0 sequencing exception, compatibility
-boundaries, and outstanding verification. It does not authorize migration
-application or release.
+The [decision register](decisions/README.md) preserves the supplied approval
+record, source checksums and delivery/reporting requirements. Approved rows
+supersede conflicting older plans; Pending and Deferred items remain gated.
+The subsequent [expiry confirmation](decisions/phase-1-expiry-confirmation-2026-10-20.md)
+confirms that access is denied after six months while purchase history remains.
 
-## Confirmed direction so far
-
-- V2 is online-first with two product types: Full Batch and Crash Course.
-- Full Batch includes Quant, Verbal, and DI together.
-- Crash Courses are available for Quant, Verbal, and DI individually.
-- Access lasts six months.
-- Recordings are mandatory; students may attend live Google Meet classes, watch recordings, or mix both.
-- Crash Courses are approximately one week; Full Batch is approximately eight weeks.
-- Crash Course live batches and schedules are published by Admins when available; students can use recordings when no live batch is available.
-- The LMS publishes the live schedule; it does not manage live attendance.
-- One shared recording set serves all eligible students.
-- Admins can publish reading material at the top of a topic course, before a video, or after a video.
-- Admins can publish or update that material whenever needed, with an Admin preview before publishing.
-- Website registration and payment should require minimal Admin intervention.
-- Existing MVP Admin and Student login separation remains.
-
-## Reference
-
-The pre-read direction is informed by the separate Maths Simplified project, especially its Notion-to-frontend contract: Notion is an authoring source, while the student experience is a controlled, structured frontend.
+The [original product decisions](review/product-and-business-decisions.md),
+[acceptance criteria](review/acceptance-criteria.md) and
+[roadmap](review/product-roadmap.md) remain references for non-conflicting scope.
+Phase 2 batch selection and Phase 3 upgrade/payment decisions are separate from
+Phase 1 acceptance. No database migration, Production operation or modification
+of existing student/course records is authorized by this index.

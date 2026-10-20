@@ -1,5 +1,7 @@
 # Ace Club LMS V2 — Product Roadmap
 
+> Authority update — 20 October 2026: [preserved approvals](../decisions/README.md) supersede conflicting older requirements. The later [expiry confirmation](../decisions/phase-1-expiry-confirmation-2026-10-20.md) confirms denial after six months. This candidate implements Phase 1 only; later-phase implementation remains separate.
+
 Status: Draft for Product Owner review
 Owner: Product owner and Engineering
 Last updated: 18 October 2026
