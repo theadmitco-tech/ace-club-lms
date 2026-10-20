@@ -56,10 +56,7 @@ jobs:
           "$pg_tools_dir/postgres" --version
       # The database suite creates its own cluster with TCP disabled.
       # No Supabase credentials, app server, shared DB, or deployment is used.
-      - run: npm run test:v2-products
-      - run: npm run test:v2-readers
-      - run: npm run test:release-safety
-      - run: npm run test:pilot-v2
+      - run: npm run test:v2:phase1
       - run: ./node_modules/.bin/tsc --noEmit --incremental false
       - run: npm run build
       - name: Verify the locked installation leaves manifests unchanged

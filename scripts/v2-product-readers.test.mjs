@@ -10,6 +10,10 @@ const sourceUrl = new URL('../src/lib/server/v2Products.ts', import.meta.url);
 const compiled = ts.transpileModule(readFileSync(sourceUrl, 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText;
+const domain = {};
+runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/v2Products.ts', import.meta.url), 'utf8'), {
+  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+}).outputText, { exports: domain });
 
 function harness() {
   const state = {
@@ -41,6 +45,7 @@ function harness() {
     exports: moduleExports,
     require: (name) => {
       if (name === 'server-only') return {};
+      if (name === '@/lib/v2Products') return domain;
       assert.equal(name, '@/utils/supabase/server', `Unexpected server dependency: ${name}`);
       return { createClient: async () => {
         state.clients += 1;
@@ -121,10 +126,76 @@ test('catalogue selects public fields and available products; prices come from t
     table: 'v2_products', columns: 'code, name, product_kind, sections',
     column: 'available_for_purchase', value: true, sort: 'code',
   });
-  app.state.result = { data: { amount_paise: 1234567, currency: 'INR', price_version_id: 'synthetic-revision', product_codes: ['di_crash'] }, error: null };
+  app.state.result = { data: { amount_paise: 1234567, currency: 'INR', price_version_id: 'a1000000-0000-4000-8000-000000000002', product_codes: ['di_crash'] }, error: null };
   assert.equal((await app.quoteV2Products(['di_crash'])).amount_paise, 1234567);
   assert.equal(app.state.calls.at(-1).name, 'quote_v2_products');
   app.state.result = { data: null, error: { message: 'Synthetic private database details' } };
   await assert.rejects(app.listV2Products(), /^Error: Unable to load the V2 catalogue\.$/);
   await assert.rejects(app.quoteV2Products(['di_crash']), /^Error: Unable to quote the selected V2 products\.$/);
+});
+
+test('malformed or overbroad catalogue and access replies fail closed', async () => {
+  const app = harness();
+  const product = { code: 'quant_crash', name: 'Synthetic product', product_kind: 'crash_course', sections: ['quant'] };
+  const access = { product_code: 'quant_crash', sections: ['quant'], expires_at: '2027-04-18T00:00:00+00:00' };
+  for (const data of [null, {}, [null], [product, product], [{ ...product, sections: ['quant', 'di'] }],
+    [{ ...product, product_kind: 'full_batch' }], [{ ...product, code: '__proto__' }],
+    [{ ...product, name: '' }], [{ ...product, private_field: 'Synthetic private details' }]]) {
+    app.state.result = { data, error: null };
+    await assert.rejects(app.listV2Products(), /^Error: Unable to load the V2 catalogue\.$/);
+  }
+  for (const data of [null, {}, [null], [access, access], [{ ...access, sections: ['verbal'] }],
+    [{ ...access, expires_at: 'infinity' }], [{ ...access, expires_at: '2027-04-18' }],
+    [{ ...access, student_id: 'another-student' }]]) {
+    app.state.result = { data, error: null };
+    await assert.rejects(app.getMyV2Access(), /^Error: Unable to verify V2 access\.$/);
+  }
+  app.state.result = { data: [product], error: null };
+  assert.equal((await app.listV2Products())[0].code, 'quant_crash');
+  app.state.result = { data: [access], error: null };
+  assert.equal((await app.getMyV2Access())[0].product_code, 'quant_crash');
+  app.state.result = { data: [], error: null };
+  assert.equal((await app.getMyV2Access()).length, 0);
+});
+
+test('quotes must match the exact selection, valid configured amount and price revision', async () => {
+  const app = harness();
+  const quote = { product_codes: ['di_crash', 'quant_crash'], price_version_id: 'a1000000-0000-4000-8000-000000000003', amount_paise: 1800000, currency: 'INR' };
+  for (const patch of [{ product_codes: ['full_batch'] }, { product_codes: ['di_crash'] },
+    { product_codes: ['di_crash', 'verbal_crash'] }, { product_codes: ['di_crash', 'di_crash'] },
+    { amount_paise: 0 }, { amount_paise: -1 }, { amount_paise: 1.5 }, { amount_paise: '1800000' },
+    { amount_paise: Infinity }, { amount_paise: 2147483648 }, { currency: 'USD' },
+    { price_version_id: 'unknown' }, { private_field: 'Synthetic private details' }]) {
+    app.state.result = { data: { ...quote, ...patch }, error: null };
+    await assert.rejects(app.quoteV2Products(['quant_crash', 'di_crash']), /^Error: Unable to quote the selected V2 products\.$/);
+  }
+  app.state.result = { data: quote, error: null };
+  assert.equal((await app.quoteV2Products(['quant_crash', 'di_crash'])).amount_paise, 1800000);
+});
+
+test('invalid product selections and cross-section checks never reach the database', async () => {
+  const app = harness();
+  app.state.result = { data: true, error: null };
+  for (const selection of [null, [], ['unknown'], ['__proto__'], ['quant_crash', 'quant_crash'], ['full_batch', 'quant_crash']]) {
+    await assert.rejects(app.quoteV2Products(selection), /Unable to quote/);
+  }
+  for (const [product, section] of [['unknown', null], ['__proto__', null], ['quant_crash', 'verbal'], ['full_batch', 'qa']]) {
+    assert.equal(await app.canAccessV2Product(product, section), false);
+  }
+  assert.equal(app.state.clients, 0);
+});
+
+test('configuration and transport failures never expose private diagnostics through readers', async () => {
+  for (const fault of ['clientFailure', 'rpcFailure']) {
+    const app = harness();
+    app.state[fault] = true;
+    await assert.rejects(app.quoteV2Products(['quant_crash']), /^Error: Unable to quote the selected V2 products\.$/);
+    await assert.rejects(app.getMyV2Access(), /^Error: Unable to verify V2 access\.$/);
+  }
+  const app = harness();
+  app.state.clientFailure = true;
+  await assert.rejects(app.listV2Products(), /^Error: Unable to load the V2 catalogue\.$/);
+  app.state.clientFailure = false;
+  app.state.authFailure = true;
+  await assert.rejects(app.getMyV2Access(), /^Error: Unable to verify V2 access\.$/);
 });

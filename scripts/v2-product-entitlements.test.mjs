@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -8,6 +8,7 @@ import test from 'node:test';
 
 // This suite always creates its own cluster. It cannot target an existing DB.
 const migration = fileURLToPath(new URL('../supabase/migrations/20261018090000_add_v2_product_entitlements.sql', import.meta.url));
+const preflight = readFileSync(new URL('./v2-phase-1-schema-preflight.sql', import.meta.url), 'utf8');
 const alice = 'b1000000-0000-4000-8000-000000000001';
 const bob = 'b1000000-0000-4000-8000-000000000002';
 const inactive = 'b1000000-0000-4000-8000-000000000003';
@@ -103,6 +104,16 @@ test('V2 product catalogue and entitlement database boundaries', { timeout: 1200
       rows: Object.fromEntries(legacyTables.map((table) => [table, snapshot(`select * from public."${table}"`)])),
     });
     const beforeMigration = legacyState();
+    await t.test('Phase 1 inspection reports missing objects in a read-only transaction', () => {
+      const report = JSON.parse(query(preflight));
+      assert.equal(report.check, 'v2_phase1_schema_metadata_only');
+      assert.equal(report.transaction_read_only, 'on');
+      assert.equal(report.tables.length, 4);
+      assert.equal(report.routines.length, 4);
+      assert(report.tables.every((entry) => !entry.present));
+      assert(report.routines.every((entry) => !entry.present));
+      assert.deepEqual(legacyState(), beforeMigration);
+    });
     await t.test('a migration failure rolls back earlier DDL and leaves legacy state intact', () => {
       query('create view public.v2_product_grants as select 1 as unexpected_column');
       const result = run('psql', ['-X', '-q', '-v', 'ON_ERROR_STOP=1', '-f', migration]);
@@ -118,6 +129,25 @@ test('V2 product catalogue and entitlement database boundaries', { timeout: 1200
       assert.deepEqual(legacyState(), beforeMigration);
       assert.equal(query(session('authenticated', alice, 'select count(*) from public.materials')), '1');
       assert.equal(query(session('authenticated', bob, 'select count(*) from public.materials')), '0');
+    });
+    await t.test('Phase 1 inspection identifies access privileges and drift without reading private rows', () => {
+      query('create role phase1_metadata_reader nologin; grant usage on schema public to phase1_metadata_reader;');
+      const inspect = () => JSON.parse(query(`set role phase1_metadata_reader; ${preflight}`));
+      const report = inspect();
+      assert(report.tables.every((entry) => entry.present && entry.ordinary_table && entry.rls_enabled));
+      assert(report.tables.every((entry) => entry.direct_write_roles.length === 0));
+      assert(report.routines.every((entry) => entry.present));
+      assert.deepEqual(report.routines.find((entry) => entry.signature.startsWith('public.grant_v2_purchase')).execute_roles, ['service_role']);
+      assert.doesNotMatch(JSON.stringify(report), /alice@|bob@|b1000000|Released fixture/);
+      try {
+        query('alter table public.v2_product_grants disable row level security; grant update on public.v2_purchases to authenticated;');
+        const drift = inspect();
+        assert.equal(drift.tables.find((entry) => entry.name === 'v2_product_grants').rls_enabled, false);
+        assert.deepEqual(drift.tables.find((entry) => entry.name === 'v2_purchases').direct_write_roles, ['authenticated']);
+      } finally {
+        query('revoke update on public.v2_purchases from authenticated; alter table public.v2_product_grants enable row level security;');
+      }
+      assert.deepEqual(legacyState(), beforeMigration);
     });
     const confirmed = query("select (statement_timestamp() - interval '1 day')::text");
 
@@ -254,6 +284,42 @@ test('V2 product catalogue and entitlement database boundaries', { timeout: 1200
         perform set_config('request.jwt.claim.sub', '${alice}', true);
         if not public.can_access_v2_product('di_crash') then raise exception 'Start boundary was denied'; end if;
       end $$;`);
+    });
+
+    await t.test('expired purchases deny all product access without deleting history or needing a cleanup job', () => {
+      const student = 'b1000000-0000-4000-8000-000000000005';
+      const paidAt = query("select (statement_timestamp()-interval '7 months')::text");
+      const selections = ['full_batch', 'quant_crash', 'verbal_crash', 'di_crash'];
+      const grants = selections.map((product) => grantSql({
+        user: student, products: [product], reference: `expired-${product}`, confirmed: paidAt,
+        price: product === 'full_batch' ? prices[0] : prices[1],
+        amount: product === 'full_batch' ? 2500000 : 1000000,
+      })).join(';');
+      // The transaction and account exist only in this disposable fixture.
+      query(`begin;
+        insert into auth.users(id,email) values ('${student}','expired-fixture@example.test');
+        update public.profiles set is_active=true where id='${student}';
+        ${grants};
+        ${grants};
+        set local role authenticated;
+        set local request.jwt.claim.sub='${student}';
+        do $$ declare product text; history jsonb; begin
+          select jsonb_agg(to_jsonb(p) order by p.id) into history from public.v2_purchases p;
+          if jsonb_array_length(history) <> 4 then raise exception 'Expired replay duplicated purchase history'; end if;
+          foreach product in array array['full_batch','quant_crash','verbal_crash','di_crash'] loop
+            if public.can_access_v2_product(product) then raise exception 'Expired product remained accessible'; end if;
+          end loop;
+          foreach product in array array['quant','verbal','di'] loop
+            if public.can_access_v2_product('full_batch',product) then raise exception 'Expired section remained accessible'; end if;
+          end loop;
+          if public.get_my_v2_access() <> '[]'::jsonb then raise exception 'Expired access remained in summary'; end if;
+          if (select count(*) from public.v2_product_grants) <> 4 then raise exception 'Expiry erased grant history'; end if;
+          if history <> (select jsonb_agg(to_jsonb(p) order by p.id) from public.v2_purchases p) then
+            raise exception 'Access checks changed payment history';
+          end if;
+        end $$;
+        rollback;`);
+      assert.equal(query(`select count(*) from public.profiles where id='${student}'`), '0');
     });
 
     await t.test('revocation, deactivation, and closed sales have distinct access behavior', () => {
