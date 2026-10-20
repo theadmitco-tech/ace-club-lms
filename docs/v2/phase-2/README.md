@@ -18,8 +18,11 @@ Start with the [delivery report](approved-delivery-report.md),
 [combined staging handoff](review-and-release.md) and
 [isolated verification evidence](evidence/isolated-review-2026-10-20.md).
 The [decision register](../decisions/README.md) controls approved and pending scope.
-The [branch publication record](evidence/branch-publication-2026-10-20.md) confirms
-the push; draft PR creation remains pending. Use the [prepared PR text](draft-pr.md).
+Draft [PR #24](https://github.com/theadmitco-tech/ace-club-lms/pull/24) is recorded
+in the [browser QA checkpoint](evidence/browser-qa-2026-10-20.md#submitted-review-status-and-next-action)
+from supplied screenshots. The earlier
+[branch publication record](evidence/branch-publication-2026-10-20.md) predates
+PR creation. The separate flexible-mocks deployment remains failed.
 
 Extracted from the preserved local branch `intern/v2-approved-phase-1-2` at
 `208ceaa453049463322ff127842eec9814e6ea8a`. Later payment, content-route and deployment
@@ -52,11 +55,20 @@ The isolated candidate passes **229 tests in 21 files**: 102 Phase 1/legacy test
 and 127 Phase 2 tests. Lint, TypeScript and production build also pass. See the
 [evidence](evidence/isolated-review-2026-10-20.md) for commands, changed files and limits.
 
+Local follow-up branch `intern/v2-phase-2-browser-qa` contains navigation,
+responsive-layout and mobile-menu fixes at `171efd2`. All 229 regression tests
+and 13 isolated browser scenarios pass. See the
+[browser evidence and screenshots](evidence/browser-qa-2026-10-20.md).
+These fixes are committed locally and have not been added to PR #24.
+Synthetic browser results do not replace staging acceptance.
+
 ## Remaining work
 
 - [x] Isolate the Phase 2 diff on the latest Phase 1 dependency.
 - [x] Verify Admin authoring, privacy, retries, concurrency and legacy regressions locally.
-- [ ] Publish a separate draft PR and record exact-candidate hosted checks/Preview.
+- [x] Publish separate draft PR #24; record the supplied check/deployment evidence.
+- [x] Exercise the Admin UI locally with synthetic browser fixtures and record fixes.
+- [ ] Review/publish the local QA fixes and verify the resulting exact-candidate CI/Preview.
 - [ ] Inspect staging schema and ledger; obtain separate migration/setup approval.
 - [ ] Verify Admin workflows, negative access, mobile and keyboard behavior in staging.
 - [ ] Resolve Student batch eligibility and implement the authorized schedule reader.

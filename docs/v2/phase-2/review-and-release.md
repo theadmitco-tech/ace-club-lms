@@ -9,12 +9,21 @@ Last updated: 20 October 2026
 | Phase | Branch and base | Review scope |
 |---|---|---|
 | 1 | `intern/v2-onboarding` at `d3020c1`; base `codex/v2-integration` | Catalogue, prices, grants, six-month expiry; draft [PR #23](https://github.com/theadmitco-tech/ace-club-lms/pull/23) |
-| 2 | `intern/v2-phase-2-review`; base `intern/v2-onboarding` at `d3020c1` | Admin templates, independent schedules, private Meet drafts and reviewed batch publication |
+| 2 | `intern/v2-phase-2-review`; base `intern/v2-onboarding` at `d3020c1` | Admin templates, independent schedules, private Meet drafts and reviewed batch publication; draft [PR #24](https://github.com/theadmitco-tech/ace-club-lms/pull/24) |
 
 Phase 2 application commit: `26ec141561a0749dba371409273c1f1ee9906049`.
-The final documentation commit will be the published review head. Use that exact
-head for CI and Preview evidence; an older deployment does not verify this diff.
+Submitted review head: `c8978a107dc209de4eff6e03b1a2773442b44d49`, as recorded
+in the supplied PR screenshots. Use the exact candidate head for CI and Preview
+evidence; an older deployment does not verify a newer diff.
 The preserved combined source branch is not a publication target.
+
+Local follow-up `intern/v2-phase-2-browser-qa` at `171efd2` fixes draft-navigation
+warnings, long-title mobile overflow and mobile-menu keyboard behavior. It passes
+13 synthetic browser scenarios and all 229 regression tests. The
+[browser report](evidence/browser-qa-2026-10-20.md) includes screenshots and limits.
+These fixes are not yet in PR #24. Review them before publishing a new candidate,
+then update the exact commit used for hosted checks. No staging gate is satisfied
+by the synthetic browser fixture alone.
 
 The [Phase 1 completion report](../phase-1/completion-report.md) and
 [Phase 2 delivery report](approved-delivery-report.md) define separate acceptance

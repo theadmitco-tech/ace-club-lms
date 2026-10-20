@@ -10,7 +10,8 @@ Branch: `intern/v2-phase-2-review`.
 Application commit: `26ec141561a0749dba371409273c1f1ee9906049`.
 Base: Phase 1 commit `d3020c1c9916c17f6ced27f83ff9ee1be05479f2` on
 `intern/v2-onboarding`, draft [PR #23](https://github.com/theadmitco-tech/ace-club-lms/pull/23).
-Use a separate draft PR targeting that task branch. Retarget to the integration
+Draft [PR #24](https://github.com/theadmitco-tech/ace-club-lms/pull/24) targets that
+task branch at submitted head `c8978a1`. Retarget to the integration
 branch only after the dependency is integrated and the resulting diff is reviewed.
 
 Authority: [approved decision source](../decisions/owner-decisions-2026-10-20.md)
@@ -23,7 +24,7 @@ resolves six-month denial for Phase 1; notification and upgrade decisions remain
 | Area | Included in this PR | Remaining before full phase acceptance |
 |---|---|---|
 | Templates | Four fixed product scopes, configurable durations, immutable drafts | Canonical curriculum mapping and representative schedule review |
-| Batch schedules | Independent template snapshots, live dates/times, undated outlines and empty schedules | Admin browser review; explicit content associations |
+| Batch schedules | Independent template snapshots, live dates/times, undated outlines and empty schedules | Staging Admin browser review; explicit content associations |
 | Publication | Scope preview; confirmed publish, unpublish, republish; preserved revisions | Student batch-access decision and authorized schedule reader |
 | Meet details | Private Admin-only drafts for live events, separate from publication | Authorized Student join-link delivery |
 | Capacity | Fixed eight-registration metadata; no per-session reservations | Full Course registration-unit decision and transactional allocation in Phase 3 |
@@ -52,7 +53,7 @@ The upgrade helper's package-price-version incompatibility remains recorded in
 [Phase 1 limitations](../phase-1/completion-report.md). It is not a dependency of
 Admin authoring and is not presented as ready for checkout integration.
 
-## Verification
+## Verification of the original isolated candidate
 
 | Check | Result |
 |---|---|
@@ -73,6 +74,24 @@ tests are not interactive browser evidence.
 The [verification record](evidence/isolated-review-2026-10-20.md) lists all 43
 application/configuration/test/migration files and migration checksums. Hosted
 CI/Preview results require the final published commit; staging remains unverified.
+
+## Local browser QA follow-up
+
+`intern/v2-phase-2-browser-qa` at `171efd2` adds a disposable browser harness and
+fixes three issues: meeting links ignoring a pending publication review,
+long-title overflow on narrow screens, and mobile-menu keyboard accessibility.
+The four changed application files are limited to the Admin shell, its CSS, the
+batch editor link and authoring-form CSS. No server authorization or SQL changed.
+
+The follow-up passes 13 Chromium scenarios, all 229 regression tests, lint,
+TypeScript and the production build. The
+[browser evidence](evidence/browser-qa-2026-10-20.md) lists every changed file,
+reproduction steps, synthetic screenshots and remaining staging limits.
+It is committed locally and has not been pushed into the submitted review.
+
+Supplied PR #24 screenshots show six successful checks and the failed
+`ace-club-flexible-mocks` deployment. Do not describe all hosted checks as passing.
+Hosted checks for the local QA fixes remain pending.
 
 ## Risks and next decisions
 
