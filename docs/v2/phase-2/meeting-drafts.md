@@ -1,8 +1,16 @@
 # Private meeting drafts
 
-Status: Implemented and tested locally; staging and publishing acceptance pending
+Status: Superseded — historical draft design; use the current delivery report
 Owner: Engineering
 Last updated: 19 October 2026
+
+
+Current scope: [isolated delivery report](approved-delivery-report.md).
+The 20 October approved decisions supersede the original publication hold,
+mandatory dates for non-live items and per-session reservation plans below.
+Batch publication is implemented; Student batch eligibility remains undecided.
+Preserve the following text as historical design and verification context.
+
 
 This third Phase 2 part implements the private Admin preparation of Google Meet
 details required by [LIVE-02](../review/acceptance-criteria.md#ac-v2-live-02--publish-live-batches).

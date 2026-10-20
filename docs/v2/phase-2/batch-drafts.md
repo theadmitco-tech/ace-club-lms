@@ -1,8 +1,16 @@
 # Independent batch draft scheduling
 
-Status: Implemented and tested locally; unpublished; staging verification pending
+Status: Superseded — historical draft design; use the current delivery report
 Owner: Engineering
 Last updated: 19 October 2026
+
+
+Current scope: [isolated delivery report](approved-delivery-report.md).
+The 20 October approved decisions supersede the original publication hold,
+mandatory dates for non-live items and per-session reservation plans below.
+Batch publication is implemented; Student batch eligibility remains undecided.
+Preserve the following text as historical design and verification context.
+
 
 This is the second local implementation part of [Phase 2](README.md). It provides
 the draft scheduling foundation for PRODUCT-04 and LIVE-05 in the

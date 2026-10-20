@@ -1,8 +1,16 @@
 # V2 Phase 2 data relationships and Admin form plan
 
-Status: Draft — wider publishing design; template, batch and private meeting drafts implemented locally
+Status: Superseded — historical draft design; use the current delivery report
 Owner: Engineering and product owner
 Last updated: 19 October 2026
+
+
+Current scope: [isolated delivery report](approved-delivery-report.md).
+The 20 October approved decisions supersede the original publication hold,
+mandatory dates for non-live items and per-session reservation plans below.
+Batch publication is implemented; Student batch eligibility remains undecided.
+Preserve the following text as historical design and verification context.
+
 
 Part 2 defines a proposed contract for product-specific publishing, independent
 live schedules and the Admin form. The design proposes keeping the routes and

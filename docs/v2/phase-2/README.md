@@ -18,6 +18,8 @@ Start with the [delivery report](approved-delivery-report.md),
 [combined staging handoff](review-and-release.md) and
 [isolated verification evidence](evidence/isolated-review-2026-10-20.md).
 The [decision register](../decisions/README.md) controls approved and pending scope.
+The [branch publication record](evidence/branch-publication-2026-10-20.md) confirms
+the push; draft PR creation remains pending. Use the [prepared PR text](draft-pr.md).
 
 Extracted from the preserved local branch `intern/v2-approved-phase-1-2` at
 `208ceaa453049463322ff127842eec9814e6ea8a`. Later payment, content-route and deployment
