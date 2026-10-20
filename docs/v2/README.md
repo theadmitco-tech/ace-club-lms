@@ -9,19 +9,21 @@ evidence and existing Student access while developing the new product model.
 
 ## Current work
 
-This branch is dedicated to **Phase 1: product catalogue and entitlement foundation**.
-Start with the [completion report](phase-1/completion-report.md), then the
-[staging checklist](phase-1/manual-verification-checklist.md) and
-[review/release handoff](phase-1/review-and-release.md).
+This branch contains the **Phase 2 Admin foundation**, based on the separate
+Phase 1 candidate. Start with the [Phase 2 delivery report](phase-2/approved-delivery-report.md)
+and [coordinated staging handoff](phase-2/review-and-release.md).
 
-Branch: `intern/v2-phase-1-completion`.
-Verified application commit: `529391fd5bc402831914a60418c0cfef4cec66da`.
-Local result: 102 tests across 11 files, lint, TypeScript and build passed.
-Shared staging verification and product acceptance remain pending.
+Branch: `intern/v2-phase-2-review`.
+Verified application commit: `26ec141561a0749dba371409273c1f1ee9906049`.
+Base: `intern/v2-onboarding` at `d3020c1`, Phase 1 draft PR #23.
+Local result: 229 tests across 21 files, lint, TypeScript and build passed.
+Student delivery, shared staging verification and product acceptance remain pending.
 
-Phase 2 is preserved on `intern/v2-approved-phase-1-2` at `208ceaa`.
-Its implementation and later migrations are absent from this candidate. Earlier
-phase numbers in the legacy application do not mean V2 roadmap phases are complete.
+The [Phase 1 report](phase-1/completion-report.md) and
+[checklist](phase-1/manual-verification-checklist.md) retain the dependency's scope.
+The combined source work remains preserved on `intern/v2-approved-phase-1-2`
+at `208ceaa`; later payment/content changes are not included here. Earlier phase
+numbers in legacy code do not mean the new V2 roadmap phases are complete.
 
 ## Requirements and decisions
 

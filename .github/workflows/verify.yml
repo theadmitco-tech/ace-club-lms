@@ -2,9 +2,9 @@ name: Verify
 
 on:
   pull_request:
-    branches: [main, codex/v2-integration]
+    branches: [main, codex/v2-integration, intern/v2-onboarding]
   push:
-    branches: [main, codex/v2-integration]
+    branches: [main, codex/v2-integration, intern/v2-phase-2-review]
 
 permissions:
   contents: read
@@ -57,6 +57,7 @@ jobs:
       # The database suite creates its own cluster with TCP disabled.
       # No Supabase credentials, app server, shared DB, or deployment is used.
       - run: npm run test:v2:phase1
+      - run: npm run test:v2:phase2
       - run: ./node_modules/.bin/tsc --noEmit --incremental false
       - run: npm run build
       - name: Verify the locked installation leaves manifests unchanged
