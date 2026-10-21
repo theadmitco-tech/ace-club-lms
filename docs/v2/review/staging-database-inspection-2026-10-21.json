@@ -1,5 +1,5 @@
 {
-  "report_version": 1,
+  "report_version": 2,
   "observed_date_utc": "2026-10-21",
   "repository": "theadmitco-tech/ace-club-lms",
   "database_inspection": {
@@ -155,7 +155,8 @@
       "identical_in_pr24": true,
       "transaction_wrapped": true,
       "staging_ledger_status": "UNVERIFIED",
-      "staging_definition_status": "UNVERIFIED"
+      "staging_definition_status": "UNVERIFIED",
+      "source_url": "https://github.com/theadmitco-tech/ace-club-lms/blob/d3020c1c9916c17f6ced27f83ff9ee1be05479f2/supabase/migrations/20261018090000_add_v2_product_entitlements.sql"
     },
     {
       "pr": 24,
@@ -166,7 +167,8 @@
       "sha256": "ae9729e49c76f25e43320060da2fc35c3ba94e02e48ee782c7a5023a4eac0ec2",
       "transaction_wrapped": true,
       "staging_ledger_status": "UNVERIFIED",
-      "staging_definition_status": "UNVERIFIED"
+      "staging_definition_status": "UNVERIFIED",
+      "source_url": "https://github.com/theadmitco-tech/ace-club-lms/blob/c8978a107dc209de4eff6e03b1a2773442b44d49/supabase/migrations/20261019090000_add_v2_template_drafts.sql"
     },
     {
       "pr": 24,
@@ -177,7 +179,8 @@
       "sha256": "b484762434a2395435a91ab71951ff48a59726d706b1bcb2c79f4ffc2ae31aff",
       "transaction_wrapped": true,
       "staging_ledger_status": "UNVERIFIED",
-      "staging_definition_status": "UNVERIFIED"
+      "staging_definition_status": "UNVERIFIED",
+      "source_url": "https://github.com/theadmitco-tech/ace-club-lms/blob/c8978a107dc209de4eff6e03b1a2773442b44d49/supabase/migrations/20261019100000_add_v2_batch_drafts.sql"
     },
     {
       "pr": 24,
@@ -188,7 +191,8 @@
       "sha256": "89cfe129ec70c3e0d6c9664bc1f763a50ff4a08544ecc9121ac35229e25f956d",
       "transaction_wrapped": true,
       "staging_ledger_status": "UNVERIFIED",
-      "staging_definition_status": "UNVERIFIED"
+      "staging_definition_status": "UNVERIFIED",
+      "source_url": "https://github.com/theadmitco-tech/ace-club-lms/blob/c8978a107dc209de4eff6e03b1a2773442b44d49/supabase/migrations/20261019110000_add_v2_private_meeting_drafts.sql"
     },
     {
       "pr": 24,
@@ -199,7 +203,8 @@
       "sha256": "a5cc7b5588515a0d13f699031e731e9cf578d18014ca228b120607a0b6c9111b",
       "transaction_wrapped": true,
       "staging_ledger_status": "UNVERIFIED",
-      "staging_definition_status": "UNVERIFIED"
+      "staging_definition_status": "UNVERIFIED",
+      "source_url": "https://github.com/theadmitco-tech/ace-club-lms/blob/c8978a107dc209de4eff6e03b1a2773442b44d49/supabase/migrations/20261020090000_add_v2_outline_schedules.sql"
     },
     {
       "pr": 24,
@@ -210,7 +215,8 @@
       "sha256": "b4d6ded4e51471da9b4fc64e237d3f0cdcb296fff0c55358b95a6d548dfbd9d6",
       "transaction_wrapped": true,
       "staging_ledger_status": "UNVERIFIED",
-      "staging_definition_status": "UNVERIFIED"
+      "staging_definition_status": "UNVERIFIED",
+      "source_url": "https://github.com/theadmitco-tech/ace-club-lms/blob/c8978a107dc209de4eff6e03b1a2773442b44d49/supabase/migrations/20261020100000_add_v2_batch_publication.sql"
     }
   ],
   "historical_browser_evidence": {
@@ -246,5 +252,38 @@
     "CI checkout SHAs are synthetic PR merge commits, not merged releases.",
     "No current authenticated Preview session was available to this inspection.",
     "The state of changes made by other operators was not audited."
-  ]
+  ],
+  "final_review_utc": "2026-10-21T12:44:04+00:00",
+  "inspection_queries": [
+    {
+      "path": "scripts/v2-phase-1-schema-preflight.sql",
+      "source_commit": "d3020c1c9916c17f6ced27f83ff9ee1be05479f2",
+      "sha256": "27eb66bfbaf8e7afefa4202607c488934d3183aa89da55297ab7921cef914080",
+      "source_url": "https://github.com/theadmitco-tech/ace-club-lms/blob/d3020c1c9916c17f6ced27f83ff9ee1be05479f2/scripts/v2-phase-1-schema-preflight.sql",
+      "archive_path": "checks/v2-phase-1-schema-preflight.sql",
+      "scope": "Object presence and selected privileges; not complete definition equivalence",
+      "executed_against_staging": false
+    },
+    {
+      "path": "scripts/v2-schema-preflight.sql",
+      "source_commit": "c8978a107dc209de4eff6e03b1a2773442b44d49",
+      "sha256": "557ef7f1ee7643e74697a5c4ae559361541600216ea5cc16d018cc15d4d1ea1e",
+      "source_url": "https://github.com/theadmitco-tech/ace-club-lms/blob/c8978a107dc209de4eff6e03b1a2773442b44d49/scripts/v2-schema-preflight.sql",
+      "archive_path": "checks/v2-schema-preflight.sql",
+      "scope": "Object presence and selected privileges; not complete definition equivalence",
+      "executed_against_staging": false
+    }
+  ],
+  "handoff": {
+    "archive_filename": "ace-club-v2-staging-review-2026-10-21.zip",
+    "report_filename": "staging-database-inspection-2026-10-21.md",
+    "includes": [
+      "report",
+      "sanitized evidence manifest",
+      "two pinned read-only preflights",
+      "SHA256SUMS.txt"
+    ],
+    "migration_execution_authorized": false,
+    "phase2_requires_separate_approval_after_phase1_verification": true
+  }
 }

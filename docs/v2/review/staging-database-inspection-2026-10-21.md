@@ -1,4 +1,4 @@
-# V2 staging database review
+# V2 staging pre-migration review
 
 Date: 21 October 2026
 
@@ -16,6 +16,22 @@ Both PRs remain open, Draft and unmerged. Phase 1 requires separate approval
 before staging application. Phase 2 requires its own approval after Phase 1
 passes staging verification. The [sanitized evidence manifest](staging-database-inspection-2026-10-21.json)
 records source hashes, PR metadata, CI jobs and deployment identifiers.
+
+## Review summary
+
+| Requested evidence | Current result |
+|---|---|
+| Installed and missing V2 migrations | Pending read-only staging ledger and definition inspection |
+| Migration file checksums | Verified for all six files at the submitted PR commits |
+| Existing schema compatibility | Pending actual staging metadata; source requirements documented |
+| Migration order | Phase 1 first; Phase 2 gated on Phase 1 verification and separate approval |
+| Recovery plan | Proposed below; actual backup availability and restore readiness unverified |
+| Exact Preview and commit tested | Deployment URLs and CI checkout commits verified; current hosted functional tests not run |
+| Change boundary | No database, Production, student/course-data or remote PR changes made by this review |
+
+**Action requested now:** provide scoped read-only staging access or return the
+metadata results specified in section 3. Migration application approval is a
+later decision, after those results have been reviewed.
 
 ## 1. Installed and missing migrations
 
@@ -60,15 +76,21 @@ no historical migration is modified by those diffs.
 
 | PR | File under `supabase/migrations/` | SHA-256 |
 |---|---|---|
-| #23 | `20261018090000_add_v2_product_entitlements.sql` | `ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7` |
-| #24 | `20261019090000_add_v2_template_drafts.sql` | `ae9729e49c76f25e43320060da2fc35c3ba94e02e48ee782c7a5023a4eac0ec2` |
-| #24 | `20261019100000_add_v2_batch_drafts.sql` | `b484762434a2395435a91ab71951ff48a59726d706b1bcb2c79f4ffc2ae31aff` |
-| #24 | `20261019110000_add_v2_private_meeting_drafts.sql` | `89cfe129ec70c3e0d6c9664bc1f763a50ff4a08544ecc9121ac35229e25f956d` |
-| #24 | `20261020090000_add_v2_outline_schedules.sql` | `a5cc7b5588515a0d13f699031e731e9cf578d18014ca228b120607a0b6c9111b` |
-| #24 | `20261020100000_add_v2_batch_publication.sql` | `b4d6ded4e51471da9b4fc64e237d3f0cdcb296fff0c55358b95a6d548dfbd9d6` |
+| #23 | [20261018090000_add_v2_product_entitlements.sql](https://github.com/theadmitco-tech/ace-club-lms/blob/d3020c1c9916c17f6ced27f83ff9ee1be05479f2/supabase/migrations/20261018090000_add_v2_product_entitlements.sql) | `ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7` |
+| #24 | [20261019090000_add_v2_template_drafts.sql](https://github.com/theadmitco-tech/ace-club-lms/blob/c8978a107dc209de4eff6e03b1a2773442b44d49/supabase/migrations/20261019090000_add_v2_template_drafts.sql) | `ae9729e49c76f25e43320060da2fc35c3ba94e02e48ee782c7a5023a4eac0ec2` |
+| #24 | [20261019100000_add_v2_batch_drafts.sql](https://github.com/theadmitco-tech/ace-club-lms/blob/c8978a107dc209de4eff6e03b1a2773442b44d49/supabase/migrations/20261019100000_add_v2_batch_drafts.sql) | `b484762434a2395435a91ab71951ff48a59726d706b1bcb2c79f4ffc2ae31aff` |
+| #24 | [20261019110000_add_v2_private_meeting_drafts.sql](https://github.com/theadmitco-tech/ace-club-lms/blob/c8978a107dc209de4eff6e03b1a2773442b44d49/supabase/migrations/20261019110000_add_v2_private_meeting_drafts.sql) | `89cfe129ec70c3e0d6c9664bc1f763a50ff4a08544ecc9121ac35229e25f956d` |
+| #24 | [20261020090000_add_v2_outline_schedules.sql](https://github.com/theadmitco-tech/ace-club-lms/blob/c8978a107dc209de4eff6e03b1a2773442b44d49/supabase/migrations/20261020090000_add_v2_outline_schedules.sql) | `a5cc7b5588515a0d13f699031e731e9cf578d18014ca228b120607a0b6c9111b` |
+| #24 | [20261020100000_add_v2_batch_publication.sql](https://github.com/theadmitco-tech/ace-club-lms/blob/c8978a107dc209de4eff6e03b1a2773442b44d49/supabase/migrations/20261020100000_add_v2_batch_publication.sql) | `b4d6ded4e51471da9b4fc64e237d3f0cdcb296fff0c55358b95a6d548dfbd9d6` |
 
 These are source-file checksums, not checksums of SQL proven to have run on
 staging. A matching version identifier alone does not establish identical SQL.
+The source links above are pinned to commits. A checksum can be reproduced
+without checking out a branch or modifying files, for example:
+
+```bash
+git show d3020c1c9916c17f6ced27f83ff9ee1be05479f2:supabase/migrations/20261018090000_add_v2_product_entitlements.sql | sha256sum
+```
 
 ## 3. Staging schema compatibility
 
@@ -102,8 +124,8 @@ connection URLs and student/course rows must not be included in the report.
 1. Confirm the project reference and current Preview-to-staging mapping through
    the approved dashboard/configuration view. A database name such as `postgres`
    is insufficient evidence of environment identity.
-2. Run [the Phase 1 preflight](../../../scripts/v2-phase-1-schema-preflight.sql)
-   and [the combined preflight](../../../scripts/v2-schema-preflight.sql).
+2. Run [the Phase 1 preflight at the PR #23 commit](https://github.com/theadmitco-tech/ace-club-lms/blob/d3020c1c9916c17f6ced27f83ff9ee1be05479f2/scripts/v2-phase-1-schema-preflight.sql)
+   and [the combined preflight at the PR #24 commit](https://github.com/theadmitco-tech/ace-club-lms/blob/c8978a107dc209de4eff6e03b1a2773442b44d49/scripts/v2-schema-preflight.sql).
    Both use read-only transactions, short timeouts and `ROLLBACK`; neither
    invokes application RPCs nor reads student, purchase, meeting or draft rows.
 3. If the ledger exists and access permits, execute the query below. If access
@@ -141,6 +163,24 @@ agree. Classify it as missing when its ledger entry is absent and the database
 matches the known state before that migration. For the outline migration, compare
 the earlier function bodies with the replacements; table absence is not the test.
 Any unexplained mismatch requires review, not automatic replay.
+
+### Operator response
+
+Return the following evidence without credentials, account addresses or business
+rows. If a check is unavailable, mark it **Unverified** and give the access/error
+reason; an empty result is not automatically proof that an object is absent.
+
+| Evidence | Required response |
+|---|---|
+| Inspection scope | UTC inspection time, confirmed staging project reference, PostgreSQL version, and `transaction_read_only = on` |
+| Migration inventory | Version identifiers returned by the ledger query and the two preflight JSON results |
+| Definition comparison | Match/difference/unverified for each row in the schema comparison table, including the final function replacements and effective permissions |
+| Environment mapping | Each exact Preview URL and deployed commit mapped to the confirmed staging project; no environment-variable values |
+| Recovery readiness | Available restore-point timestamp and coverage, or unverified/unavailable; no backup download link or private backup contents |
+| Change boundary | Confirmation that only read-only inspection occurred and no migration, fixture write, merge or Production operation ran |
+
+An inspection error does not authorize changing privileges, refreshing API caches,
+repairing migration history or applying SQL. Report the error and stop that check.
 
 ## 4. Proposed migration order
 
@@ -219,7 +259,7 @@ Earlier user-observed Admin/Student sign-in and role navigation used
 `https://ace-club-1vr3qxhtk-theadmitco-techs-projects.vercel.app`, associated with
 `3207cba41b0561ef78c0adf5a44302d753d48bdb`. The catalogue probe failed with
 `PGRST205`; complete Phase 1 staging verification did not pass. See
-[historical browser evidence](../phase-1/evidence/preview-and-access-2026-10-19.md).
+[historical browser evidence](https://github.com/theadmitco-tech/ace-club-lms/blob/d3020c1c9916c17f6ced27f83ff9ee1be05479f2/docs/v2/phase-1/evidence/preview-and-access-2026-10-19.md).
 Those observations do not verify either current candidate. Local browser QA on
 `171efd2` is also separate and is not included in PR #24.
 
@@ -240,9 +280,12 @@ Files changed locally:
 No application or migration source changed.
 Verification includes recomputing all six Git-blob hashes, checking the inherited
 Phase 1 file, reviewing migration dependencies/transaction boundaries, and reading
-exact-head CI and deployment metadata. JSON parsing, 19 relative documentation
-links and the added-content name/credential-pattern checks passed. The SQL
-inspection remains unexecuted.
+exact-head CI and deployment metadata. JSON parsing, documentation links and
+added-content name/credential-pattern checks passed. The SQL inspection remains
+unexecuted. The accompanying handoff archive contains this report, its evidence
+manifest, byte-identical copies of the two pinned read-only preflights and a file
+checksum list. Source migrations are linked for review; the archive's SQL files
+are inspection queries only.
 
 **Next required input:** scoped read-only staging access, or sanitized results
 from the operator steps in section 3. Complete the installed/missing matrix and

@@ -19,8 +19,8 @@ Phase 2 needs separate approval after Phase 1 staging verification passes.
 | 2 | `intern/v2-phase-2-review`; base `intern/v2-onboarding` at `d3020c1` | Admin templates, independent schedules, private Meet drafts and reviewed batch publication; draft [PR #24](https://github.com/theadmitco-tech/ace-club-lms/pull/24) |
 
 Phase 2 application commit: `26ec141561a0749dba371409273c1f1ee9906049`.
-Submitted review head: `c8978a107dc209de4eff6e03b1a2773442b44d49`, as recorded
-in the supplied PR screenshots. Use the exact candidate head for CI and Preview
+Submitted review head: `c8978a107dc209de4eff6e03b1a2773442b44d49`, confirmed
+through GitHub metadata on 21 October 2026. Use the exact candidate head for CI and Preview
 evidence; an older deployment does not verify a newer diff.
 The preserved combined source branch is not a publication target.
 
