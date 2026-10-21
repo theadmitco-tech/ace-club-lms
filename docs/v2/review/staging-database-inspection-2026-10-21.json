@@ -1,0 +1,250 @@
+{
+  "report_version": 1,
+  "observed_date_utc": "2026-10-21",
+  "repository": "theadmitco-tech/ace-club-lms",
+  "database_inspection": {
+    "status": "BLOCKED_NO_CONNECTION",
+    "expected_project_ref": "eyphkkginlgoaxflauog",
+    "project_identity_verified_this_review": false,
+    "ledger_read": false,
+    "schema_read": false,
+    "installed_migrations": null,
+    "missing_migrations": null,
+    "schema_compatible": null
+  },
+  "pull_requests": [
+    {
+      "number": 23,
+      "url": "https://github.com/theadmitco-tech/ace-club-lms/pull/23",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "base": "codex/v2-integration",
+      "base_sha": "940ea7835734a8fb22a6451a30b31084b11d5c97",
+      "head": "intern/v2-onboarding",
+      "head_sha": "d3020c1c9916c17f6ced27f83ff9ee1be05479f2",
+      "statuses": [
+        {
+          "context": "Vercel – ace-club-flexible-mocks",
+          "state": "failure",
+          "target_url": "https://vercel.com/theadmitco-techs-projects/ace-club-flexible-mocks/CYds5yq1LVf8hEsSF8Ar6SGLmkXM"
+        },
+        {
+          "context": "Vercel – ace-club-lms",
+          "state": "success",
+          "target_url": "https://vercel.com/theadmitco-techs-projects/ace-club-lms/GsQzPgkeNcRhCVEUA5FLocTW6LMn"
+        }
+      ],
+      "workflow": {
+        "pr": 23,
+        "run_id": 39457613372,
+        "head_sha": "d3020c1c9916c17f6ced27f83ff9ee1be05479f2",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-10-20T16:27:33Z",
+        "updated_at": "2026-10-20T16:28:08Z",
+        "url": "https://github.com/theadmitco-tech/ace-club-lms/actions/runs/39457613372",
+        "base_sha": "940ea7835734a8fb22a6451a30b31084b11d5c97",
+        "checkout_sha": "7c5212db8b062f1e3e6e49b5a05fa72c3d683d47",
+        "jobs": [
+          {
+            "id": 118748477989,
+            "name": "Lint",
+            "conclusion": "success"
+          },
+          {
+            "id": 118748478639,
+            "name": "Tests and build",
+            "conclusion": "success"
+          }
+        ]
+      },
+      "deployment": {
+        "id": 7205281286,
+        "environment": "Preview – ace-club-lms",
+        "sha": "d3020c1c9916c17f6ced27f83ff9ee1be05479f2",
+        "created_at": "2026-10-20T16:28:26Z",
+        "latest_status": [
+          {
+            "state": "success",
+            "environment_url": "https://ace-club-a8go51h46-theadmitco-techs-projects.vercel.app",
+            "target_url": "https://ace-club-a8go51h46-theadmitco-techs-projects.vercel.app",
+            "log_url": "https://ace-club-a8go51h46-theadmitco-techs-projects.vercel.app",
+            "created_at": "2026-10-20T16:28:27Z"
+          }
+        ]
+      },
+      "hosted_browser_test_this_review": "NOT_RUN",
+      "staging_backend_for_current_deployment": "UNVERIFIED"
+    },
+    {
+      "number": 24,
+      "url": "https://github.com/theadmitco-tech/ace-club-lms/pull/24",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "base": "intern/v2-onboarding",
+      "base_sha": "d3020c1c9916c17f6ced27f83ff9ee1be05479f2",
+      "head": "intern/v2-phase-2-review",
+      "head_sha": "c8978a107dc209de4eff6e03b1a2773442b44d49",
+      "statuses": [
+        {
+          "context": "Vercel – ace-club-flexible-mocks",
+          "state": "failure",
+          "target_url": "https://vercel.com/theadmitco-techs-projects/ace-club-flexible-mocks/7vojKcjb8eAsA4xbYEiGgbvzvgz5"
+        },
+        {
+          "context": "Vercel – ace-club-lms",
+          "state": "success",
+          "target_url": "https://vercel.com/theadmitco-techs-projects/ace-club-lms/2DgZsohdpNoZjJd4iS11wzWSy8SJ"
+        }
+      ],
+      "workflow": {
+        "pr": 24,
+        "run_id": 39465739150,
+        "head_sha": "c8978a107dc209de4eff6e03b1a2773442b44d49",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-10-20T17:24:03Z",
+        "updated_at": "2026-10-20T17:24:52Z",
+        "url": "https://github.com/theadmitco-tech/ace-club-lms/actions/runs/39465739150",
+        "base_sha": "d3020c1c9916c17f6ced27f83ff9ee1be05479f2",
+        "checkout_sha": "1a01f4ad0ee360d03ba6e51698f8aa51672dca84",
+        "jobs": [
+          {
+            "id": 118776522506,
+            "name": "Lint",
+            "conclusion": "success"
+          },
+          {
+            "id": 118776522941,
+            "name": "Tests and build",
+            "conclusion": "success"
+          }
+        ]
+      },
+      "deployment": {
+        "id": 7206331884,
+        "environment": "Preview – ace-club-lms",
+        "sha": "c8978a107dc209de4eff6e03b1a2773442b44d49",
+        "created_at": "2026-10-20T17:17:28Z",
+        "latest_status": [
+          {
+            "state": "success",
+            "environment_url": "https://ace-club-ga4ano6dk-theadmitco-techs-projects.vercel.app",
+            "target_url": "https://ace-club-ga4ano6dk-theadmitco-techs-projects.vercel.app",
+            "log_url": "https://ace-club-ga4ano6dk-theadmitco-techs-projects.vercel.app",
+            "created_at": "2026-10-20T17:17:28Z"
+          }
+        ]
+      },
+      "hosted_browser_test_this_review": "NOT_RUN",
+      "staging_backend_for_current_deployment": "UNVERIFIED"
+    }
+  ],
+  "migrations": [
+    {
+      "pr": 23,
+      "head": "d3020c1c9916c17f6ced27f83ff9ee1be05479f2",
+      "change": "A",
+      "path": "supabase/migrations/20261018090000_add_v2_product_entitlements.sql",
+      "bytes": 14811,
+      "sha256": "ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7",
+      "identical_in_pr24": true,
+      "transaction_wrapped": true,
+      "staging_ledger_status": "UNVERIFIED",
+      "staging_definition_status": "UNVERIFIED"
+    },
+    {
+      "pr": 24,
+      "head": "c8978a107dc209de4eff6e03b1a2773442b44d49",
+      "change": "A",
+      "path": "supabase/migrations/20261019090000_add_v2_template_drafts.sql",
+      "bytes": 10273,
+      "sha256": "ae9729e49c76f25e43320060da2fc35c3ba94e02e48ee782c7a5023a4eac0ec2",
+      "transaction_wrapped": true,
+      "staging_ledger_status": "UNVERIFIED",
+      "staging_definition_status": "UNVERIFIED"
+    },
+    {
+      "pr": 24,
+      "head": "c8978a107dc209de4eff6e03b1a2773442b44d49",
+      "change": "A",
+      "path": "supabase/migrations/20261019100000_add_v2_batch_drafts.sql",
+      "bytes": 15602,
+      "sha256": "b484762434a2395435a91ab71951ff48a59726d706b1bcb2c79f4ffc2ae31aff",
+      "transaction_wrapped": true,
+      "staging_ledger_status": "UNVERIFIED",
+      "staging_definition_status": "UNVERIFIED"
+    },
+    {
+      "pr": 24,
+      "head": "c8978a107dc209de4eff6e03b1a2773442b44d49",
+      "change": "A",
+      "path": "supabase/migrations/20261019110000_add_v2_private_meeting_drafts.sql",
+      "bytes": 8673,
+      "sha256": "89cfe129ec70c3e0d6c9664bc1f763a50ff4a08544ecc9121ac35229e25f956d",
+      "transaction_wrapped": true,
+      "staging_ledger_status": "UNVERIFIED",
+      "staging_definition_status": "UNVERIFIED"
+    },
+    {
+      "pr": 24,
+      "head": "c8978a107dc209de4eff6e03b1a2773442b44d49",
+      "change": "A",
+      "path": "supabase/migrations/20261020090000_add_v2_outline_schedules.sql",
+      "bytes": 22774,
+      "sha256": "a5cc7b5588515a0d13f699031e731e9cf578d18014ca228b120607a0b6c9111b",
+      "transaction_wrapped": true,
+      "staging_ledger_status": "UNVERIFIED",
+      "staging_definition_status": "UNVERIFIED"
+    },
+    {
+      "pr": 24,
+      "head": "c8978a107dc209de4eff6e03b1a2773442b44d49",
+      "change": "A",
+      "path": "supabase/migrations/20261020100000_add_v2_batch_publication.sql",
+      "bytes": 9315,
+      "sha256": "b4d6ded4e51471da9b4fc64e237d3f0cdcb296fff0c55358b95a6d548dfbd9d6",
+      "transaction_wrapped": true,
+      "staging_ledger_status": "UNVERIFIED",
+      "staging_definition_status": "UNVERIFIED"
+    }
+  ],
+  "historical_browser_evidence": {
+    "date": "2026-10-19",
+    "commit": "3207cba41b0561ef78c0adf5a44302d753d48bdb",
+    "preview_url": "https://ace-club-1vr3qxhtk-theadmitco-techs-projects.vercel.app",
+    "kind": "user_reported",
+    "catalogue_http": 404,
+    "catalogue_error": "PGRST205",
+    "quote": "NOT_RUN",
+    "limitation": "Historical evidence is not verification of either current PR head or of the migration ledger."
+  },
+  "actions": {
+    "github_reads_only": true,
+    "hosted_database_connection_opened": false,
+    "migrations_applied": false,
+    "production_contacted": false,
+    "student_course_rows_read": false,
+    "student_course_data_changed": false,
+    "pr_modified": false,
+    "pr_merged": false,
+    "branch_pushed": false
+  },
+  "sources": {
+    "pr23": "https://api.github.com/repos/theadmitco-tech/ace-club-lms/pulls/23",
+    "pr24": "https://api.github.com/repos/theadmitco-tech/ace-club-lms/pulls/24",
+    "deployment23": "https://api.github.com/repos/theadmitco-tech/ace-club-lms/deployments/7205281286/statuses",
+    "deployment24": "https://api.github.com/repos/theadmitco-tech/ace-club-lms/deployments/7206331884/statuses"
+  },
+  "limits": [
+    "Source SHA-256 hashes do not establish which SQL was applied to staging.",
+    "GitHub check and deployment metadata was inspected; jobs were not rerun.",
+    "CI checkout SHAs are synthetic PR merge commits, not merged releases.",
+    "No current authenticated Preview session was available to this inspection.",
+    "The state of changes made by other operators was not audited."
+  ]
+}

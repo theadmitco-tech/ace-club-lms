@@ -2,7 +2,14 @@
 
 Status: Active — separate review candidates; hosted setup and acceptance pending
 Owner: Engineering and product owner
-Last updated: 20 October 2026
+Last updated: 21 October 2026
+
+The [read-only staging review](../review/staging-database-inspection-2026-10-21.md)
+records checksums from both submitted PR heads, exact deployment URLs, CI evidence,
+migration order and the proposed recovery plan. Actual staging ledger and schema
+inspection remain blocked by unavailable database access. Both PRs were confirmed
+Draft and unmerged on 21 October. Phase 1 application needs separate approval;
+Phase 2 needs separate approval after Phase 1 staging verification passes.
 
 ## Separate review candidates
 
