@@ -98,7 +98,7 @@
     }
   },
   "remaining": [
-    "Current Preview public REST catalogue/quote probe",
+    "Record the exact origin and deployed commit for the reported passing browser catalogue/quote probe",
     "Authenticated browser and cross-role HTTP/API checks with designated test accounts",
     "Legacy content, worksheet editor and applicable existing checkout regression checks",
     "Staging concurrent-delivery coverage or explicit acceptance of existing local concurrency evidence",
@@ -204,5 +204,75 @@
       "private_directory_mode": "0700",
       "private_file_mode": "0600"
     }
+  },
+  "browser_followup_2026_10_25": {
+    "source": "User-supplied browser-console screenshots",
+    "independently_executed": false,
+    "public_catalogue": {
+      "check": "phase1_public_catalogue",
+      "catalogue": "FOUR_PRODUCTS_MATCH",
+      "quote": "FULL_BATCH_INR_25000",
+      "catalogue_http": 200,
+      "quote_http": 200,
+      "result": "PUBLIC_CHECKS_PASSED"
+    },
+    "exact_origin_visible": true,
+    "deployed_commit_confirmed_by_screenshot": false,
+    "admin_role_probe": {
+      "origin": "https://ace-club-lms-git-intern-v2-onboarding-theadmitco-techs-projects.vercel.app",
+      "check": "phase1_admin_api_boundary",
+      "endpoints": [
+        {
+          "path": "/api/admin/set-user-active",
+          "http": 400,
+          "observation": "ADMIN_VALIDATION_REACHED"
+        },
+        {
+          "path": "/api/admin/session-materials",
+          "http": 400,
+          "observation": "ADMIN_VALIDATION_REACHED"
+        }
+      ],
+      "result": "ADMIN_VALIDATION_REACHED"
+    },
+    "student_role_probe": {
+      "origin": "https://ace-club-lms-git-intern-v2-onboarding-theadmitco-techs-projects.vercel.app",
+      "check": "phase1_admin_api_boundary",
+      "endpoints": [
+        {
+          "path": "/api/admin/set-user-active",
+          "http": 403,
+          "observation": "NON_ADMIN_DENIED"
+        },
+        {
+          "path": "/api/admin/session-materials",
+          "http": 403,
+          "observation": "NON_ADMIN_DENIED"
+        }
+      ],
+      "result": "NON_ADMIN_DENIED",
+      "dashboard_state": "NO_COURSE_ASSIGNED",
+      "enrolled_content_verified": false,
+      "admin_navigation_redirect_verified_by_screenshot": false
+    },
+    "signed_out_role_probe": {
+      "origin": "https://ace-club-lms-git-intern-v2-onboarding-theadmitco-techs-projects.vercel.app",
+      "check": "phase1_admin_api_boundary",
+      "endpoints": [
+        {
+          "path": "/api/admin/set-user-active",
+          "http": 401,
+          "observation": "SIGNED_OUT_DENIED"
+        },
+        {
+          "path": "/api/admin/session-materials",
+          "http": 401,
+          "observation": "SIGNED_OUT_DENIED"
+        }
+      ],
+      "result": "SIGNED_OUT_DENIED",
+      "page_state": "PUBLIC_LANDING_WITH_LOGIN"
+    },
+    "origin_evidence": "Admin, Student and signed-out probe request URLs; catalogue screenshot remains cropped"
   }
 }

@@ -200,3 +200,70 @@ Follow-up files changed:
 Next decision: Phase 1 acceptance after browser evidence and remaining exceptions
 are reviewed; Phase 2 staging application remains a separate decision. Access to
 the protected Preview and the unassessed deployment failure remain dependencies.
+
+## Browser catalogue result received — 25 October 2026
+
+A supplied browser-console screenshot records:
+
+```json
+{
+  "check": "phase1_public_catalogue",
+  "catalogue": "FOUR_PRODUCTS_MATCH",
+  "quote": "FULL_BATCH_INR_25000",
+  "catalogue_http": 200,
+  "quote_http": 200,
+  "result": "PUBLIC_CHECKS_PASSED"
+}
+```
+
+This is a reported browser execution, not an independently executed agent check.
+It establishes the four public product scopes and INR 25,000 Full Batch quote.
+The supplied script enforces its Preview allowlist and observed staging origin.
+The screenshot omits the address bar; the exact origin and current deployed
+commit are not established by this image alone. The visible Admin dashboard
+does not establish the complete sign-in sequence or privileged API authorization.
+Next: record the URL and run the prepared role probe as the designated Admin,
+then Student and signed out. Other acceptance items remain open.
+
+## Admin API result received — 25 October 2026
+
+A subsequent supplied screenshot records `ADMIN_VALIDATION_REACHED` for both
+`/api/admin/set-user-active` and `/api/admin/session-materials`, each HTTP 400.
+The request URLs show the exact branch Preview origin:
+<https://ace-club-lms-git-intern-v2-onboarding-theadmitco-techs-projects.vercel.app>.
+Both endpoints accepted Admin authorization and returned the expected missing-input
+validation. With the supplied empty-object payloads, the reviewed handlers return
+before application-data writes. The red console entries are expected HTTP errors
+for this negative validation test, not failed authorization checks.
+
+This screenshot does not independently establish the branch alias's deployed
+commit, valid-write behavior, Student denial or signed-out denial. The next
+browser steps are the same probe as Student and after LMS sign-out. No remote
+configuration, migration, application data or PR changes were made to record it.
+
+## Student API result received — 25 October 2026
+
+A supplied screenshot records `NON_ADMIN_DENIED` for both
+`/api/admin/set-user-active` and `/api/admin/session-materials`, each HTTP 403.
+Both request URLs use the same branch Preview recorded above. This verifies
+denial of these two privileged API requests in the reported Student session.
+The visible Student dashboard reports no course assigned; it does not establish
+enrolled-content access or the separate `/admin` navigation redirect check.
+Signed-out API verification was still pending at this checkpoint. No account, enrollment or content
+changes were made to record this result.
+
+## Signed-out API result received — 25 October 2026
+
+A supplied screenshot records `SIGNED_OUT_DENIED` for both
+`/api/admin/set-user-active` and `/api/admin/session-materials`, each HTTP 401.
+The request URLs show the same branch Preview, and the page displays the public
+landing screen with a Login action. Running the probe on the public landing page
+rather than the login page does not change its fixed same-origin API requests.
+
+All three reported API role checks now match the expected results: Admin reaches
+empty-input validation, Student is forbidden, and a signed-out caller is
+unauthorized. This completes only the two-route API authorization check. Current
+candidate mapping, Student `/admin` navigation, authenticated V2 data isolation,
+legacy enrolled-content regressions and the remaining acceptance items are still
+tracked in the checklist. No application-data writes or remote operations were
+performed to record these screenshots.

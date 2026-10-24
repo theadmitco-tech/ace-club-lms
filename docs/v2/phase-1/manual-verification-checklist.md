@@ -2,7 +2,7 @@
 
 Status: Database verification passed; current Preview browser verification and acceptance pending
 Owner: Engineering and product owner
-Last updated: 24 October 2026
+Last updated: 25 October 2026
 
 This is the current execution checklist. Historical observations remain in the
 [evidence folder](evidence/) and Git history. Earlier login screenshots and the
@@ -18,9 +18,12 @@ This is the current execution checklist. Historical observations remain in the
 - SHA-256: `ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7`.
 
 The deployment-specific URL is fixed. Recheck the branch alias's commit if any
-push occurs before testing. Access is currently awaiting the requested Preview
-permission. Do not substitute the older `ace-club-1vr3qxhtk` deployment or remove
-the probes' origin guards.
+push occurs before testing. A supplied screenshot on 25 October records a passing
+catalogue probe on an allowed Preview. A subsequent Admin role-probe screenshot
+shows both request URLs on the branch Preview above. Its current deployed commit
+still needs to accompany the final browser record.
+Do not substitute the older `ace-club-1vr3qxhtk` deployment or remove the probes'
+origin guards.
 
 Phase 1 staging application is already approved and complete; do not repeat it.
 Use designated synthetic test identities and fixtures only. Existing student/course
@@ -65,7 +68,7 @@ SQL identity simulation does not prove Google sign-in, JWT delivery, browser API
 authorization or legacy interface behavior. Local concurrency tests do not prove
 simultaneous delivery against hosted staging.
 
-## Browser pass — run once access is available
+## Browser verification — in progress
 
 Record each result with the candidate commit, URL, role, expected/actual outcome
 and time. Share only sanitized results or redacted screenshots; no credentials,
@@ -83,8 +86,13 @@ request headers, HAR exports, private student rows or database backups.
    the known missing-input validation result.
 
 - [ ] Admin sign-in and dashboard pass on the current candidate.
-- [ ] Public catalogue/quote probe passes on the current candidate.
-- [ ] Admin API role probe reports the expected validation result.
+- [x] Public catalogue/quote probe reports `PUBLIC_CHECKS_PASSED`: both HTTP 200,
+  `FOUR_PRODUCTS_MATCH` and `FULL_BATCH_INR_25000` (supplied screenshot, 25 October).
+- [x] Record the Admin probe's exact origin: the branch Preview above, visible in
+  both request URLs in the 25 October screenshot.
+- [ ] Confirm the branch Preview's deployed candidate commit for final acceptance.
+- [x] Admin API role probe reports `ADMIN_VALIDATION_REACHED` for both endpoints,
+  each HTTP 400 (supplied screenshot, 25 October).
 
 The catalogue probe uses anonymous GET requests and requires observed staging
 traffic. `WRONG_PREVIEW` means the page is outside the verified allowlist;
@@ -110,8 +118,10 @@ application failure or proof that a valid mutation works.
    is inconclusive and must be investigated.
 
 - [ ] Student cannot enter the Admin interface.
-- [ ] Student requests to both privileged API routes are denied.
-- [ ] Signed-out requests to both privileged API routes are denied.
+- [x] Student requests to both privileged API routes return HTTP 403 and
+  `NON_ADMIN_DENIED` (supplied screenshot, 25 October, branch Preview).
+- [x] Signed-out requests to both privileged API routes return HTTP 401 and
+  `SIGNED_OUT_DENIED` (supplied screenshot, 25 October, branch Preview).
 - [ ] Designated Student A cannot read Student B's synthetic purchase/grant
   records through an actual authenticated REST/RPC session; Admin history reads
   work while browser grant calls remain denied. Record fixture setup and cleanup
