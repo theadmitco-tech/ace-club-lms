@@ -57,6 +57,29 @@ Synthetic account/purchase checks ran inside one transaction ending in `ROLLBACK
 Before/after checks confirm unchanged Auth user state, purchase/grant counts,
 catalogue state and all 56 existing public application tables. No fixtures remain.
 
+Follow-up on 24 October at 14:57:57 UTC: **eight additional staging pricing
+checks passed** in a separate rollback-only transaction. Current revisions are
+quoted; future revisions are neither quoted nor visible to anonymous/Student
+roles; Admin can inspect future prices. A price change leaves a prior synthetic
+purchase's paid amount, identity, expiry and grants unchanged, preserves its
+access and allows an identical payment-reference replay. Fulfillment against a
+not-yet-effective price is rejected. Before/after comparisons again confirm no
+persisted fixture, Auth-user, pricing or legacy application-data change.
+
+The exact PR #23 source was also extracted into an isolated local directory.
+Its database suite passed **21 tests**, including simultaneous duplicate payment
+delivery and conflicting buyers; its server-reader suite passed **10 tests**,
+including failed authentication/transport and subsequent-request access checks.
+Commands, run separately with inherited `NODE_TEST_CONTEXT` removed:
+
+```sh
+node --experimental-strip-types scripts/v2-product-entitlements.test.mjs
+node --experimental-strip-types scripts/v2-product-readers.test.mjs
+```
+
+These 31 checks used disposable local database state or mocked transport. They
+did not send simultaneous requests to hosted staging or exercise a real browser.
+
 These SQL role checks do not substitute for Google sign-in, real JWT/REST requests,
 browser navigation, or payment-provider verification. Remaining acceptance work:
 the current Preview catalogue probe; authenticated and cross-role HTTP/browser
@@ -80,6 +103,9 @@ every column's nullability and the remaining definitions produced an exact match
 GitHub still reports a failing `ace-club-flexible-mocks` deployment status on
 PR #23's head; `ace-club-lms` reports success. The failed deployment has not been
 diagnosed or waived by this operation. Do not describe all checks as passing.
+Read-only Vercel inspection of deployment
+`dpl_CYds5yq1LVf8hEsSF8Ar6SGLmkXM` returned HTTP 403 using the existing CLI
+authorization. No build logs were obtained and no deployment settings changed.
 
 ## 4. Exact commit and Preview tested
 
@@ -96,7 +122,8 @@ is now pinned to this candidate and still requires observed traffic to the
 staging project before making anonymous GET requests.
 Its local safety suite passed with
 `node --test scripts/v2-staging-catalogue-probe.test.mjs`; `git diff --check`
-also passed. The JSON evidence lists the seven local files changed. No application
+also passed. The JSON evidence lists the initial application-report changes and
+the later verification follow-up separately. No application
 runtime code or migration SQL was edited.
 
 Both PR #23 and PR #24 were rechecked as Draft and unmerged. No PR head changed.
@@ -127,3 +154,49 @@ origin, fetching assets only from the current allowed origin and retaining the
 staging backend guard. Branch aliases can move after a push; recheck the source
 commit before recording later acceptance evidence. Access to the branch URL has
 not been re-confirmed by the manual tester yet. No Vercel permissions were changed.
+
+## Prepared browser checks and local changes
+
+The [current checklist](../manual-verification-checklist.md) now separates verified
+database behavior from pending browser and legacy regressions. The new
+[role probe](../../../../scripts/v2-phase1-role-probe.browser.js) reports Admin,
+Student and signed-out authorization outcomes for two existing Admin API routes.
+It submits only empty objects, rejected before any writes in the reviewed PR #23
+handlers. Both handlers and their shared authorization helper match the exact
+PR #23 source. The script has not been run against a real Preview session.
+
+Local safety tests: 7 role-probe tests and 11 catalogue-probe tests pass. They
+verify the permitted origins, fixed requests, expected statuses, failure handling
+and exclusion of private response/session data from output. The role suite is
+included in the Phase 1 local verification runner. No application rebuild is
+needed for these standalone browser helpers and documentation changes.
+
+Follow-up validation commands:
+
+```sh
+env -u NODE_TEST_CONTEXT node scripts/v2-phase1-role-probe.test.mjs
+env -u NODE_TEST_CONTEXT node scripts/v2-staging-catalogue-probe.test.mjs
+./node_modules/.bin/eslint scripts/v2-phase1-role-probe.browser.js scripts/v2-phase1-role-probe.test.mjs scripts/verify-v2-phase1.mjs --max-warnings=0
+git diff --check
+```
+
+All passed; updated documentation links and evidence JSON also validated.
+Verification SQL, exact-source test logs and before/after aggregate evidence are
+retained privately in the recovery directory's
+`phase1-verification/followup-20261024` folder (directory 0700, files 0600).
+They are excluded from Git. The report contains only sanitized results.
+
+Follow-up files changed:
+
+- `scripts/v2-phase1-role-probe.browser.js`
+- `scripts/v2-phase1-role-probe.test.mjs`
+- `scripts/verify-v2-phase1.mjs`
+- `docs/v2/phase-1/manual-verification-checklist.md`
+- `docs/v2/phase-1/review-and-release.md`
+- `docs/v2/phase-1/completion-report.md`
+- `docs/v2/phase-1/evidence/staging-application-2026-10-24.md`
+- `docs/v2/phase-1/evidence/staging-application-2026-10-24.json`
+
+Next decision: Phase 1 acceptance after browser evidence and remaining exceptions
+are reviewed; Phase 2 staging application remains a separate decision. Access to
+the protected Preview and the unassessed deployment failure remain dependencies.

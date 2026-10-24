@@ -12,6 +12,13 @@ isolation, expiry and revocation checks passed. Existing application data and
 earlier migration records stayed unchanged; synthetic verification rolled back.
 See the [application report](evidence/staging-application-2026-10-24.md).
 
+The [current execution checklist](manual-verification-checklist.md) separates
+completed SQL/local checks from the remaining browser steps. Follow-up verification
+passed eight staging price-revision checks with complete fixture rollback and
+31 focused tests on the exact PR #23 source. A tested standalone role probe is
+ready for the Admin, Student and signed-out browser sessions. Vercel log inspection
+returned HTTP 403; the flexible-mocks failure has not been diagnosed.
+
 Next: complete the current Preview's browser/REST and legacy regression checks,
 resolve or assess the failing flexible-mocks deployment status, and obtain Phase 1
 acceptance. Phase 2 application remains separately gated. Both PRs remain Draft;

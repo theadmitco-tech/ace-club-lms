@@ -1,189 +1,154 @@
 # V2 Phase 1 — Staging verification checklist
 
-Status: Active — Phase 1 applied; staging SQL verification passed; current Preview browser checks pending
+Status: Database verification passed; current Preview browser verification and acceptance pending
 Owner: Engineering and product owner
 Last updated: 24 October 2026
 
-## Current staging result — 24 October
+This is the current execution checklist. Historical observations remain in the
+[evidence folder](evidence/) and Git history. Earlier login screenshots and the
+20 October catalogue 404 do not describe the current candidate's acceptance state.
 
-The approved migration from PR #23 at `d3020c1` was applied to staging after a
-private backup and isolated recovery rehearsal. Pricing, grants, role isolation,
-expiry and revocation passed SQL verification; synthetic fixtures were rolled
-back and existing application data stayed unchanged. See the
-[application report](evidence/staging-application-2026-10-24.md) for exact source,
-checksum, results and limitations. The earlier 404 is historical; the current
-Preview REST/browser result is still pending.
+## Candidate and boundaries
 
-Next browser target:
-<https://ace-club-a8go51h46-theadmitco-techs-projects.vercel.app>.
-The probe has been repinned to this candidate, retaining the staging-origin
-guard. Run it from the signed-in Preview after a reload and record only its
-sanitized JSON result. Continue the browser-specific checks below; SQL identity
-simulation does not establish browser/API authentication or legacy UI behavior.
-Do not request the already granted Phase 1 application approval again.
+- PR #23 source: `d3020c1c9916c17f6ced27f83ff9ee1be05479f2`.
+- Staging project: `eyphkkginlgoaxflauog` (`ace-club-lms-staging`).
+- Exact deployment: <https://ace-club-a8go51h46-theadmitco-techs-projects.vercel.app>.
+- Branch Preview: <https://ace-club-lms-git-intern-v2-onboarding-theadmitco-techs-projects.vercel.app>.
+- Phase 1 migration: `20261018090000_add_v2_product_entitlements.sql`.
+- SHA-256: `ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7`.
 
-The remaining sections preserve the earlier checklist and observations. Unchecked
-mixed SQL/browser items are not automatically completed by the SQL result above.
+The deployment-specific URL is fixed. Recheck the branch alias's commit if any
+push occurs before testing. Access is currently awaiting the requested Preview
+permission. Do not substitute the older `ace-club-1vr3qxhtk` deployment or remove
+the probes' origin guards.
 
-## Current candidate
+Phase 1 staging application is already approved and complete; do not repeat it.
+Use designated synthetic test identities and fixtures only. Existing student/course
+records must remain unchanged. Both PRs remain Draft and unmerged. Phase 2 staging
+application and any Production release require separate approval.
 
-Use `intern/v2-phase-1-completion` and application commit
-`529391fd5bc402831914a60418c0cfef4cec66da`, described in the
-[completion report](completion-report.md). Six-month access denial is now
-[confirmed](../decisions/phase-1-expiry-confirmation-2026-10-20.md).
-All earlier browser observations below are historical and must be repeated where
-relevant for the exact candidate. No new staging checklist item is marked passed.
+## Completed — database and local checks
 
-This checklist is not permission to apply a migration or change shared data.
-Use designated synthetic staging identities only. Do not copy production data,
-record secrets, or run the complete historical migration directory.
+Evidence: [staging application report](evidence/staging-application-2026-10-24.md)
+and its [sanitized JSON](evidence/staging-application-2026-10-24.json).
 
-The 18 October access decision permits Preview review while keeping Vercel
-team/project access restricted. Use the [Preview-only collaboration workflow](review-and-release.md#preview-only-collaboration-decision--18-october-2026).
-Deployment/configuration evidence is supplied by the project owner. Dashboard
-membership is not a checklist requirement; a Preview invitation does not establish LMS roles.
-The product owner confirmed that an earlier shared Preview connects to staging
-Supabase. The [19 October evidence](evidence/preview-and-access-2026-10-19.md)
-identifies the current PR Preview at `3207cba` and records basic Admin/Student
-navigation using designated Google test accounts. The current Preview's database
-target and migration state still require confirmation. Entitlement, API, RLS and
-content-access testing remains pending.
+- [x] Exact migration checksum and PR source recorded; private recovery archive
+  and isolated application-data restore rehearsal verified before application.
+- [x] Only the approved Phase 1 migration applied; its ledger record is present,
+  all 46 earlier migration records are unchanged and Phase 2 is absent.
+- [x] Four tables and seven function definitions, policies, indexes, triggers,
+  constraints and nullability match the reviewed migration rehearsal.
+- [x] All eight valid product combinations and seven invalid selections tested
+  on staging; four product scopes and approved bundle prices match.
+- [x] All 72 direct-write privilege checks pass; anonymous private reads and
+  anonymous/authenticated grant calls are denied.
+- [x] Rollback-only synthetic grants verify replay, six conflicting replays,
+  atomic failure, identity isolation, Admin history without grant permission,
+  product scopes, inactive/expired/revoked denial and retained history.
+- [x] Stored six-calendar-month UTC expiry, month-end clamping and the
+  start-inclusive/expiry-exclusive predicate verified on staging.
+- [x] Closing sales preserves existing access; independent valid purchases
+  survive revocation of another purchase; historical prices are immutable.
+- [x] Eight additional staging price-revision checks pass: effective price
+  selection, future-price visibility, unchanged historical payment/access,
+  replay after a price change and denial of early future-price fulfillment.
+- [x] Existing application data, Auth users and price/purchase/grant state match
+  before and after synthetic checks. All synthetic staging changes rolled back.
+- [x] Exact PR #23 local database suite: 21 tests pass, including concurrent
+  duplicate deliveries and conflicting buyers.
+- [x] Exact PR #23 local server-reader suite: 10 tests pass, including transport
+  and authentication failure handling and access rechecking on later calls.
+- [x] Current local browser helpers: 11 catalogue safety tests and 7 role-probe
+  safety tests pass. These use mocked responses, not real browser sessions.
 
-**19 October browser-connection update:** The manual tester confirmed that the
-Preview's browser request hostname is `eyphkkginlgoaxflauog.supabase.co`, matching
-the repository's staging mapping. This verifies the reported browser target only;
-server runtime configuration, deployed migration definitions and the migration
-ledger remain unverified. No keys, headers or session tokens were supplied.
+SQL identity simulation does not prove Google sign-in, JWT delivery, browser API
+authorization or legacy interface behavior. Local concurrency tests do not prove
+simultaneous delivery against hosted staging.
 
-## Public catalogue browser check
+## Browser pass — run once access is available
 
-The probe was run manually on the exact PR Preview identified in the evidence:
-`https://ace-club-1vr3qxhtk-theadmitco-techs-projects.vercel.app`.
+Record each result with the candidate commit, URL, role, expected/actual outcome
+and time. Share only sanitized results or redacted screenshots; no credentials,
+request headers, HAR exports, private student rows or database backups.
 
-**20 October result:** `CATALOGUE_UNAVAILABLE`, HTTP 404, `PGRST205`; the quote
-check did not run. See the [sanitized result and next action](evidence/catalogue-probe-2026-10-20.md).
-Inspect the actual staging schema/ledger before selecting a fix or rerunning the
-probe. The procedure below is retained for verification after the cause is resolved.
+### 1. Admin and public API
 
-The historical probe was pinned to that earlier Preview. The current script is
-pinned to the candidate named in the 24 October update above. Do not weaken the
-origin check or treat the historical result as evidence for the current candidate.
+1. Open the verified Preview and sign in with the designated test Admin.
+2. Reload `/admin`; confirm the Admin dashboard opens.
+3. Run the complete [catalogue probe](../../../scripts/v2-staging-catalogue-probe.browser.js)
+   in Developer Tools → Console. Expected: `PUBLIC_CHECKS_PASSED`, four products,
+   and `FULL_BATCH_INR_25000`.
+4. Run the complete [role probe](../../../scripts/v2-phase1-role-probe.browser.js).
+   Expected: `ADMIN_VALIDATION_REACHED`; both endpoints return HTTP 400 with
+   the known missing-input validation result.
 
-1. Reload the Preview's Admin dashboard so its browser requests are recorded.
-2. Open [the browser probe](../../../scripts/v2-staging-catalogue-probe.browser.js)
-   in the editor and copy the complete file.
-3. Open Developer Tools → Console on that Preview, paste the file and run it.
-4. Record only the resulting JSON object headed `phase1_public_catalogue`. Do not
-   export a HAR, copy request headers or provide credentials.
+- [ ] Admin sign-in and dashboard pass on the current candidate.
+- [ ] Public catalogue/quote probe passes on the current candidate.
+- [ ] Admin API role probe reports the expected validation result.
 
-The probe reads already-loaded first-party JavaScript to find the app's public
-anonymous API key. It accepts only the fixed Preview origin and observed staging
-traffic. It never reads session cookies/storage or executes downloaded scripts.
-It makes GET requests for the four product scopes and one Full Batch price quote;
-no grant, purchase, profile or migration writes are attempted. Public keys remain
-in memory and are omitted from output. See the [Supabase API-key reference](https://supabase.com/docs/guides/getting-started/api-keys)
-for the distinction between public keys and user authentication.
+The catalogue probe uses anonymous GET requests and requires observed staging
+traffic. `WRONG_PREVIEW` means the page is outside the verified allowlist;
+`STAGING_CONNECTION_NOT_OBSERVED_RELOAD_AND_RETRY` means it could not establish
+the expected browser backend. A failed check is not a migration instruction.
 
-| Result | Interpretation |
-|---|---|
-| `PUBLIC_CHECKS_PASSED` | Four expected product scopes and the INR 25,000 Full Batch quote are exposed correctly through the public API. |
-| `CATALOGUE_UNAVAILABLE` with `PGRST205` or `42P01` | The table is unavailable through REST; a missing migration, schema-cache state or exposure issue needs investigation. |
-| `QUOTE_UNAVAILABLE` with `PGRST202` | The expected function signature is unavailable through REST; migration/cache state needs investigation. |
-| `REVIEW_CATALOGUE_CONFIGURATION` or `REVIEW_PRICE_CONFIGURATION` | Public data differs from the expected launch configuration. |
-| HTTP 401/403, `42501`, `READ_FAILED` or other configuration result | The check is inconclusive; inspect the sanitized result before retrying. |
+The role probe uses two POST requests containing only `{}` to
+`/api/admin/set-user-active` and `/api/admin/session-materials`. At the reviewed
+commit, both handlers authorize the caller and reject missing fields before any
+profile, material or Storage write. Do not add IDs, files or other payload fields.
+The browser sends its normal same-origin session; the script never reads cookies,
+browser storage or tokens. A 400 here is an expected validation result, not an
+application failure or proof that a valid mutation works.
 
-A pass does not establish the complete migration checksum/ledger, other bundle
-prices, authenticated access, isolation, expiry, or legacy compatibility. The
-current browser result is a failed catalogue check. Local safety tests use synthetic responses only:
-`node scripts/v2-staging-catalogue-probe.test.mjs`.
+### 2. Student and signed-out boundaries
 
-Local verification on 19 October: all ten probe safety tests passed, repository
-lint passed with zero warnings, and the production build passed including
-TypeScript. Deployment-environment validation was skipped outside Vercel, so the
-build adds no hosted configuration evidence. No app server was started and no
-database request was made during these local checks.
+1. Sign out of the LMS, then sign in with the designated test Student.
+2. Visit `/admin`; expect redirection to `/dashboard` and no Admin interface.
+3. Run the role probe. Expected: `NON_ADMIN_DENIED`, both HTTP 403.
+4. Sign out of the LMS without signing out of Vercel Preview access. On the
+   Preview login page, run the role probe. Expected: `SIGNED_OUT_DENIED`, both
+   HTTP 401. A login redirect, HTML response, mixed result or request failure
+   is inconclusive and must be investigated.
 
-## Observed role navigation
+- [ ] Student cannot enter the Admin interface.
+- [ ] Student requests to both privileged API routes are denied.
+- [ ] Signed-out requests to both privileged API routes are denied.
+- [ ] Designated Student A cannot read Student B's synthetic purchase/grant
+  records through an actual authenticated REST/RPC session; Admin history reads
+  work while browser grant calls remain denied. Record fixture setup and cleanup
+  separately. The two-route role probe does not cover these V2 data checks.
 
-- [x] Dedicated Student sign-in opens the Student interface (manual report).
-- [x] Student navigation to `/admin` ends at `/dashboard` (manual report).
-- [x] Dedicated Admin sign-in opens the Admin dashboard (screenshot evidence).
-- [ ] Signed-out and cross-role privileged API access denied.
-- [ ] Synthetic legacy enrollment permits the affected content journeys; the
-  observed Student dashboard currently reports no course assigned.
+### 3. Legacy regression checks
 
-These observations establish basic navigation only. They do not satisfy the V2
-catalogue, grant, expiry or isolation checks below.
+Use designated synthetic content/enrollment fixtures. A Student account showing
+“no course assigned” can verify empty-state navigation but cannot verify content
+access. Record missing fixture setup as a dependency, not a pass. Do not enroll,
+deactivate or edit an existing real student to complete a check.
 
-## Before execution
+- [ ] Enrolled test Student: dashboard, schedule, recordings, worksheets,
+  practice tracker and protected direct material URLs retain expected behavior,
+  including access through an enrolled inactive batch.
+- [ ] Test Admin worksheet: initial/empty load, changing worksheet while loading,
+  add/edit/delete/import refresh and network-failure recovery. Drafts/results
+  must not appear in another worksheet. Mutations use disposable fixtures only.
+- [ ] Public batch listing works. If existing checkout is enabled, verify its
+  success/cancel/signature/failure paths in a confirmed provider test environment.
+  If unavailable, record the reason and acceptance exception; never use live
+  payment credentials or create a charge for this check.
 
-- [x] Record the local candidate source and unchanged Phase 1 migration checksum
-  in the [isolated evidence](evidence/isolated-candidate-2026-10-20.md).
-- [ ] Obtain a Preview for that commit and project-owner confirmation of the
-  staging Supabase target. Confirm the designated test Admin and Student identities; do
-  not use real student accounts for probes. Request sanitized build logs if needed.
-- [ ] Obtain successful `Lint` and `Tests and build` checks on that commit. Resolve
-  existing lint errors; verify that branch protection actually requires checks and
-  PR review before merging. The workflow file alone does not enforce protection.
-- [ ] Confirm the target is Staging and reconcile the deployed schema/migration ledger.
-  The [Phase 1 metadata inspection](../../../scripts/v2-phase-1-schema-preflight.sql)
-  checks only four Phase 1 tables/RPCs in a read-only transaction; presence and
-  privileges do not prove equivalent definitions or migration approval.
-- [ ] Review `20261018090000_add_v2_product_entitlements.sql`, backup and recovery
-  arrangements; obtain separate approval before the authorized operator applies it.
-- [x] Record confirmation that access is denied after six months.
-- [ ] Verify six-calendar-month UTC expiry and destination-month clamping on
-  staging using examples: 31 August 2026 at 10:00 UTC expires
-  28 February 2027 at 10:00 UTC. Existing MVP students are not assigned this expiry automatically.
-- [ ] Confirm the price-table correction reflects the already approved three–Crash
-  Course bundle, which never grants Full Batch access.
+V2 entitlements are a foundation in this phase. Connecting existing content
+routes and payment-provider fulfillment to V2 belongs to later roadmap work.
 
-## Catalogue and grants
+## Remaining evidence and acceptance
 
-- [ ] Quote all four products and all two/three-section Crash Course combinations.
-  Confirm INR 10,000 / 18,000 / 25,000 bundle pricing and INR 25,000 Full Batch.
-- [ ] Reject unknown/duplicate/null products and Full Batch mixed with Crash Courses.
-- [ ] Confirm anonymous callers and students cannot write product, price, purchase,
-  or grant tables or call `grant_v2_purchase`.
-- [ ] Have the authorized staging operator create synthetic verified-purchase
-  fixtures through the restricted grant function. This does not test a payment provider.
-- [ ] Replay identical references, including concurrent deliveries, and confirm a
-  single purchase with unchanged expiry. Mismatched buyer, products, timestamp,
-  amount, currency, or price revision must fail without extra access.
-- [ ] Confirm a failed bundle grant leaves no partial purchase or access; two
-  simultaneous conflicting buyers cannot claim the same payment reference.
+- [ ] Obtain staging concurrent-delivery evidence or explicit acceptance of the
+  21-test local database suite's duplicate/conflicting-delivery coverage.
+- [ ] Resolve or assess the failing `ace-club-flexible-mocks` deployment status.
+  The LMS Preview is successful. Read-only log inspection returned HTTP 403 on
+  24 October, so the failure cause remains unknown; do not report all checks green.
+- [ ] Record all browser results, fixture cleanup and any agreed exceptions.
+- [ ] Record product-owner Phase 1 acceptance, then request the separate Phase 2
+  staging decision. Phase 1 acceptance does not authorize a merge or Production release.
 
-## Identity, access, and history
-
-- [ ] Student A cannot read Student B's purchases or grants through Supabase REST/RPC.
-- [ ] A Quant Crash Course grants Quant only; three Crash Courses still deny Full
-  Batch. A separate Full Batch purchase grants Quant, Verbal, and DI together.
-- [ ] Signed-out, inactive, expired, and revoked identities/purchases are denied.
-  Confirm the exact start-inclusive, expiry-exclusive boundary.
-- [ ] Expired access is denied on a later request without a cleanup job or
-  browser logout. Purchase/grant history remains; duplicate fulfillment does not
-  restart expiry, and another independently valid purchase retains its access.
-- [ ] With synthetic failures, verify loss of session or RPC connectivity cannot
-  grant access. Revoking one of two valid purchases must preserve the other.
-- [ ] Active Admins can inspect history but cannot issue grants through their browser session.
-- [ ] Closing product sales preserves existing access; future price versions do
-  not alter paid prices, product identity, or expiry.
-- [ ] Existing MVP students retain their current dashboard, recordings, worksheets,
-  tracker, and direct material URL behavior, including enrolled inactive batches.
-- [ ] Verify the Admin worksheet editor: initial/empty load, navigation to a different
-  worksheet while loading, add/edit/delete/import refresh, and recovery after a
-  network failure. Confirm drafts and results do not carry into another worksheet.
-- [ ] Verify the existing public batch list and any enabled registration checkout
-  in provider test mode: successful response, cancellation, invalid signature, and
-  failed-network responses. The lint cleanup does not implement V2 fulfillment.
-- [ ] Confirm no claim that existing content routes already use V2 entitlements:
-  product-to-batch/content bindings are later-phase work.
-
-## Evidence and acceptance
-
-- [ ] Record exact source, migration checksum, sanitized identity roles, expected
-  and actual outcomes, and restored synthetic-fixture state.
-- [ ] Attach the clean local lint result and the hosted run for the same source;
-  local lint is resolved, but a build alone is not staging acceptance.
-- [ ] Record Product Owner acceptance or remaining exceptions. Do not infer merge
-  or Production-release approval from phase acceptance.
+Required review/branch protection and the Production release/recovery decision
+remain release gates. They do not require redoing the completed Phase 1 migration
+or reopening previously approved product decisions.
