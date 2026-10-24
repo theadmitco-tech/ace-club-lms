@@ -5,6 +5,7 @@ import vm from 'node:vm';
 
 const source = readFileSync(new URL('./v2-staging-catalogue-probe.browser.js', import.meta.url), 'utf8');
 const preview = 'https://ace-club-a8go51h46-theadmitco-techs-projects.vercel.app';
+const branchPreview = 'https://ace-club-lms-git-intern-v2-onboarding-theadmitco-techs-projects.vercel.app';
 const ref = 'eyphkkginlgoaxflauog';
 const staging = `https://${ref}.supabase.co`;
 const syntheticKey = (role = 'anon', project = ref) => [
@@ -22,7 +23,7 @@ const rows = [
 async function probe(options = {}) {
   const requests = [];
   const outputs = [];
-  const chunk = `${preview}/_next/static/chunks/test.js`;
+  const chunk = `${options.origin ?? preview}/_next/static/chunks/test.js`;
   const document = { querySelectorAll: () => [{ src: chunk }, { src: 'https://example.invalid/tracker.js' }] };
   Object.defineProperty(document, 'cookie', { get() { assert.fail('Cookie access is forbidden'); } });
   const context = {
@@ -82,6 +83,16 @@ test('refuses any other Preview or Production origin before network access', asy
   const { result, requests } = await probe({ origin: 'https://example.invalid' });
   assert.equal(result.result, 'WRONG_PREVIEW');
   assert.equal(requests.length, 0);
+});
+
+test('accepts the verified PR branch link while retaining staging checks', async () => {
+  const { result, requests } = await probe({ origin: branchPreview });
+  assert.equal(result.result, 'PUBLIC_CHECKS_PASSED');
+  assert.equal(requests.length, 3);
+  assert.equal(new URL(requests[0].url).origin, branchPreview);
+  const rejected = await probe({ origin: branchPreview, resources: ['https://other.supabase.co/rest/v1/profiles'] });
+  assert.equal(rejected.result.result, 'STAGING_CONNECTION_NOT_OBSERVED_RELOAD_AND_RETRY');
+  assert.equal(rejected.requests.length, 0);
 });
 
 test('requires observed staging traffic and rejects mixed backend targets', async () => {

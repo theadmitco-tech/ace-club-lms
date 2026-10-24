@@ -116,3 +116,14 @@ temporary login role; this was not a shared database-password reset.
 
 Machine-readable sanitized results: [staging-application-2026-10-24.json](staging-application-2026-10-24.json).
 Private backups, connection credentials and row data are excluded from repository evidence.
+
+## Preview access follow-up — 24 October
+
+The deployment-specific URL prompted another access request. PR #23 still has
+head `d3020c1`, and its current Vercel bot comment links to the branch Preview:
+<https://ace-club-lms-git-intern-v2-onboarding-theadmitco-techs-projects.vercel.app>.
+The probe now accepts that exact branch origin as well as the recorded deployment
+origin, fetching assets only from the current allowed origin and retaining the
+staging backend guard. Branch aliases can move after a push; recheck the source
+commit before recording later acceptance evidence. Access to the branch URL has
+not been re-confirmed by the manual tester yet. No Vercel permissions were changed.
