@@ -117,7 +117,8 @@ application failure or proof that a valid mutation works.
    HTTP 401. A login redirect, HTML response, mixed result or request failure
    is inconclusive and must be investigated.
 
-- [ ] Student cannot enter the Admin interface.
+- [x] Student navigation to `/admin` redirects to `/dashboard` without displaying
+  the Admin interface (manual tester confirmation, 25 October).
 - [x] Student requests to both privileged API routes return HTTP 403 and
   `NON_ADMIN_DENIED` (supplied screenshot, 25 October, branch Preview).
 - [x] Signed-out requests to both privileged API routes return HTTP 401 and
@@ -129,11 +130,21 @@ application failure or proof that a valid mutation works.
 
 ### 3. Legacy regression checks
 
+**Current dependency:** creation of the dedicated draft fixture was reported
+complete, but enrollment was reported as unsuccessful. The
+[enrollment investigation](evidence/enrollment-feedback-2026-10-25.md) records a
+verified local feedback defect and pending hosted request evidence. Do not mark
+enrolled-content checks passed until enrollment is confirmed. The local feedback
+fix is not deployed to the Preview.
+
 Use designated synthetic content/enrollment fixtures. A Student account showing
 “no course assigned” can verify empty-state navigation but cannot verify content
 access. Record missing fixture setup as a dependency, not a pass. Do not enroll,
 deactivate or edit an existing real student to complete a check.
 
+- [x] Unassigned test Student: Schedule, Resources and Practice log load without
+  errors (manual tester confirmation, 25 October). This does not verify content,
+  practice-entry saves or enrollment-dependent permissions.
 - [ ] Enrolled test Student: dashboard, schedule, recordings, worksheets,
   practice tracker and protected direct material URLs retain expected behavior,
   including access through an enrolled inactive batch.

@@ -273,6 +273,52 @@
       "result": "SIGNED_OUT_DENIED",
       "page_state": "PUBLIC_LANDING_WITH_LOGIN"
     },
-    "origin_evidence": "Admin, Student and signed-out probe request URLs; catalogue screenshot remains cropped"
+    "origin_evidence": "Admin, Student and signed-out probe request URLs; catalogue screenshot remains cropped",
+    "student_admin_navigation": {
+      "source": "Manual tester confirmation in conversation",
+      "reported_same_preview": true,
+      "requested_path": "/admin",
+      "resulting_path": "/dashboard",
+      "admin_interface_displayed": false,
+      "result": "PASSED",
+      "independently_executed": false
+    },
+    "unassigned_student_navigation": {
+      "source": "Manual tester confirmation in conversation",
+      "pages": [
+        "Schedule",
+        "Resources",
+        "Practice log"
+      ],
+      "result": "PASSED",
+      "scope": "Pages load without errors for the unassigned Student account",
+      "enrolled_content_verified": false,
+      "practice_entry_save_verified": false,
+      "independently_executed": false
+    },
+    "dedicated_course_fixture": {
+      "name": "Phase 1 QA - 2026-10-25",
+      "creation_status": "REPORTED_COMPLETE",
+      "source": "Manual tester confirmation in conversation",
+      "template_reviewed": "Full Course revision 4",
+      "reviewed_event_count": 30,
+      "reviewed_resource_count": 15,
+      "requested_start_date": "2026-10-26",
+      "requested_publication": "draft",
+      "saved_values_independently_verified": false,
+      "enrollment_status": "REPORTED_UNSUCCESSFUL; HTTP response and persisted state unconfirmed",
+      "persistence": "Persistent synthetic fixture; separate from SQL rollback tests",
+      "cleanup_status": "PENDING"
+    },
+    "enrollment_issue": {
+      "reported_failed": true,
+      "hosted_failure_cause": "UNCONFIRMED",
+      "http_status": null,
+      "partial_writes_ruled_out": false,
+      "local_feedback_defect_confirmed": true,
+      "local_fix_deployed": false,
+      "evidence": "docs/v2/phase-1/evidence/enrollment-feedback-2026-10-25.md",
+      "local_regression_tests_passed": 8
+    }
   }
 }

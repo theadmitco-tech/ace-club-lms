@@ -267,3 +267,48 @@ candidate mapping, Student `/admin` navigation, authenticated V2 data isolation,
 legacy enrolled-content regressions and the remaining acceptance items are still
 tracked in the checklist. No application-data writes or remote operations were
 performed to record these screenshots.
+
+## Student page-protection result received — 25 October 2026
+
+The manual tester confirmed that entering `/admin` while signed in with the
+Student test account redirects to `/dashboard` without showing the Admin
+interface, following the instruction to use the same Preview. This is a reported
+navigation result, not an independently automated browser test. The navigation
+check is complete; enrolled-content behavior remains unverified because the
+reported test account has no assigned course.
+
+## Unassigned Student navigation result received — 25 October 2026
+
+The manual tester confirmed that Schedule, Resources and Practice log load
+without errors for the same Student account. This completes the basic navigation
+check for an unassigned account. It does not establish lesson/material access,
+practice-entry persistence or behavior after enrollment. Dedicated synthetic
+course/enrollment fixtures are still required for those checks; existing real
+student/course records remain outside the permitted verification changes.
+
+## Dedicated course fixture — 25 October 2026
+
+The manual tester reported completing confirmation for the new staging batch
+`Phase 1 QA - 2026-10-25`. The reviewed proposal used Full Course revision 4,
+30 events, 15 reusable resources and Draft publication. The requested corrected
+start date was 26 October 2026. The creation response, saved date, record IDs and
+saved counts have not yet been independently verified; no enrollment is confirmed.
+
+This is a persistent synthetic course fixture, separate from the earlier
+rollback-only database tests. Track its lifecycle and eventual cleanup separately;
+the earlier no-fixtures-remain statement applies only to those SQL transactions.
+Subsequent enrollment must use only the designated Student test account and this
+new batch. The existing bulk-enroll handler also activates the supplied account,
+sets its role to Student and updates its invitation timestamp, so the Admin
+account and real student accounts must not be supplied. No enrollment was run by
+the agent while inspecting that handler.
+
+## Enrollment issue reported — 25 October 2026
+
+Enrollment into the dedicated course fixture was reported as unsuccessful.
+The screenshot does not establish the server failure or whether any partial
+profile/enrollment writes occurred. A local UI defect that hides enrollment
+failures and resets the form has been corrected and tested; see the
+[investigation and validation](enrollment-feedback-2026-10-25.md). This change is
+not yet deployed. Existing application-report results above describe their dated
+checkpoints; they do not establish successful enrollment for this new fixture.
