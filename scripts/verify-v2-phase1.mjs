@@ -7,6 +7,8 @@ const suites = [
   'v2-product-entitlements.test.mjs',
   'v2-product-readers.test.mjs',
   'v2-staging-catalogue-probe.test.mjs',
+  'batch-enrollment-feedback.test.mjs',
+  'bulk-enroll-route.test.mjs',
   'release-safety.test.mjs',
   'course-template-validation.test.mjs',
   'batch-schedule.test.mjs',

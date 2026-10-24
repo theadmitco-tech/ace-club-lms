@@ -36,6 +36,7 @@ export default function CoursesClient({ templates }: { templates: CourseTemplate
   const [courses, setCoursesList] = useState<CourseRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [updateError, setUpdateError] = useState('');
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
@@ -94,15 +95,23 @@ export default function CoursesClient({ templates }: { templates: CourseTemplate
 
   const fetchCourses = async () => {
     setIsLoading(true);
-    const { data, error } = await supabase
-      .from('courses')
-      .select('*, sessions(id, session_date, is_published), enrollments(id), registrations(id, status, reserved_until, payments(amount, status))')
-      .order('created_at', { ascending: false });
-      
-    if (!error && data) {
+    try {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*, sessions(id, session_date, is_published), enrollments(id), registrations(id, status, reserved_until, payments(amount, status))')
+        .order('created_at', { ascending: false });
+      if (error || !data) {
+        addToast('error', 'Unable to load batches. Reload to try again.');
+        return false;
+      }
       setCoursesList(data as unknown as CourseRow[]);
+      return true;
+    } catch {
+      addToast('error', 'Unable to load batches. Reload to try again.');
+      return false;
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const fetchStudentsInBatch = async (courseId: string) => {
@@ -130,6 +139,7 @@ export default function CoursesClient({ templates }: { templates: CourseTemplate
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleEdit = (course: CourseRow) => {
+    setUpdateError('');
     setEditingId(course.id);
     setForm({
       name: course.name,
@@ -148,48 +158,86 @@ export default function CoursesClient({ templates }: { templates: CourseTemplate
   };
 
   const handleUpdate = async () => {
-    if (!editingId) return;
-    setIsSubmitting(true);
-    
-    const { error } = await supabase
-      .from('courses')
-      .update({
-        name: form.name,
-        is_active: form.is_active,
-        registration_open: form.registration_open,
-        capacity: Number(form.capacity) || 8,
-        price_amount: Math.max(0, Math.round(Number(form.price_amount || 0) * 100)),
-        currency: form.currency || 'INR',
-        registration_closes_at: form.registration_closes_at ? new Date(form.registration_closes_at).toISOString() : null,
-        public_note: form.public_note.trim() || null,
-      })
-      .eq('id', editingId);
-
-    if (form.bulkEmails) {
-      const emails = form.bulkEmails.split(/[\n,]/).map(e => e.trim()).filter(e => e.length > 0 && e.includes('@'));
-      if (emails.length > 0) {
-        try {
-          const res = await fetch('/api/admin/bulk-enroll', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ emails, courseId: editingId })
-          });
-          const result = await res.json();
-          if (result.success > 0) addToast('success', `Enrolled ${result.success} new students.`);
-          if (result.failed > 0) addToast('warning', `Failed to enroll ${result.failed} students.`);
-        } catch (err) { console.error(err); }
-      }
+    if (!editingId || isSubmitting) return;
+    setUpdateError('');
+    const fail = (message: string) => {
+      setUpdateError(message);
+      addToast('error', message);
+    };
+    const emails = [...new Set(form.bulkEmails.split(/[\n,]/)
+      .map(email => email.trim().toLowerCase()).filter(Boolean))];
+    if (emails.some(email => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
+      fail('Enter valid email addresses separated by commas or new lines. Nothing was saved.');
+      return;
     }
 
-    if (error) {
-      addToast('error', 'Failed to update batch.');
-    } else {
-      addToast('success', 'Batch updated.');
-      await fetchCourses();
+    setIsSubmitting(true);
+    let batchSaved = false;
+    let enrollmentConfirmed = false;
+    try {
+      const { error } = await supabase
+        .from('courses')
+        .update({
+          name: form.name,
+          is_active: form.is_active,
+          registration_open: form.registration_open,
+          capacity: Number(form.capacity) || 8,
+          price_amount: Math.max(0, Math.round(Number(form.price_amount || 0) * 100)),
+          currency: form.currency || 'INR',
+          registration_closes_at: form.registration_closes_at ? new Date(form.registration_closes_at).toISOString() : null,
+          public_note: form.public_note.trim() || null,
+        })
+        .eq('id', editingId);
+      if (error) {
+        fail('Unable to save the batch. Enrollment was not attempted. Your entries are still here.');
+        return;
+      }
+      batchSaved = true;
+
+      if (emails.length > 0) {
+        const res = await fetch('/api/admin/bulk-enroll', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ emails, courseId: editingId }),
+        });
+        if (!res.ok) {
+          const reason = res.status === 401 ? 'Sign in again before retrying enrollment.'
+            : res.status === 403 ? 'An active Admin account is required for enrollment.'
+              : `Enrollment returned HTTP ${res.status}. Check the student list before retrying.`;
+          fail(`Batch saved, but enrollment was not confirmed. ${reason} Your entries are still here.`);
+          return;
+        }
+        const result = await res.json();
+        if (!result || !Number.isSafeInteger(result.success) || result.success < 0
+          || !Number.isSafeInteger(result.failed) || result.failed < 0
+          || result.success + result.failed !== emails.length) {
+          fail('Batch saved, but the enrollment response was unexpected. Check the student list before retrying. Your entries are still here.');
+          return;
+        }
+        if (result.failed > 0) {
+          fail(`Batch saved. Enrollment confirmed for ${result.success} of ${emails.length} students; ${result.failed} failed. Your entries are still here. Check the student list before retrying.`);
+          return;
+        }
+      }
+      enrollmentConfirmed = true;
+      if (!await fetchCourses()) {
+        fail('Changes saved, but the batch list could not be refreshed. Reload to check the result.');
+        return;
+      }
       resetForm();
       setShowAdd(false);
+      addToast('success', emails.length > 0
+        ? `Batch updated. Enrollment confirmed for ${emails.length} ${emails.length === 1 ? 'student' : 'students'}.`
+        : 'Batch updated.');
+    } catch {
+      fail(enrollmentConfirmed
+        ? 'Changes saved, but the batch list could not be refreshed. Reload to check the result.'
+        : batchSaved
+          ? 'Batch saved, but enrollment could not be confirmed. Check the student list before retrying. Your entries are still here.'
+          : 'The batch save could not be confirmed. Enrollment was not attempted. Your entries are still here.');
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
 
   const handleDelete = async (id: string) => {
@@ -282,6 +330,7 @@ export default function CoursesClient({ templates }: { templates: CourseTemplate
   };
 
   const resetForm = () => {
+    setUpdateError('');
     setEditingId(null);
     setForm({
       name: '',
@@ -355,6 +404,7 @@ export default function CoursesClient({ templates }: { templates: CourseTemplate
             <h2 className="admin-card-title">{editingId ? 'Edit Batch' : 'Create New Batch'}</h2>
           </div>
           <div className="admin-form">
+            {updateError && <p role="alert" style={{ color: 'var(--error)' }}>{updateError}</p>}
             <div className="form-group">
               <label htmlFor="course-name" className="form-label">Batch Name</label>
               <input
