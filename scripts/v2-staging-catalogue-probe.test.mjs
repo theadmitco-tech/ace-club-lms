@@ -4,7 +4,7 @@ import test from 'node:test';
 import vm from 'node:vm';
 
 const source = readFileSync(new URL('./v2-staging-catalogue-probe.browser.js', import.meta.url), 'utf8');
-const preview = 'https://ace-club-1vr3qxhtk-theadmitco-techs-projects.vercel.app';
+const preview = 'https://ace-club-a8go51h46-theadmitco-techs-projects.vercel.app';
 const ref = 'eyphkkginlgoaxflauog';
 const staging = `https://${ref}.supabase.co`;
 const syntheticKey = (role = 'anon', project = ref) => [

@@ -2,7 +2,7 @@
 // Public API keys stay in memory; session cookies and browser storage are not read.
 // Only fixed diagnostic fields are printed. No purchase or student data is queried.
 (async () => {
-  const previewOrigin = 'https://ace-club-1vr3qxhtk-theadmitco-techs-projects.vercel.app';
+  const previewOrigin = 'https://ace-club-a8go51h46-theadmitco-techs-projects.vercel.app';
   const projectRef = 'eyphkkginlgoaxflauog';
   const stagingOrigin = `https://${projectRef}.supabase.co`;
   const report = { check: 'phase1_public_catalogue', catalogue: 'NOT_RUN', quote: 'NOT_RUN' };

@@ -1,15 +1,20 @@
 # V2 Phases 1 and 2 — Coordinated staging handoff
 
-Status: Active — separate review candidates; hosted setup and acceptance pending
+Status: Active — Phase 1 staging SQL verified; browser acceptance and Phase 2 approval pending
 Owner: Engineering and product owner
-Last updated: 21 October 2026
+Last updated: 24 October 2026
 
-The [read-only staging review](../review/staging-database-inspection-2026-10-21.md)
-records checksums from both submitted PR heads, exact deployment URLs, CI evidence,
-migration order and the proposed recovery plan. Actual staging ledger and schema
-inspection remain blocked by unavailable database access. Both PRs were confirmed
-Draft and unmerged on 21 October. Phase 1 application needs separate approval;
-Phase 2 needs separate approval after Phase 1 staging verification passes.
+The approved Phase 1 migration has been applied to staging after a private backup
+and recovery rehearsal. SQL verification passed, synthetic fixtures rolled back,
+and existing application data stayed unchanged. The
+[24 October application report](../phase-1/evidence/staging-application-2026-10-24.md)
+supersedes the earlier database-access blocker and pending Phase 1 application.
+Current Preview browser acceptance is still pending. Both PRs were rechecked as
+Draft and unmerged. Phase 2 has not been applied and needs separate approval after
+Phase 1 verification is accepted.
+
+The [earlier staging review](../review/staging-database-inspection-2026-10-21.md)
+retains both PR checksums, exact deployment URLs, CI evidence and the recovery plan.
 
 ## Separate review candidates
 
@@ -40,6 +45,10 @@ remain unresolved. This handoff does not mark either phase accepted.
 
 ## Review and staging sequence
 
+This sequence is a reference, not a request to repeat completed approvals or
+configuration checks. Phase 1 application is complete; remaining Phase 1 browser
+acceptance precedes any separate Phase 2 application approval.
+
 1. Review the Phase 1 PR, then the Phase 2-only diff against it. Confirm the
    accepted application lineage before any integration merge or shared migration.
 2. Verify passing CI and an LMS Preview built from each exact candidate.
@@ -67,9 +76,11 @@ catalogue, new checkout or course-capacity allocator is enabled by these PRs.
 
 ## Staging inspection before any write
 
-The earlier catalogue check returned HTTP 404 / `PGRST205`. Its cause remains
-unverified. The supplied decision source reports ledger version `20260925100000`;
-that statement is not a fresh database inspection.
+The earlier catalogue check returned HTTP 404 / `PGRST205`. The 24 October
+pre-application inspection confirmed that Phase 1 tables, functions and ledger
+entry were absent. Phase 1 is now installed and SQL-verified; current Preview
+REST/schema-cache verification remains pending. Keep the checks below for a
+future separately approved Phase 2 application, without replaying Phase 1.
 
 For Phase 1, run [the Phase 1 preflight](../../../scripts/v2-phase-1-schema-preflight.sql).
 For the combined schema, run [the Phase 1/2 preflight](../../../scripts/v2-schema-preflight.sql).
@@ -95,7 +106,7 @@ order by version;
 rollback;
 ```
 
-Do not export stored migration statements or private rows. Objects without
+Keep stored migration statements and private rows out of Git and shared reports. Objects without
 matching ledger entries require reconciliation, not blind replay or ledger repair.
 
 ## Proposed migration order
@@ -111,7 +122,8 @@ matching ledger entries require reconciliation, not blind replay or ledger repai
 
 Use the [candidate checksums](evidence/isolated-review-2026-10-20.md#migration-checksums).
 Do not replay the historical migration directory. A Git push or Vercel deployment
-does not apply these SQL files. No hosted migration has been performed by this task.
+does not apply these SQL files. Only the Phase 1 migration has been applied to
+staging; no Phase 2 migration or Production migration has been applied.
 
 ## Preview verification
 

@@ -1,8 +1,29 @@
 # V2 Phase 1 — Staging verification checklist
 
-Status: Draft — basic role navigation observed; V2 catalogue unavailable in staging API
+Status: Active — Phase 1 applied; staging SQL verification passed; current Preview browser checks pending
 Owner: Engineering and product owner
-Last updated: 20 October 2026
+Last updated: 24 October 2026
+
+## Current staging result — 24 October
+
+The approved migration from PR #23 at `d3020c1` was applied to staging after a
+private backup and isolated recovery rehearsal. Pricing, grants, role isolation,
+expiry and revocation passed SQL verification; synthetic fixtures were rolled
+back and existing application data stayed unchanged. See the
+[application report](evidence/staging-application-2026-10-24.md) for exact source,
+checksum, results and limitations. The earlier 404 is historical; the current
+Preview REST/browser result is still pending.
+
+Next browser target:
+<https://ace-club-a8go51h46-theadmitco-techs-projects.vercel.app>.
+The probe has been repinned to this candidate, retaining the staging-origin
+guard. Run it from the signed-in Preview after a reload and record only its
+sanitized JSON result. Continue the browser-specific checks below; SQL identity
+simulation does not establish browser/API authentication or legacy UI behavior.
+Do not request the already granted Phase 1 application approval again.
+
+The remaining sections preserve the earlier checklist and observations. Unchecked
+mixed SQL/browser items are not automatically completed by the SQL result above.
 
 ## Current candidate
 
@@ -44,9 +65,9 @@ check did not run. See the [sanitized result and next action](evidence/catalogue
 Inspect the actual staging schema/ledger before selecting a fix or rerunning the
 probe. The procedure below is retained for verification after the cause is resolved.
 
-The probe is intentionally pinned to the earlier Preview. For a new deployment,
-first confirm its source and staging target, then review the allowlist update.
-Do not weaken the origin check or treat an old Preview as the new candidate.
+The historical probe was pinned to that earlier Preview. The current script is
+pinned to the candidate named in the 24 October update above. Do not weaken the
+origin check or treat the historical result as evidence for the current candidate.
 
 1. Reload the Preview's Admin dashboard so its browser requests are recorded.
 2. Open [the browser probe](../../../scripts/v2-staging-catalogue-probe.browser.js)

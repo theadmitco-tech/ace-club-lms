@@ -1,0 +1,128 @@
+{
+  "recorded_utc": "2026-10-24T14:27:49.911696+00:00",
+  "environment": "staging",
+  "project_ref": "eyphkkginlgoaxflauog",
+  "application": {
+    "project_ref": "eyphkkginlgoaxflauog",
+    "started_utc": "2026-10-24T14:22:50.905872+00:00",
+    "finished_utc": "2026-10-24T14:23:22.458340+00:00",
+    "migration": "20261018090000_add_v2_product_entitlements.sql",
+    "sha256": "ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7",
+    "pr23_head": "d3020c1c9916c17f6ced27f83ff9ee1be05479f2",
+    "exit_code": 0
+  },
+  "schema_comparison": {
+    "result": "MATCH",
+    "tables": 4,
+    "functions": 7,
+    "normalization": "PostgreSQL 18 standalone NOT NULL constraint entries omitted; every column not_null flag still compared with staging PostgreSQL 17.6.",
+    "remaining_differences": []
+  },
+  "read_only_verification": {
+    "checks": [
+      "catalogue_scopes",
+      "calendar_expiry_expression",
+      "access_boundary_predicate",
+      "anonymous_quote_execution",
+      "restricted_grant_execution",
+      "anonymous_private_read_denial",
+      "missing_identity_fail_closed"
+    ],
+    "direct_write_privilege_checks": 72,
+    "invalid_selections_rejected": 7,
+    "result": "PASSED",
+    "transaction_read_only": "on",
+    "valid_quotes": 8
+  },
+  "synthetic_rollback_verification": {
+    "checks": [
+      "trusted_grant",
+      "idempotent_replay",
+      "six_conflicting_replay_rejections",
+      "failed_grant_atomicity",
+      "future_confirmation_rejected",
+      "student_row_isolation",
+      "admin_history_without_grant_privilege",
+      "single_product_scope",
+      "three_crashes_not_full_batch",
+      "inactive_identity_denied",
+      "full_batch_all_sections",
+      "independent_purchase_survives_revocation",
+      "expired_and_revoked_denied",
+      "history_retained",
+      "stored_six_month_expiry",
+      "stored_month_end_clamping",
+      "closed_sales_preserves_access",
+      "price_history_immutable"
+    ],
+    "fixture_persistence": "ROLLBACK",
+    "result": "PASSED"
+  },
+  "preservation": {
+    "existing_application_tables_compared": 56,
+    "existing_application_data_unchanged": true,
+    "auth_users_unchanged_across_fixtures": true,
+    "purchase_grant_catalogue_state_unchanged_across_fixtures": true,
+    "prior_migration_records_unchanged": true,
+    "phase2_applied": false,
+    "production_accessed": false
+  },
+  "recovery": {
+    "archive_sha256": "bbc1a812e311828c323100b0f35b490a84e4b257ee566060719796407d191349",
+    "application_restore_rehearsal": {
+      "tables_compared": 105,
+      "tables_match": true,
+      "sequences_compared": 2,
+      "sequences_match": true,
+      "public_tables_compared": 56,
+      "timezone": "UTC",
+      "scope": "Application and managed-schema table data except vault; local role membership grantors normalized; PostgreSQL 18.6 local target for 17.6 source.",
+      "full_supabase_restore": false
+    },
+    "private_backup_directory": "~/Downloads/ace-club-staging-recovery/20261024T141331Z"
+  },
+  "preview": {
+    "url": "https://ace-club-a8go51h46-theadmitco-techs-projects.vercel.app",
+    "commit": "d3020c1c9916c17f6ced27f83ff9ee1be05479f2",
+    "mapping_evidence": "docs/v2/review/staging-database-inspection-2026-10-21.md",
+    "browser_tested_this_run": false
+  },
+  "pull_requests": {
+    "23": {
+      "draft": true,
+      "merged": false
+    },
+    "24": {
+      "draft": true,
+      "merged": false
+    }
+  },
+  "remaining": [
+    "Current Preview public REST catalogue/quote probe",
+    "Authenticated browser and cross-role HTTP/API checks with designated test accounts",
+    "Legacy content, worksheet editor and applicable existing checkout regression checks",
+    "Staging concurrent-delivery coverage or explicit acceptance of existing local concurrency evidence",
+    "Assessment of failing flexible-mocks deployment check",
+    "Product owner Phase 1 acceptance; separate Phase 2 application approval"
+  ],
+  "local_files_changed": [
+    "docs/v2/phase-1/evidence/staging-application-2026-10-24.md",
+    "docs/v2/phase-1/evidence/staging-application-2026-10-24.json",
+    "docs/v2/phase-1/manual-verification-checklist.md",
+    "docs/v2/phase-1/review-and-release.md",
+    "docs/v2/phase-2/review-and-release.md",
+    "scripts/v2-staging-catalogue-probe.browser.js",
+    "scripts/v2-staging-catalogue-probe.test.mjs"
+  ],
+  "local_validation": {
+    "browser_probe_safety_suite": {
+      "command": "node --test scripts/v2-staging-catalogue-probe.test.mjs",
+      "result": "PASSED"
+    },
+    "diff_whitespace_check": "PASSED",
+    "application_code_changed": false,
+    "migration_file_changed": false,
+    "local_rehearsal_server": "STOPPED",
+    "temporary_connection_credential_files": "REMOVED"
+  }
+}
