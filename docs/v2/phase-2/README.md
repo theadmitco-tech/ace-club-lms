@@ -6,6 +6,12 @@ Last updated: 25 October 2026
 
 ## Current local follow-up
 
+The [content-preservation tooling](content-preservation.md) prepares a read-only
+inventory of legacy content and an offline drift comparison. It is a local
+prerequisite for reviewed mappings, not a content migration or hosted verification.
+Its [verification record](evidence/content-preservation-2026-10-25.md) records
+165 passing Phase 2 tests across 14 suite files on the local follow-up branch.
+
 The [25 October implementation report](evidence/admin-completion-2026-10-25.md)
 records recovered Admin drafts, protected publication retries, template event
 reordering and shared worksheet recovery. That checkpoint passed 262 tests and 28 synthetic browser scenarios. The
@@ -20,12 +26,15 @@ The dated candidate information below describes the earlier submitted PR.
 ## Scope and sequencing
 
 Branch: `intern/v2-phase-2-review`.
-Dependency: Phase 1 draft [PR #23](https://github.com/theadmitco-tech/ace-club-lms/pull/23),
-`intern/v2-onboarding` at `d3020c1c9916c17f6ced27f83ff9ee1be05479f2`.
-Application commit: `26ec141561a0749dba371409273c1f1ee9906049`.
-Target the Phase 1 task branch initially so the Phase 2 PR shows only its own diff.
-After Phase 1 acceptance and integration, reconcile the base and rerun checks.
-No integration or main merge is authorized.
+Dependency: Phase 1 [PR #23](https://github.com/theadmitco-tech/ace-club-lms/pull/23)
+was squash-merged into `codex/v2-integration` at
+`6447f5b5cae0b868de5f98d123c5af5b1c414bd6`.
+PR #24 now targets that baseline at exact head
+`c67cfe75e215913b20f663e0920c50897d2e1fe4`, remains Draft and has passing Verify
+and LMS Preview checks. Four reconciliation conflicts were resolved without
+changing Phase 2 application code or its five proposed migrations. The PR
+description records 247 tests for that candidate; newer local work and its test
+results remain separate. No Phase 2 merge or shared migration is authorized.
 
 Start with the [delivery report](approved-delivery-report.md),
 [combined staging handoff](review-and-release.md) and
@@ -86,6 +95,7 @@ Synthetic browser results do not replace staging acceptance.
 - [ ] Inspect staging schema and ledger; obtain separate migration/setup approval.
 - [ ] Verify Admin workflows, negative access, mobile and keyboard behavior in staging.
 - [x] Resolve Student batch eligibility and implement the authorized schedule reader locally.
+- [x] Prepare local content-preservation inventory and comparison tooling.
 - [ ] Implement reviewed content associations and protected recording-only delivery.
 - [ ] Resolve Full Course registration allocation and enforce course capacity with Phase 3.
 - [ ] Obtain acceptance against every Phase 2 roadmap exit gate.

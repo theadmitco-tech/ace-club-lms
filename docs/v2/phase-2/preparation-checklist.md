@@ -4,6 +4,15 @@ Status: Active — mapping and approved local authoring verified; full acceptanc
 Owner: Engineering and product owner
 Last updated: 20 October 2026
 
+Current checkpoint, 25 October: Phase 1 is merged into `codex/v2-integration` at
+`6447f5b`; reconciled Draft PR #24 is at `c67cfe7` with passing CI/LMS Preview.
+The enrolled-batch-only decision is implemented on the separate local follow-up
+branch. [Content-preservation tooling](content-preservation.md) is now available
+for local synthetic verification. The original discovery/checkpoint below remains
+historical; its pending Student eligibility and Phase 1 integration statements
+are superseded by this update. Content mappings, capacity allocation and shared
+Phase 2 setup/acceptance remain pending.
+
 Phase 2 adds product-specific batch publishing for Full Batch and the three Crash
 Courses. Task 1 maps the existing tools to those products before choosing a data
 model or changing application behavior. Checked discovery items below mean source

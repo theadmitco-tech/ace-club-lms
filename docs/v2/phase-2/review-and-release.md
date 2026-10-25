@@ -4,6 +4,15 @@ Status: Active — Phase 1 staging SQL verified; browser acceptance and Phase 2 
 Owner: Engineering and product owner
 Last updated: 24 October 2026
 
+Current checkpoint, 25 October: PR #23 is merged at `6447f5b` on
+`codex/v2-integration`. Draft PR #24 now targets that base at `c67cfe7`; its
+description is updated and exact-head CI and LMS Preview passed. The local
+recovery/enrolled-schedule work is outside that candidate. The historical
+candidate table and sequence below do not describe the current PR state.
+Student batch eligibility is resolved; shared Phase 2 setup remains prohibited
+until separately authorized. [Content-preservation tooling](content-preservation.md)
+has been prepared locally and has not captured hosted data.
+
 25 October checkpoint: Phase 1 staging migration and verification are confirmed
 complete, with its final review handled separately. Do not rerun that migration.
 The owner confirmed Flexible Mocks is a pre-existing configuration issue unrelated
@@ -72,8 +81,8 @@ acceptance precedes any separate Phase 2 application approval.
    database-administration privileges.
 4. Run the read-only inspection below and reconcile actual definitions and ledger.
    Prepare a recoverable staging backup and reviewed recovery procedure.
-5. Obtain explicit approval for the specific staging setup. Apply only reviewed
-   missing Phase 1 SQL, then run the Phase 1 checks. Stop on failures or drift.
+5. Obtain explicit approval for the specific Phase 2 staging setup. Phase 1 is
+   already applied and verified; do not rerun its migration. Stop on schema drift.
 6. After Phase 1 staging verification, apply only the approved missing Phase 2
    migrations in the order below. Reinspect definitions, RLS and privileges.
 7. With separate setup approval, enable the two authoring flags on the Phase 2
