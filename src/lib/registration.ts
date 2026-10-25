@@ -1,8 +1,6 @@
 import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 
-const RESERVATION_MINUTES = 15;
-
 export interface PublicBatch {
   id: string;
   name: string;
@@ -109,7 +107,7 @@ export async function getPublicBatches(limit = 3): Promise<PublicBatch[]> {
 
   if (error) throw error;
 
-  const mapped = await Promise.all((courses || []).map(async (course: any) => {
+  const mapped = await Promise.all((courses || []).map(async (course) => {
     const sessions = (course.sessions || []) as { session_number: number; session_date: string }[];
     const firstSession = sessions
       .slice()

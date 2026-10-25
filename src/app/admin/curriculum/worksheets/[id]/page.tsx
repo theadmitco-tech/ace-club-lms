@@ -1,44 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { useAuth } from '@/lib/AuthContext';
 import { parseCsv } from '@/lib/questionBankCsv';
 
-type Difficulty = 'basic' | 'advanced';
-type QuestionType = 'problem_solving' | 'data_sufficiency' | 'critical_reasoning' | 'reading_comprehension' | 'data_insights';
-type DiQuestionType = 'data_sufficiency' | 'multi_source_reasoning' | 'table_analysis' | 'graphics_interpretation' | 'two_part_analysis';
-type AnswerMode = 'single_choice' | 'multi_select' | 'numeric' | 'two_part' | 'dropdown';
-type ContentFormat = 'plain' | 'markdown';
-
-type MasterPracticeSet = {
-  id: string;
-  master_session_id: string;
-  title: string;
-  created_at: string;
-};
-
-type MasterPracticeQuestion = {
-  id: string;
-  master_practice_set_id: string;
-  question_text: string;
-  options: string[];
-  correct_answer: string;
-  explanation: string;
-  difficulty: Difficulty;
-  question_type?: QuestionType;
-  di_question_type?: DiQuestionType | null;
-  answer_mode?: AnswerMode;
-  stimulus_group_key?: string | null;
-  stimulus_title?: string | null;
-  stimulus_text?: string | null;
-  stimulus_data?: Record<string, unknown> | null;
-  content_format?: ContentFormat;
-  admin_notes?: string | null;
-  order_index: number;
-  created_at: string;
-};
+import { loadMasterWorksheet } from '@/lib/masterWorksheet';
+import type {
+  AnswerMode, ContentFormat, Difficulty, DiQuestionType, MasterPracticeQuestion,
+  MasterPracticeSet, MasterSession, MasterWorksheetResult, QuestionType,
+} from '@/lib/masterWorksheet';
 
 type QuestionDraft = {
   question_text: string;
@@ -198,13 +170,17 @@ function extractPdfTextFallback(rawText: string) {
 }
 
 export default function AdminMasterWorksheetEditorPage() {
-  const params = useParams();
+  const params = useParams<{ id: string }>();
+  // A different worksheet starts with fresh drafts and an initial loading state.
+  return <MasterWorksheetEditor key={params.id} masterSessionId={params.id} />;
+}
+
+function MasterWorksheetEditor({ masterSessionId }: { masterSessionId: string }) {
   const router = useRouter();
-  const masterSessionId = params.id as string;
   const supabase = createClient();
   const { addToast } = useAuth();
 
-  const [masterSession, setMasterSession] = useState<any | null>(null);
+  const [masterSession, setMasterSession] = useState<MasterSession | null>(null);
   const [practiceSet, setPracticeSet] = useState<MasterPracticeSet | null>(null);
   const [questions, setQuestions] = useState<MasterPracticeQuestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -218,66 +194,32 @@ export default function AdminMasterWorksheetEditorPage() {
   const [isImporting, setIsImporting] = useState(false);
   const [pdfDraftNote, setPdfDraftNote] = useState('');
 
-  const fetchData = async () => {
-    setIsLoading(true);
-    setTablesUnavailable(false);
-
-    const { data: session, error: sessionError } = await supabase
-      .from('master_sessions')
-      .select('id, title, session_number')
-      .eq('id', masterSessionId)
-      .single();
-
-    if (sessionError || !session) {
+  const applyData = useCallback((result: MasterWorksheetResult) => {
+    setIsLoading(false);
+    setTablesUnavailable(result.status === 'tables-error');
+    if (result.status === 'session-error') {
       addToast('error', 'Failed to load master session.');
-      setIsLoading(false);
       return;
     }
-
-    setMasterSession(session);
-
-    try {
-      const { data: sets, error: setError } = await supabase
-        .from('master_practice_sets')
-        .select('*')
-        .eq('master_session_id', masterSessionId)
-        .order('created_at', { ascending: true })
-        .limit(1);
-
-      if (setError) throw setError;
-
-      const firstSet = (sets?.[0] || null) as MasterPracticeSet | null;
-      setPracticeSet(firstSet);
-
-      if (!firstSet) {
-        setQuestions([]);
-        setIsLoading(false);
-        return;
-      }
-
-      const { data: questionData, error: questionError } = await supabase
-        .from('master_practice_questions')
-        .select('*')
-        .eq('master_practice_set_id', firstSet.id)
-        .order('order_index', { ascending: true });
-
-      if (questionError) throw questionError;
-
-      setQuestions((questionData || []).map((question: any) => ({
-        ...question,
-        options: Array.isArray(question.options) ? question.options : [],
-      })));
-    } catch (error) {
-      console.info('Master practice tables are not available yet.', error);
-      setTablesUnavailable(true);
+    setMasterSession(result.session);
+    if (result.status === 'ready') {
+      setPracticeSet(result.practiceSet);
+      setQuestions(result.questions);
     }
-
-    setIsLoading(false);
-  };
+  }, [addToast]);
 
   useEffect(() => {
-    if (masterSessionId) void fetchData();
-  }, [masterSessionId]); // eslint-disable-line react-hooks/exhaustive-deps
+    let cancelled = false;
+    void loadMasterWorksheet(supabase, masterSessionId).then((result) => {
+      if (!cancelled) applyData(result);
+    });
+    return () => { cancelled = true; };
+  }, [supabase, masterSessionId, applyData]);
+
+  const refreshData = () => {
+    setIsLoading(true);
+    void loadMasterWorksheet(supabase, masterSessionId).then(applyData);
+  };
 
   const ensurePracticeSet = async () => {
     if (practiceSet) return practiceSet;
@@ -363,7 +305,7 @@ export default function AdminMasterWorksheetEditorPage() {
       addToast('success', 'Session question added.');
       setNewQuestion(emptyQuestionDraft);
       setShowAddQuestion(false);
-      fetchData();
+      refreshData();
     } catch (error) {
       console.error(error);
       addToast('error', 'Failed to add question. If this mentions a missing column, run supabase_master_question_metadata.sql.');
@@ -397,7 +339,7 @@ export default function AdminMasterWorksheetEditorPage() {
     } else {
       addToast('success', 'Question updated.');
       handleCancelEditQuestion();
-      fetchData();
+      refreshData();
     }
   };
 
@@ -407,7 +349,7 @@ export default function AdminMasterWorksheetEditorPage() {
       addToast('error', 'Failed to delete question.');
     } else {
       addToast('success', 'Question deleted.');
-      fetchData();
+      refreshData();
     }
   };
 
@@ -475,7 +417,7 @@ export default function AdminMasterWorksheetEditorPage() {
       addToast('success', `${rows.length} question(s) imported. Existing questions were retained.`);
       setCsvPreview(null);
       setShowBulkUpload(false);
-      fetchData();
+      refreshData();
     } catch (error) {
       console.error(error);
       addToast('error', 'CSV import failed. Check JSON fields and run supabase_master_question_metadata.sql if needed.');

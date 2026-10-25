@@ -29,25 +29,41 @@ export async function POST(request: NextRequest) {
     }
 
     const supabaseAdmin = getSupabaseAdmin();
-    const results = { success: 0, failed: 0, errors: [] as string[] };
+    const results = {
+      success: 0, failed: 0, errors: [] as string[],
+      failures: [] as { input: number; stage: string }[],
+    };
+    const fail = (input: number, stage: string, message: string) => {
+      results.failed++;
+      results.errors.push(`Entry ${input}: ${message}`);
+      results.failures.push({ input, stage });
+    };
 
-    for (const untrustedEmail of emails) {
+    for (const [index, untrustedEmail] of emails.entries()) {
+      const input = index + 1;
       const email = typeof untrustedEmail === 'string'
         ? untrustedEmail.trim().toLowerCase()
         : '';
 
       if (!email || !email.includes('@')) {
-        results.failed++;
-        results.errors.push('One email address was invalid.');
+        fail(input, 'input_validation', 'One email address was invalid.');
         continue;
       }
 
       let userId: string | undefined;
-      const { data: existingProfile } = await supabaseAdmin
+      const { data: existingProfile, error: lookupError } = await supabaseAdmin
         .from('profiles')
-        .select('id, full_name')
+        .select('id, full_name, role')
         .eq('email', email)
         .maybeSingle();
+      if (lookupError) {
+        fail(input, 'profile_lookup', 'Could not read the account profile. No account or enrollment writes were attempted for this entry.');
+        continue;
+      }
+      if (existingProfile && existingProfile.role !== 'student') {
+        fail(input, 'profile_role', 'Only Student accounts can be enrolled. The existing account role was not changed.');
+        continue;
+      }
       const studentName = emails.length === 1 && typeof fullName === 'string' && fullName.trim()
         ? fullName.trim()
         : existingProfile?.full_name || email.split('@')[0];
@@ -62,8 +78,7 @@ export async function POST(request: NextRequest) {
         });
 
         if (createError || !createdUser.user) {
-          results.failed++;
-          results.errors.push(`Could not provision ${email}.`);
+          fail(input, 'account_creation', 'Could not create the account. Check whether it already exists and whether the server can manage accounts.');
           continue;
         }
 
@@ -80,8 +95,7 @@ export async function POST(request: NextRequest) {
       });
 
       if (profileError) {
-        results.failed++;
-        results.errors.push(`Could not activate ${email}.`);
+        fail(input, 'profile_activation', 'Could not activate the Student profile. Enrollment was not attempted for this entry.');
         continue;
       }
 
@@ -93,8 +107,7 @@ export async function POST(request: NextRequest) {
         );
 
       if (enrollmentError) {
-        results.failed++;
-        results.errors.push(`Could not enroll ${email}.`);
+        fail(input, 'enrollment_write', 'Could not save the enrollment. The account profile may already have been activated.');
         continue;
       }
 
@@ -102,8 +115,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(results);
-  } catch (error) {
-    console.error('Student provisioning failed:', error);
+  } catch {
+    console.error('Student provisioning failed.');
     return NextResponse.json({ error: 'Unable to provision students.' }, { status: 500 });
   }
 }

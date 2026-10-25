@@ -2,13 +2,17 @@
 
 Status: Active
 Owner: Engineering
-Last updated: 20 August 2026
+Last updated: 18 October 2026
 
 This index routes readers to the smallest set of documents needed for a task. Product authority remains in [`instruction/`](../instruction/README.md).
 
 Current signed history: [Ace Club LMS Running Handoff](handoffs/ace-club-lms-running-handoff.md).
 
 Current post-MVP iteration state: [Pilot V2 — Consolidated Bootstrap and Running Handoff](pilot-v2/README.md).
+
+Next major product version: [V2 planning and engineering entry point](v2/README.md).
+[V2 Phase 1 local implementation](v2/phase-1/README.md) awaits staging verification
+and acceptance; it is separate from the historical Pilot V2 work above.
 
 Signed Pilot V1 history: [Pilot Iterations Running Handoff](handoffs/pilot-iterations-running-handoff.md) and [Production Rollout Evidence](pilot-v1/evidence/production-rollout-2026-08-13.md).
 

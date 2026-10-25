@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyRazorpaySignature } from '@/lib/registration';
+import { getErrorMessage } from '@/lib/errorMessage';
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,8 +30,8 @@ export async function POST(request: NextRequest) {
       order_id: finalOrderId,
       payment_id: finalPaymentId,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Standard Razorpay verification failed:', error);
-    return NextResponse.json({ error: error.message || 'Failed to verify payment.' }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error, 'Failed to verify payment.') }, { status: 500 });
   }
 }

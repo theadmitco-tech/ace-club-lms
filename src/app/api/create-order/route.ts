@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createRazorpayOrder } from '@/lib/registration';
+import { getErrorMessage } from '@/lib/errorMessage';
 
 const MIN_AMOUNT_PAISE = 100;
 
@@ -23,9 +24,9 @@ export async function POST(request: NextRequest) {
       amount: order.amount || amount,
       currency: order.currency || currency,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Standard Razorpay order creation failed:', error);
-    const message = error.message || 'Failed to create Razorpay order.';
+    const message = getErrorMessage(error, 'Failed to create Razorpay order.');
     const status = message.toLowerCase().includes('authentication') || message.toLowerCase().includes('auth')
       ? 401
       : 500;

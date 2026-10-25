@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getErrorMessage } from '@/lib/errorMessage';
 import {
   enrollPaidRegistration,
   getSupabaseAdmin,
@@ -60,8 +61,8 @@ export async function POST(request: NextRequest) {
       registrationId: existingPayment.registration_id,
       email: enrollment.email,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Verify Razorpay payment failed:', error);
-    return NextResponse.json({ error: error.message || 'Failed to verify payment.' }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error, 'Failed to verify payment.') }, { status: 500 });
   }
 }
