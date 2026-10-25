@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-Last updated: 20 October 2026
+Last updated: 25 October 2026
 
 V2 is separate from the older MVP/Pilot V2 initiative. Preserve signed historical
 evidence and existing Student access while developing the new product model.
@@ -13,16 +13,19 @@ This branch contains the **Phase 2 Admin foundation**, reconciled with the
 squash-merged Phase 1 baseline on `codex/v2-integration` at
 `6447f5b5cae0b868de5f98d123c5af5b1c414bd6` (PR #23).
 
-Review branch: `intern/v2-phase-2-review`, draft PR #24. Start with the
-[reconciliation record](phase-2/evidence/reconciliation-2026-10-25.md),
-[Phase 2 delivery report](phase-2/approved-delivery-report.md) and
-[staging handoff](phase-2/review-and-release.md).
+Review branch: `intern/v2-phase-2-review`, Draft PR #24. Review is paused for the
+[25 October course-model correction](decisions/course-model-correction-2026-10-25.md).
+Start with the [correction evidence](phase-2/evidence/course-model-correction-2026-10-25.md)
+and [Phase 2 implementation status](phase-2/README.md).
 
-The submitted scope remains Admin templates, independent batch drafts, private
-meeting drafts and reviewed publication. Newer local recovery and Student-schedule
-work is separate and is not included by this reconciliation. Historical test and
-Preview results do not verify the reconciled head; use the current PR description
-and reconciliation record for candidate-specific results.
+The corrected local candidate contains complete Quant, Verbal and DI offering
+structures plus Full Course, optional live scheduling, private session content,
+Admin recovery, enrolled-batch schedules and offline content-preservation/mapping
+tools. Protected Student content publishing remains incomplete. The previous
+reconciliation at `c67cfe7` is historical evidence; its green Preview does not
+validate the correction. Publishing is currently blocked by missing Git credentials
+in the implementation session. Use the final handoff for the exact candidate and
+its own CI/Preview status.
 
 Phase 1 staging migration is complete and must not be rerun. Phase 2 migrations,
 hosted acceptance and Production changes are not authorized by reconciliation.

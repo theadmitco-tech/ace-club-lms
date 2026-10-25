@@ -34,8 +34,9 @@ records recovered Admin drafts, protected publication retries, template event
 reordering and shared worksheet recovery. That checkpoint passed 262 tests and 28 synthetic browser scenarios. The
 enrolled-schedule follow-up passes 282 tests, 32 browser scenarios, lint,
 TypeScript and the production build.
-Work is on `work/phase2-completion-2026-10-25`; no shared PR branch or hosted
-database was changed. The [enrolled-schedule follow-up](evidence/enrolled-schedules-2026-10-25.md)
+The corrected local candidate is integrated on `work/pr24-reconcile-2026-10-25`.
+Its application/test tree matches the locally verified correction. The push was
+blocked by missing Git credentials; no shared PR branch or hosted database was changed. The [enrolled-schedule follow-up](evidence/enrolled-schedules-2026-10-25.md)
 implements the newly confirmed enrolled-batch-only rule. Full Phase 2 acceptance
 still needs reviewed content mapping/delivery and separately approved staging QA.
 The dated candidate information below describes the earlier submitted PR.

@@ -77,3 +77,12 @@ acceptance and Phase 2 migration approval remain outstanding.
 The earlier green Preview at `c67cfe7` does not validate this correction. The final
 handoff must identify the corrected commit and report its own CI/Preview status.
 No Production, Flexible Mocks or existing Student/course data was changed.
+
+## Publication status
+
+The fast-forward push to the existing PR branch failed because the local Git
+client could not obtain an HTTPS username with terminal prompts disabled. No
+remote ref was updated. A new Preview and exact-head hosted CI remain pending.
+The final reconciled application, scripts, manifests and migrations are byte-for-
+byte identical to tested correction commit `5463f6f`; integration changed only CI
+trigger metadata and documentation.
