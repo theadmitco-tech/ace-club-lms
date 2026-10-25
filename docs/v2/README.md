@@ -9,21 +9,24 @@ evidence and existing Student access while developing the new product model.
 
 ## Current work
 
-This branch contains the **Phase 2 Admin foundation**, based on the separate
-Phase 1 candidate. Start with the [Phase 2 delivery report](phase-2/approved-delivery-report.md)
-and [coordinated staging handoff](phase-2/review-and-release.md).
+This branch contains the **Phase 2 Admin foundation**, reconciled with the
+squash-merged Phase 1 baseline on `codex/v2-integration` at
+`6447f5b5cae0b868de5f98d123c5af5b1c414bd6` (PR #23).
 
-Branch: `intern/v2-phase-2-review`.
-Verified application commit: `26ec141561a0749dba371409273c1f1ee9906049`.
-Base: `intern/v2-onboarding` at `d3020c1`, Phase 1 draft PR #23.
-Local result: 229 tests across 21 files, lint, TypeScript and build passed.
-Student delivery, shared staging verification and product acceptance remain pending.
+Review branch: `intern/v2-phase-2-review`, draft PR #24. Start with the
+[reconciliation record](phase-2/evidence/reconciliation-2026-10-25.md),
+[Phase 2 delivery report](phase-2/approved-delivery-report.md) and
+[staging handoff](phase-2/review-and-release.md).
 
-The [Phase 1 report](phase-1/completion-report.md) and
-[checklist](phase-1/manual-verification-checklist.md) retain the dependency's scope.
-The combined source work remains preserved on `intern/v2-approved-phase-1-2`
-at `208ceaa`; later payment/content changes are not included here. Earlier phase
-numbers in legacy code do not mean the new V2 roadmap phases are complete.
+The submitted scope remains Admin templates, independent batch drafts, private
+meeting drafts and reviewed publication. Newer local recovery and Student-schedule
+work is separate and is not included by this reconciliation. Historical test and
+Preview results do not verify the reconciled head; use the current PR description
+and reconciliation record for candidate-specific results.
+
+Phase 1 staging migration is complete and must not be rerun. Phase 2 migrations,
+hosted acceptance and Production changes are not authorized by reconciliation.
+The [Phase 1 report](phase-1/completion-report.md) retains the dependency's history.
 
 ## Requirements and decisions
 

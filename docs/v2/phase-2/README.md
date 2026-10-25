@@ -2,24 +2,25 @@
 
 Status: Active — isolated review candidate; staging and full phase acceptance pending
 Owner: Engineering and product owner
-Last updated: 20 October 2026
+Last updated: 25 October 2026
 
 ## Scope and sequencing
 
 Branch: `intern/v2-phase-2-review`.
-Dependency: Phase 1 draft [PR #23](https://github.com/theadmitco-tech/ace-club-lms/pull/23),
-`intern/v2-onboarding` at `d3020c1c9916c17f6ced27f83ff9ee1be05479f2`.
-Application commit: `26ec141561a0749dba371409273c1f1ee9906049`.
-Target the Phase 1 task branch initially so the Phase 2 PR shows only its own diff.
-After Phase 1 acceptance and integration, reconcile the base and rerun checks.
-No integration or main merge is authorized.
+Base: `codex/v2-integration` at `6447f5b5cae0b868de5f98d123c5af5b1c414bd6`,
+the squash merge of Phase 1 PR #23. PR #24 remains Draft.
+The [25 October reconciliation record](evidence/reconciliation-2026-10-25.md)
+supersedes the original base and test counts below. No new Student-delivery or
+recovery feature was added by reconciliation. The newer local follow-up candidate
+remains separate. No integration or main merge is authorized.
 
 Start with the [delivery report](approved-delivery-report.md),
 [combined staging handoff](review-and-release.md) and
 [isolated verification evidence](evidence/isolated-review-2026-10-20.md).
 The [decision register](../decisions/README.md) controls approved and pending scope.
 The [branch publication record](evidence/branch-publication-2026-10-20.md) confirms
-the push; draft PR creation remains pending. Use the [prepared PR text](draft-pr.md).
+the original push. Draft [PR #24](https://github.com/theadmitco-tech/ace-club-lms/pull/24)
+now exists; its current description records the reconciled candidate.
 
 Extracted from the preserved local branch `intern/v2-approved-phase-1-2` at
 `208ceaa453049463322ff127842eec9814e6ea8a`. Later payment, content-route and deployment
@@ -56,10 +57,10 @@ and 127 Phase 2 tests. Lint, TypeScript and production build also pass. See the
 
 - [x] Isolate the Phase 2 diff on the latest Phase 1 dependency.
 - [x] Verify Admin authoring, privacy, retries, concurrency and legacy regressions locally.
-- [ ] Publish a separate draft PR and record exact-candidate hosted checks/Preview.
+- [x] Publish separate draft PR #24; reconciliation checks are recorded separately.
 - [ ] Inspect staging schema and ledger; obtain separate migration/setup approval.
 - [ ] Verify Admin workflows, negative access, mobile and keyboard behavior in staging.
-- [ ] Resolve Student batch eligibility and implement the authorized schedule reader.
+- [ ] Review the separate local enrolled-batch Student reader follow-up.
 - [ ] Implement reviewed content associations and protected recording-only delivery.
 - [ ] Resolve Full Course registration allocation and enforce course capacity with Phase 3.
 - [ ] Obtain acceptance against every Phase 2 roadmap exit gate.

@@ -2,7 +2,7 @@ name: Verify
 
 on:
   pull_request:
-    branches: [main, codex/v2-integration, intern/v2-onboarding]
+    branches: [main, codex/v2-integration]
   push:
     branches: [main, codex/v2-integration, intern/v2-phase-2-review]
 

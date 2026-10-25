@@ -4,6 +4,14 @@ Status: Active — separate review candidates; hosted setup and acceptance pendi
 Owner: Engineering and product owner
 Last updated: 20 October 2026
 
+25 October reconciliation: PR #23 has been squash-merged into
+`codex/v2-integration` at `6447f5b5cae0b868de5f98d123c5af5b1c414bd6`.
+PR #24 is being reconciled onto that baseline and remains Draft. Use the
+[current reconciliation record](evidence/reconciliation-2026-10-25.md) and PR
+metadata for the current base/head and checks. Earlier branch references and
+pending Phase 1 application instructions below are historical; **do not rerun the
+Phase 1 migration**. No Phase 2 migration or existing-data change is authorized.
+
 ## Separate review candidates
 
 | Phase | Branch and base | Review scope |
