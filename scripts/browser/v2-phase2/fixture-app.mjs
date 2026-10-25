@@ -5,6 +5,14 @@ import { fileURLToPath } from 'node:url';
 
 export const repo = fileURLToPath(new URL('../../../', import.meta.url));
 export const sources = [
+  'src/app/schedule/v2/page.tsx',
+  'src/app/dashboard/dashboard.css',
+  'src/components/student/StudentHeader.tsx',
+  'src/components/student/SignOutButton.tsx',
+  'src/lib/v2Enrollments.ts',
+  'src/app/admin/v2/batches/[batchId]/students/page.tsx',
+  'src/app/admin/v2/batches/[batchId]/students/EnrollmentEditor.tsx',
+  'src/app/admin/v2/batches/[batchId]/students/actions.ts',
   'src/app/admin/AdminShell.tsx',
   'src/app/admin/admin.css',
   'src/components/AdminDraftNavigation.tsx',
@@ -76,7 +84,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 import { clearDraftRecovery } from '@/lib/draftRecovery';
 const user = { id: 'synthetic-admin', role: 'admin', full_name: 'Synthetic Admin', email: 'admin@example.test' };
 export function useAuth() {
-  return { user, isLoading: false, logout: async () => { clearDraftRecovery(window.sessionStorage); window.location.href = '/login'; } };
+  return { user, isLoading: false, addToast: (_type: string, _message: string) => {}, logout: async () => { clearDraftRecovery(window.sessionStorage); window.location.href = '/login'; } };
 }`);
   await put('src/lib/server/portalAuthorization.ts', `
 import { call } from './fixture';
@@ -88,6 +96,7 @@ export function isV2TemplateAuthoringEnabled() { return true; }
   await put('src/lib/server/v2BatchFeature.ts', `
 export function isV2BatchAuthoringEnabled() { return true; }
 `);
+  await put('src/lib/server/v2StudentScheduleFeature.ts', 'export function isV2StudentScheduleEnabled() { return true; }');
   await put('src/lib/server/fixture.ts', `
 import 'server-only';
 // This module exists only inside the disposable browser fixture.
@@ -99,14 +108,21 @@ export async function call(method: string, ...args: unknown[]) {
   if (!response.ok) throw new Error('Synthetic transport interruption');
   return response.json();
 }`);
+  const returnTypes = {
+    listV2BatchDrafts: "Promise<{ status: 'ready'; drafts: import('@/lib/v2Batches').V2BatchDraft[] } | { status: 'unavailable' }>",
+    getMyV2BatchSchedules: "Promise<{ status: 'ready'; schedules: import('@/lib/v2Publications').V2Publication[] } | { status: 'unavailable' }>",
+    listV2EnrollmentOptions: "Promise<{ status: 'ready'; options: import('@/lib/v2Enrollments').V2EnrollmentOption[] } | { status: 'unavailable' }>",
+  };
   for (const [module, methods] of Object.entries({
+    v2Enrollments: ['listV2EnrollmentOptions', 'setV2Enrollment'],
+    v2StudentSchedules: ['getMyV2BatchSchedules'],
     v2Templates: ['listV2TemplateDrafts', 'saveV2TemplateDraft'],
     v2Batches: ['listV2BatchDrafts', 'previewV2BatchDraft', 'saveV2BatchDraft'],
     v2Publications: ['listV2BatchPublications', 'previewV2BatchPublication', 'saveV2BatchPublication'],
     v2Meetings: ['readV2MeetingDraft', 'saveV2MeetingDraft'],
   })) {
     await put(`src/lib/server/${module}.ts`, `import { call } from './fixture';\n`
-      + methods.map((method) => `export async function ${method}(...args: unknown[]) { return call('${method}', ...args); }`).join('\n'));
+      + methods.map((method) => `export async function ${method}(...args: unknown[])${returnTypes[method] ? ': ' + returnTypes[method] : ''} { return call('${method}', ...args); }`).join('\n'));
   }
   await put('src/app/practice/fixture/[materialId]/page.tsx', `
 import { WorksheetLog } from '@/components/student/WorksheetLog';

@@ -62,8 +62,9 @@ data. The migration tooling and synthetic tests can be prepared locally.
 1. Six-month access denial is now confirmed for Phase 1. Notifications and
    upgrade access periods remain later-phase decisions, not blockers to reviewing
    the initial-purchase entitlement foundation.
-2. Specify whether purchased products expose all published batches or one
-   registered batch. B2 remains Pending and does not resolve this reader rule.
+2. Resolved on 25 October: Students see only their enrolled batch, subject to
+   active product entitlement. See [enrolled-batch access](enrolled-batch-access-2026-10-25.md).
+   Public registration B2 remains Pending.
 3. Define the registration unit for Full Course's three components and payment
    concurrency at the eight-student limit.
 4. Confirm the accepted code baseline and exact staging setup/release sequence.

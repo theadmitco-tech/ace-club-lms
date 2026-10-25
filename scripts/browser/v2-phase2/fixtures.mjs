@@ -68,6 +68,7 @@ export function publicationProposal(input, state) {
 export function initialState() {
   const templates = Object.keys(products).map((code, index) => template(code, index + 1));
   return { templates, drafts: [batch(templates[0])], publications: [], meetings: {}, receipts: {},
+    enrollmentOptions: [{ studentId: id(601), name: 'Synthetic Student', active: false, eligible: true, revision: 0 }], studentSchedules: [],
     calls: [], faults: {}, readError: false, ownerId: 'synthetic-admin', worksheets: {} };
 }
 function upsert(items, record, key = 'id') {
@@ -97,6 +98,14 @@ export function worksheet(state, materialId) {
     questions: [1, 2].map(index => ({ id: id(300 + index), question_number: index, status: null, time_taken_seconds: null, comment: null, updated_at: null })) };
 }
 const handlers = {
+  getMyV2BatchSchedules: (state) => state.readError ? { status: 'unavailable', schedules: [] } : { status: 'ready', schedules: state.studentSchedules },
+  listV2EnrollmentOptions: (state) => ({ status: 'ready', options: state.enrollmentOptions }),
+  setV2Enrollment: (state, input) => {
+    const row = state.enrollmentOptions.find((item) => item.studentId === input.studentId);
+    if (!row || row.revision !== input.expectedRevision) return { status: 'error', message: 'Enrollment changed. Reload the student list before retrying.' };
+    row.active = input.active; row.revision++;
+    return { status: 'success' };
+  },
   fixtureIdentity: (state, role) => ({ id: state.ownerId, role }),
   fixtureWorksheet: worksheet,
   fixtureSaveQuestion: (state, input) => {

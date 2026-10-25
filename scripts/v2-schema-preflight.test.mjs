@@ -11,6 +11,7 @@ const migrations = [
   '20261019110000_add_v2_private_meeting_drafts.sql',
   '20261020090000_add_v2_outline_schedules.sql',
   '20261020100000_add_v2_batch_publication.sql',
+  '20261025100000_add_v2_enrolled_schedules.sql',
 ];
 
 test('staging metadata inspection runs only against a disposable local database', { timeout: 120000 }, async (t) =>
@@ -36,8 +37,8 @@ test('staging metadata inspection runs only against a disposable local database'
       const report = inspect();
       assert.equal(report.transaction_read_only, 'on');
       assert.equal(report.migration_ledger_present, false);
-      assert.equal(report.tables.length, 10);
-      assert.equal(report.routines.length, 14);
+      assert.equal(report.tables.length, 11);
+      assert.equal(report.routines.length, 17);
       assert(report.tables.every((table) => !table.present && table.direct_write_roles.length === 0));
       assert(report.routines.every((routine) => !routine.present && routine.execute_roles.length === 0));
       assert.equal(snapshot(), before);

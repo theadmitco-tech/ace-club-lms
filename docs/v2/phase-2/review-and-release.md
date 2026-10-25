@@ -12,6 +12,11 @@ to PR #23 and excluded it from the LMS merge gate. The
 262 passing tests and 28 browser scenarios. Phase 2 migrations and hosted setup
 remain separately gated; the historical sequence below is not execution authority.
 
+A subsequent [enrolled-schedule follow-up](evidence/enrolled-schedules-2026-10-25.md)
+adds proposed migration `20261025100000` and the off-by-default
+`V2_STUDENT_SCHEDULE_ENABLED` flag. Include it in the next candidate review; the
+earlier migration sequence below does not authorize applying this addition.
+
 The approved Phase 1 migration has been applied to staging after a private backup
 and recovery rehearsal. SQL verification passed, synthetic fixtures rolled back,
 and existing application data stayed unchanged. The

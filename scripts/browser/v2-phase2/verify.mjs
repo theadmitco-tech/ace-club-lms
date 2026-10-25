@@ -9,7 +9,7 @@ import { pathToFileURL } from 'node:url';
 import { tmpdir } from 'node:os';
 import { createHash } from 'node:crypto';
 import { createFixtureApp, repo, sources } from './fixture-app.mjs';
-import { initialState, products, respond, id } from './fixtures.mjs';
+import { initialState, products, respond, id, publicationProposal } from './fixtures.mjs';
 
 const require = createRequire(import.meta.url);
 const modulePath = process.env.PLAYWRIGHT_MODULE || require.resolve('playwright-core');
@@ -112,6 +112,57 @@ async function openBatch(page) {
   await button(page, 'Synthetic batch · Full Batch · revision 1').click();
 }
 async function runTests() {
+  await test('Enrolled schedule renders published live times and undated outlines on mobile', async (page) => {
+    const published = publicationProposal({ batchId: state.drafts[0].id, expectedRevision: 0, action: 'publish' }, state).document;
+    state.studentSchedules = [published];
+    await page.goto(`${origin}/schedule/v2`);
+    await text(page, 'Enrolled batch schedules');
+    await text(page, published.title);
+    await text(page, 'Date to be announced');
+    await text(page, 'IST');
+    assert.equal(await page.getByRole('link', { name: /Join/ }).count(), 0);
+    await noOverflow(page);
+    await screenshot(page, 'enrolled-schedule-mobile');
+  }, { width: 390, height: 844 });
+  await test('Enrolled schedule distinguishes empty and failed reads', async (page) => {
+    await page.goto(`${origin}/schedule/v2`);
+    await text(page, 'No published batch schedules yet');
+    state.readError = true;
+    await page.reload();
+    await text(page, 'Schedule could not be loaded');
+    assert.equal(await page.getByText('No published batch schedules yet').count(), 0);
+    state.readError = false;
+    await page.getByRole('link', { name: 'Retry', exact: true }).click();
+    await text(page, 'No published batch schedules yet');
+  });
+  await test('Enrollment review confirms by keyboard and removes on mobile', async (page) => {
+    await page.goto(`${origin}/admin/v2/batches/${state.drafts[0].id}/students`);
+    await button(page, 'Enroll in batch').click();
+    assert.equal(state.enrollmentOptions[0].active, false);
+    await text(page, 'Enroll Synthetic Student?');
+    await button(page, 'Confirm enrollment').focus();
+    await page.keyboard.press('Enter');
+    await text(page, 'Student enrolled in this batch.');
+    assert.equal(state.enrollmentOptions[0].active, true);
+    await button(page, 'Remove from batch').click();
+    await button(page, 'Confirm removal').click();
+    await text(page, 'Student removed from this batch.');
+    assert.equal(state.enrollmentOptions[0].active, false);
+    await noOverflow(page);
+  }, { width: 390, height: 844 });
+  await test('Interrupted enrollment reloads committed state without repeating a stale confirmation', async (page) => {
+    await page.goto(`${origin}/admin/v2/batches/${state.drafts[0].id}/students`);
+    await button(page, 'Enroll in batch').click();
+    state.faults.setV2Enrollment = { interruptAfterSave: true };
+    await button(page, 'Confirm enrollment').click();
+    await text(page, 'Confirmation was interrupted.');
+    assert.equal(state.enrollmentOptions[0].active, true);
+    assert.equal(await button(page, 'Confirm enrollment').isDisabled(), true);
+    await dialog(page, () => button(page, 'Reload student list').click(), true);
+    await visible(button(page, 'Remove from batch'));
+    assert.equal(state.calls.filter((call) => call.method === 'setV2Enrollment').length, 1);
+  });
+
   await test('Empty screens and recoverable list errors', async (page) => {
     state.templates = [];
     state.drafts = [];

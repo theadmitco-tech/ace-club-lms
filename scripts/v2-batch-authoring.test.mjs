@@ -239,9 +239,11 @@ test('the batch page authorizes before loading either templates or batches and h
   let deny=false;
   const calls=[];
   const page=load('src/app/admin/v2/batches/page.tsx',{
+    '../templates/templates.module.css': { default: {} },
     'react/jsx-runtime': { jsx: () => ({}),jsxs: () => ({}) },'@/components/AdminDraftNavigation': {},'./BatchDraftEditor': {}, './PublicationPanel': {},
     'next/navigation': { notFound: () => { throw new Error('Not found'); } },
     '@/lib/server/v2BatchFeature': { isV2BatchAuthoringEnabled: () => enabled },
+    '@/lib/server/v2StudentScheduleFeature': { isV2StudentScheduleEnabled: () => true },
     '@/lib/server/portalAuthorization': { requirePortalRole: async (role) => { calls.push(role); if (deny) throw new Error('Denied'); return { id: 'synthetic-admin', role }; } },
     '@/lib/server/v2Publications': { listV2BatchPublications: async () => { calls.push('publications'); return { status: 'ready',publications: [] }; } },
     '@/lib/server/v2Templates': { listV2TemplateDrafts: async () => { calls.push('templates'); return { status: 'ready',templates: [] }; } },

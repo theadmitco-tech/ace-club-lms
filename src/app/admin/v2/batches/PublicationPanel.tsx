@@ -63,7 +63,7 @@ export default function PublicationPanel({ drafts, publications, ownerId }: { dr
     }} onDiscard={recovery.forget} />
     <h2 id="publication-heading">Review batch publication</h2>
     <p>Publish a saved outline and schedule. Further draft edits need another review before they replace the published version.</p>
-    <p>Student delivery is awaiting the batch-access decision. This action does not open registration, publish meeting links, or change purchased access.</p>
+    <p>Published schedules are available to enrolled students with active product access when Student schedules are enabled.</p>
     {!drafts.length && <p>Save a batch draft to review publication.</p>}
     <ul className={styles.list}>{drafts.map((batch) => {
       const published = publications.find((item) => item.batchId === batch.id);

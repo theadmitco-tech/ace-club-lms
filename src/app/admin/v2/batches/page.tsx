@@ -7,6 +7,8 @@ import { listV2TemplateDrafts } from '@/lib/server/v2Templates';
 import BatchDraftEditor from './BatchDraftEditor';
 import PublicationPanel from './PublicationPanel';
 import { listV2BatchPublications } from '@/lib/server/v2Publications';
+import { isV2StudentScheduleEnabled } from '@/lib/server/v2StudentScheduleFeature';
+import styles from '../templates/templates.module.css';
 
 export default async function V2BatchesPage() {
   if (!isV2BatchAuthoringEnabled()) notFound();
@@ -19,6 +21,9 @@ export default async function V2BatchesPage() {
     {batches.status === 'ready' && templates.status === 'ready'
       ? <>
         <BatchDraftEditor key={identity.id} ownerId={identity.id} drafts={batches.drafts} templates={templates.templates} />
+        {isV2StudentScheduleEnabled() && <section className={styles.card}><h2>Batch students</h2>
+          <ul className={styles.list}>{batches.drafts.map((batch) => <li key={batch.id}><Link href={`/admin/v2/batches/${batch.id}/students`} prefetch={false}>{batch.title} — Manage students</Link></li>)}</ul>
+        </section>}
         {publications.status === 'ready' ? <PublicationPanel key={identity.id} ownerId={identity.id} drafts={batches.drafts} publications={publications.publications} />
           : <div className="admin-card" role="alert">Publication history could not be loaded. Check the reviewed staging setup and reload before publishing.</div>}
       </>

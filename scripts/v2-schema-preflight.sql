@@ -9,7 +9,7 @@ set local lock_timeout = '2s';
 with expected_tables(name) as (
   values ('v2_products'), ('v2_price_versions'), ('v2_purchases'), ('v2_product_grants'),
     ('v2_course_templates'), ('v2_course_template_revisions'), ('v2_live_batches'),
-    ('v2_live_batch_revisions'), ('v2_batch_meeting_revisions'), ('v2_batch_publication_revisions')
+    ('v2_live_batch_revisions'), ('v2_batch_meeting_revisions'), ('v2_batch_publication_revisions'), ('v2_batch_enrollments')
 ), expected_routines(signature) as (
   values ('public.quote_v2_products(text[])'),
     ('public.can_access_v2_product(text,text)'), ('public.get_my_v2_access()'),
@@ -19,7 +19,8 @@ with expected_tables(name) as (
     ('public.save_v2_batch_draft(jsonb,text)'), ('public.list_v2_batch_drafts()'),
     ('public.read_v2_meeting_draft(uuid)'), ('public.save_v2_meeting_draft(jsonb)'),
     ('public.preview_v2_batch_publication(jsonb)'), ('public.save_v2_batch_publication(jsonb,text)'),
-    ('public.list_v2_batch_publications()')
+    ('public.list_v2_batch_publications()'), ('public.get_my_v2_batch_schedules()'),
+    ('public.list_v2_batch_enrollment_options(uuid)'), ('public.set_v2_batch_enrollment(uuid,uuid,boolean,integer)')
 ), client_roles as (
   select oid, rolname from pg_catalog.pg_roles where rolname in ('anon', 'authenticated', 'service_role')
 ), tables as (

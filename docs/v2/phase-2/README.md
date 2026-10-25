@@ -8,11 +8,13 @@ Last updated: 25 October 2026
 
 The [25 October implementation report](evidence/admin-completion-2026-10-25.md)
 records recovered Admin drafts, protected publication retries, template event
-reordering and shared worksheet recovery. The local candidate passes 262 tests
-and 28 synthetic browser scenarios, lint, TypeScript and the production build.
+reordering and shared worksheet recovery. That checkpoint passed 262 tests and 28 synthetic browser scenarios. The
+enrolled-schedule follow-up passes 282 tests, 32 browser scenarios, lint,
+TypeScript and the production build.
 Work is on `work/phase2-completion-2026-10-25`; no shared PR branch or hosted
-database was changed. Full Phase 2 acceptance still needs the Student eligibility
-decision, reviewed content mapping/delivery and separately approved staging QA.
+database was changed. The [enrolled-schedule follow-up](evidence/enrolled-schedules-2026-10-25.md)
+implements the newly confirmed enrolled-batch-only rule. Full Phase 2 acceptance
+still needs reviewed content mapping/delivery and separately approved staging QA.
 The dated candidate information below describes the earlier submitted PR.
 
 ## Scope and sequencing
@@ -57,7 +59,8 @@ Routes: `/admin/v2/templates`, `/admin/v2/batches` and
 `/admin/v2/batches/[batchId]/meeting`.
 Both server-only authoring flags remain off by default and disabled on Vercel
 Production. The server and database independently require an active Admin.
-Students cannot read these private drafts or publication snapshots. Flags govern
+Students cannot read private drafts or publication history. The new guarded
+schedule reader exposes only eligible enrolled batches’ latest published snapshots. Flags govern
 application routes, not database RPC privileges after migration.
 
 ## Local verification
@@ -82,7 +85,7 @@ Synthetic browser results do not replace staging acceptance.
 - [ ] Review/publish the local QA fixes and verify the resulting exact-candidate CI/Preview.
 - [ ] Inspect staging schema and ledger; obtain separate migration/setup approval.
 - [ ] Verify Admin workflows, negative access, mobile and keyboard behavior in staging.
-- [ ] Resolve Student batch eligibility and implement the authorized schedule reader.
+- [x] Resolve Student batch eligibility and implement the authorized schedule reader locally.
 - [ ] Implement reviewed content associations and protected recording-only delivery.
 - [ ] Resolve Full Course registration allocation and enforce course capacity with Phase 3.
 - [ ] Obtain acceptance against every Phase 2 roadmap exit gate.
