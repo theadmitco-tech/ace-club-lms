@@ -66,7 +66,12 @@ current authenticated identity and existing expiry/revocation/section checks.
 2. Before approved staging application, capture a private backup, schema/privilege
    baseline and product/price/purchase/grant fingerprints. Check the exact Phase 1
    checksum below, migration ledger and any additional hosted dependencies. The
-   current audit inspected committed source, not the live database.
+   current audit inspected committed source, not the live database. The prepared
+   `canonical-contract-inspection.sql` collects ledger hashes and routine
+   definitions/privileges before and after an approved operation. It runs in a
+   read-only transaction, fails on filtered RLS reads and prints no private row
+   values. Save its output privately. Compare during a controlled window: legitimate
+   concurrent purchases can also change fingerprints and need reconciliation.
 3. Rehearse the forward and rollback SQL on a disposable restore. Apply only this
    approved file in one transaction; lock/statement timeouts fail rather than wait
    indefinitely. Do not run an automatic push of the unapplied Phase 2 queue.
@@ -102,8 +107,12 @@ Content migration is a separate workstream: see
 ### Recorded verification — 25 October 2026
 
 - All 15 Phase 1 runner suites passed (137 tests at that run).
-- The final proposal suite passed all 9 tests after adding the DDL-failure case;
-  rollback also refused a synthetic dependent view and restored earlier DDL.
+- The latest proposal suite passed all 11 tests, including read-only inspection
+  and Phase 2 coexistence. Rollback refused a synthetic dependent view and restored
+  earlier DDL when it failed. With all six proposed Phase 2 migrations installed
+  locally, canonical and legacy purchasers retained only their enrolled batches.
+  Expansion/rollback preserved course, publication, enrollment and ledger snapshots;
+  revocation still removed access. Both installation orders were exercised.
 - All 14 content-mapping tests passed, including version-2 session placement.
 - Lint, TypeScript and the webpack production build passed with synthetic config.
 - The applied Phase 1 migration checksum is unchanged.
