@@ -6,6 +6,12 @@ Last updated: 25 October 2026
 
 ## Current local follow-up
 
+The [content-mapping review](content-mapping.md) validates explicit source/target
+proposals and prepares a fingerprinted scope report. It supports undated outline
+targets with synthetic fixtures; it does not import or publish protected content.
+The [mapping evidence](evidence/content-mapping-2026-10-25.md) records 176 passing
+Phase 2 tests across 15 suite files for this local checkpoint.
+
 The [content-preservation tooling](content-preservation.md) prepares a read-only
 inventory of legacy content and an offline drift comparison. It is a local
 prerequisite for reviewed mappings, not a content migration or hosted verification.
@@ -96,6 +102,7 @@ Synthetic browser results do not replace staging acceptance.
 - [ ] Verify Admin workflows, negative access, mobile and keyboard behavior in staging.
 - [x] Resolve Student batch eligibility and implement the authorized schedule reader locally.
 - [x] Prepare local content-preservation inventory and comparison tooling.
+- [x] Validate explicit mapping proposals and prepare exact revision/scope reviews locally.
 - [ ] Implement reviewed content associations and protected recording-only delivery.
 - [ ] Resolve Full Course registration allocation and enforce course capacity with Phase 3.
 - [ ] Obtain acceptance against every Phase 2 roadmap exit gate.

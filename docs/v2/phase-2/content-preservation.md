@@ -81,6 +81,10 @@ source content must remain intact; future V2 associations need their own review
 and entitlement tests. Private Meet delivery and Full Course seat allocation
 remain separate from this inventory.
 
+The [mapping review tool](content-mapping.md) now validates explicit proposed
+associations against these fingerprints and exact template revisions. It can be
+exercised locally with synthetic fixtures while real source mappings are pending.
+
 Run the synthetic tests with:
 
 ```sh
