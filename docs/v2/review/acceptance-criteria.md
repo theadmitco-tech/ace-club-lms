@@ -1,5 +1,7 @@
 # Ace Club LMS V2 — Acceptance Criteria
 
+> Current correction — 25 October 2026: [approved course model](../decisions/course-model-correction-2026-10-25.md) controls terminology and structure. Quant, Verbal and DI are complete individual courses; Full Course contains all three. Every course retains sessions, materials, recordings, pre-session reads and post-session reads. Only actual live classes require scheduling. Phase 2 review is paused; PR #24 stays Draft.
+
 > Authority update — 20 October 2026: [preserved approvals](../decisions/README.md) supersede conflicting older requirements. The later [expiry confirmation](../decisions/phase-1-expiry-confirmation-2026-10-20.md) confirms denial after six months. This candidate implements Phase 1 only; later-phase implementation remains separate.
 
 Status: Draft for Product Owner review
@@ -14,17 +16,17 @@ This document converts the approved V2 product direction into testable outcomes 
 
 The website is the primary delivery surface. Every purchased product provides access to the relevant recordings, pre-reads, worksheets, schedule information, and other included material through the website.
 
-### AC-V2-PRODUCT-02 — Full Batch is complete
+### AC-V2-PRODUCT-02 — Full Course is complete
 
-Full Batch contains Quant, Verbal, and DI together. A student cannot purchase or receive Full Batch entitlement for only one or two sections. Full Batch cannot be assembled by buying Crash Courses in parts; however, a student who previously purchased one or two Crash Courses may later purchase and receive Full Batch access.
+Full Course contains Quant, Verbal, and DI together. A student cannot purchase or receive Full Course entitlement for only one or two sections. Full Course cannot be assembled by buying individual courses in parts; however, a student who previously purchased one or two individual courses may later purchase and receive Full Course access.
 
-### AC-V2-PRODUCT-03 — Crash Course products
+### AC-V2-PRODUCT-03 — Individual course products
 
-The system supports separate Quant, Verbal, and DI Crash Course products. Each Crash Course gives access only to its selected section unless another product is separately purchased.
+The system supports separate Quant, Verbal, and DI individual course products. Each individual course gives access only to its selected section unless another product is separately purchased.
 
 ### AC-V2-PRODUCT-04 — Different delivery schedules
 
-Full Batch and Crash Course schedules are independent. Full Batch may run over approximately eight weeks; a Crash Course may run over approximately one week. A schedule must not be inferred solely from the product name.
+Full Course and individual course schedules are independent. Full Course may run over approximately eight weeks; individual course durations are configurable and do not imply reduced content. A schedule must not be inferred solely from the product name.
 
 ### AC-V2-PRODUCT-05 — Confirmed launch pricing
 
@@ -32,15 +34,15 @@ The launch catalogue uses:
 
 | Product | Price |
 |---|---:|
-| One Crash Course | ₹10,000 |
-| Two Crash Courses | ₹18,000 |
-| All three Crash Courses | ₹25,000 |
-| Full Batch — all three sections | ₹25,000 |
+| One individual course | ₹10,000 |
+| Two individual courses | ₹18,000 |
+| All three individual courses | ₹25,000 |
+| Full Course — all three sections | ₹25,000 |
 
 Pricing is stored as commercial configuration and is not hard-coded into presentation components.
 
-The all-three Crash Course bundle is included as already approved in V2-DEC-03.
-It grants the three separate Crash Course products, not Full Batch entitlement.
+The all-three individual course bundle is included as already approved in V2-DEC-03.
+It grants the three separate individual course products, not Full Course entitlement.
 
 ### AC-V2-PRODUCT-06 — Six-month access
 
@@ -64,9 +66,9 @@ After successful payment, the student receives the approved access/login instruc
 
 The entitlement granted after payment matches the purchased product exactly:
 
-- Crash Course: one selected section.
-- Full Batch: Quant, Verbal, and DI.
-- Purchasing Crash Courses does not silently grant Full Batch access.
+- individual course: one selected section.
+- Full Course: Quant, Verbal, and DI.
+- Purchasing individual courses does not silently grant Full Course access.
 
 ## 3. Live delivery
 
@@ -76,27 +78,25 @@ Live sessions are optional delivery components. Recordings and website materials
 
 ### AC-V2-LIVE-02 — Publish live batches
 
-An Admin can create and publish Full Batch and Crash Course live-batch details, including product type, section(s), dates, times, Google Meet information, duration, and relevant material links.
+An Admin can create and publish Full Course and individual course live-batch details, including product type, section(s), dates, times, Google Meet information, duration, and relevant material links.
 
-### AC-V2-LIVE-03 — Crash Course live availability
+### AC-V2-LIVE-03 — Individual course live availability
 
-A Crash Course may have a published live batch or may be recording/materials-only when no live batch is available. Quant Crash Course always has recordings; live Quant classes may be added later by an Admin.
+An individual course may have a published live batch or may be recording/materials-only when no live batch is available. Quant individual course always has recordings; live Quant classes may be added later by an Admin.
 
 ### AC-V2-LIVE-04 — Live capacity
 
-For a live session, the system supports a default capacity of eight reserved seats. Seat reservation affects only live participation and Google Meet access; it never removes website or recording access.
-
-Waitlist implementation is deferred from the first launch unless separately approved.
+Live-course registration stops at eight students. Attendance is optional. There is no per-session reservation or waitlist. Course materials and recordings remain governed by the applicable entitlement.
 
 ### AC-V2-LIVE-05 — Schedule changes
 
-An Admin can update a published schedule, and entitled students see the current schedule. Schedule changes do not require rebuilding the product or changing student entitlements.
+An Admin can update a published schedule, and entitled students enrolled in that batch see the current schedule. Schedule changes do not require rebuilding the product or changing student entitlements.
 
 ## 4. Recordings and materials
 
 ### AC-V2-MATERIAL-01 — Shared class structure
 
-The same underlying class/content structure can be used in Full Batch and the corresponding Crash Course. Access is controlled by entitlement; duplicate student-specific copies are not required.
+The same underlying class/content structure can be used in Full Course and the corresponding individual course. Access is controlled by entitlement; duplicate student-specific copies are not required.
 
 ### AC-V2-MATERIAL-02 — Recording management
 
@@ -126,7 +126,7 @@ The implementation supports a gradual migration from Notion-authored material to
 
 ### AC-V2-ADMIN-01 — Product templates
 
-The Admin can publish Full Batch and Crash Course details using clear product-specific templates. The template makes product type, included sections, delivery mode, duration, schedule, recordings, and materials explicit.
+The Admin can publish Full Course and individual course details using clear product-specific templates. The template makes product type, included sections, delivery mode, duration, schedule, recordings, and materials explicit.
 
 ### AC-V2-ADMIN-02 — Immediate publishing
 
@@ -152,7 +152,7 @@ Unauthenticated, inactive, or incorrectly entitled users cannot access protected
 
 ### AC-V2-SEC-02 — Product isolation
 
-A Crash Course student cannot access another section or Full Batch-only material unless an approved entitlement grants it.
+An individual course student cannot access another section or Full Course-only material unless an approved entitlement grants it.
 
 ### AC-V2-SEC-03 — Environment safety
 
@@ -166,11 +166,11 @@ Each completed phase includes the relevant tests, Preview evidence, screenshots 
 
 V2 is ready for Product Owner staging review only when:
 
-- Full Batch and all three Crash Courses can be configured and published.
+- Full Course and all three individual courses can be configured and published.
 - Pricing and entitlement boundaries pass.
 - Payment-to-access flow passes with failure/retry coverage.
 - Recordings and pre-reads work through the website.
-- Full Batch and Crash Course schedules remain independent.
+- Full Course and individual course schedules remain independent.
 - Admin preview and immediate publishing work.
 - Access expiry and protected-resource checks pass.
 - No critical security, privacy, or data-integrity issue remains open.

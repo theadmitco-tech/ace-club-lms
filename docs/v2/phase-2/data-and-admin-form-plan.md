@@ -31,8 +31,8 @@ selection is still undecided as recorded in the preparation checklist.
 
 ## Design basis and limits
 
-The [Phase 2 roadmap][roadmap] requires Full Batch and Crash Course publishing,
-independent schedules, configurable durations, recording-only Crash Courses and
+The [Phase 2 roadmap][roadmap] requires Full Course and individual course publishing,
+independent schedules, configurable durations, recording-only individual courses and
 schedule updates visible to entitled students. [LIVE-01 through LIVE-05][live-criteria]
 separate live participation from purchased website access. [SEC-01 through SEC-04][security-criteria]
 require protected resources, isolation, environment safety and evidence.
@@ -101,9 +101,9 @@ separate event/reservation records proposed here are not yet implemented.
 
 ### Relationship rules
 
-1. Product scope is server-derived: Full Batch includes `quant`, `verbal` and `di`;
-   each Crash includes only its purchased section. [Phase 1 schema][product-schema]
-2. A batch belongs to one product. Full Batch and Crash schedules remain independent
+1. Product scope is server-derived: Full Course includes `quant`, `verbal` and `di`;
+   each individual course includes only its purchased section. [Phase 1 schema][product-schema]
+2. A batch belongs to one product. Full Course and individual course schedules remain independent
    even when they use the same underlying class recordings.
 3. A template revision is a starting snapshot. Later batch edits affect only that
    batch and do not mutate the source template or another batch.
@@ -132,7 +132,7 @@ separate release decision. Existing shared design components may be reused.
 
 | Step | Admin action | Validation and result |
 |---|---|---|
-| 1. Select product | Choose Full Batch, Quant Crash, Verbal Crash or DI Crash | Included sections are displayed read-only from product configuration |
+| 1. Select product | Choose Full Course, Quant, Verbal or DI | Included sections are displayed read-only from product configuration |
 | 2. Set delivery | Choose recordings/materials only, or add a live batch alongside recordings | Recording-only skips dates, live capacity and Meet fields. Choosing it while live batches exist requires an explicit reviewed unpublish action |
 | 3. Associate learning content | Choose reviewed class, recording and material references | Wrong-section, missing and unsupported references are rejected; this is not a new recording upload or Notion editor |
 | 4. Configure live schedule | Select a product-specific template, start date and event details | Live path only; preview the generated schedule and its section/instructor/time details |
@@ -151,7 +151,7 @@ initial design; closing an unsaved edit requires an unsaved-changes notice.
 | Field | Recording-only path | Live path | Validation and source |
 |---|---|---|---|
 | Product | Required | Required | One catalogue product code; fixed after the record is created |
-| Included sections | Read-only | Read-only | Full Batch always all three; Crash exactly one |
+| Included sections | Read-only | Read-only | Full Course always all three; individual courses exactly one |
 | Display title and summary | Title required; summary optional | Title required; summary optional | Trimmed plain text with bounded lengths; protected links cannot be placed here |
 | Class/content references | Required before publication, subject to D1/D5 coverage decision | Required before publication, subject to D1/D5 | Existing reviewed content identities; no private raw URLs or real student data in synthetic fixtures |
 | Recordings/materials | Explicit association summary | Explicit association summary | Recordings are required by product rules; exact completeness threshold needs D5. A placeholder does not prove playable content |
@@ -166,8 +166,9 @@ initial design; closing an unsaved edit requires an unsaved-changes notice.
 | Publication state | Draft, published or unpublished product details | Separate draft, published or unpublished live batch | Does not edit `courses.is_active`, `available_for_purchase`, purchase grants or payment state |
 | Expected version and request token | System-managed | System-managed | Used for stale-edit detection and safe retries; not a substitute for authorization |
 
-The approximately eight-week and one-week schedules are defaults, not hard-coded
-class dates or a ban on other approved durations. Real class order, schedules and
+An approximately eight-week Full Course schedule is a configurable suggestion.
+Individual courses have no default duration, and unscheduled course content
+requires neither a start date nor a duration. Real class order, schedules and
 instructors must come from D1/D2. Technical input limits should be documented when
 the form and schema are implemented, without changing the approved product model.
 
@@ -307,7 +308,7 @@ publication, shared environment change or deployment has occurred.
 
 Line references are pinned conceptually to the inspected application commit above.
 
-[roadmap]: ../review/product-roadmap.md#phase-2--full-batch-and-crash-course-publishing
+[roadmap]: ../review/product-roadmap.md#phase-2--full-course-and-individual-course-publishing
 [live-criteria]: ../review/acceptance-criteria.md#3-live-delivery
 [security-criteria]: ../review/acceptance-criteria.md#6-security-and-quality
 [legacy-template-reader]: ../../../src/lib/server/courseTemplates.ts#L56

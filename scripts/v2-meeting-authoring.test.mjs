@@ -24,7 +24,7 @@ const url = 'https://meet.google.com/aaa-bbbb-ccc';
 const input = () => ({ batchId: randomUUID(),batchRevision: 1,expectedRevision: 0,requestId: randomUUID(),links: [{ key: randomUUID(),url }] });
 function draftFor(request) {
   const event = { key: request.links[0].key,localDate: '2028-01-01',localStartTime: '19:00',durationMinutes: 60,instructor: '',capacity: 8 };
-  return { batch: { id: request.batchId,productCode: 'quant_crash',templateId: randomUUID(),templateRevision: 1,revision: 1,
+  return { batch: { id: request.batchId,productCode: 'quant',templateId: randomUUID(),templateRevision: 1,revision: 1,
     state: 'draft',title: 'Synthetic batch',startDate: '2028-01-01',timeZone: 'Asia/Kolkata',
     events: [{ ...event,title: 'Synthetic event',section: 'quant',...batches.v2BatchEventInstants(event) }] },revision: 1,links: request.links };
 }
@@ -158,7 +158,7 @@ test('private page gates role and batch identity before loading meeting details'
     'react/jsx-runtime': { jsx: () => ({}),jsxs: () => ({}) },'next/link': {},'./MeetingDraftEditor': {},
     'next/navigation': { notFound: () => { throw new Error('Not found'); } },'@/lib/v2Meetings': domain,
     '@/lib/server/v2BatchFeature': { isV2BatchAuthoringEnabled: () => enabled },
-    '@/lib/server/portalAuthorization': { requirePortalRole: async (role) => { calls.push(role); if (deny) throw new Error('Denied'); } },
+    '@/lib/server/portalAuthorization': { requirePortalRole: async (role) => { calls.push(role); if (deny) throw new Error('Denied'); return { id: 'synthetic-admin', role }; } },
     '@/lib/server/v2Meetings': { readV2MeetingDraft: async (id) => { calls.push(id); return { status: 'unavailable' }; } },
   });
   const params=Promise.resolve({ batchId: randomUUID() });

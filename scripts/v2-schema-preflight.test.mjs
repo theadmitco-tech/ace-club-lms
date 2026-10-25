@@ -11,6 +11,7 @@ const migrations = [
   '20261019110000_add_v2_private_meeting_drafts.sql',
   '20261020090000_add_v2_outline_schedules.sql',
   '20261020100000_add_v2_batch_publication.sql',
+  '20261025100000_add_v2_enrolled_schedules.sql',
 ];
 
 test('staging metadata inspection runs only against a disposable local database', { timeout: 120000 }, async (t) =>
@@ -36,8 +37,8 @@ test('staging metadata inspection runs only against a disposable local database'
       const report = inspect();
       assert.equal(report.transaction_read_only, 'on');
       assert.equal(report.migration_ledger_present, false);
-      assert.equal(report.tables.length, 10);
-      assert.equal(report.routines.length, 14);
+      assert.equal(report.tables.length, 12);
+      assert.equal(report.routines.length, 17);
       assert(report.tables.every((table) => !table.present && table.direct_write_roles.length === 0));
       assert(report.routines.every((routine) => !routine.present && routine.execute_roles.length === 0));
       assert.equal(snapshot(), before);
@@ -73,11 +74,11 @@ test('staging metadata inspection runs only against a disposable local database'
         assert(routine.execute_roles.includes('authenticated'));
         assert(!routine.execute_roles.includes('anon'));
       }
-      const draftConstraint = query(`select pg_get_constraintdef(oid) from pg_constraint where conrelid='public.v2_live_batches'::regclass
-        and conname='v2_live_batches_state_check'`);
+      const draftConstraint = query(`select pg_get_constraintdef(oid) from pg_constraint where conrelid='public.v2_course_batches'::regclass
+        and conname='v2_course_batches_state_check'`);
       assert.match(draftConstraint, /state = 'draft'/);
       for (const role of ['anon','authenticated','service_role']) {
-        rejects(`begin; set local role ${role}; update public.v2_live_batches set state='published'; rollback;`, /permission denied/);
+        rejects(`begin; set local role ${role}; update public.v2_course_batches set state='published'; rollback;`, /permission denied/);
       }
       const before = snapshot();
       inspect();
@@ -86,11 +87,11 @@ test('staging metadata inspection runs only against a disposable local database'
     });
 
     await t.test('schema drift is visible without attempting automatic repairs', () => {
-      query('alter table public.v2_batch_meeting_revisions disable row level security; grant update on public.v2_live_batches to authenticated;');
+      query('alter table public.v2_batch_meeting_revisions disable row level security; grant update on public.v2_course_batches to authenticated;');
       const report = inspect();
       assert.equal(report.tables.find((table) => table.name === 'v2_batch_meeting_revisions').rls_enabled, false);
-      assert.deepEqual(report.tables.find((table) => table.name === 'v2_live_batches').direct_write_roles, ['authenticated']);
-      query('revoke update on public.v2_live_batches from authenticated; alter table public.v2_batch_meeting_revisions enable row level security;');
+      assert.deepEqual(report.tables.find((table) => table.name === 'v2_course_batches').direct_write_roles, ['authenticated']);
+      query('revoke update on public.v2_course_batches from authenticated; alter table public.v2_batch_meeting_revisions enable row level security;');
     });
 
     await t.test('inspection never reads purchase, identity, draft or migration statement contents', () => {

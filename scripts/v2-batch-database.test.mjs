@@ -47,7 +47,7 @@ test('independent V2 batch drafts in disposable PostgreSQL', { timeout: 120000 }
       'a1000000-0000-4000-8000-000000000002',1000000,'INR');`);
   const templates = {};
   const documents = {};
-  for (const [product, sections] of Object.entries({ full_batch: ['quant','verbal','di'], quant_crash: ['quant'], verbal_crash: ['verbal'], di_crash: ['di'] })) {
+  for (const [product, sections] of Object.entries({ full_course: ['quant','verbal','di'], quant: ['quant'], verbal: ['verbal'], di: ['di'] })) {
     templates[product] = randomUUID();
     documents[product] = templateDocument(sections);
     query(as(admin, `select public.save_v2_template_draft('${templates[product]}','${product}',0,'${randomUUID()}',${json(documents[product])})`));
@@ -69,16 +69,16 @@ test('independent V2 batch drafts in disposable PostgreSQL', { timeout: 120000 }
   const before = priorState();
   const preview = (input, user = admin) => JSON.parse(query(as(user, previewSql(input))));
   const save = (input, proposal = preview(input), user = admin) => JSON.parse(query(as(user, saveSql(input, proposal.fingerprint))));
-  const input = inputFor(templates.full_batch);
+  const input = inputFor(templates.full_course);
   let initial;
   let batch;
   let initialReview;
 
   await t.test('failed DDL rolls back and successful migration preserves all prior records and schema', () => {
-    query('create view public.v2_live_batch_revisions as select 1 as unexpected');
+    query('create view public.v2_course_batch_revisions as select 1 as unexpected');
     assert.throws(() => apply(migration));
-    assert.equal(query("select to_regclass('public.v2_live_batches') is null"), 't');
-    query('drop view public.v2_live_batch_revisions');
+    assert.equal(query("select to_regclass('public.v2_course_batches') is null"), 't');
+    query('drop view public.v2_course_batch_revisions');
     assert.deepEqual(priorState(), before);
     apply(migration);
     assert.deepEqual(priorState(), before);
@@ -86,8 +86,8 @@ test('independent V2 batch drafts in disposable PostgreSQL', { timeout: 120000 }
   await t.test('preview writes nothing and converts midnight, leap-day and overnight events correctly', () => {
     initialReview = preview(input);
     assert.deepEqual(preview(input), initialReview);
-    assert.equal(query('select count(*) from public.v2_live_batches'), '0');
-    assert.equal(query('select count(*) from public.v2_live_batch_revisions'), '0');
+    assert.equal(query('select count(*) from public.v2_course_batches'), '0');
+    assert.equal(query('select count(*) from public.v2_course_batch_revisions'), '0');
     assert.deepEqual(priorState(), before);
     const events = initialReview.draft.events;
     assert.equal(events[0].startsAt, '2028-02-27T18:45:00.000Z');
@@ -103,25 +103,25 @@ test('independent V2 batch drafts in disposable PostgreSQL', { timeout: 120000 }
     rejects(as(admin, saveSql(input, '0'.repeat(32))), /reviewed schedule changed/);
     rejects(as(admin, saveSql({ ...input, startDate: '2028-03-01' }, initialReview.fingerprint)), /reviewed schedule changed/);
     rejects(as(admin, saveSql({ ...input, title: 'Changed after review' }, initialReview.fingerprint)), /reviewed schedule changed/);
-    assert.equal(query('select count(*) from public.v2_live_batches'), '0');
+    assert.equal(query('select count(*) from public.v2_course_batches'), '0');
     initial = save(input, initialReview).draft;
     batch = initial;
     assert.deepEqual(initial, initialReview.draft);
   });
   await t.test('anonymous, Student, inactive and service-role callers cannot read or author drafts', () => {
     for (const [user, role] of [[null,'anon'],[null,'authenticated'],[student,'authenticated'],[inactive,'authenticated'],[admin,'service_role']]) {
-      for (const sql of [previewSql(inputFor(templates.quant_crash)), saveSql(input, initialReview.fingerprint), 'select public.list_v2_batch_drafts()']) {
+      for (const sql of [previewSql(inputFor(templates.quant)), saveSql(input, initialReview.fingerprint), 'select public.list_v2_batch_drafts()']) {
         rejects(as(user, sql, role), /permission denied|Active Admin/);
       }
     }
     for (const user of [student,inactive]) {
-      for (const table of ['v2_live_batches','v2_live_batch_revisions']) assert.equal(query(as(user, `select count(*) from public.${table}`)), '0');
+      for (const table of ['v2_course_batches','v2_course_batch_revisions']) assert.equal(query(as(user, `select count(*) from public.${table}`)), '0');
     }
-    rejects(as(null,'select * from public.v2_live_batches','anon'), /permission denied/);
+    rejects(as(null,'select * from public.v2_course_batches','anon'), /permission denied/);
   });
   await t.test('table mutations and private projection helpers are unavailable even under broad platform defaults', () => {
     for (const role of ['anon','authenticated','service_role']) {
-      for (const table of ['v2_live_batches','v2_live_batch_revisions']) {
+      for (const table of ['v2_course_batches','v2_course_batch_revisions']) {
         for (const operation of ['INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER']) {
           assert.equal(query(`select has_table_privilege('${role}','public.${table}','${operation}')`), 'f');
         }
@@ -132,7 +132,7 @@ test('independent V2 batch drafts in disposable PostgreSQL', { timeout: 120000 }
   const others = [];
   await t.test('all four products and multiple batches of one product remain separate', () => {
     for (const [product, templateId] of Object.entries(templates)) {
-      const created = save(inputFor(templateId, { startDate: '2029-01-02', title: 'A display name does not grant Full Batch access' })).draft;
+      const created = save(inputFor(templateId, { startDate: '2029-01-02', title: 'A display name does not grant Full Course access' })).draft;
       assert.equal(created.productCode, product);
       assert.deepEqual(created.events.map((event) => event.section), documents[product].events.map((event) => event.section));
       others.push(created);
@@ -146,13 +146,13 @@ test('independent V2 batch drafts in disposable PostgreSQL', { timeout: 120000 }
     const all = JSON.parse(query(as(admin,'select public.list_v2_batch_drafts()')));
     for (const other of others) assert.deepEqual(all.find((item) => item.id === other.id), other);
     assert.deepEqual(priorState(), before);
-    assert.deepEqual(JSON.parse(query(`select document from public.v2_live_batch_revisions where batch_id='${input.id}' and revision=1`)), initial);
+    assert.deepEqual(JSON.parse(query(`select document from public.v2_course_batch_revisions where batch_id='${input.id}' and revision=1`)), initial);
   });
   await t.test('dates, zone, bounds and extra caller-controlled fields are rejected before writes', () => {
     for (const patch of [{ startDate: '2027-02-29' },{ startDate: '2028-04-31' },{ startDate: '2028-13-01' },{ startDate: '2028-2-01' },
       { startDate: 'infinity' },{ startDate: '1999-12-31' },{ startDate: '2100-01-01' },{ timeZone: 'UTC' },
-      { productCode: 'full_batch' },{ state: 'published' },{ actorId: admin },{ title: '' },{ expectedRevision: 9999999999 },{ events: [] }]) {
-      rejects(as(admin,previewSql(inputFor(templates.quant_crash,patch))), /Invalid|must come/);
+      { productCode: 'full_course' },{ state: 'published' },{ actorId: admin },{ title: '' },{ expectedRevision: 9999999999 },{ events: [] }]) {
+      rejects(as(admin,previewSql(inputFor(templates.quant,patch))), /Invalid|must come/);
     }
     const changed = edit(batch);
     for (const patch of [{ localDate: '2027-02-29' },{ localStartTime: '24:00' },{ durationMinutes: 0 },{ durationMinutes: 721 },
@@ -166,7 +166,7 @@ test('independent V2 batch drafts in disposable PostgreSQL', { timeout: 120000 }
     const changed = edit(batch);
     for (const events of [changed.events.slice(1), [...changed.events, changed.events[0]],
       [{ ...changed.events[0], key: randomUUID() }, ...changed.events.slice(1)]]) rejects(as(admin,previewSql({ ...changed, events })), /identities|Invalid/);
-    rejects(as(admin,previewSql({ ...changed, templateId: templates.quant_crash })), /identity cannot change/);
+    rejects(as(admin,previewSql({ ...changed, templateId: templates.quant })), /identity cannot change/);
     rejects(as(admin,previewSql({ ...changed, templateRevision: 2 })), /identity cannot change/);
     rejects(as(admin,previewSql({ ...changed, startDate: '2028-03-01' })), /anchor date cannot change/);
   });
@@ -176,18 +176,18 @@ test('independent V2 batch drafts in disposable PostgreSQL', { timeout: 120000 }
     assert.deepEqual(recovered.draft, initial);
     rejects(as(admin,saveSql({ ...input, title: 'Changed retry' }, initialReview.fingerprint)), /different submission/);
     rejects(as(admin,saveSql(input, '0'.repeat(32))), /different submission/);
-    assert.equal(query(`select latest_revision from public.v2_live_batches where id='${batch.id}'`), '2');
+    assert.equal(query(`select latest_revision from public.v2_course_batches where id='${batch.id}'`), '2');
   });
   await t.test('concurrent duplicate confirmation produces one batch and revision', async () => {
-    const concurrent = inputFor(templates.quant_crash);
+    const concurrent = inputFor(templates.quant);
     const proposal = preview(concurrent);
     const results = await Promise.all([1,2,3].map(() => concurrentQuery(as(admin,saveSql(concurrent,proposal.fingerprint)))));
     assert.equal(results.map(JSON.parse).filter((result) => !result.replayed).length, 1);
-    assert.equal(query(`select count(*) from public.v2_live_batch_revisions where batch_id='${concurrent.id}'`), '1');
+    assert.equal(query(`select count(*) from public.v2_course_batch_revisions where batch_id='${concurrent.id}'`), '1');
   });
   await t.test('concurrent creation with one batch id and different requests has one winner', async () => {
     const id = randomUUID();
-    const inputs = [inputFor(templates.quant_crash,{ id }), inputFor(templates.verbal_crash,{ id })];
+    const inputs = [inputFor(templates.quant,{ id }), inputFor(templates.verbal,{ id })];
     const proposals = inputs.map((item) => preview(item));
     const results = await Promise.allSettled(inputs.map((item,index) => concurrentQuery(as(admin,saveSql(item,proposals[index].fingerprint)))));
     assert.equal(results.filter((result) => result.status === 'fulfilled').length, 1);
@@ -195,12 +195,12 @@ test('independent V2 batch drafts in disposable PostgreSQL', { timeout: 120000 }
   });
   await t.test('concurrent reuse of a request token cannot create two different batches', async () => {
     const requestId = randomUUID();
-    const inputs = [inputFor(templates.quant_crash,{ requestId }),inputFor(templates.di_crash,{ requestId })];
+    const inputs = [inputFor(templates.quant,{ requestId }),inputFor(templates.di,{ requestId })];
     const proposals = inputs.map((item) => preview(item));
     const results = await Promise.allSettled(inputs.map((item,index) => concurrentQuery(as(admin,saveSql(item,proposals[index].fingerprint)))));
     assert.equal(results.filter((result) => result.status === 'fulfilled').length,1);
     assert.match(results.find((result) => result.status === 'rejected').reason.message,/different submission/);
-    assert.equal(query(`select count(*) from public.v2_live_batches where id in (${inputs.map((item) => lit(item.id)).join(',')})`),'1');
+    assert.equal(query(`select count(*) from public.v2_course_batches where id in (${inputs.map((item) => lit(item.id)).join(',')})`),'1');
   });
   await t.test('two Admins editing the same version cannot overwrite each other', async () => {
     const requests = [edit(batch,{ title: 'Synthetic edit A' }),edit(batch,{ title: 'Synthetic edit B' })];
@@ -212,48 +212,48 @@ test('independent V2 batch drafts in disposable PostgreSQL', { timeout: 120000 }
     rejects(as(admin,saveSql(edit(initial), initialReview.fingerprint)), /revision changed/);
   });
   await t.test('a late write failure rolls back the new batch and its version pointer', () => {
-    const rejected = inputFor(templates.di_crash,{ title: 'Synthetic failure injection' });
+    const rejected = inputFor(templates.di,{ title: 'Synthetic failure injection' });
     const proposal = preview(rejected);
     query(`create function public.synthetic_batch_failure() returns trigger language plpgsql as $$ begin
       if new.document->>'title'='Synthetic failure injection' then raise exception 'Synthetic failure'; end if; return new; end $$;
-      create trigger synthetic_batch_failure before insert on public.v2_live_batch_revisions for each row execute function public.synthetic_batch_failure();`);
+      create trigger synthetic_batch_failure before insert on public.v2_course_batch_revisions for each row execute function public.synthetic_batch_failure();`);
     rejects(as(admin,saveSql(rejected,proposal.fingerprint)), /Synthetic failure/);
-    assert.equal(query(`select count(*) from public.v2_live_batches where id='${rejected.id}'`), '0');
-    assert.equal(query('select count(*) from public.v2_live_batches where latest_revision=0'), '0');
+    assert.equal(query(`select count(*) from public.v2_course_batches where id='${rejected.id}'`), '0');
+    assert.equal(query('select count(*) from public.v2_course_batches where latest_revision=0'), '0');
     const rejectedEdit = edit(batch,{ title: 'Synthetic failure injection' });
     const editProposal = preview(rejectedEdit);
-    const history = snapshot(`select * from public.v2_live_batch_revisions where batch_id='${batch.id}'`);
+    const history = snapshot(`select * from public.v2_course_batch_revisions where batch_id='${batch.id}'`);
     rejects(as(admin,saveSql(rejectedEdit,editProposal.fingerprint)),/Synthetic failure/);
-    assert.equal(snapshot(`select * from public.v2_live_batch_revisions where batch_id='${batch.id}'`),history);
-    assert.equal(query(`select latest_revision from public.v2_live_batches where id='${batch.id}'`),String(batch.revision));
-    query('drop trigger synthetic_batch_failure on public.v2_live_batch_revisions; drop function public.synthetic_batch_failure()');
+    assert.equal(snapshot(`select * from public.v2_course_batch_revisions where batch_id='${batch.id}'`),history);
+    assert.equal(query(`select latest_revision from public.v2_course_batches where id='${batch.id}'`),String(batch.revision));
+    query('drop trigger synthetic_batch_failure on public.v2_course_batch_revisions; drop function public.synthetic_batch_failure()');
   });
   await t.test('deactivated Admins cannot recover a previously saved draft', () => {
     query(`update public.profiles set is_active=false where id='${admin}'`);
     rejects(as(admin,saveSql(input,initialReview.fingerprint)), /Active Admin/);
-    assert.equal(query(as(admin,'select count(*) from public.v2_live_batch_revisions')), '0');
+    assert.equal(query(as(admin,'select count(*) from public.v2_course_batch_revisions')), '0');
     query(`update public.profiles set is_active=true where id='${admin}'`);
   });
   await t.test('reapplication preserves all batches, earlier templates, legacy enrollment and purchase expiry', () => {
-    const current = snapshot('select * from public.v2_live_batch_revisions');
+    const current = snapshot('select * from public.v2_course_batch_revisions');
     apply(migration);
-    assert.equal(snapshot('select * from public.v2_live_batch_revisions'), current);
+    assert.equal(snapshot('select * from public.v2_course_batch_revisions'), current);
     assert.deepEqual(priorState(), before);
     assert.equal(query(as(student,"select public.can_access_course('c3000000-0000-4000-8000-000000000001')")), 't');
     assert.equal(query(as(student,"select public.can_access_v2_product('quant_crash')")), 't');
   });
   await t.test('template updates invalidate new confirmations but never replace existing batch snapshots', () => {
-    const pending = inputFor(templates.full_batch);
+    const pending = inputFor(templates.full_course);
     const proposal = preview(pending);
-    const revised = { ...documents.full_batch, title: 'Revised template', events: documents.full_batch.events.map((event) => ({ ...event, localStartTime: '10:00', capacity: 6 })) };
-    query(as(admin,`select public.save_v2_template_draft('${templates.full_batch}','full_batch',1,'${randomUUID()}',${json(revised)})`));
+    const revised = { ...documents.full_course, title: 'Revised template', events: documents.full_course.events.map((event) => ({ ...event, localStartTime: '10:00', capacity: 6 })) };
+    query(as(admin,`select public.save_v2_template_draft('${templates.full_course}','full_course',1,'${randomUUID()}',${json(revised)})`));
     rejects(as(admin,saveSql(pending,proposal.fingerprint)), /Template revision changed/);
-    assert.equal(query(`select count(*) from public.v2_live_batches where id='${pending.id}'`), '0');
+    assert.equal(query(`select count(*) from public.v2_course_batches where id='${pending.id}'`), '0');
     assert.deepEqual(preview(edit(batch)).draft.events, batch.events);
     const current = save(edit(batch,{ title: 'Title edit after template update' })).draft;
     assert.equal(current.templateRevision, 1);
     assert.deepEqual(current.events, batch.events);
-    const fresh = save(inputFor(templates.full_batch,{ templateRevision: 2 })).draft;
+    const fresh = save(inputFor(templates.full_course,{ templateRevision: 2 })).draft;
     assert.equal(fresh.templateRevision, 2);
     assert.equal(fresh.events[0].localStartTime, '10:00');
     assert.deepEqual(save(input,initialReview).draft, initial);
@@ -261,9 +261,9 @@ test('independent V2 batch drafts in disposable PostgreSQL', { timeout: 120000 }
   await t.test('an empty template remains a template draft without inventing a live batch', () => {
     const emptyId=randomUUID();
     const document={ ...templateDocument(['quant']),events: [] };
-    query(as(admin,`select public.save_v2_template_draft('${emptyId}','quant_crash',0,'${randomUUID()}',${json(document)})`));
+    query(as(admin,`select public.save_v2_template_draft('${emptyId}','quant',0,'${randomUUID()}',${json(document)})`));
     const emptyInput=inputFor(emptyId);
     rejects(as(admin,previewSql(emptyInput)),/requires a template with planned events/);
-    assert.equal(query(`select count(*) from public.v2_live_batches where id='${emptyInput.id}'`),'0');
+    assert.equal(query(`select count(*) from public.v2_course_batches where id='${emptyInput.id}'`),'0');
   });
 }));

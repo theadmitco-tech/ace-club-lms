@@ -1,0 +1,324 @@
+{
+  "recorded_utc": "2026-10-24T14:27:49.911696+00:00",
+  "environment": "staging",
+  "project_ref": "eyphkkginlgoaxflauog",
+  "application": {
+    "project_ref": "eyphkkginlgoaxflauog",
+    "started_utc": "2026-10-24T14:22:50.905872+00:00",
+    "finished_utc": "2026-10-24T14:23:22.458340+00:00",
+    "migration": "20261018090000_add_v2_product_entitlements.sql",
+    "sha256": "ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7",
+    "pr23_head": "d3020c1c9916c17f6ced27f83ff9ee1be05479f2",
+    "exit_code": 0
+  },
+  "schema_comparison": {
+    "result": "MATCH",
+    "tables": 4,
+    "functions": 7,
+    "normalization": "PostgreSQL 18 standalone NOT NULL constraint entries omitted; every column not_null flag still compared with staging PostgreSQL 17.6.",
+    "remaining_differences": []
+  },
+  "read_only_verification": {
+    "checks": [
+      "catalogue_scopes",
+      "calendar_expiry_expression",
+      "access_boundary_predicate",
+      "anonymous_quote_execution",
+      "restricted_grant_execution",
+      "anonymous_private_read_denial",
+      "missing_identity_fail_closed"
+    ],
+    "direct_write_privilege_checks": 72,
+    "invalid_selections_rejected": 7,
+    "result": "PASSED",
+    "transaction_read_only": "on",
+    "valid_quotes": 8
+  },
+  "synthetic_rollback_verification": {
+    "checks": [
+      "trusted_grant",
+      "idempotent_replay",
+      "six_conflicting_replay_rejections",
+      "failed_grant_atomicity",
+      "future_confirmation_rejected",
+      "student_row_isolation",
+      "admin_history_without_grant_privilege",
+      "single_product_scope",
+      "three_crashes_not_full_batch",
+      "inactive_identity_denied",
+      "full_batch_all_sections",
+      "independent_purchase_survives_revocation",
+      "expired_and_revoked_denied",
+      "history_retained",
+      "stored_six_month_expiry",
+      "stored_month_end_clamping",
+      "closed_sales_preserves_access",
+      "price_history_immutable"
+    ],
+    "fixture_persistence": "ROLLBACK",
+    "result": "PASSED"
+  },
+  "preservation": {
+    "existing_application_tables_compared": 56,
+    "existing_application_data_unchanged": true,
+    "auth_users_unchanged_across_fixtures": true,
+    "purchase_grant_catalogue_state_unchanged_across_fixtures": true,
+    "prior_migration_records_unchanged": true,
+    "phase2_applied": false,
+    "production_accessed": false
+  },
+  "recovery": {
+    "archive_sha256": "bbc1a812e311828c323100b0f35b490a84e4b257ee566060719796407d191349",
+    "application_restore_rehearsal": {
+      "tables_compared": 105,
+      "tables_match": true,
+      "sequences_compared": 2,
+      "sequences_match": true,
+      "public_tables_compared": 56,
+      "timezone": "UTC",
+      "scope": "Application and managed-schema table data except vault; local role membership grantors normalized; PostgreSQL 18.6 local target for 17.6 source.",
+      "full_supabase_restore": false
+    },
+    "private_backup_directory": "~/Downloads/ace-club-staging-recovery/20261024T141331Z"
+  },
+  "preview": {
+    "url": "https://ace-club-a8go51h46-theadmitco-techs-projects.vercel.app",
+    "commit": "d3020c1c9916c17f6ced27f83ff9ee1be05479f2",
+    "mapping_evidence": "docs/v2/review/staging-database-inspection-2026-10-21.md",
+    "browser_tested_this_run": false
+  },
+  "pull_requests": {
+    "23": {
+      "draft": true,
+      "merged": false
+    },
+    "24": {
+      "draft": true,
+      "merged": false
+    }
+  },
+  "remaining": [
+    "Record the exact origin and deployed commit for the reported passing browser catalogue/quote probe",
+    "Authenticated browser and cross-role HTTP/API checks with designated test accounts",
+    "Legacy content, worksheet editor and applicable existing checkout regression checks",
+    "Staging concurrent-delivery coverage or explicit acceptance of existing local concurrency evidence",
+    "Assessment of failing flexible-mocks deployment check",
+    "Product owner Phase 1 acceptance; separate Phase 2 application approval"
+  ],
+  "local_files_changed": [
+    "docs/v2/phase-1/evidence/staging-application-2026-10-24.md",
+    "docs/v2/phase-1/evidence/staging-application-2026-10-24.json",
+    "docs/v2/phase-1/manual-verification-checklist.md",
+    "docs/v2/phase-1/review-and-release.md",
+    "docs/v2/phase-2/review-and-release.md",
+    "scripts/v2-staging-catalogue-probe.browser.js",
+    "scripts/v2-staging-catalogue-probe.test.mjs"
+  ],
+  "local_validation": {
+    "browser_probe_safety_suite": {
+      "command": "node --test scripts/v2-staging-catalogue-probe.test.mjs",
+      "result": "PASSED"
+    },
+    "diff_whitespace_check": "PASSED",
+    "application_code_changed": false,
+    "migration_file_changed": false,
+    "local_rehearsal_server": "STOPPED",
+    "temporary_connection_credential_files": "REMOVED"
+  },
+  "followup_verification": {
+    "staging_pricing": {
+      "result": "PASSED",
+      "verified_utc": "2026-10-24T14:57:57.680925+00:00",
+      "project_ref": "eyphkkginlgoaxflauog",
+      "verification": {
+        "checks": [
+          "current_revision_selected",
+          "future_revision_not_quoted",
+          "future_price_hidden_from_anonymous_and_student",
+          "admin_can_inspect_future_price",
+          "existing_paid_amount_identity_expiry_and_grants_unchanged",
+          "existing_access_retained",
+          "idempotent_replay_after_price_change",
+          "future_revision_cannot_fulfill_early"
+        ],
+        "fixture_persistence": "ROLLBACK",
+        "result": "PASSED"
+      },
+      "fixtures_rolled_back": true,
+      "legacy_application_data_unchanged": true
+    },
+    "exact_pr23_local_tests": {
+      "source_commit": "d3020c1c9916c17f6ced27f83ff9ee1be05479f2",
+      "recorded_utc": "2026-10-24T14:55:27.579338+00:00",
+      "results": [
+        {
+          "suite": "v2-product-entitlements.test.mjs",
+          "exit_code": 0
+        },
+        {
+          "suite": "v2-product-readers.test.mjs",
+          "exit_code": 0
+        }
+      ],
+      "database_tests_passed": 21,
+      "reader_tests_passed": 10,
+      "failures": 0,
+      "hosted_concurrent_requests_tested": false,
+      "commands": [
+        "env -u NODE_TEST_CONTEXT node --experimental-strip-types scripts/v2-product-entitlements.test.mjs",
+        "env -u NODE_TEST_CONTEXT node --experimental-strip-types scripts/v2-product-readers.test.mjs"
+      ]
+    },
+    "browser_helpers": {
+      "role_probe_tests_passed": 7,
+      "catalogue_probe_tests_passed": 11,
+      "real_preview_session_tested": false,
+      "role_probe_payload": "{}",
+      "role_probe_handlers_match_pr23": true,
+      "raw_session_or_private_response_output": false
+    },
+    "deployment_inspection": {
+      "deployment_id": "dpl_CYds5yq1LVf8hEsSF8Ar6SGLmkXM",
+      "operation": "GET only",
+      "deployment_http": 403
+    },
+    "files_changed": [
+      "scripts/v2-phase1-role-probe.browser.js",
+      "scripts/v2-phase1-role-probe.test.mjs",
+      "scripts/verify-v2-phase1.mjs",
+      "docs/v2/phase-1/manual-verification-checklist.md",
+      "docs/v2/phase-1/review-and-release.md",
+      "docs/v2/phase-1/completion-report.md",
+      "docs/v2/phase-1/evidence/staging-application-2026-10-24.md",
+      "docs/v2/phase-1/evidence/staging-application-2026-10-24.json"
+    ],
+    "application_runtime_changed": false,
+    "migration_changed": false,
+    "phase2_applied": false,
+    "production_accessed": false,
+    "local_validation": {
+      "targeted_eslint_zero_warnings": "PASSED",
+      "diff_whitespace_check": "PASSED",
+      "documentation_links_and_json": "PASSED",
+      "private_evidence_directory": "~/Downloads/ace-club-staging-recovery/20261024T141331Z/phase1-verification/followup-20261024",
+      "private_directory_mode": "0700",
+      "private_file_mode": "0600"
+    }
+  },
+  "browser_followup_2026_10_25": {
+    "source": "User-supplied browser-console screenshots",
+    "independently_executed": false,
+    "public_catalogue": {
+      "check": "phase1_public_catalogue",
+      "catalogue": "FOUR_PRODUCTS_MATCH",
+      "quote": "FULL_BATCH_INR_25000",
+      "catalogue_http": 200,
+      "quote_http": 200,
+      "result": "PUBLIC_CHECKS_PASSED"
+    },
+    "exact_origin_visible": true,
+    "deployed_commit_confirmed_by_screenshot": false,
+    "admin_role_probe": {
+      "origin": "https://ace-club-lms-git-intern-v2-onboarding-theadmitco-techs-projects.vercel.app",
+      "check": "phase1_admin_api_boundary",
+      "endpoints": [
+        {
+          "path": "/api/admin/set-user-active",
+          "http": 400,
+          "observation": "ADMIN_VALIDATION_REACHED"
+        },
+        {
+          "path": "/api/admin/session-materials",
+          "http": 400,
+          "observation": "ADMIN_VALIDATION_REACHED"
+        }
+      ],
+      "result": "ADMIN_VALIDATION_REACHED"
+    },
+    "student_role_probe": {
+      "origin": "https://ace-club-lms-git-intern-v2-onboarding-theadmitco-techs-projects.vercel.app",
+      "check": "phase1_admin_api_boundary",
+      "endpoints": [
+        {
+          "path": "/api/admin/set-user-active",
+          "http": 403,
+          "observation": "NON_ADMIN_DENIED"
+        },
+        {
+          "path": "/api/admin/session-materials",
+          "http": 403,
+          "observation": "NON_ADMIN_DENIED"
+        }
+      ],
+      "result": "NON_ADMIN_DENIED",
+      "dashboard_state": "NO_COURSE_ASSIGNED",
+      "enrolled_content_verified": false,
+      "admin_navigation_redirect_verified_by_screenshot": false
+    },
+    "signed_out_role_probe": {
+      "origin": "https://ace-club-lms-git-intern-v2-onboarding-theadmitco-techs-projects.vercel.app",
+      "check": "phase1_admin_api_boundary",
+      "endpoints": [
+        {
+          "path": "/api/admin/set-user-active",
+          "http": 401,
+          "observation": "SIGNED_OUT_DENIED"
+        },
+        {
+          "path": "/api/admin/session-materials",
+          "http": 401,
+          "observation": "SIGNED_OUT_DENIED"
+        }
+      ],
+      "result": "SIGNED_OUT_DENIED",
+      "page_state": "PUBLIC_LANDING_WITH_LOGIN"
+    },
+    "origin_evidence": "Admin, Student and signed-out probe request URLs; catalogue screenshot remains cropped",
+    "student_admin_navigation": {
+      "source": "Manual tester confirmation in conversation",
+      "reported_same_preview": true,
+      "requested_path": "/admin",
+      "resulting_path": "/dashboard",
+      "admin_interface_displayed": false,
+      "result": "PASSED",
+      "independently_executed": false
+    },
+    "unassigned_student_navigation": {
+      "source": "Manual tester confirmation in conversation",
+      "pages": [
+        "Schedule",
+        "Resources",
+        "Practice log"
+      ],
+      "result": "PASSED",
+      "scope": "Pages load without errors for the unassigned Student account",
+      "enrolled_content_verified": false,
+      "practice_entry_save_verified": false,
+      "independently_executed": false
+    },
+    "dedicated_course_fixture": {
+      "name": "Phase 1 QA - 2026-10-25",
+      "creation_status": "REPORTED_COMPLETE",
+      "source": "Manual tester confirmation in conversation",
+      "template_reviewed": "Full Course revision 4",
+      "reviewed_event_count": 30,
+      "reviewed_resource_count": 15,
+      "requested_start_date": "2026-10-26",
+      "requested_publication": "draft",
+      "saved_values_independently_verified": false,
+      "enrollment_status": "REPORTED_UNSUCCESSFUL; HTTP response and persisted state unconfirmed",
+      "persistence": "Persistent synthetic fixture; separate from SQL rollback tests",
+      "cleanup_status": "PENDING"
+    },
+    "enrollment_issue": {
+      "reported_failed": true,
+      "hosted_failure_cause": "UNCONFIRMED",
+      "http_status": null,
+      "partial_writes_ruled_out": false,
+      "local_feedback_defect_confirmed": true,
+      "local_fix_deployed": false,
+      "evidence": "docs/v2/phase-1/evidence/enrollment-feedback-2026-10-25.md",
+      "local_regression_tests_passed": 8
+    }
+  }
+}

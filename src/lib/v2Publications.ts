@@ -1,4 +1,5 @@
-import { isV2ProductCode, isV2ProductSection, type V2ProductCode, type V2Section } from './v2Products';
+import { isV2TemplateProduct as isV2ProductCode, isV2CourseSection as isV2ProductSection, type V2CourseCode } from './v2Templates';
+import type { V2Section } from './v2Products';
 import { V2_TEMPLATE_PRODUCTS } from './v2Templates';
 import { isV2MeetingBatchId } from './v2Meetings';
 
@@ -12,7 +13,7 @@ export type V2PublicationEvent = {
 };
 export type V2Publication = {
   batchId: string; batchRevision: number; revision: number; state: 'published' | 'unpublished';
-  productCode: V2ProductCode; title: string; sections: V2Section[];
+  productCode: V2CourseCode; title: string; sections: V2Section[];
   timeZone: 'Asia/Kolkata'; liveRegistrationLimit: 8 | null; events: V2PublicationEvent[];
 };
 export type V2PublicationProposal = { document: V2Publication; fingerprint: string };

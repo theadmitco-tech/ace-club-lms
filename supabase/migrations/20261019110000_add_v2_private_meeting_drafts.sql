@@ -10,7 +10,7 @@ create table if not exists public.v2_batch_meeting_revisions (
   actor_id uuid not null references public.profiles(id) on delete restrict,
   created_at timestamptz not null default statement_timestamp(),
   primary key (batch_id, revision),
-  foreign key (batch_id, batch_revision) references public.v2_live_batch_revisions(batch_id, revision) on delete restrict,
+  foreign key (batch_id, batch_revision) references public.v2_course_batch_revisions(batch_id, revision) on delete restrict,
   unique (actor_id, request_id)
 );
 alter table public.v2_batch_meeting_revisions enable row level security;
@@ -72,8 +72,8 @@ returns jsonb language plpgsql stable security definer set search_path = '' as $
 declare v_batch jsonb; v_links jsonb; v_saved public.v2_batch_meeting_revisions%rowtype;
 begin
   if not public.is_portal_admin() then raise exception 'Active Admin access required' using errcode='42501'; end if;
-  select r.document into v_batch from public.v2_live_batches b
-    join public.v2_live_batch_revisions r on r.batch_id=b.id and r.revision=b.latest_revision
+  select r.document into v_batch from public.v2_course_batches b
+    join public.v2_course_batch_revisions r on r.batch_id=b.id and r.revision=b.latest_revision
     where b.id=p_batch_id and b.state='draft';
   if not found then raise exception 'Draft batch unavailable' using errcode='22023'; end if;
   select * into v_saved from public.v2_batch_meeting_revisions where batch_id=p_batch_id order by revision desc limit 1;
@@ -96,7 +96,7 @@ create or replace function public.save_v2_meeting_draft(p_request jsonb)
 returns jsonb language plpgsql security definer set search_path = '' as $$
 declare
   v_actor uuid := auth.uid(); v_id uuid; v_token uuid; v_expected integer; v_current integer;
-  v_head public.v2_live_batches%rowtype; v_batch jsonb; v_saved public.v2_batch_meeting_revisions%rowtype;
+  v_head public.v2_course_batches%rowtype; v_batch jsonb; v_saved public.v2_batch_meeting_revisions%rowtype;
 begin
   perform 1 from public.profiles where id=v_actor and role='admin' and is_active=true for share;
   if not found then raise exception 'Active Admin access required' using errcode='42501'; end if;
@@ -111,13 +111,13 @@ begin
     return jsonb_build_object('batchId',v_id,'batchRevision',v_saved.batch_revision,'revision',v_saved.revision,'replayed',true);
   end if;
   -- Sharing the batch row lock serializes meeting saves with schedule edits.
-  select * into v_head from public.v2_live_batches where id=v_id for update;
+  select * into v_head from public.v2_course_batches where id=v_id for update;
   if not found then raise exception 'Draft batch unavailable' using errcode='22023'; end if;
   if v_head.state <> 'draft' then raise exception 'Only draft meeting details can be changed here' using errcode='22023'; end if;
   if v_head.latest_revision <> (p_request->>'batchRevision')::integer then raise exception 'Batch revision changed' using errcode='40001'; end if;
   select coalesce(max(revision),0) into v_current from public.v2_batch_meeting_revisions where batch_id=v_id;
   if v_current <> v_expected then raise exception 'Meeting revision changed' using errcode='40001'; end if;
-  select document into v_batch from public.v2_live_batch_revisions where batch_id=v_id and revision=v_head.latest_revision;
+  select document into v_batch from public.v2_course_batch_revisions where batch_id=v_id and revision=v_head.latest_revision;
   if jsonb_array_length(p_request->'links') <> jsonb_array_length(v_batch->'events') or exists (
     select 1 from jsonb_array_elements(p_request->'links') l where not exists (
       select 1 from jsonb_array_elements(v_batch->'events') e where e->>'key'=l->>'key'

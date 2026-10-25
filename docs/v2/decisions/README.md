@@ -4,7 +4,9 @@ Status: Active
 Owner: Product owner and Engineering
 Last updated: 20 October 2026
 
-Start with the [supplied decision record](owner-decisions-2026-10-20.md).
+First apply the [25 October course-model correction](course-model-correction-2026-10-25.md). Phase 2 review is paused; complete individual courses replace compressed-course assumptions.
+
+Then read the [supplied decision record](owner-decisions-2026-10-20.md).
 The approved rows supersede conflicting older V2 planning requirements. Pending
 and Deferred rows do not authorize dependent implementation. The source's Draft
 heading, qualified approval wording and blank dates are preserved.
@@ -62,8 +64,9 @@ data. The migration tooling and synthetic tests can be prepared locally.
 1. Six-month access denial is now confirmed for Phase 1. Notifications and
    upgrade access periods remain later-phase decisions, not blockers to reviewing
    the initial-purchase entitlement foundation.
-2. Specify whether purchased products expose all published batches or one
-   registered batch. B2 remains Pending and does not resolve this reader rule.
+2. Resolved on 25 October: Students see only their enrolled batch, subject to
+   active product entitlement. See [enrolled-batch access](enrolled-batch-access-2026-10-25.md).
+   Public registration B2 remains Pending.
 3. Define the registration unit for Full Course's three components and payment
    concurrency at the eight-student limit.
 4. Confirm the accepted code baseline and exact staging setup/release sequence.

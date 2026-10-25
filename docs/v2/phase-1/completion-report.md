@@ -1,8 +1,17 @@
 # Phase 1 — Isolated implementation and acceptance handoff
 
-Status: Active — local candidate verified; staging and product acceptance pending
+Status: Historical implementation handoff; current staging result linked below
 Owner: Engineering and product owner
 Last updated: 20 October 2026
+
+## Current acceptance status — 24 October 2026
+
+PR #23 at `d3020c1c9916c17f6ced27f83ff9ee1be05479f2` contains this implementation.
+The approved Phase 1 migration is now applied to staging and database checks pass.
+Use the [current application report](evidence/staging-application-2026-10-24.md)
+and [execution checklist](manual-verification-checklist.md) for remaining work.
+Browser verification and product acceptance are pending. The earlier access,
+publication and application gates below are historical, not new approval requests.
 
 ## Candidate and scope
 

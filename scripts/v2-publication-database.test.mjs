@@ -64,42 +64,42 @@ test('approved outlines and Admin publication in disposable PostgreSQL', { timeo
     const preview = (input) => JSON.parse(query(as(admin,previewSql(input))));
     const save = (input,proposal=preview(input),user=admin) => JSON.parse(query(as(user,saveSql(input,proposal.fingerprint))));
     const legacyEvent=live('quant'); delete legacyEvent.kind;
-    const oldBatch=createBatch(template('quant_crash',[legacyEvent]),'2028-02-28');
+    const oldBatch=createBatch(template('quant',[legacyEvent]),'2028-02-28');
 
     await t.test('new migrations are transactional, preserve old snapshots and do not modify existing access', () => {
-      const oldSnapshot=snapshot('select * from public.v2_live_batch_revisions');
+      const oldSnapshot=snapshot('select * from public.v2_course_batch_revisions');
       apply(outlineMigration);
       query('create view public.v2_batch_publication_revisions as select 1 as unexpected');
       assert.throws(() => apply(publicationMigration));
       assert.equal(query("select to_regprocedure('public.preview_v2_batch_publication(jsonb)') is null"),'t');
       query('drop view public.v2_batch_publication_revisions');
       apply(publicationMigration);
-      assert.equal(snapshot('select * from public.v2_live_batch_revisions'),oldSnapshot);
+      assert.equal(snapshot('select * from public.v2_course_batch_revisions'),oldSnapshot);
       assert.deepEqual(existing(),before);
       assert.deepEqual(editBatch(oldBatch).events,oldBatch.events);
     });
     let mixed, empty, full;
     await t.test('outlines and empty recording-only schedules need no fake dates; live sessions still require them', () => {
-      for (const [product,section] of [['quant_crash','quant'],['verbal_crash','verbal'],['di_crash','di']]) {
+      for (const [product,section] of [['quant','quant'],['verbal','verbal'],['di','di']]) {
         const batch=createBatch(template(product,[outline(section)]));
         assert.equal(batch.startDate,'');
         assert.equal(batch.events[0].startsAt,null);
         assert.equal(batch.events[0].title,'');
         assert.equal(save(publicationInput(batch)).document.liveRegistrationLimit,null);
       }
-      empty=createBatch(template('di_crash',[]));
+      empty=createBatch(template('di',[]));
       assert.deepEqual(empty.events,[]);
       assert.deepEqual(save(publicationInput(empty)).document.events,[]);
-      full=createBatch(template('full_batch',[outline('quant'),outline('verbal'),outline('di')]));
+      full=createBatch(template('full_course',[outline('quant'),outline('verbal'),outline('di')]));
       assert.deepEqual(save(publicationInput(full)).document.sections,['quant','verbal','di']);
-      const mixedTemplate=template('quant_crash',[outline('quant'),live('quant')]);
+      const mixedTemplate=template('quant',[outline('quant'),live('quant')]);
       assert.throws(() => createBatch(mixedTemplate),/Invalid schedule date/);
       mixed=createBatch(mixedTemplate,'2028-02-29');
       assert.equal(mixed.events[0].startsAt,null);
       assert.equal(mixed.events[1].startsAt,'2028-02-29T18:00:00.000Z');
       assert.equal(mixed.events[1].endsAt,'2028-02-29T19:00:00.000Z');
       for (const patch of [{ localStartTime:'18:00' },{ durationMinutes:60 },{ dayOffset:0 },{ kind:null }]) {
-        assert.throws(() => template('quant_crash',[{ ...outline('quant'),...patch }]),/Invalid/);
+        assert.throws(() => template('quant',[{ ...outline('quant'),...patch }]),/Invalid/);
       }
     });
     await t.test('private meeting drafts accept only live item identities and support no-live batches', () => {
@@ -176,8 +176,8 @@ test('approved outlines and Admin publication in disposable PostgreSQL', { timeo
       assert.match(conflicts.find((item) => item.status==='rejected').reason.message,/revision changed/);
     });
     await t.test('shared request tokens cannot publish two batches and failed writes leave no partial publication', async () => {
-      const batch=createBatch(template('di_crash',[outline('di')]));
-      const batchTwo=createBatch(template('verbal_crash',[outline('verbal')]));
+      const batch=createBatch(template('di',[outline('di')]));
+      const batchTwo=createBatch(template('verbal',[outline('verbal')]));
       const token=randomUUID();
       const requests=[batch,batchTwo].map((item) => ({ ...publicationInput(item),requestId:token }));
       const reviews=requests.map(preview);
@@ -204,7 +204,7 @@ test('approved outlines and Admin publication in disposable PostgreSQL', { timeo
       }
     });
     await t.test('migration reapplication preserves publication, draft and meeting history and legacy access', () => {
-      const tables=['v2_live_batch_revisions','v2_batch_meeting_revisions','v2_batch_publication_revisions'];
+      const tables=['v2_course_batch_revisions','v2_batch_meeting_revisions','v2_batch_publication_revisions'];
       const snapshots=tables.map((name) => snapshot(`select * from public.${name}`));
       apply(outlineMigration); apply(publicationMigration);
       assert.deepEqual(tables.map((name) => snapshot(`select * from public.${name}`)),snapshots);

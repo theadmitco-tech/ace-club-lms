@@ -59,6 +59,8 @@ function harness() {
   const router = { push: (url) => state.pushes.push(url), replace: (url) => state.replacements.push(url),
     refresh: () => { state.refreshes++; } };
   const dependencies = { react, 'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'next-link' },
+    '@/components/DraftRecovery': { DraftRecoveryNotice: 'recovery-notice', useDraftRecovery: () => ({ recovered: null, remember() {}, forget() {}, acknowledge() {}, unavailable: false }) },
+    '@/lib/v2WorkspaceRecovery': {},
     'next/navigation': { useRouter: () => router, usePathname: () => '/admin/v2/templates' } };
   const component = (path, extra = {}) => load(path, { ...dependencies, ...extra }, {
     window, crypto: { randomUUID }, structuredClone,
@@ -99,7 +101,7 @@ const batches = load('src/lib/v2Batches.ts', { './v2Templates': templates });
 const meetings = load('src/lib/v2Meetings.ts', { './v2Batches': batches });
 const batch = () => ({
   id: randomUUID(), templateId: randomUUID(), templateRevision: 1, revision: 1, state: 'draft',
-  productCode: 'quant_crash', title: 'Synthetic batch', startDate: '2028-01-01', timeZone: 'Asia/Kolkata',
+  productCode: 'quant', title: 'Synthetic batch', startDate: '2028-01-01', timeZone: 'Asia/Kolkata',
   events: [{ key: randomUUID(), title: 'Synthetic lesson', section: 'quant', localDate: '2028-01-01',
     localStartTime: '18:00', durationMinutes: 60, instructor: '', capacity: 8,
     startsAt: '2028-01-01T12:30:00.000Z', endsAt: '2028-01-01T13:30:00.000Z' }],
@@ -283,7 +285,7 @@ test('template save failures retain warnings, retries retain their token, succes
   });
   const render = () => app.render('editor', () => Editor({ templates: [] }));
   let tree = render();
-  element(tree, (node) => node.type === 'button' && node.props.children === 'Full Batch').props.onClick();
+  element(tree, (node) => node.type === 'button' && node.props.children === 'Full Course').props.onClick();
   tree = render();
   element(tree, (node) => node.props.id === 'template-title').props.onChange({ target: { value: 'Synthetic template' } });
   tree = render();
@@ -308,7 +310,7 @@ test('template save failures retain warnings, retries retain their token, succes
   assert.equal(app.state.refreshes, 1);
 });
 
-test('batch field edits warn on shared navigation and meeting links use onNavigate', () => {
+test('meeting links respect unsaved batch edits and other mounted draft guards', () => {
   const app = harness();
   const draft = batch();
   const { default: Editor } = app.component('src/app/admin/v2/batches/BatchDraftEditor.tsx', {
@@ -325,10 +327,18 @@ test('batch field edits warn on shared navigation and meeting links use onNaviga
   const link = element(tree, (node) => node.props.href?.endsWith('/meeting'));
   assert.equal(link.props.onClick, undefined);
   const navigation = event();
-  link.props.onNavigate(navigation);
+  app.navigation.AdminDraftLink(link.props).props.onNavigate(navigation);
   assert.equal(navigation.prevented, true);
   app.unmount('editor');
   assert.equal(app.guard.confirmLeave(), true);
+  app.render('publication', () => app.navigation.useAdminDraftGuard(true));
+  const publicationNavigation = event();
+  app.navigation.AdminDraftLink(link.props).props.onNavigate(publicationNavigation);
+  assert.equal(publicationNavigation.prevented, true);
+  app.unmount('publication');
+  const cleanNavigation = event();
+  app.navigation.AdminDraftLink(link.props).props.onNavigate(cleanNavigation);
+  assert.equal(cleanNavigation.prevented, false);
 });
 
 test('private meeting edits warn on shared navigation and clear on unmount', () => {

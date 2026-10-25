@@ -24,7 +24,7 @@ const request = () => ({ id: randomUUID(),templateId: randomUUID(),templateRevis
 const event = () => ({ key: randomUUID(),localDate: '2028-02-29',localStartTime: '00:15',durationMinutes: 60,instructor: '',capacity: 8 });
 const draftFor = (input) => {
   const planned = event();
-  return { id: input.id,productCode: 'quant_crash',templateId: input.templateId,templateRevision: input.templateRevision,
+  return { id: input.id,productCode: 'quant',templateId: input.templateId,templateRevision: input.templateRevision,
     revision: input.expectedRevision+1,state: 'draft',title: input.title,startDate: input.startDate,timeZone: input.timeZone,
     events: [{ ...planned,title: 'Synthetic lesson',section: 'quant',...domain.v2BatchEventInstants(planned) }] };
 };
@@ -43,7 +43,7 @@ test('IST conversion crosses UTC and local calendar boundaries without using the
 test('new batch requests accept template identity but no caller-defined schedule or product', () => {
   const input = request();
   assert.equal(domain.validateV2BatchInput(input),null);
-  for (const patch of [{ events: [] },{ events: [event()] },{ productCode: 'full_batch' },{ state: 'published' },{ actorId: randomUUID() },
+  for (const patch of [{ events: [] },{ events: [event()] },{ productCode: 'full_course' },{ state: 'published' },{ actorId: randomUUID() },
     { timeZone: 'UTC' },{ templateRevision: 0 },{ expectedRevision: 2147483647 },{ title: ' ' },{ title: 'bad\0title' },{ requestId: null }]) {
     assert.equal(typeof domain.validateV2BatchInput({ ...input,...patch }),'string');
   }
@@ -239,10 +239,12 @@ test('the batch page authorizes before loading either templates or batches and h
   let deny=false;
   const calls=[];
   const page=load('src/app/admin/v2/batches/page.tsx',{
+    '../templates/templates.module.css': { default: {} },
     'react/jsx-runtime': { jsx: () => ({}),jsxs: () => ({}) },'@/components/AdminDraftNavigation': {},'./BatchDraftEditor': {}, './PublicationPanel': {},
     'next/navigation': { notFound: () => { throw new Error('Not found'); } },
     '@/lib/server/v2BatchFeature': { isV2BatchAuthoringEnabled: () => enabled },
-    '@/lib/server/portalAuthorization': { requirePortalRole: async (role) => { calls.push(role); if (deny) throw new Error('Denied'); } },
+    '@/lib/server/v2StudentScheduleFeature': { isV2StudentScheduleEnabled: () => true },
+    '@/lib/server/portalAuthorization': { requirePortalRole: async (role) => { calls.push(role); if (deny) throw new Error('Denied'); return { id: 'synthetic-admin', role }; } },
     '@/lib/server/v2Publications': { listV2BatchPublications: async () => { calls.push('publications'); return { status: 'ready',publications: [] }; } },
     '@/lib/server/v2Templates': { listV2TemplateDrafts: async () => { calls.push('templates'); return { status: 'ready',templates: [] }; } },
     '@/lib/server/v2Batches': { listV2BatchDrafts: async () => { calls.push('batches'); return { status: 'ready',drafts: [] }; } },

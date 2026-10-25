@@ -1,0 +1,87 @@
+{
+  "baseCommit": "c8978a107dc209de4eff6e03b1a2773442b44d49",
+  "mode": "isolated UI fixture; synthetic auth and DAL; not staging or authorization evidence",
+  "stylesheetAdjustment": "Remove external font imports from fixture globals.css; other copied screen files remain exact.",
+  "browser": "149.0.7827.55",
+  "hashes": {
+    "src/app/admin/AdminShell.tsx": "17220e822d2269c8f80c7ce65ffe3640ae56c1f9e733e4850e001ee19a5e1bd5",
+    "src/app/admin/admin.css": "8a536bf66de9d105e8e2aa378eddd6434cfafba01dadfe6677158ccc97b6049e",
+    "src/components/AdminDraftNavigation.tsx": "66c2cb37d18fc5ef00d42ed852acba3ea8cfcac3e21b823ba611f98ff841d0ea",
+    "src/components/BrandLogo.tsx": "56a57e01003d4195f1ae2a7b771fbd5ab9dccb84fc9765b88445165fcc583a0f",
+    "src/app/admin/v2/templates/page.tsx": "868cc156fd56228260c5955344fb0f84493ab160085e04ac60cbc4b2f2f1d72d",
+    "src/app/admin/v2/templates/TemplateEditor.tsx": "cef31b67b42eda4fdf4b70cca349c18a04116e55d96e1f6c7bf56ce3caa1cb8a",
+    "src/app/admin/v2/templates/actions.ts": "649e9f6e158f0ca8b46c1ee85e2b224bdb9519deb123dbb795f30338f35894ad",
+    "src/app/admin/v2/templates/templates.module.css": "b3744b2470ecbd57126b603d496f575504b5991fe843e14824ba4d81ce8c545a",
+    "src/app/admin/v2/batches/page.tsx": "5a49dedd8dda2b158ca5ac375e7d878b6814265cf50735aee09f366a44e51915",
+    "src/app/admin/v2/batches/BatchDraftEditor.tsx": "195807fb5b7ae5096ff502de57a807d3a5317e3566d534d47531605af454e140",
+    "src/app/admin/v2/batches/PublicationPanel.tsx": "951e6034dada356dd6bef39163a2985c5618dbe75d6340aab7909af96aef8b19",
+    "src/app/admin/v2/batches/actions.ts": "2b315677034de2e5e02ee4946d2a9b1cfac7638243598e9496df94e438be40f4",
+    "src/app/admin/v2/batches/[batchId]/meeting/page.tsx": "f3ef35cda88462d2f93f6b32c2e17876432c1523caae27b32ee8e4da596c133b",
+    "src/app/admin/v2/batches/[batchId]/meeting/MeetingDraftEditor.tsx": "ce47a4c6aff1058b5926f03f5d946906702e678e1f9d32bdb86ee74fdb28f72c",
+    "src/app/admin/v2/batches/[batchId]/meeting/actions.ts": "00a333d7415d92e22c747c1977980e33e95d6aafb1d170b3fb51e8d79e063297",
+    "src/lib/v2Products.ts": "90a094d4dec4b0d808b253a8c556b5ba91f4fd010ed15a75a371bfad79172fc4",
+    "src/lib/v2Templates.ts": "988692af060d334b93888dd747d96b575c232072b1d73877ac6fd8e027b30559",
+    "src/lib/v2Batches.ts": "9ac8b597e0baed4a29a28643fdabcab4128e2b86936270297890432627c76219",
+    "src/lib/v2Meetings.ts": "714ee6ea4ce540d73b18876d5822ba7df27e26de377f5e79d5f7399d4a345a85",
+    "src/lib/v2Publications.ts": "fdb44ad2c1cbcf57ad7043483e5ac4b10a73189a7e385b7af020c31becac9400",
+    "public/5.svg": "6712128c2ebc5febc738bda30b4eb69d794eaa96f4908ffa14ff213e5ca0f068",
+    "public/6.svg": "81cd3689a08965edb8cbc24aa4abc99887faa9d148e9a96ac99958e7481625b6",
+    "src/app/globals.css": "690066d83344100d091d06483c787145cb63558dbbe1d9d2494e73faf96545bd"
+  },
+  "results": [
+    {
+      "name": "Empty screens and recoverable list errors",
+      "status": "passed"
+    },
+    {
+      "name": "Four product forms, keyboard save and native validation",
+      "status": "passed"
+    },
+    {
+      "name": "Template interrupted save, busy state and retry identity",
+      "status": "passed"
+    },
+    {
+      "name": "Batch review, publish, independent edits, unpublish and republish",
+      "status": "passed"
+    },
+    {
+      "name": "Batch stale errors and interrupted confirmations preserve review",
+      "status": "passed"
+    },
+    {
+      "name": "Publication review protects meeting-link navigation",
+      "status": "passed"
+    },
+    {
+      "name": "Publication stale and interrupted responses keep the confirmation safe",
+      "status": "passed"
+    },
+    {
+      "name": "Meeting validation, stale failure, lost confirmation and reload",
+      "status": "passed"
+    },
+    {
+      "name": "Unsaved navigation cancellation, reload and sign-out",
+      "status": "passed"
+    },
+    {
+      "name": "Responsive forms and long titles at 320px",
+      "status": "passed"
+    },
+    {
+      "name": "Responsive forms and long titles at 390px",
+      "status": "passed"
+    },
+    {
+      "name": "Responsive forms and long titles at 768px",
+      "status": "passed"
+    },
+    {
+      "name": "Mobile navigation has an accessible name and avoids hidden keyboard targets",
+      "status": "passed"
+    }
+  ],
+  "blockedOrigins": [],
+  "browserErrors": []
+}

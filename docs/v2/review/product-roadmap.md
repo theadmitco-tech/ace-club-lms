@@ -1,5 +1,7 @@
 # Ace Club LMS V2 — Product Roadmap
 
+> Current correction — 25 October 2026: [approved course model](../decisions/course-model-correction-2026-10-25.md) controls terminology and structure. Quant, Verbal and DI are complete individual courses; Full Course contains all three. Every course retains sessions, materials, recordings, pre-session reads and post-session reads. Only actual live classes require scheduling. Phase 2 review is paused; PR #24 stays Draft.
+
 > Authority update — 20 October 2026: [preserved approvals](../decisions/README.md) supersede conflicting older requirements. The later [expiry confirmation](../decisions/phase-1-expiry-confirmation-2026-10-20.md) confirms denial after six months. This candidate implements Phase 1 only; later-phase implementation remains separate.
 
 Status: Draft for Product Owner review
@@ -12,17 +14,17 @@ This roadmap sequences the V2 acceptance criteria into intern-sized delivery pha
 
 V2 is an online-first LMS with two product types:
 
-- **Full Batch:** Quant + Verbal + DI together, delivered over approximately eight weeks.
-- **Crash Course:** Quant, Verbal, or DI individually, delivered over approximately one week when a live batch is available, with recordings always available.
+- **Full Course:** Quant + Verbal + DI together, delivered over approximately eight weeks.
+- **Individual course:** Quant, Verbal, or DI individually, complete courses with optional live classes and recording/material access.
 
 Launch pricing:
 
-- One Crash Course: ₹10,000.
-- Two Crash Courses: ₹18,000.
-- All three Crash Courses: ₹25,000, as approved in V2-DEC-03; this remains distinct from Full Batch.
-- Full Batch: ₹25,000.
+- One individual course: ₹10,000.
+- Two individual courses: ₹18,000.
+- All three individual courses: ₹25,000, as approved in V2-DEC-03; this remains distinct from Full Course.
+- Full Course: ₹25,000.
 
-Full Batch cannot be assembled by purchasing Crash Courses in parts. Students receive six months of access from successful payment. Live attendance is optional; recordings and website materials remain available.
+Full Course cannot be assembled by purchasing individual courses in parts. Students receive six months of access from successful payment. Live attendance is optional; recordings and website materials remain available.
 
 ## Phase summary
 
@@ -30,7 +32,7 @@ Full Batch cannot be assembled by purchasing Crash Courses in parts. Students re
 |---|---|---|---|
 | 0 | Product and technical baseline | Intern + Engineering | Scope, flows, data model, and risks reviewed |
 | 1 | Product catalogue and entitlement foundation | Intern | Product access boundaries pass |
-| 2 | Full Batch and Crash Course publishing | Intern | Admin can publish both product types |
+| 2 | Full Course and individual course publishing | Intern | Admin can publish both product types |
 | 3 | Self-registration and payment | Intern | Verified payment creates correct access |
 | 4 | Website learning delivery | Intern | Recordings, pre-reads, and materials work online |
 | 5 | Admin publishing and content workflow | Intern | Admin can preview and publish materials safely |
@@ -47,7 +49,7 @@ Convert the approved decisions into an implementation-ready specification withou
 
 - Read `AGENTS.md`, the existing MVP documentation, V2 product decisions, acceptance criteria, and coding/release rules.
 - Map current MVP users, courses, sessions, materials, registrations, payments, enrollments, and release logic.
-- Identify which existing structures can support Full Batch, Crash Course, section entitlements, six-month expiry, and independent schedules.
+- Identify which existing structures can support Full Course, individual course, section entitlements, six-month expiry, and independent schedules.
 - Define the smallest safe additive data model, if changes are required.
 - Define the Admin and Student journeys with screenshots or wireframes where useful.
 - Prepare a compatibility and rollback note for existing MVP students.
@@ -56,8 +58,8 @@ Convert the approved decisions into an implementation-ready specification withou
 ### Exit gate
 
 - [ ] No conflict remains between the product decisions and acceptance criteria.
-- [ ] Full Batch cannot be accidentally purchased or granted by section.
-- [ ] Crash Course access boundaries are defined.
+- [ ] Full Course cannot be accidentally purchased or granted by section.
+- [ ] individual course access boundaries are defined.
 - [ ] Existing MVP student treatment is documented.
 - [ ] Proposed migrations and rollback approach are reviewed before implementation.
 
@@ -65,17 +67,17 @@ Convert the approved decisions into an implementation-ready specification withou
 
 ### Objective
 
-Represent Full Batch and the three Crash Courses as explicit products with correct pricing and access rules.
+Represent Full Course and the three individual courses as explicit products with correct pricing and access rules.
 
 ### Work
 
-- Add product definitions for Full Batch, Quant Crash Course, Verbal Crash Course, and DI Crash Course.
+- Add product definitions for Full Course, Quant individual course, Verbal individual course, and DI individual course.
 - Store prices as commercial configuration.
 - Model section entitlements separately from product presentation where necessary.
 - Apply six-month access expiry from verified payment time.
-- Ensure Full Batch grants all three sections together.
-- Ensure Crash Courses grant only the purchased section.
-- Prevent Crash Courses from silently creating Full Batch entitlement.
+- Ensure Full Course grants all three sections together.
+- Ensure individual courses grant only the purchased section.
+- Prevent individual courses from silently creating Full Course entitlement.
 - Preserve current MVP access while migration remains unapproved.
 
 ### Exit gate
@@ -84,9 +86,9 @@ Represent Full Batch and the three Crash Courses as explicit products with corre
 - [ ] Pricing is correct.
 - [ ] Entitlement tests pass for every product.
 - [ ] Expired access is denied consistently.
-- [ ] Cross-section and Full Batch leakage tests pass.
+- [ ] Cross-section and Full Course leakage tests pass.
 
-## Phase 2 — Full Batch and Crash Course publishing
+## Phase 2 — Full Course and individual course publishing
 
 ### Objective
 
@@ -94,23 +96,23 @@ Allow an Admin to publish product-specific batch details without manually recons
 
 ### Work
 
-- Create separate Admin flows or templates for Full Batch and Crash Course.
-- Support approximately eight-week Full Batch schedules.
-- Support approximately one-week Crash Course schedules.
+- Create separate Admin flows or templates for Full Course and individual course.
+- Support approximately eight-week Full Course schedules.
+- Support complete individual courses with optional live-class schedules; no compressed-duration assumption.
 - Allow Admins to configure other durations where approved.
 - Specify included sections, delivery mode, dates, times, instructors, Google Meet details, recordings, and materials.
-- Allow Full Batch and Crash Course schedules to differ.
+- Allow Full Course and individual course schedules to differ.
 - Publish, edit, unpublish, and republish batch details.
-- Keep live capacity at eight by default.
-- Defer waitlist implementation unless separately approved.
+- Limit live-course registration to eight students.
+- Exclude per-session reservations and waitlists from the current scope.
 
 ### Exit gate
 
-- [ ] Admin can publish a Full Batch.
-- [ ] Admin can publish Quant, Verbal, and DI Crash Courses.
-- [ ] Full Batch and Crash Course schedules remain independent.
-- [ ] A Crash Course can be recording/materials-only when no live batch exists.
-- [ ] Published schedule changes appear to entitled students.
+- [ ] Admin can publish a Full Course.
+- [ ] Admin can publish Quant, Verbal, and DI individual courses.
+- [ ] Full Course and individual course schedules remain independent.
+- [ ] An individual course can be recording/materials-only when no live batch exists.
+- [ ] Published schedule changes appear only to entitled students enrolled in that batch.
 
 ## Phase 3 — Self-registration and payment
 
@@ -132,8 +134,8 @@ Allow students to select and pay for a product without routine Admin enrollment.
 ### Exit gate
 
 - [ ] A student can complete a successful purchase end-to-end in staging.
-- [ ] Full Batch purchase grants all three sections.
-- [ ] Crash Course purchase grants only the selected section.
+- [ ] Full Course purchase grants all three sections.
+- [ ] individual course purchase grants only the selected section.
 - [ ] No manual enrollment is required for the normal path.
 - [ ] Payment failure and retry scenarios are safe and idempotent.
 
@@ -157,8 +159,8 @@ Make the website the reliable primary delivery surface for live information, rec
 
 ### Exit gate
 
-- [ ] Full Batch students see Quant, Verbal, and DI.
-- [ ] Crash Course students see only their purchased section.
+- [ ] Full Course students see Quant, Verbal, and DI.
+- [ ] individual course students see only their purchased section.
 - [ ] Recording-only access works when no live batch is published.
 - [ ] Live attendance is optional and does not affect website access.
 - [ ] Protected resources cannot be opened by unauthorised users.
@@ -199,13 +201,13 @@ Verify the complete V2 flow on local and staging environments before any Product
 
 ### Review journeys
 
-1. Full Batch purchase and access.
-2. Quant Crash Course purchase and access.
-3. Verbal Crash Course purchase and access.
-4. DI Crash Course purchase and access.
+1. Full Course purchase and access.
+2. Quant individual course purchase and access.
+3. Verbal individual course purchase and access.
+4. DI individual course purchase and access.
 5. Recording-only access with no live batch.
 6. Live schedule publication and update.
-7. Eight-seat live-session reservation behavior.
+7. Eight-student live-course registration limit.
 8. Recording upload, replacement, and deletion.
 9. Pre-read access and visual progress state.
 10. Admin preview and immediate publication.
@@ -251,7 +253,7 @@ Prepare a separate, reversible Production release after V2 staging acceptance.
 - Attendance analytics.
 - Automated grading and advanced learning analytics.
 - Scheduled content publishing.
-- Full Batch assembled through Crash Course purchases.
+- Full Course assembled through individual course purchases.
 - Unapproved migration of existing MVP data.
 - Unrelated repository cleanup.
 

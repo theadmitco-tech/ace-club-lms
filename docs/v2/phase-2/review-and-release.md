@@ -1,8 +1,42 @@
 # V2 Phases 1 and 2 — Coordinated staging handoff
 
-Status: Active — separate review candidates; hosted setup and acceptance pending
+Status: Active — Phase 1 staging SQL verified; browser acceptance and Phase 2 approval pending
 Owner: Engineering and product owner
-Last updated: 20 October 2026
+Last updated: 24 October 2026
+
+Current checkpoint, 25 October: PR #23 is merged at `6447f5b` on
+`codex/v2-integration`. Draft PR #24 now targets that base at `c67cfe7`; its
+description is updated and exact-head CI and LMS Preview passed. The local
+recovery/enrolled-schedule work is outside that candidate. The historical
+candidate table and sequence below do not describe the current PR state.
+Student batch eligibility is resolved; shared Phase 2 setup remains prohibited
+until separately authorized. [Content-preservation tooling](content-preservation.md)
+has been prepared locally and has not captured hosted data.
+
+25 October checkpoint: Phase 1 staging migration and verification are confirmed
+complete, with its final review handled separately. Do not rerun that migration.
+The owner confirmed Flexible Mocks is a pre-existing configuration issue unrelated
+to PR #23 and excluded it from the LMS merge gate. The
+[current Phase 2 local report](evidence/admin-completion-2026-10-25.md) records
+262 passing tests and 28 browser scenarios. Phase 2 migrations and hosted setup
+remain separately gated; the historical sequence below is not execution authority.
+
+A subsequent [enrolled-schedule follow-up](evidence/enrolled-schedules-2026-10-25.md)
+adds proposed migration `20261025100000` and the off-by-default
+`V2_STUDENT_SCHEDULE_ENABLED` flag. Include it in the next candidate review; the
+earlier migration sequence below does not authorize applying this addition.
+
+The approved Phase 1 migration has been applied to staging after a private backup
+and recovery rehearsal. SQL verification passed, synthetic fixtures rolled back,
+and existing application data stayed unchanged. The
+[24 October application report](../phase-1/evidence/staging-application-2026-10-24.md)
+supersedes the earlier database-access blocker and pending Phase 1 application.
+Current Preview browser acceptance is still pending. Both PRs were rechecked as
+Draft and unmerged. Phase 2 has not been applied and needs separate approval after
+Phase 1 verification is accepted.
+
+The [earlier staging review](../review/staging-database-inspection-2026-10-21.md)
+retains both PR checksums, exact deployment URLs, CI evidence and the recovery plan.
 
 25 October reconciliation: PR #23 has been squash-merged into
 `codex/v2-integration` at `6447f5b5cae0b868de5f98d123c5af5b1c414bd6`.
@@ -17,12 +51,21 @@ Phase 1 migration**. No Phase 2 migration or existing-data change is authorized.
 | Phase | Branch and base | Review scope |
 |---|---|---|
 | 1 | `intern/v2-onboarding` at `d3020c1`; base `codex/v2-integration` | Catalogue, prices, grants, six-month expiry; draft [PR #23](https://github.com/theadmitco-tech/ace-club-lms/pull/23) |
-| 2 | `intern/v2-phase-2-review`; base `intern/v2-onboarding` at `d3020c1` | Admin templates, independent schedules, private Meet drafts and reviewed batch publication |
+| 2 | `intern/v2-phase-2-review`; base `intern/v2-onboarding` at `d3020c1` | Admin templates, independent schedules, private Meet drafts and reviewed batch publication; draft [PR #24](https://github.com/theadmitco-tech/ace-club-lms/pull/24) |
 
 Phase 2 application commit: `26ec141561a0749dba371409273c1f1ee9906049`.
-The final documentation commit will be the published review head. Use that exact
-head for CI and Preview evidence; an older deployment does not verify this diff.
+Submitted review head: `c8978a107dc209de4eff6e03b1a2773442b44d49`, confirmed
+through GitHub metadata on 21 October 2026. Use the exact candidate head for CI and Preview
+evidence; an older deployment does not verify a newer diff.
 The preserved combined source branch is not a publication target.
+
+Local follow-up `intern/v2-phase-2-browser-qa` at `171efd2` fixes draft-navigation
+warnings, long-title mobile overflow and mobile-menu keyboard behavior. It passes
+13 synthetic browser scenarios and all 229 regression tests. The
+[browser report](evidence/browser-qa-2026-10-20.md) includes screenshots and limits.
+These fixes are not yet in PR #24. Review them before publishing a new candidate,
+then update the exact commit used for hosted checks. No staging gate is satisfied
+by the synthetic browser fixture alone.
 
 The [Phase 1 completion report](../phase-1/completion-report.md) and
 [Phase 2 delivery report](approved-delivery-report.md) define separate acceptance
@@ -31,6 +74,10 @@ registration allocation, content associations and hosted release decisions
 remain unresolved. This handoff does not mark either phase accepted.
 
 ## Review and staging sequence
+
+This sequence is a reference, not a request to repeat completed approvals or
+configuration checks. Phase 1 application is complete; remaining Phase 1 browser
+acceptance precedes any separate Phase 2 application approval.
 
 1. Review the Phase 1 PR, then the Phase 2-only diff against it. Confirm the
    accepted application lineage before any integration merge or shared migration.
@@ -42,8 +89,8 @@ remain unresolved. This handoff does not mark either phase accepted.
    database-administration privileges.
 4. Run the read-only inspection below and reconcile actual definitions and ledger.
    Prepare a recoverable staging backup and reviewed recovery procedure.
-5. Obtain explicit approval for the specific staging setup. Apply only reviewed
-   missing Phase 1 SQL, then run the Phase 1 checks. Stop on failures or drift.
+5. Obtain explicit approval for the specific Phase 2 staging setup. Phase 1 is
+   already applied and verified; do not rerun its migration. Stop on schema drift.
 6. After Phase 1 staging verification, apply only the approved missing Phase 2
    migrations in the order below. Reinspect definitions, RLS and privileges.
 7. With separate setup approval, enable the two authoring flags on the Phase 2
@@ -59,9 +106,11 @@ catalogue, new checkout or course-capacity allocator is enabled by these PRs.
 
 ## Staging inspection before any write
 
-The earlier catalogue check returned HTTP 404 / `PGRST205`. Its cause remains
-unverified. The supplied decision source reports ledger version `20260925100000`;
-that statement is not a fresh database inspection.
+The earlier catalogue check returned HTTP 404 / `PGRST205`. The 24 October
+pre-application inspection confirmed that Phase 1 tables, functions and ledger
+entry were absent. Phase 1 is now installed and SQL-verified; current Preview
+REST/schema-cache verification remains pending. Keep the checks below for a
+future separately approved Phase 2 application, without replaying Phase 1.
 
 For Phase 1, run [the Phase 1 preflight](../../../scripts/v2-phase-1-schema-preflight.sql).
 For the combined schema, run [the Phase 1/2 preflight](../../../scripts/v2-schema-preflight.sql).
@@ -87,7 +136,7 @@ order by version;
 rollback;
 ```
 
-Do not export stored migration statements or private rows. Objects without
+Keep stored migration statements and private rows out of Git and shared reports. Objects without
 matching ledger entries require reconciliation, not blind replay or ledger repair.
 
 ## Proposed migration order
@@ -103,7 +152,8 @@ matching ledger entries require reconciliation, not blind replay or ledger repai
 
 Use the [candidate checksums](evidence/isolated-review-2026-10-20.md#migration-checksums).
 Do not replay the historical migration directory. A Git push or Vercel deployment
-does not apply these SQL files. No hosted migration has been performed by this task.
+does not apply these SQL files. Only the Phase 1 migration has been applied to
+staging; no Phase 2 migration or Production migration has been applied.
 
 ## Preview verification
 

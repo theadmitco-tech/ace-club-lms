@@ -1,8 +1,33 @@
 # V2 Phase 1 — Review and release gates
 
-Status: Active — isolated local candidate verified; hosted review and acceptance pending
+Status: Active — staging migration and SQL verification passed; browser acceptance pending
 Owner: Engineering and product owner
-Last updated: 20 October 2026
+Last updated: 24 October 2026
+
+## Current result — 24 October
+
+The approved exact PR #23 migration at `d3020c1` has been applied to staging.
+Backup/recovery rehearsal, schema comparison, pricing, synthetic grants, role
+isolation, expiry and revocation checks passed. Existing application data and
+earlier migration records stayed unchanged; synthetic verification rolled back.
+See the [application report](evidence/staging-application-2026-10-24.md).
+
+The [current execution checklist](manual-verification-checklist.md) separates
+completed SQL/local checks from the remaining browser steps. Follow-up verification
+passed eight staging price-revision checks with complete fixture rollback and
+31 focused tests on the exact PR #23 source. A tested standalone role probe is
+ready for the Admin, Student and signed-out browser sessions. Vercel log inspection
+returned HTTP 403; the flexible-mocks failure has not been diagnosed.
+
+Next: complete the current Preview's browser/REST and legacy regression checks,
+resolve or assess the failing flexible-mocks deployment status, and obtain Phase 1
+acceptance. Phase 2 application remains separately gated. Both PRs remain Draft;
+no merge or Production operation is authorized.
+
+## Historical planning — 20 October
+
+The sections below preserve the earlier planning record. The application report
+above supersedes its pending access, recovery and Phase 1 application statements.
 
 Start with the [Phase 1 completion report](completion-report.md). Current branch:
 `intern/v2-phase-1-completion`; verified application commit:

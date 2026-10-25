@@ -12,7 +12,7 @@ const migration = '20261019090000_add_v2_template_drafts.sql';
 const doc = (section = 'quant') => ({ title: 'Synthetic teaching plan', summary: '', durationDays: 7, events: [{
   key: randomUUID(), title: 'Synthetic lesson', section, dayOffset: 0, localStartTime: '18:00', durationMinutes: 60, capacity: 8, instructor: '',
 }] });
-const request = (overrides = {}) => ({ id: randomUUID(), product: 'quant_crash', revision: 0, token: randomUUID(), document: doc(), ...overrides });
+const request = (overrides = {}) => ({ id: randomUUID(), product: 'quant', revision: 0, token: randomUUID(), document: doc(), ...overrides });
 const save = (input) => `select public.save_v2_template_draft(${literal(input.id)}, ${literal(input.product)}, ${input.revision}, ${literal(input.token)}, ${literal(JSON.stringify(input.document))}::jsonb)`;
 const as = (user, sql, role = 'authenticated') => `begin; set local role ${role}; set local request.jwt.claim.sub = ${literal(user ?? '')}; ${sql}; commit;`;
 
@@ -97,15 +97,15 @@ test('V2 draft authoring database behavior', { timeout: 120000 }, async (t) => w
   await t.test('Admin saves an immutable draft with stable product identity and no batch', () => {
     const result = JSON.parse(query(as(actor, save(first))));
     assert.equal(result.replayed, false);
-    assert.deepEqual(result.template, { id: first.id, productCode: 'quant_crash', revision: 1, document: first.document });
+    assert.deepEqual(result.template, { id: first.id, productCode: 'quant', revision: 1, document: first.document });
     assert.equal(query(as(student, 'select count(*) from public.v2_course_templates')), '0');
     assert.equal(query(as(student, 'select count(*) from public.v2_course_template_revisions')), '0');
     assert.equal(query(as(inactive, 'select count(*) from public.v2_course_template_revisions')), '0');
     rejects(as(null, 'select * from public.v2_course_templates', 'anon'), /permission denied/);
     assert.deepEqual(beforeState(), before);
   });
-  await t.test('each product accepts only its own sections; Full Batch permits all three', () => {
-    for (const [product, sections] of Object.entries({ full_batch: ['quant','verbal','di'], quant_crash: ['quant'], verbal_crash: ['verbal'], di_crash: ['di'] })) {
+  await t.test('each product accepts only its own sections; Full Course permits all three', () => {
+    for (const [product, sections] of Object.entries({ full_course: ['quant','verbal','di'], quant: ['quant'], verbal: ['verbal'], di: ['di'] })) {
       for (const section of ['quant','verbal','di']) {
         const sql = as(actor, save(request({ product, document: doc(section) })));
         if (sections.includes(section)) query(sql); else rejects(sql, /Invalid template/);
@@ -143,7 +143,7 @@ test('V2 draft authoring database behavior', { timeout: 120000 }, async (t) => w
     assert.equal(result.template.revision, 2);
     assert.deepEqual(JSON.parse(query(`select document from public.v2_course_template_revisions where template_id='${first.id}' and revision=1`)), first.document);
     rejects(as(actor, save(request({ ...second, token: randomUUID() }))), /revision changed/);
-    rejects(as(actor, save(request({ id: first.id, revision: 2, product: 'full_batch' }))), /product cannot change/);
+    rejects(as(actor, save(request({ id: first.id, revision: 2, product: 'full_course' }))), /product cannot change/);
     assert.equal(JSON.parse(query(as(actor, save(first)))).template.revision, 1);
     const list = JSON.parse(query(as(actor, 'select public.list_v2_template_drafts()')));
     assert.equal(list.find((item) => item.id === first.id).revision, 2);
@@ -161,6 +161,15 @@ test('V2 draft authoring database behavior', { timeout: 120000 }, async (t) => w
     assert.equal(results.filter((item) => item.status === 'fulfilled').length, 1);
     assert.match(results.find((item) => item.status === 'rejected').reason.message, /revision changed/);
     assert.equal(query(`select latest_revision from public.v2_course_templates where id='${first.id}'`), '3');
+  });
+  await t.test('reordering events preserves identities and the earlier immutable revision', () => {
+    const input = request();
+    input.document.events.push({ ...input.document.events[0], key: randomUUID(), title: 'Second synthetic lesson', dayOffset: 1 });
+    query(as(actor, save(input)));
+    const reordered = { ...input, revision: 1, token: randomUUID(), document: { ...input.document, events: [...input.document.events].reverse() } };
+    const result = JSON.parse(query(as(actor, save(reordered))));
+    assert.deepEqual(result.template.document.events, reordered.document.events);
+    assert.deepEqual(JSON.parse(query(`select document from public.v2_course_template_revisions where template_id='${input.id}' and revision=1`)), input.document);
   });
   await t.test('concurrent token reuse for different templates cannot create partial drafts', async () => {
     const token = randomUUID();

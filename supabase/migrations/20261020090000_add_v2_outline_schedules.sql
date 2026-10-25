@@ -19,15 +19,16 @@ begin
     or jsonb_typeof(p_document->'summary') is distinct from 'string'
     or length(p_document->>'summary') > 2000
     or p_document->>'summary' <> btrim(p_document->>'summary', E' \t\n\r\f\013')
-    or jsonb_typeof(p_document->'durationDays') is distinct from 'number'
+    or jsonb_typeof(p_document->'durationDays') not in ('number','null')
     or (p_document->>'durationDays') !~ '^[0-9]{1,3}$'
     or jsonb_typeof(p_document->'events') is distinct from 'array' then return false; end if;
   v_days := (p_document->>'durationDays')::integer;
   if v_days not between 1 and 366 or jsonb_array_length(p_document->'events') > 100 then return false; end if;
   for v_event in select value from jsonb_array_elements(p_document->'events') loop
     if jsonb_typeof(v_event) is distinct from 'object' then return false; end if;
-    if (select count(*) from jsonb_object_keys(v_event)) <> (8 + case when v_event ? 'kind' then 1 else 0 end)
+    if (select count(*) from jsonb_object_keys(v_event)) <> (8 + case when v_event ? 'kind' then 1 else 0 end + case when v_event ? 'content' then 1 else 0 end)
       or not (v_event ?& array['key', 'title', 'section', 'dayOffset', 'localStartTime', 'durationMinutes', 'capacity', 'instructor']) then return false; end if;
+    if v_event ? 'content' and not public.v2_session_content_valid(v_event->'content') then return false; end if;
     if jsonb_typeof(v_event->'key') is distinct from 'string'
       or (v_event->>'key') !~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
       or (v_event->>'key') = any(v_keys)
@@ -56,6 +57,7 @@ begin
       or (v_event->>'durationMinutes') !~ '^[0-9]{1,3}$'
       or jsonb_typeof(v_event->'capacity') is distinct from 'number'
       or (v_event->>'capacity') !~ '^[0-9]{1,4}$' then return false; end if;
+    if v_days is null then return false; end if;
     if (v_event->>'dayOffset')::integer not between 0 and v_days - 1
       or (v_event->>'durationMinutes')::integer not between 15 and 720
       or (v_event->>'capacity')::integer not between 1 and 1000 then return false; end if;
@@ -147,7 +149,7 @@ $$;
 create or replace function public.build_v2_batch_draft(p_request jsonb)
 returns jsonb language plpgsql stable security definer set search_path = '' as $$
 declare
-  v_head public.v2_live_batches%rowtype;
+  v_head public.v2_course_batches%rowtype;
   v_source jsonb; v_product text; v_event jsonb; v_edit jsonb;
   v_events jsonb := '[]'; v_date date; v_start timestamptz; v_end timestamptz;
   v_revision integer;
@@ -155,7 +157,7 @@ begin
   perform public.assert_v2_batch_request(p_request);
   v_revision := (p_request->>'expectedRevision')::integer;
   if v_revision = 0 then
-    if exists (select 1 from public.v2_live_batches where id=(p_request->>'id')::uuid) then
+    if exists (select 1 from public.v2_course_batches where id=(p_request->>'id')::uuid) then
       raise exception 'Batch revision changed' using errcode='40001';
     end if;
     select r.document, t.product_code into v_source, v_product from public.v2_course_templates t
@@ -164,13 +166,13 @@ begin
     if not found then raise exception 'Template revision changed' using errcode='40001'; end if;
 
   else
-    select * into v_head from public.v2_live_batches where id=(p_request->>'id')::uuid;
+    select * into v_head from public.v2_course_batches where id=(p_request->>'id')::uuid;
     if not found or v_head.latest_revision <> v_revision then raise exception 'Batch revision changed' using errcode='40001'; end if;
     if v_head.state <> 'draft' then raise exception 'Only draft schedules can be changed here' using errcode='22023'; end if;
     if v_head.template_id <> (p_request->>'templateId')::uuid or v_head.template_revision <> (p_request->>'templateRevision')::integer then
       raise exception 'Batch template identity cannot change' using errcode='22023';
     end if;
-    select document into v_source from public.v2_live_batch_revisions where batch_id=v_head.id and revision=v_revision;
+    select document into v_source from public.v2_course_batch_revisions where batch_id=v_head.id and revision=v_revision;
     v_product := v_head.product_code;
     if v_source->>'startDate' <> p_request->>'startDate' then
       raise exception 'Template anchor date cannot change; edit event dates instead' using errcode='22023';
@@ -193,6 +195,7 @@ begin
       select value into v_edit from jsonb_array_elements(p_request->'events') where value->>'key'=v_event->>'key';
       if not found then raise exception 'Draft event identities must be preserved' using errcode='22023'; end if;
     end if;
+    if v_event ? 'content' then v_edit := v_edit || jsonb_build_object('content',v_event->'content'); end if;
     -- Item type belongs to the source snapshot. Rescheduling cannot turn a
     -- blank outline into a live event without a separately reviewed content edit.
     if coalesce(v_edit->>'kind','live') <> coalesce(v_event->>'kind','live') then raise exception 'Event kind must be preserved' using errcode='22023'; end if;
@@ -268,8 +271,8 @@ returns jsonb language plpgsql stable security definer set search_path = '' as $
 declare v_batch jsonb; v_links jsonb; v_saved public.v2_batch_meeting_revisions%rowtype;
 begin
   if not public.is_portal_admin() then raise exception 'Active Admin access required' using errcode='42501'; end if;
-  select r.document into v_batch from public.v2_live_batches b
-    join public.v2_live_batch_revisions r on r.batch_id=b.id and r.revision=b.latest_revision
+  select r.document into v_batch from public.v2_course_batches b
+    join public.v2_course_batch_revisions r on r.batch_id=b.id and r.revision=b.latest_revision
     where b.id=p_batch_id and b.state='draft';
   if not found then raise exception 'Draft batch unavailable' using errcode='22023'; end if;
   select * into v_saved from public.v2_batch_meeting_revisions where batch_id=p_batch_id order by revision desc limit 1;
@@ -292,7 +295,7 @@ create or replace function public.save_v2_meeting_draft(p_request jsonb)
 returns jsonb language plpgsql security definer set search_path = '' as $$
 declare
   v_actor uuid := auth.uid(); v_id uuid; v_token uuid; v_expected integer; v_current integer;
-  v_head public.v2_live_batches%rowtype; v_batch jsonb; v_saved public.v2_batch_meeting_revisions%rowtype;
+  v_head public.v2_course_batches%rowtype; v_batch jsonb; v_saved public.v2_batch_meeting_revisions%rowtype;
 begin
   perform 1 from public.profiles where id=v_actor and role='admin' and is_active=true for share;
   if not found then raise exception 'Active Admin access required' using errcode='42501'; end if;
@@ -307,13 +310,13 @@ begin
     return jsonb_build_object('batchId',v_id,'batchRevision',v_saved.batch_revision,'revision',v_saved.revision,'replayed',true);
   end if;
   -- Sharing the batch row lock serializes meeting saves with schedule edits.
-  select * into v_head from public.v2_live_batches where id=v_id for update;
+  select * into v_head from public.v2_course_batches where id=v_id for update;
   if not found then raise exception 'Draft batch unavailable' using errcode='22023'; end if;
   if v_head.state <> 'draft' then raise exception 'Only draft meeting details can be changed here' using errcode='22023'; end if;
   if v_head.latest_revision <> (p_request->>'batchRevision')::integer then raise exception 'Batch revision changed' using errcode='40001'; end if;
   select coalesce(max(revision),0) into v_current from public.v2_batch_meeting_revisions where batch_id=v_id;
   if v_current <> v_expected then raise exception 'Meeting revision changed' using errcode='40001'; end if;
-  select document into v_batch from public.v2_live_batch_revisions where batch_id=v_id and revision=v_head.latest_revision;
+  select document into v_batch from public.v2_course_batch_revisions where batch_id=v_id and revision=v_head.latest_revision;
   if jsonb_array_length(p_request->'links') <> (select count(*) from jsonb_array_elements(v_batch->'events') e where coalesce(e->>'kind','live') <> 'outline') or exists (
     select 1 from jsonb_array_elements(p_request->'links') l where not exists (
       select 1 from jsonb_array_elements(v_batch->'events') e where e->>'key'=l->>'key' and coalesce(e->>'kind','live') <> 'outline'

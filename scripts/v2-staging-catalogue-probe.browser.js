@@ -2,14 +2,19 @@
 // Public API keys stay in memory; session cookies and browser storage are not read.
 // Only fixed diagnostic fields are printed. No purchase or student data is queried.
 (async () => {
-  const previewOrigin = 'https://ace-club-1vr3qxhtk-theadmitco-techs-projects.vercel.app';
+  // PR #23 branch link verified at d3020c1; recheck its source after any push.
+  const allowedOrigins = new Set([
+    'https://ace-club-a8go51h46-theadmitco-techs-projects.vercel.app',
+    'https://ace-club-lms-git-intern-v2-onboarding-theadmitco-techs-projects.vercel.app',
+  ]);
+  const previewOrigin = location.origin;
   const projectRef = 'eyphkkginlgoaxflauog';
   const stagingOrigin = `https://${projectRef}.supabase.co`;
   const report = { check: 'phase1_public_catalogue', catalogue: 'NOT_RUN', quote: 'NOT_RUN' };
   const finish = (result) => console.info(JSON.stringify({ ...report, result }, null, 2));
 
   try {
-    if (location.origin !== previewOrigin) return finish('WRONG_PREVIEW');
+    if (!allowedOrigins.has(previewOrigin)) return finish('WRONG_PREVIEW');
 
     const resources = performance.getEntriesByType('resource')
       .map((entry) => new URL(entry.name, location.origin));
