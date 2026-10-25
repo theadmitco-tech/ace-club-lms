@@ -101,7 +101,7 @@ const batches = load('src/lib/v2Batches.ts', { './v2Templates': templates });
 const meetings = load('src/lib/v2Meetings.ts', { './v2Batches': batches });
 const batch = () => ({
   id: randomUUID(), templateId: randomUUID(), templateRevision: 1, revision: 1, state: 'draft',
-  productCode: 'quant_crash', title: 'Synthetic batch', startDate: '2028-01-01', timeZone: 'Asia/Kolkata',
+  productCode: 'quant', title: 'Synthetic batch', startDate: '2028-01-01', timeZone: 'Asia/Kolkata',
   events: [{ key: randomUUID(), title: 'Synthetic lesson', section: 'quant', localDate: '2028-01-01',
     localStartTime: '18:00', durationMinutes: 60, instructor: '', capacity: 8,
     startsAt: '2028-01-01T12:30:00.000Z', endsAt: '2028-01-01T13:30:00.000Z' }],
@@ -285,7 +285,7 @@ test('template save failures retain warnings, retries retain their token, succes
   });
   const render = () => app.render('editor', () => Editor({ templates: [] }));
   let tree = render();
-  element(tree, (node) => node.type === 'button' && node.props.children === 'Full Batch').props.onClick();
+  element(tree, (node) => node.type === 'button' && node.props.children === 'Full Course').props.onClick();
   tree = render();
   element(tree, (node) => node.props.id === 'template-title').props.onChange({ target: { value: 'Synthetic template' } });
   tree = render();

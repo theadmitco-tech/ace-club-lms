@@ -8,8 +8,8 @@ set local lock_timeout = '2s';
 
 with expected_tables(name) as (
   values ('v2_products'), ('v2_price_versions'), ('v2_purchases'), ('v2_product_grants'),
-    ('v2_course_templates'), ('v2_course_template_revisions'), ('v2_live_batches'),
-    ('v2_live_batch_revisions'), ('v2_batch_meeting_revisions'), ('v2_batch_publication_revisions'), ('v2_batch_enrollments')
+    ('v2_course_offerings'), ('v2_course_templates'), ('v2_course_template_revisions'), ('v2_course_batches'),
+    ('v2_course_batch_revisions'), ('v2_batch_meeting_revisions'), ('v2_batch_publication_revisions'), ('v2_batch_enrollments')
 ), expected_routines(signature) as (
   values ('public.quote_v2_products(text[])'),
     ('public.can_access_v2_product(text,text)'), ('public.get_my_v2_access()'),

@@ -1,5 +1,5 @@
 import { isV2Publication, isV2PublicationInput, isV2PublicationFingerprint, publicationMatchesInput, type V2PublicationInput, type V2PublicationProposal } from './v2Publications';
-import { isV2TemplateProduct, V2_TEMPLATE_PRODUCTS, type V2TemplateDraft } from './v2Templates';
+import { isV2SessionContent, isV2TemplateProduct, V2_TEMPLATE_PRODUCTS, type V2TemplateDraft } from './v2Templates';
 import { isV2BatchDraft, isV2BatchProposal, type V2BatchDraft, type V2BatchInput, type V2BatchProposal } from './v2Batches';
 import { isV2MeetingBatchId as uuid, validateV2MeetingInput, type V2MeetingInput, type V2MeetingLink } from './v2Meetings';
 
@@ -14,7 +14,7 @@ const nullableNumber = (value: unknown) => value === null || number(value);
 const nullableText = (value: unknown) => value === null || text(value);
 const events = (value: unknown, check: (event: Record<string, unknown>) => boolean) => Array.isArray(value) && value.length <= 100
   && value.every((event) => object(event) && uuid(event.key) && (event.kind === undefined || event.kind === 'live' || event.kind === 'outline')
-    && text(event.instructor) && nullableText(event.localStartTime) && nullableNumber(event.durationMinutes) && number(event.capacity) && check(event));
+    && (event.content === undefined || isV2SessionContent(event.content, true)) && text(event.instructor) && nullableText(event.localStartTime) && nullableNumber(event.durationMinutes) && number(event.capacity) && check(event));
 
 // Scratch documents may be incomplete or invalid while typing. Validate their
 // shape here; existing server/SQL validation still controls every save.
@@ -24,7 +24,7 @@ export function isTemplateWorkspace(value: unknown): value is TemplateWorkspace 
   const doc = draft.document;
   if (!uuid(draft.id) || !revision(draft.revision) || !isV2TemplateProduct(draft.productCode) || !object(doc)) return false;
   const sections: readonly string[] = V2_TEMPLATE_PRODUCTS[draft.productCode].sections;
-  return text(doc.title) && text(doc.summary, 4000) && number(doc.durationDays)
+  return text(doc.title) && text(doc.summary, 4000) && nullableNumber(doc.durationDays)
     && events(doc.events, (event) => text(event.title) && typeof event.section === 'string' && sections.includes(event.section) && nullableNumber(event.dayOffset))
     && (value.retry === null || (object(value.retry) && uuid(value.retry.requestId) && text(value.retry.payload, 250_000)
       && value.retry.payload === JSON.stringify(draft)));

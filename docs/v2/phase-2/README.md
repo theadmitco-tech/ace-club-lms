@@ -4,7 +4,18 @@ Status: Active — isolated review candidate; staging and full phase acceptance 
 Owner: Engineering and product owner
 Last updated: 25 October 2026
 
+## Current correction
+
+Phase 2 review is paused under the [course-model correction](../decisions/course-model-correction-2026-10-25.md). PR #24 remains Draft. Current local work replaces compressed-course assumptions with complete Quant, Verbal, DI and Full Course offerings, private per-session content collections and optional live scheduling. The earlier candidate/check results below are historical until the corrected head is verified and published.
+
+[Correction evidence](evidence/course-model-correction-2026-10-25.md) records the implementation and local checks.
+
 ## Current local follow-up
+
+The [earlier source investigation](content-source-candidates.md) is superseded.
+Complete current course content is the source required by the approved correction.
+Exact source records and associations still require read-only inspection before
+a separately authorized import; legacy short-format seeds are not substitutes.
 
 The [content-mapping review](content-mapping.md) validates explicit source/target
 proposals and prepares a fingerprinted scope report. It supports undated outline
@@ -59,7 +70,7 @@ unchanged. Preserve earlier dated evidence as historical results, not current ac
 
 ## Implemented behavior
 
-- Private templates for Full Batch and Quant, Verbal and DI standalone products.
+- Private templates for Full Course and Quant, Verbal and DI standalone products.
 - Independent batch drafts pinned to a template revision; undated outlines and
   blank non-live placeholders; exact live dates/times in `Asia/Kolkata`.
 - Immutable revisions, stale-edit rejection, idempotent retry recovery and

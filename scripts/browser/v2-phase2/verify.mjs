@@ -109,7 +109,7 @@ async function test(name, run, viewport = { width: 1440, height: 1000 }) {
 }
 async function openBatch(page) {
   await page.goto(`${origin}/admin/v2/batches`);
-  await button(page, 'Synthetic batch · Full Batch · revision 1').click();
+  await button(page, 'Synthetic batch · Full Course · revision 1').click();
 }
 async function runTests() {
   await test('Enrolled schedule renders published live times and undated outlines on mobile', async (page) => {
@@ -186,14 +186,15 @@ async function runTests() {
       await button(page, 'Save draft').click();
       assert.equal(await page.locator('#template-title').evaluate((el) => el.validity.valueMissing), true);
       await page.getByLabel('Title', { exact: true }).fill(`Browser ${code}`);
-      assert.equal(await page.getByLabel('Duration in days').inputValue(), String(product.days));
-      await button(page, 'Add live session').click();
-      const live = page.getByRole('group', { name: 'Live session 1', exact: true });
+      assert.equal(await page.getByLabel('Live schedule span in days (optional without live classes)').inputValue(), product.days === null ? '' : String(product.days));
+      await page.locator('#template-duration').fill('56');
+      await button(page, 'Add live class').click();
+      const live = page.getByRole('group', { name: 'Live class 1', exact: true });
       await visible(live.getByRole('combobox'));
       assert.deepEqual(await live.getByRole('combobox').locator('option').evaluateAll((els) => els.map((el) => el.value)), product.sections);
       await live.getByLabel('Title', { exact: true }).fill('Synthetic live lesson');
-      await button(page, 'Add undated outline item').click();
-      assert.equal(await page.getByRole('group', { name: 'Outline item 2', exact: true }).getByLabel('Local start time').count(), 0);
+      await button(page, 'Add course session').click();
+      assert.equal(await page.getByRole('group', { name: 'Course session 2', exact: true }).getByLabel('Local start time').count(), 0);
       await button(page, 'Save draft').focus();
       await page.keyboard.press('Enter');
       await text(page, 'Draft revision 1 saved.');
@@ -201,9 +202,38 @@ async function runTests() {
     }
     await screenshot(page, 'templates-desktop');
   });
+  await test('Complete individual content saves without a live schedule and survives reload', async (page) => {
+    state.templates = [];
+    await page.goto(`${origin}/admin/v2/templates`);
+    await button(page, 'Quant').click();
+    await page.locator('#template-title').fill('Complete Quant course');
+    assert.equal(await page.locator('#template-duration').inputValue(), '');
+    await button(page, 'Add course session').click();
+    const session = page.getByRole('group', { name: 'Course session 1', exact: true });
+    await session.getByLabel('Title', { exact: true }).fill('Quant fundamentals');
+    assert.equal(await session.getByLabel('Local start time').count(), 0);
+    for (const label of ['Materials', 'Recordings', 'Pre-session reads', 'Post-session reads']) {
+      await button(session, `Add ${label.toLowerCase()} item`).click();
+      const group = session.getByRole('group', { name: `${label} (1)`, exact: true });
+      await group.getByLabel('Title', { exact: true }).fill(`${label} example`);
+      await group.getByLabel('HTTPS link').fill(`https://example.test/${label.toLowerCase().replaceAll(' ', '-')}`);
+    }
+    await button(page, 'Save draft').click();
+    await text(page, 'Draft revision 1 saved.');
+    const saved = structuredClone(state.templates[0]);
+    assert.equal(saved.document.durationDays, null);
+    assert.equal(Object.values(saved.document.events[0].content).every((items) => items.length === 1), true);
+    await page.reload();
+    await button(page, 'Complete Quant course · Quant · revision 1').click();
+    assert.equal(await page.getByLabel('HTTPS link').count(), 4);
+    assert.equal(await page.getByLabel('Local start time').count(), 0);
+    assert.deepEqual(state.templates[0], saved);
+    await noOverflow(page);
+    await screenshot(page, 'complete-individual-content-mobile');
+  }, { width: 390, height: 844 });
   await test('Template interrupted save, busy state and retry identity', async (page) => {
     await page.goto(`${origin}/admin/v2/templates`);
-    await button(page, 'Full Batch').click();
+    await button(page, 'Full Course').click();
     await page.getByLabel('Title', { exact: true }).fill('Retry template');
     state.faults.saveV2TemplateDraft = { delay: 700, interruptAfterSave: true };
     await button(page, 'Save draft').click();
@@ -238,7 +268,7 @@ async function runTests() {
     const publication = page.getByRole('region', { name: 'Review batch publication', exact: true });
     const item = publication.getByRole('listitem').filter({ has: page.getByText('Browser revised batch', { exact: true }) });
     await item.getByRole('button', { name: 'Preview publication', exact: true }).click();
-    await text(page, 'Scope: this batch only · Full Batch · quant, verbal, di');
+    await text(page, 'Scope: this batch only · Full Course · quant, verbal, di');
     assert.equal(state.publications.length, 0);
     await button(page, 'Confirm publish').click();
     await text(page, 'Publication revision 1 published.');
@@ -301,14 +331,14 @@ async function runTests() {
     const previousBatch = structuredClone(state.drafts[0]);
     const initialKeys = state.templates[0].document.events.map(event => event.key);
     await page.goto(`${origin}/admin/v2/templates`);
-    await button(page, 'Synthetic Full Batch · Full Batch · revision 1').click();
+    await button(page, 'Synthetic Full Course · Full Course · revision 1').click();
     assert.equal(await button(page, 'Move event 1 up').isDisabled(), true);
     assert.equal(await button(page, 'Move event 2 down').isDisabled(), true);
     await button(page, 'Move event 2 up').focus();
     await page.keyboard.press('Enter');
     await dialog(page, () => page.reload(), true);
     await button(page, 'Restore edits').click();
-    assert.match(await page.locator('fieldset legend').nth(1).textContent(), /Outline item 1/);
+    assert.match(await page.locator('fieldset legend').nth(1).textContent(), /Course session 1/);
     await button(page, 'Save draft').click();
     await text(page, 'Draft revision 2 saved.');
     const saved = state.templates.find(template => template.id === id(1));
@@ -316,8 +346,8 @@ async function runTests() {
     assert.deepEqual(state.drafts[0], previousBatch);
     await page.reload();
     assert.equal(await button(page, 'Restore edits').count(), 0);
-    await button(page, 'Synthetic Full Batch · Full Batch · revision 2').click();
-    assert.match(await page.locator('fieldset legend').nth(1).textContent(), /Outline item 1/);
+    await button(page, 'Synthetic Full Course · Full Course · revision 2').click();
+    assert.match(await page.locator('fieldset legend').nth(1).textContent(), /Course session 1/);
   });
   await test('Publication review protects meeting-link navigation', async (page) => {
     await page.goto(`${origin}/admin/v2/batches`);
@@ -390,7 +420,7 @@ async function runTests() {
   });
   await test('Template recovery survives navigation and a lost save confirmation after reload', async (page) => {
     await page.goto(`${origin}/admin/v2/templates`);
-    await button(page, 'Full Batch').click();
+    await button(page, 'Full Course').click();
     await page.getByLabel('Title', { exact: true }).fill('Recover this template');
     await dialog(page, () => page.locator('.sidebar-nav-item').filter({ hasText: 'Dashboard' }).click(), true);
     await page.goto(`${origin}/admin/v2/templates`);
@@ -460,7 +490,7 @@ async function runTests() {
   });
   await test('Recovery isolates users, supports discard and clears on sign-out', async (page) => {
     await page.goto(`${origin}/admin/v2/templates`);
-    await button(page, 'Full Batch').click();
+    await button(page, 'Full Course').click();
     await page.getByLabel('Title', { exact: true }).fill('Private user A draft');
     state.ownerId = 'synthetic-user-b';
     await dialog(page, () => page.reload(), true);
@@ -473,7 +503,7 @@ async function runTests() {
     await button(page, 'Discard recovery').click();
     await page.reload();
     assert.equal(await button(page, 'Restore edits').count(), 0);
-    await button(page, 'Full Batch').click();
+    await button(page, 'Full Course').click();
     await page.getByLabel('Title', { exact: true }).fill('Clear on sign-out');
     await dialog(page, () => button(page, 'Sign Out').click(), true);
     await text(page, 'Synthetic sign-out destination');
@@ -482,7 +512,7 @@ async function runTests() {
   await test('Unavailable tab storage reports recovery loss while server saving remains usable', async (page) => {
     await page.goto(`${origin}/admin/v2/templates`);
     await page.evaluate(() => { Storage.prototype.setItem = () => { throw new Error('Synthetic quota error'); }; });
-    await button(page, 'Full Batch').click();
+    await button(page, 'Full Course').click();
     await page.getByLabel('Title', { exact: true }).fill('Storage unavailable');
     await text(page, 'Recovery is unavailable in this tab.');
     await button(page, 'Save draft').click();
@@ -545,7 +575,7 @@ async function runTests() {
 
   await test('Recovered stale template cannot overwrite a newer saved revision', async (page) => {
     await page.goto(`${origin}/admin/v2/templates`);
-    await button(page, 'Synthetic Full Batch · Full Batch · revision 1').click();
+    await button(page, 'Synthetic Full Course · Full Course · revision 1').click();
     await page.locator('#template-title').fill('Old recovered edit');
     await dialog(page, () => page.reload(), true);
     state.templates[0].revision = 2; state.templates[0].document.title = 'Newer saved title';
@@ -613,16 +643,16 @@ async function runTests() {
       state.templates[0].document.title = 'W'.repeat(120);
       state.drafts[0].title = 'B'.repeat(120);
       await page.goto(`${origin}/admin/v2/templates`);
-      await button(page, 'Full Batch').click();
+      await button(page, 'Full Course').click();
       await page.getByLabel('Title', { exact: true }).fill('Synthetic mobile template');
-      await button(page, 'Add live session').click();
+      await button(page, 'Add live class').click();
       await screenshot(page, `template-${width}`);
       await noOverflow(page);
       await dialog(page, () => page.getByRole('link', { name: 'Manage batch drafts' }).click(), true);
       await button(page, 'New batch draft').click();
       await screenshot(page, `batch-${width}`);
       await noOverflow(page);
-      await button(page, `${'B'.repeat(120)} · Full Batch · revision 1`).click();
+      await button(page, `${'B'.repeat(120)} · Full Course · revision 1`).click();
       await button(page, 'Preview publication').click();
       await visible(button(page, 'Confirm publish'));
       await screenshot(page, `publication-${width}`);

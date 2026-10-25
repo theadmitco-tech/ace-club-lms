@@ -13,8 +13,7 @@ historical; its pending Student eligibility and Phase 1 integration statements
 are superseded by this update. Content mappings, capacity allocation and shared
 Phase 2 setup/acceptance remain pending.
 
-Phase 2 adds product-specific batch publishing for Full Batch and the three Crash
-Courses. Task 1 maps the existing tools to those products before choosing a data
+Phase 2 adds product-specific batch publishing for Full Course and the three individual courses. Task 1 maps the existing tools to those products before choosing a data
 model or changing application behavior. Checked discovery items below mean source
 inspection is complete; they do not mean the feature passes in staging.
 
@@ -32,7 +31,7 @@ The older per-session reservation, universal date prerequisites and WhatsApp
 requirements below are superseded. Historical results are retained, not new
 acceptance evidence. Six-month access denial is confirmed by the
 [Phase 1 follow-up](../decisions/phase-1-expiry-confirmation-2026-10-20.md).
-Student batch visibility and hosted release decisions remain open.
+Student batch visibility is now enrolled-batch-only; hosted release decisions remain separate.
 
 ## Working checkpoint
 
@@ -55,21 +54,21 @@ remains relevant before implementation is based on a different release lineage.
 
 ## Product mapping
 
-The product identities come from [Phase 1 types][product-types] and the approved
+Canonical Phase 2 offering codes are defined in `src/lib/v2Templates.ts` and the approved
 [product decisions](../review/product-and-business-decisions.md#v2-dec-02--product-types-and-offers).
 The repository's [older template seeds][template-seeds] are a different catalogue.
 Similar labels do not establish equivalent curriculum, access, or schedules.
 
 | V2 product | Purchased sections | Documented schedule | Existing template relationship | Task 1 finding |
 |---|---|---|---|---|
-| `full_batch` | `quant`, `verbal`, `di` together | Approximately eight weeks | `full-course`, with `qa`, `va`, `di` and `programme` sections | Candidate structure for reuse; requires explicit section/content mapping and V2 product binding |
-| `quant_crash` | `quant` only | Approximately one week when live | No dedicated Quant Crash template in the inspected seed | Requires a Quant template; copying a subset of Full Course content is a proposal requiring curriculum review |
-| `verbal_crash` | `verbal` only | Approximately one week when live | Separate `cr-crash-course` and `rc-crash-course` templates | Neither is automatically the complete Verbal product; the relationship between both curricula and Verbal needs review |
-| `di_crash` | `di` only | Approximately one week when live | `di-crash-course` | Candidate structure for reuse; matching section keys do not prove approved content or schedule |
+| `full_course` | `quant`, `verbal`, `di` together | Approximately eight weeks | `full-course`, with `qa`, `va`, `di` and `programme` sections | Candidate structure for reuse; requires explicit section/content mapping and V2 product binding |
+| `quant` | `quant` only | No default duration; schedule only actual live classes | No dedicated complete Quant template established by the inspected seed | Requires a Quant template; copying a subset of Full Course content is a proposal requiring curriculum review |
+| `verbal` | `verbal` only | No default duration; schedule only actual live classes | Separate `cr-crash-course` and `rc-crash-course` templates | Neither is automatically the complete Verbal product; the relationship between both curricula and Verbal needs review |
+| `di` | `di` only | No default duration; schedule only actual live classes | `di-crash-course` | Candidate structure for reuse; matching section keys do not prove approved content or schedule |
 
-Full Batch remains one complete product. Buying all three Crash Courses does not
-grant the Full Batch schedule. All products include recordings; live participation
-is optional. A Crash Course must remain available through recordings/materials
+Full Course remains one complete product. Buying all three individual courses does not
+grant the Full Course schedule. All products include recordings; live participation
+is optional. An individual course must remain available through recordings/materials
 when no live batch exists. Sources: [product and live criteria][product-live-criteria].
 
 ## Existing tools and required changes
@@ -140,7 +139,7 @@ their names are not evidence that this V2 roadmap phase is already implemented.
 | ID | Required resolution | Responsible role | Work affected |
 |---|---|---|---|
 | D1 | B1 resolves CR/RC as Verbal topics. Supply exact class/content IDs for Quant, Verbal and DI before existing-content mapping. | Product owner supplies curriculum; Engineering records explicit associations | Real template fixtures and shared content references |
-| D2 | Supply representative Full Batch and Crash schedules: class order, dates or day offsets, times, duration and instructor assignments. Confirm `Asia/Kolkata` for entry/display. | Product owner | Real template population and schedule acceptance; synthetic data can support design |
+| D2 | Supply representative Full Course and individual course schedules: class order, dates or day offsets, times, duration and instructor assignments. Confirm `Asia/Kolkata` for entry/display. | Product owner | Real template population and schedule acceptance; synthetic data can support design |
 | D3 | Determine whether a purchase exposes all eligible batches or a selected batch, and how multiple batches are displayed without affecting expiry. | Product owner and Engineering | Batch association and student schedule reader |
 | D4 | C1 resolves eight registrations per live course and no per-session reservations/cancellations/waitlist. Define Full Course allocation and concurrent payment handling. | Product owner and Engineering | LIVE-04 enforcement with Phase 3; protected Meet eligibility |
 | D5 | A1 permits undated outlines; live sessions need exact topic/date/time. Admin publish/unpublish/republish is implemented locally, retaining purchased access. | Engineering implements; product owner reviews | Remaining Student rendering and content association acceptance |
@@ -163,7 +162,7 @@ The following contract is a review checklist, not a new schema or approved UI.
 The [Part 2 draft](data-and-admin-form-plan.md#proposed-admin-journey) supplies the
 proposed fields and behavior; these acceptance boxes remain open until reviewed.
 
-- [ ] Product code and included sections come from the V2 catalogue; Full Batch sections cannot be individually removed.
+- [ ] Product code and included sections come from the V2 catalogue; Full Course sections cannot be individually removed.
 - [ ] Batch title, selected template revision and delivery mode are explicit.
 - [ ] Live mode has validated date/time, time zone, duration, event order, instructor and separate protected Meet details.
 - [ ] Recording-only mode does not require live dates, a Meet link or a live seat.
@@ -193,12 +192,12 @@ expected result, actual result and a sanitized artifact or test output.
 
 | Check | Expected outcome | Requirement | Evidence required |
 |---|---|---|---|
-| [ ] Four product templates | Full Batch has all three sections; each Crash has exactly its section; arbitrary display names do not alter access | PRODUCT-02/03/04, ADMIN-01 | Domain/database tests and Admin Preview journey |
+| [ ] Four product templates | Full Course has all three sections; each individual course has exactly its section; arbitrary display names do not alter access | PRODUCT-02/03/04, ADMIN-01 | Domain/database tests and Admin Preview journey |
 | [ ] Publish lifecycle | Draft, publish, edit, unpublish and republish follow the agreed transitions without partial writes | Phase 2 work, LIVE-02/05 | Database tests and Admin/Student staging comparison |
-| [ ] Independent schedules | Editing Full Batch, a Crash Course or one of two batches leaves the other schedules and purchases unchanged | PRODUCT-04, LIVE-05 | Before/after assertions plus staging journey |
-| [ ] No live batch | Each Crash product remains publishable for recording/material delivery; no fabricated live booking is required | LIVE-01/03 | Domain/data tests and recording-only staging journey |
+| [ ] Independent schedules | Editing Full Course, a individual course or one of two batches leaves the other schedules and purchases unchanged | PRODUCT-04, LIVE-05 | Before/after assertions plus staging journey |
+| [ ] No live batch | Each individual course product remains publishable for recording/material delivery; no fabricated live booking is required | LIVE-01/03 | Domain/data tests and recording-only staging journey |
 | [ ] Current schedule | Entitled students see the latest published schedule, including agreed cancelled/unpublished states; multiple purchases remain distinct | LIVE-05 | Reader tests and staging refresh/navigation checks |
-| [ ] Wrong product | A Quant-only student cannot access Verbal, DI or Full Batch-only schedule/links; all three Crash purchases still do not grant Full Batch | PRODUCT-02/03, SEC-02 | Direct read/RPC/URL tests, not only hidden navigation |
+| [ ] Wrong product | A Quant-only student cannot access Verbal, DI or Full Course-only schedule/links; all three individual purchases still do not grant Full Course | PRODUCT-02/03, SEC-02 | Direct read/RPC/URL tests, not only hidden navigation |
 | [ ] Inactive or expired access | Signed-out, inactive, expired and revoked callers cannot retrieve protected schedule links; boundary failures deny access | PRODUCT-06, SEC-01 | Real database policies and server-reader tests |
 | [ ] Admin-only writes | Student and anonymous callers cannot publish, edit or bypass validation by calling the API/RPC directly | SEC-01/03 | Server action and database permission tests |
 | [ ] Live registration | The agreed course registration path enforces eight, rejects a ninth simultaneous registration and handles duplicate retries without consuming extra places | LIVE-04; D4 allocation must be resolved | Database concurrency and staging registration tests with Phase 3 |
@@ -296,4 +295,4 @@ Line references apply to the inspected application commit; they may move after i
 [product-live-criteria]: ../review/acceptance-criteria.md#1-product-model
 [live-criteria]: ../review/acceptance-criteria.md#3-live-delivery
 [live-decisions]: ../review/product-and-business-decisions.md#b-live-classes-and-schedule
-[phase-2-scope]: ../review/product-roadmap.md#phase-2--full-batch-and-crash-course-publishing
+[phase-2-scope]: ../review/product-roadmap.md#phase-2--full-course-and-individual-course-publishing

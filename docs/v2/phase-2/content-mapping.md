@@ -58,7 +58,7 @@ proposal must use exact values from its reviewed inventory and template files.
 Allowed source tables are `materials`, `master_materials` and
 `course_template_resources`. An item can be proposed for multiple targets only
 through separate bindings. There is no wildcard, inferred title match or automatic
-Full Batch access when three Crash Course targets are selected.
+Full Course access when three individual course targets are selected.
 
 ## Review output and invalidation
 
@@ -86,6 +86,10 @@ revisions/fingerprints and enforce authorization transactionally. This offline
 review must never be treated as that import gate by itself.
 
 ## Remaining review inputs
+
+The [superseded source investigation](content-source-candidates.md) records legacy
+seed names only. Under the [approved correction](../decisions/course-model-correction-2026-10-25.md), preserve complete current Quant, Verbal and DI content;
+short-format seed schedules are not approved replacements for those courses.
 
 For Quant, Verbal (including CR/RC) and DI, identify the existing source courses
 or templates, then confirm exact material IDs and target event identities. Review

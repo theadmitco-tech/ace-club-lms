@@ -4,14 +4,14 @@ import { createHash } from 'node:crypto';
 export const id = (value) => `00000000-0000-4000-8000-${String(value).padStart(12, '0')}`;
 export const fingerprint = (value) => createHash('md5').update(JSON.stringify(value)).digest('hex');
 export const products = {
-  full_batch: { label: 'Full Batch', sections: ['quant', 'verbal', 'di'], days: 56 },
-  quant_crash: { label: 'Quant standalone course', sections: ['quant'], days: 7 },
-  verbal_crash: { label: 'Verbal standalone course', sections: ['verbal'], days: 7 },
-  di_crash: { label: 'DI standalone course', sections: ['di'], days: 7 },
+  full_course: { label: 'Full Course', sections: ['quant', 'verbal', 'di'], days: 56 },
+  quant: { label: 'Quant', sections: ['quant'], days: null },
+  verbal: { label: 'Verbal', sections: ['verbal'], days: null },
+  di: { label: 'DI', sections: ['di'], days: null },
 };
-export function template(code = 'full_batch', index = 1) {
+export function template(code = 'full_course', index = 1) {
   return { id: id(index), productCode: code, revision: 1, document: {
-    title: `Synthetic ${products[code].label}`, summary: '', durationDays: products[code].days,
+    title: `Synthetic ${products[code].label}`, summary: '', durationDays: products[code].days ?? 28,
     events: [
       { key: id(index + 100), kind: 'live', title: 'Synthetic live lesson',
         section: products[code].sections[0], dayOffset: 0, localStartTime: '18:00',
@@ -26,6 +26,7 @@ export function batch(source = template(), index = 10) {
     templateRevision: source.revision, revision: 1, state: 'draft', title: 'Synthetic batch',
     startDate: '2026-11-02', timeZone: 'Asia/Kolkata', events: source.document.events.map((event) => ({
       key: event.key, kind: event.kind, title: event.title, section: event.section,
+      ...(event.content ? { content: structuredClone(event.content) } : {}),
       localDate: event.kind === 'outline' ? null : '2026-11-02',
       localStartTime: event.localStartTime, durationMinutes: event.durationMinutes,
       capacity: 8, instructor: event.instructor, ...instants(event.kind, '2026-11-02', event.localStartTime, event.durationMinutes),
@@ -46,6 +47,7 @@ export function batchProposal(input, state) {
     const date = event.kind === 'outline' ? null
       : new Date(Date.parse(`${input.startDate}T00:00:00Z`) + event.dayOffset * 86400000).toISOString().slice(0, 10);
     return { key: event.key, kind: event.kind, title: event.title, section: event.section,
+      ...(event.content ? { content: structuredClone(event.content) } : {}),
       localDate: date, localStartTime: event.localStartTime, durationMinutes: event.durationMinutes,
       capacity: 8, instructor: event.instructor, ...instants(event.kind, date, event.localStartTime, event.durationMinutes) };
   });

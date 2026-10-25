@@ -15,7 +15,7 @@ const meetings=load('src/lib/v2Meetings.ts',{'./v2Batches':batches});
 const publication=load('src/lib/v2Publications.ts',{'./v2Templates':templates,'./v2Products':products,'./v2Meetings':meetings});
 const enrollment=load('src/lib/v2Enrollments.ts',{'./v2Meetings':meetings});
 const batchId=randomUUID(),studentId=randomUUID();
-const schedule={batchId,batchRevision:1,revision:1,state:'published',productCode:'quant_crash',title:'Synthetic batch',sections:['quant'],timeZone:'Asia/Kolkata',liveRegistrationLimit:null,events:[]};
+const schedule={batchId,batchRevision:1,revision:1,state:'published',productCode:'quant',title:'Synthetic batch',sections:['quant'],timeZone:'Asia/Kolkata',liveRegistrationLimit:null,events:[]};
 function harness(role='student') {
   const state={role,enabled:true,calls:[],clients:0,result:{data:[],error:null},fault:''};
   const deps={'server-only':{},'@/lib/v2Publications':publication,'@/lib/v2Enrollments':enrollment,'@/lib/v2Meetings':meetings,

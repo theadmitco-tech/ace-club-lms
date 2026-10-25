@@ -1,7 +1,7 @@
 -- Independent draft schedules only. Shared migration application needs approval.
 begin;
 
-create table if not exists public.v2_live_batches (
+create table if not exists public.v2_course_batches (
   id uuid primary key,
   template_id uuid not null,
   template_revision integer not null,
@@ -11,8 +11,8 @@ create table if not exists public.v2_live_batches (
   foreign key (template_id, template_revision) references public.v2_course_template_revisions(template_id, revision) on delete restrict,
   foreign key (template_id, product_code) references public.v2_course_templates(id, product_code) on delete restrict
 );
-create table if not exists public.v2_live_batch_revisions (
-  batch_id uuid not null references public.v2_live_batches(id) on delete restrict,
+create table if not exists public.v2_course_batch_revisions (
+  batch_id uuid not null references public.v2_course_batches(id) on delete restrict,
   revision integer not null check (revision > 0),
   document jsonb not null check (jsonb_typeof(document) = 'object'),
   request jsonb not null check (jsonb_typeof(request) = 'object'),
@@ -24,21 +24,21 @@ create table if not exists public.v2_live_batch_revisions (
   unique (actor_id, request_id)
 );
 do $$ begin
-  if not exists (select 1 from pg_constraint where conrelid='public.v2_live_batches'::regclass and conname='v2_batch_current_revision') then
-    alter table public.v2_live_batches add constraint v2_batch_current_revision
-      foreign key (id, latest_revision) references public.v2_live_batch_revisions(batch_id, revision)
+  if not exists (select 1 from pg_constraint where conrelid='public.v2_course_batches'::regclass and conname='v2_batch_current_revision') then
+    alter table public.v2_course_batches add constraint v2_batch_current_revision
+      foreign key (id, latest_revision) references public.v2_course_batch_revisions(batch_id, revision)
       deferrable initially deferred;
   end if;
 end $$;
 
-alter table public.v2_live_batches enable row level security;
-alter table public.v2_live_batch_revisions enable row level security;
-revoke all on public.v2_live_batches, public.v2_live_batch_revisions from public, anon, authenticated, service_role;
-grant select on public.v2_live_batches, public.v2_live_batch_revisions to authenticated;
-drop policy if exists v2_batch_admin_read on public.v2_live_batches;
-create policy v2_batch_admin_read on public.v2_live_batches for select to authenticated using (public.is_portal_admin());
-drop policy if exists v2_batch_revision_admin_read on public.v2_live_batch_revisions;
-create policy v2_batch_revision_admin_read on public.v2_live_batch_revisions for select to authenticated using (public.is_portal_admin());
+alter table public.v2_course_batches enable row level security;
+alter table public.v2_course_batch_revisions enable row level security;
+revoke all on public.v2_course_batches, public.v2_course_batch_revisions from public, anon, authenticated, service_role;
+grant select on public.v2_course_batches, public.v2_course_batch_revisions to authenticated;
+drop policy if exists v2_batch_admin_read on public.v2_course_batches;
+create policy v2_batch_admin_read on public.v2_course_batches for select to authenticated using (public.is_portal_admin());
+drop policy if exists v2_batch_revision_admin_read on public.v2_course_batch_revisions;
+create policy v2_batch_revision_admin_read on public.v2_course_batch_revisions for select to authenticated using (public.is_portal_admin());
 
 create or replace function public.v2_batch_date(p_value text)
 returns date language plpgsql immutable set search_path = '' as $$
@@ -128,7 +128,7 @@ $$;
 create or replace function public.build_v2_batch_draft(p_request jsonb)
 returns jsonb language plpgsql stable security definer set search_path = '' as $$
 declare
-  v_head public.v2_live_batches%rowtype;
+  v_head public.v2_course_batches%rowtype;
   v_source jsonb; v_product text; v_event jsonb; v_edit jsonb;
   v_events jsonb := '[]'; v_date date; v_start timestamptz; v_end timestamptz;
   v_revision integer;
@@ -136,7 +136,7 @@ begin
   perform public.assert_v2_batch_request(p_request);
   v_revision := (p_request->>'expectedRevision')::integer;
   if v_revision = 0 then
-    if exists (select 1 from public.v2_live_batches where id=(p_request->>'id')::uuid) then
+    if exists (select 1 from public.v2_course_batches where id=(p_request->>'id')::uuid) then
       raise exception 'Batch revision changed' using errcode='40001';
     end if;
     select r.document, t.product_code into v_source, v_product from public.v2_course_templates t
@@ -147,13 +147,13 @@ begin
       raise exception 'A live schedule requires a template with planned events' using errcode='22023';
     end if;
   else
-    select * into v_head from public.v2_live_batches where id=(p_request->>'id')::uuid;
+    select * into v_head from public.v2_course_batches where id=(p_request->>'id')::uuid;
     if not found or v_head.latest_revision <> v_revision then raise exception 'Batch revision changed' using errcode='40001'; end if;
     if v_head.state <> 'draft' then raise exception 'Only draft schedules can be changed here' using errcode='22023'; end if;
     if v_head.template_id <> (p_request->>'templateId')::uuid or v_head.template_revision <> (p_request->>'templateRevision')::integer then
       raise exception 'Batch template identity cannot change' using errcode='22023';
     end if;
-    select document into v_source from public.v2_live_batch_revisions where batch_id=v_head.id and revision=v_revision;
+    select document into v_source from public.v2_course_batch_revisions where batch_id=v_head.id and revision=v_revision;
     v_product := v_head.product_code;
     if v_source->>'startDate' <> p_request->>'startDate' then
       raise exception 'Template anchor date cannot change; edit event dates instead' using errcode='22023';
@@ -172,6 +172,7 @@ begin
       select value into v_edit from jsonb_array_elements(p_request->'events') where value->>'key'=v_event->>'key';
       if not found then raise exception 'Draft event identities must be preserved' using errcode='22023'; end if;
     end if;
+    if v_event ? 'content' then v_edit := v_edit || jsonb_build_object('content',v_event->'content'); end if;
     v_date := public.v2_batch_date(v_edit->>'localDate');
     v_start := (v_date + (v_edit->>'localStartTime')::time) at time zone 'Asia/Kolkata';
     v_end := v_start + make_interval(mins => (v_edit->>'durationMinutes')::integer);
@@ -198,7 +199,7 @@ $$;
 create or replace function public.save_v2_batch_draft(p_request jsonb, p_fingerprint text)
 returns jsonb language plpgsql security definer set search_path = '' as $$
 declare
-  v_actor uuid := auth.uid(); v_draft jsonb; v_saved public.v2_live_batch_revisions%rowtype;
+  v_actor uuid := auth.uid(); v_draft jsonb; v_saved public.v2_course_batch_revisions%rowtype;
   v_id uuid; v_token uuid; v_expected integer;
 begin
   perform 1 from public.profiles where id=v_actor and role='admin' and is_active=true for share;
@@ -209,7 +210,7 @@ begin
   v_token := (p_request->>'requestId')::uuid;
   v_expected := (p_request->>'expectedRevision')::integer;
   perform pg_advisory_xact_lock(hashtextextended('v2-batch-request:' || v_actor::text || ':' || v_token::text, 0));
-  select * into v_saved from public.v2_live_batch_revisions where actor_id=v_actor and request_id=v_token;
+  select * into v_saved from public.v2_course_batch_revisions where actor_id=v_actor and request_id=v_token;
   if found then
     if v_saved.request <> p_request or v_saved.fingerprint <> p_fingerprint then
       raise exception 'Request token belongs to a different submission' using errcode='22023';
@@ -221,19 +222,19 @@ begin
   if v_expected = 0 then
     perform 1 from public.v2_course_templates where id=(p_request->>'templateId')::uuid for share;
   else
-    perform 1 from public.v2_live_batches where id=v_id for update;
+    perform 1 from public.v2_course_batches where id=v_id for update;
   end if;
   v_draft := public.build_v2_batch_draft(p_request);
   -- This checksum binds confirmation to the reviewed projection. It is not an
   -- authorization token; active Admin identity and all data are revalidated.
   if md5(v_draft::text) <> p_fingerprint then raise exception 'The reviewed schedule changed' using errcode='40001'; end if;
   if v_expected = 0 then
-    insert into public.v2_live_batches(id,template_id,template_revision,product_code,latest_revision)
+    insert into public.v2_course_batches(id,template_id,template_revision,product_code,latest_revision)
       values (v_id,(p_request->>'templateId')::uuid,(p_request->>'templateRevision')::integer,v_draft->>'productCode',0);
   end if;
-  insert into public.v2_live_batch_revisions(batch_id,revision,document,request,fingerprint,request_id,actor_id)
+  insert into public.v2_course_batch_revisions(batch_id,revision,document,request,fingerprint,request_id,actor_id)
     values (v_id,v_expected+1,v_draft,p_request,p_fingerprint,v_token,v_actor);
-  update public.v2_live_batches set latest_revision=v_expected+1 where id=v_id;
+  update public.v2_course_batches set latest_revision=v_expected+1 where id=v_id;
   return jsonb_build_object('draft',v_draft,'replayed',false);
 end;
 $$;
@@ -243,7 +244,7 @@ returns jsonb language plpgsql stable security definer set search_path = '' as $
 begin
   if not public.is_portal_admin() then raise exception 'Active Admin access required' using errcode='42501'; end if;
   return (select coalesce(jsonb_agg(r.document order by r.created_at desc,b.id),'[]'::jsonb)
-    from public.v2_live_batches b join public.v2_live_batch_revisions r on r.batch_id=b.id and r.revision=b.latest_revision
+    from public.v2_course_batches b join public.v2_course_batch_revisions r on r.batch_id=b.id and r.revision=b.latest_revision
     where b.state='draft');
 end;
 $$;

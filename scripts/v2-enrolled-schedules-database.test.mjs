@@ -38,10 +38,11 @@ test('enrolled schedules in isolated PostgreSQL', { timeout: 120000 }, async (t)
     apply(migration); apply(migration);
     assert.equal(snapshot(),preserved);
   });
-  const makeBatch = (product='quant_crash') => {
+  const completeContent=Object.fromEntries(['materials','recordings','preSessionReads','postSessionReads'].map((kind)=>[kind,[{key:randomUUID(),title:kind,url:`https://private.example.test/${kind}`}]]));
+  const makeBatch = (product='quant') => {
     const templateId=randomUUID(), batchId=randomUUID();
-    const event={key:randomUUID(),title:'Published topic',section:product==='di_crash'?'di':'quant',kind:'outline',dayOffset:null,localStartTime:null,durationMinutes:null,capacity:8,instructor:''};
-    query(as(admin,`select public.save_v2_template_draft('${templateId}',${lit(product)},0,'${randomUUID()}',${json({title:'Synthetic curriculum',summary:'',durationDays:7,events:[event]})})`));
+    const event={key:randomUUID(),title:'Published topic',section:product==='di'?'di':'quant',kind:'outline',dayOffset:null,localStartTime:null,durationMinutes:null,capacity:8,instructor:'',content:completeContent};
+    query(as(admin,`select public.save_v2_template_draft('${templateId}',${lit(product)},0,'${randomUUID()}',${json({title:'Synthetic curriculum',summary:'',durationDays:null,events:[event]})})`));
     const request={id:batchId,templateId,templateRevision:1,expectedRevision:0,requestId:randomUUID(),title:'Synthetic batch',startDate:'',timeZone:'Asia/Kolkata',events:null};
     const proposal=JSON.parse(query(as(admin,`select public.preview_v2_batch_draft(${json(request)})`)));
     return JSON.parse(query(as(admin,`select public.save_v2_batch_draft(${json(request)},${lit(proposal.fingerprint)})`))).draft;
@@ -53,8 +54,31 @@ test('enrolled schedules in isolated PostgreSQL', { timeout: 120000 }, async (t)
   };
   const enrollSql=(batch,id=student,active=true,revision=0) => `select public.set_v2_batch_enrollment('${batch.id}','${id}',${active},${revision})`;
   const read=(id=student) => JSON.parse(query(as(id,'select public.get_my_v2_batch_schedules()')));
-  const batch=makeBatch(), hidden=makeBatch(), wrong=makeBatch('di_crash');
+  const batch=makeBatch(), hidden=makeBatch(), wrong=makeBatch('di');
   publish(batch); publish(hidden); publish(wrong);
+  await t.test('canonical offerings bridge existing purchases without rewriting the Phase 1 ledger', () => {
+    assert.deepEqual(JSON.parse(query("select jsonb_agg(code order by code) from public.v2_course_offerings")),['di','full_course','quant','verbal']);
+    assert.equal(query("select public.v2_entitlement_product_code('quant')"),'quant_crash');
+    assert.equal(snapshot(),preserved);
+    rejects(as(student,"select public.v2_entitlement_product_code('quant')"),/permission denied/);
+    rejects(as(admin,"update public.v2_course_offerings set name='Changed' where code='quant'"),/permission denied/);
+  });
+  await t.test('unscheduled course content survives batch snapshots and scheduling edits; publication omits private URLs', () => {
+    assert.deepEqual(batch.events[0].content,completeContent);
+    const request={id:batch.id,templateId:batch.templateId,templateRevision:batch.templateRevision,
+      expectedRevision:1,requestId:randomUUID(),title:batch.title,startDate:'',timeZone:'Asia/Kolkata',
+      events:batch.events.map(({key,kind,localDate,localStartTime,durationMinutes,instructor,capacity})=>({key,kind,localDate,localStartTime,durationMinutes,instructor,capacity}))};
+    const proposal=JSON.parse(query(as(admin,`select public.preview_v2_batch_draft(${json(request)})`)));
+    assert.deepEqual(proposal.draft.events[0].content,completeContent);
+    assert.equal(proposal.draft.events[0].startsAt,null);
+    const publication=JSON.parse(query(`select document from public.v2_batch_publication_revisions where batch_id='${batch.id}'`));
+    assert.doesNotMatch(JSON.stringify(publication),/private.example|preSessionReads|recordings/);
+    for(const url of ['javascript:alert(1)','http://example.test','https://user:pass@example.test']) {
+      const invalid=structuredClone(completeContent);invalid.recordings[0].url=url;
+      assert.equal(query(`select public.v2_session_content_valid(${json(invalid)})`),'f');
+    }
+  });
+
   await t.test('purchase alone exposes no batch; enrollment is explicit and scoped', () => {
     assert.deepEqual(read(),[]);
     query(as(admin,enrollSql(batch)));
@@ -69,8 +93,8 @@ test('enrolled schedules in isolated PostgreSQL', { timeout: 120000 }, async (t)
   await t.test('Students cannot enumerate rosters, self-enroll or directly read private tables', () => {
     rejects(as(student,`select public.list_v2_batch_enrollment_options('${batch.id}')`),/Admin access required/);
     rejects(as(student,enrollSql(hidden)),/Admin access required/);
-    rejects(as(student,`select public.v2_student_has_product('${other}','quant_crash')`),/permission denied/);
-    for (const table of ['v2_batch_enrollments','v2_batch_publication_revisions','v2_live_batches','v2_live_batch_revisions']) {
+    rejects(as(student,`select public.v2_student_has_product('${other}','quant')`),/permission denied/);
+    for (const table of ['v2_batch_enrollments','v2_batch_publication_revisions','v2_course_batches','v2_course_batch_revisions']) {
       assert.equal(query(as(student,`select count(*) from public.${table}`)),'0');
       rejects(as(student,`delete from public.${table}`),/permission denied/);
     }

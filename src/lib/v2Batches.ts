@@ -1,5 +1,6 @@
-import { isV2TemplateProduct, V2_TEMPLATE_PRODUCTS } from './v2Templates';
-import type { V2ProductCode, V2Section } from './v2Products';
+import type { V2CourseCode } from './v2Templates';
+import { isV2TemplateProduct, isV2SessionContent, V2_TEMPLATE_PRODUCTS, type V2SessionContent } from './v2Templates';
+import type { V2Section } from './v2Products';
 
 export const V2_BATCH_TIME_ZONE = 'Asia/Kolkata' as const;
 
@@ -13,6 +14,7 @@ export type V2BatchEventInput = {
   capacity: number;
 };
 export type V2BatchEvent = V2BatchEventInput & {
+  content?: V2SessionContent;
   title: string;
   section: V2Section;
   startsAt: string | null;
@@ -31,7 +33,7 @@ export type V2BatchInput = {
 };
 export type V2BatchDraft = {
   id: string;
-  productCode: V2ProductCode;
+  productCode: V2CourseCode;
   templateId: string;
   templateRevision: number;
   revision: number;
@@ -98,7 +100,8 @@ export function isV2BatchDraft(value: unknown): value is V2BatchDraft {
     || !Array.isArray(value.events) || value.events.length > 100) return false;
   const edits: V2BatchEventInput[] = [];
   for (const event of value.events) {
-    if (!object(event) || !keys(event, ['key', 'title', 'section', 'localDate', 'localStartTime', 'durationMinutes', 'instructor', 'capacity', 'startsAt', 'endsAt', ...(Object.hasOwn(event, 'kind') ? ['kind'] : [])])) return false;
+    if (!object(event) || !keys(event, ['key', 'title', 'section', 'localDate', 'localStartTime', 'durationMinutes', 'instructor', 'capacity', 'startsAt', 'endsAt', ...(Object.hasOwn(event, 'kind') ? ['kind'] : []), ...(Object.hasOwn(event, 'content') ? ['content'] : [])])) return false;
+    if (event.content !== undefined && !isV2SessionContent(event.content)) return false;
     const edit = { key: event.key, localDate: event.localDate, localStartTime: event.localStartTime,
       durationMinutes: event.durationMinutes, instructor: event.instructor, capacity: event.capacity, ...(Object.hasOwn(event, 'kind') ? { kind: event.kind } : {}) };
     if (!eventValid(edit) || !label(event.title, event.kind === 'outline' ? 0 : 1) || !V2_TEMPLATE_PRODUCTS[value.productCode].sections.includes(event.section as V2Section)) return false;

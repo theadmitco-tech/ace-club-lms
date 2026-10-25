@@ -17,7 +17,7 @@ function load(path, dependencies = {}, globals = {}) {
   return exports;
 }
 const domain = load('src/lib/v2Templates.ts');
-const input = () => ({ id: randomUUID(), productCode: 'quant_crash', expectedRevision: 0, requestId: randomUUID(), document: {
+const input = () => ({ id: randomUUID(), productCode: 'quant', expectedRevision: 0, requestId: randomUUID(), document: {
   title: 'Synthetic template', summary: '', durationDays: 7,
   events: [{ key: randomUUID(), title: 'Synthetic event', section: 'quant', dayOffset: 0,
     localStartTime: '18:00', durationMinutes: 60, capacity: 8, instructor: '' }],
@@ -25,17 +25,17 @@ const input = () => ({ id: randomUUID(), productCode: 'quant_crash', expectedRev
 const clone = (value) => JSON.parse(JSON.stringify(value));
 
 test('supported products derive fixed sections and independent suggested durations', () => {
-  assert.deepEqual(clone(domain.V2_TEMPLATE_PRODUCTS.full_batch.sections), ['quant','verbal','di']);
+  assert.deepEqual(clone(domain.V2_TEMPLATE_PRODUCTS.full_course.sections), ['quant','verbal','di']);
   for (const section of ['quant','verbal','di']) {
-    const code = `${section}_crash`;
+    const code = `${section}`;
     assert.deepEqual(clone(domain.V2_TEMPLATE_PRODUCTS[code].sections), [section]);
-    assert.equal(domain.V2_TEMPLATE_PRODUCTS[code].suggestedDays, 7);
+    assert.equal(domain.V2_TEMPLATE_PRODUCTS[code].suggestedDays, null);
     const value = input();
     value.productCode = code;
     value.document.events[0].section = section;
     assert.equal(domain.validateV2TemplateSave(value), null);
   }
-  assert.equal(domain.V2_TEMPLATE_PRODUCTS.full_batch.suggestedDays, 56);
+  assert.equal(domain.V2_TEMPLATE_PRODUCTS.full_course.suggestedDays, 56);
   for (const value of ['full-course','cr-crash-course','rc-crash-course','__proto__','constructor',null]) assert.equal(domain.isV2TemplateProduct(value), false);
 });
 
@@ -43,7 +43,7 @@ test('drafts permit empty event lists and do not require a live date or purchase
   const value = input();
   value.document.events = [];
   assert.equal(domain.validateV2TemplateSave(value), null);
-  assert.equal(domain.validateV2TemplateSave({ ...value, document: { ...value.document, title: 'Full Batch' } }), null);
+  assert.equal(domain.validateV2TemplateSave({ ...value, document: { ...value.document, title: 'Full Course' } }), null);
   value.document.events = [input().document.events[0]];
   value.document.events[0].section = 'verbal';
   assert.match(domain.validateV2TemplateSave(value), /section/);
@@ -241,4 +241,49 @@ test('the new page hides when disabled and requires Admin authorization before l
   enabled = true;
   await page.default();
   assert.deepEqual(calls, ['admin','load']);
+});
+
+test('canonical complete courses have no compressed-course identifiers or individual duration defaults', () => {
+  assert.deepEqual(Object.keys(domain.V2_TEMPLATE_PRODUCTS).sort(), ['di','full_course','quant','verbal']);
+  for (const code of ['quant','verbal','di']) assert.equal(domain.V2_TEMPLATE_PRODUCTS[code].suggestedDays, null);
+  for (const code of ['quant_crash','verbal_crash','di_crash','full_batch']) assert.equal(domain.isV2TemplateProduct(code), false);
+});
+
+test('unscheduled sessions retain all four content collections without a course schedule', () => {
+  const value = input();
+  value.document.durationDays = null;
+  Object.assign(value.document.events[0], { kind: 'outline', dayOffset: null, localStartTime: null, durationMinutes: null,
+    content: Object.fromEntries(['materials','recordings','preSessionReads','postSessionReads'].map((kind) =>
+      [kind,[{ key:randomUUID(),title:kind,url:`https://example.test/${kind}` }]])) });
+  assert.equal(domain.validateV2TemplateSave(value), null);
+  const roundtrip = JSON.parse(JSON.stringify(value.document), (key, item) => item && typeof item === 'object' && !Array.isArray(item)
+    ? Object.fromEntries(Object.entries(item).reverse()) : item);
+  assert.equal(domain.sameV2TemplateDocument(value.document, roundtrip), true);
+  roundtrip.events[0].content.recordings[0].url = 'https://example.test/changed';
+  assert.equal(domain.sameV2TemplateDocument(value.document, roundtrip), false);
+  value.document.events[0].kind = 'live';
+  assert.notEqual(domain.validateV2TemplateSave(value), null);
+});
+
+test('content validation rejects missing collections, unsafe URLs, duplicate identities and unknown fields', () => {
+  const valid = Object.fromEntries(['materials','recordings','preSessionReads','postSessionReads'].map((kind) =>
+    [kind,[{ key:randomUUID(),title:kind,url:`https://example.test/${kind}` }]]));
+  assert.equal(domain.isV2SessionContent(valid), true);
+  for (const url of ['javascript:alert(1)','http://example.test','https://user:pass@example.test','https://example.test\\evil','https://example.test/\nprivate']) {
+    const altered=structuredClone(valid);altered.materials[0].url=url;
+    assert.equal(domain.isV2SessionContent(altered),false);
+  }
+  const duplicate=structuredClone(valid);duplicate.recordings[0].key=duplicate.materials[0].key;
+  assert.equal(domain.isV2SessionContent(duplicate),false);
+  const missing=structuredClone(valid);delete missing.postSessionReads;
+  assert.equal(domain.isV2SessionContent(missing),false);
+});
+
+test('unfinished content remains recoverable without becoming valid for a server save', () => {
+  const content = clone(domain.emptyV2SessionContent());
+  content.materials.push({ key: randomUUID(), title: 'Working title ', url: 'https:' });
+  assert.equal(domain.isV2SessionContent(content, true), true);
+  assert.equal(domain.isV2SessionContent(content), false);
+  content.materials[0].url = 'x'.repeat(2049);
+  assert.equal(domain.isV2SessionContent(content, true), false);
 });

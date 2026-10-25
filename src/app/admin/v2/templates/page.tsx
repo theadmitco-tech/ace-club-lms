@@ -13,7 +13,7 @@ export default async function V2TemplatesPage() {
   return (
     <div>
       <h1 className="admin-page-title">V2 course templates</h1>
-      <p className="admin-page-subtitle">Draft teaching plans for Full Batch and Crash Courses. Templates remain private to Admins.</p>
+      <p className="admin-page-subtitle">Draft teaching plans for Full Course and individual courses. Templates remain private to Admins.</p>
       {isV2BatchAuthoringEnabled() && <Link href="/admin/v2/batches" prefetch={false}>Manage batch drafts</Link>}
       {result.status === 'ready' ? <TemplateEditor key={identity.id} ownerId={identity.id} templates={result.templates} /> : (
         <div className="admin-card" role="alert">

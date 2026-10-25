@@ -24,7 +24,7 @@ const request = () => ({ id: randomUUID(),templateId: randomUUID(),templateRevis
 const event = () => ({ key: randomUUID(),localDate: '2028-02-29',localStartTime: '00:15',durationMinutes: 60,instructor: '',capacity: 8 });
 const draftFor = (input) => {
   const planned = event();
-  return { id: input.id,productCode: 'quant_crash',templateId: input.templateId,templateRevision: input.templateRevision,
+  return { id: input.id,productCode: 'quant',templateId: input.templateId,templateRevision: input.templateRevision,
     revision: input.expectedRevision+1,state: 'draft',title: input.title,startDate: input.startDate,timeZone: input.timeZone,
     events: [{ ...planned,title: 'Synthetic lesson',section: 'quant',...domain.v2BatchEventInstants(planned) }] };
 };
@@ -43,7 +43,7 @@ test('IST conversion crosses UTC and local calendar boundaries without using the
 test('new batch requests accept template identity but no caller-defined schedule or product', () => {
   const input = request();
   assert.equal(domain.validateV2BatchInput(input),null);
-  for (const patch of [{ events: [] },{ events: [event()] },{ productCode: 'full_batch' },{ state: 'published' },{ actorId: randomUUID() },
+  for (const patch of [{ events: [] },{ events: [event()] },{ productCode: 'full_course' },{ state: 'published' },{ actorId: randomUUID() },
     { timeZone: 'UTC' },{ templateRevision: 0 },{ expectedRevision: 2147483647 },{ title: ' ' },{ title: 'bad\0title' },{ requestId: null }]) {
     assert.equal(typeof domain.validateV2BatchInput({ ...input,...patch }),'string');
   }

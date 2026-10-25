@@ -24,11 +24,11 @@ const publication = load('src/lib/v2Publications.ts', { './v2Products': products
 const clone = (value) => JSON.parse(JSON.stringify(value));
 const outline = () => ({ key: randomUUID(), title: '', section: 'quant', kind: 'outline',
   dayOffset: null, localStartTime: null, durationMinutes: null, capacity: 8, instructor: '' });
-const templateInput = () => ({ id: randomUUID(), productCode: 'quant_crash', expectedRevision: 0, requestId: randomUUID(),
+const templateInput = () => ({ id: randomUUID(), productCode: 'quant', expectedRevision: 0, requestId: randomUUID(),
   document: { title: 'Synthetic outline', summary: '', durationDays: 7, events: [outline()] } });
 const request = () => ({ batchId: randomUUID(), batchRevision: 1, expectedRevision: 0, requestId: randomUUID(), action: 'publish' });
 const document = (input) => ({ batchId: input.batchId, batchRevision: input.batchRevision, revision: input.expectedRevision + 1,
-  state: input.action === 'publish' ? 'published' : 'unpublished', title: 'Synthetic schedule', productCode: 'quant_crash',
+  state: input.action === 'publish' ? 'published' : 'unpublished', title: 'Synthetic schedule', productCode: 'quant',
   sections: ['quant'], timeZone: 'Asia/Kolkata', liveRegistrationLimit: null, events: [] });
 const fingerprint = 'a'.repeat(32);
 
@@ -47,7 +47,7 @@ test('empty and undated batch DTOs preserve null instants and reject private fie
   assert.equal(batches.validateV2BatchInput(input), null);
   assert.equal(batches.validateV2BatchInput({ ...input, events: [] }), null);
   const draft = { id: input.id, templateId: input.templateId, templateRevision: 1, revision: 1, state: 'draft',
-    productCode: 'quant_crash', title: input.title, startDate: '', timeZone: 'Asia/Kolkata',
+    productCode: 'quant', title: input.title, startDate: '', timeZone: 'Asia/Kolkata',
     events: [{ ...event, title: '', section: 'quant', startsAt: null, endsAt: null }] };
   assert.equal(batches.isV2BatchDraft(draft), true);
   assert.deepEqual(clone(batches.editableV2BatchEvents(draft.events)), [event]);

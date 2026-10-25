@@ -16,7 +16,7 @@ create table if not exists public.v2_batch_publication_revisions (
   primary key (batch_id, revision),
   unique (actor_id, request_id),
   foreign key (batch_id, batch_revision)
-    references public.v2_live_batch_revisions(batch_id, revision) on delete restrict
+    references public.v2_course_batch_revisions(batch_id, revision) on delete restrict
 );
 alter table public.v2_batch_publication_revisions enable row level security;
 revoke all on public.v2_batch_publication_revisions from public, anon, authenticated, service_role;
@@ -60,9 +60,9 @@ declare
   v_event jsonb; v_events jsonb := '[]'; v_live boolean := false;
 begin
   perform public.assert_v2_publication_request(p_request);
-  select r.document, p.sections into v_draft, v_sections from public.v2_live_batches b
-    join public.v2_live_batch_revisions r on r.batch_id=b.id and r.revision=b.latest_revision
-    join public.v2_products p on p.code=b.product_code
+  select r.document, p.sections into v_draft, v_sections from public.v2_course_batches b
+    join public.v2_course_batch_revisions r on r.batch_id=b.id and r.revision=b.latest_revision
+    join public.v2_course_offerings p on p.code=b.product_code
     where b.id=(p_request->>'batchId')::uuid and b.latest_revision=(p_request->>'batchRevision')::integer;
   if not found then raise exception 'Batch revision changed' using errcode='40001'; end if;
   select document,revision into v_previous,v_current from public.v2_batch_publication_revisions
@@ -129,7 +129,7 @@ begin
   -- Same batch lock order as draft saves. Recheck both the draft revision and
   -- publication revision after the lock so stale previews cannot win a race.
   perform pg_advisory_xact_lock(hashtextextended('v2-batch:' || v_id::text,0));
-  perform 1 from public.v2_live_batches where id=v_id for update;
+  perform 1 from public.v2_course_batches where id=v_id for update;
   v_document := public.build_v2_batch_publication(p_request);
   if md5(v_document::text) <> p_fingerprint then raise exception 'Publication preview changed' using errcode='40001'; end if;
   insert into public.v2_batch_publication_revisions(batch_id,batch_revision,revision,document,request,fingerprint,request_id,actor_id)

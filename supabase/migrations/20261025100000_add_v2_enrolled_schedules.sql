@@ -3,7 +3,7 @@
 begin;
 
 create table if not exists public.v2_batch_enrollments (
-  batch_id uuid not null references public.v2_live_batches(id) on delete restrict,
+  batch_id uuid not null references public.v2_course_batches(id) on delete restrict,
   student_id uuid not null references public.profiles(id) on delete restrict,
   active boolean not null,
   revision integer not null check (revision > 0),
@@ -28,7 +28,7 @@ returns boolean language sql stable security definer set search_path = '' as $$
     join public.v2_purchases p on p.student_id=s.id
     join public.v2_product_grants g on g.purchase_id=p.id
     where s.id=p_student and s.role='student' and s.is_active
-      and g.product_code=p_product
+      and g.product_code=public.v2_entitlement_product_code(p_product)
       and public.v2_access_window_contains(p.confirmed_at,p.expires_at,p.revoked_at,statement_timestamp())
   );
 $$;
@@ -38,7 +38,7 @@ returns jsonb language plpgsql stable security definer set search_path = '' as $
 declare v_product text;
 begin
   if not public.is_portal_admin() then raise exception 'Active Admin access required' using errcode='42501'; end if;
-  select product_code into v_product from public.v2_live_batches where id=p_batch_id;
+  select product_code into v_product from public.v2_course_batches where id=p_batch_id;
   if not found then raise exception 'Batch unavailable' using errcode='22023'; end if;
   return (select coalesce(jsonb_agg(jsonb_build_object(
     'studentId',s.id,'name',coalesce(nullif(btrim(s.full_name),''),'Student'),
@@ -63,7 +63,7 @@ begin
   if p_active is null or p_expected_revision is null or p_expected_revision not between 0 and 2147483646 then
     raise exception 'Invalid enrollment request' using errcode='22023';
   end if;
-  select product_code into v_product from public.v2_live_batches where id=p_batch_id;
+  select product_code into v_product from public.v2_course_batches where id=p_batch_id;
   if not found then raise exception 'Batch unavailable' using errcode='22023'; end if;
   perform pg_advisory_xact_lock(hashtextextended('v2-enrollment:'||p_batch_id::text||':'||p_student_id::text,0));
   select revision into v_revision from public.v2_batch_enrollments where batch_id=p_batch_id and student_id=p_student_id for update;
@@ -93,11 +93,11 @@ returns jsonb language sql stable security definer set search_path = '' as $$
       'startsAt',ev.value->'startsAt','endsAt',ev.value->'endsAt','instructor',ev.value->'instructor'
     ) order by ev.ordinality) from jsonb_array_elements(r.document->'events') with ordinality ev(value,ordinality)),'[]'::jsonb)
   ) order by b.id),'[]'::jsonb)
-  from public.v2_batch_enrollments e join public.v2_live_batches b on b.id=e.batch_id
+  from public.v2_batch_enrollments e join public.v2_course_batches b on b.id=e.batch_id
   join lateral (select batch_revision,revision,document from public.v2_batch_publication_revisions
     where batch_id=b.id order by revision desc limit 1) r on true
   where e.student_id=auth.uid() and e.active and r.document->>'state'='published'
-    and public.can_access_v2_product(b.product_code);
+    and public.can_access_v2_product(public.v2_entitlement_product_code(b.product_code));
 $$;
 
 revoke all on function public.v2_student_has_product(uuid,text),

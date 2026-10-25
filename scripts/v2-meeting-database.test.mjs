@@ -35,7 +35,7 @@ test('private meeting drafts in disposable PostgreSQL',{ timeout: 120000 },async
       'a1000000-0000-4000-8000-000000000002',1000000,'INR');`);
   const templateId=randomUUID();
   const events=[0,1].map((dayOffset) => ({ key: randomUUID(),title: 'Synthetic lesson',section: 'quant',dayOffset,localStartTime: '19:00',durationMinutes: 60,instructor: '',capacity: 8 }));
-  query(as(admin,`select public.save_v2_template_draft('${templateId}','quant_crash',0,'${randomUUID()}',${json({ title: 'Synthetic curriculum',summary: '',durationDays: 7,events })})`));
+  query(as(admin,`select public.save_v2_template_draft('${templateId}','quant',0,'${randomUUID()}',${json({ title: 'Synthetic curriculum',summary: '',durationDays: 7,events })})`));
   const createBatch=() => {
     const input={ id: randomUUID(),templateId,templateRevision: 1,expectedRevision: 0,requestId: randomUUID(),title: 'Synthetic batch',startDate: '2028-01-01',timeZone: 'Asia/Kolkata',events: null };
     const proposal=JSON.parse(query(as(admin,`select public.preview_v2_batch_draft(${json(input)})`)));
@@ -181,7 +181,7 @@ test('private meeting drafts in disposable PostgreSQL',{ timeout: 120000 },async
     const proposal=JSON.parse(query(as(admin,`select public.preview_v2_batch_draft(${json(update)})`)));
     query(`create function public.synthetic_schedule_pause() returns trigger language plpgsql as $$ begin
       perform pg_advisory_xact_lock(7654321); perform pg_sleep(0.3); return new; end $$;
-      create trigger synthetic_schedule_pause before insert on public.v2_live_batch_revisions for each row execute function public.synthetic_schedule_pause();`);
+      create trigger synthetic_schedule_pause before insert on public.v2_course_batch_revisions for each row execute function public.synthetic_schedule_pause();`);
     const settled=(promise) => promise.then((value) => ({ status:'fulfilled',value }),(reason) => ({ status:'rejected',reason }));
     const schedule=settled(concurrentQuery(as(admin,`select public.save_v2_batch_draft(${json(update)},'${proposal.fingerprint}')`)));
     let held=false;
@@ -190,7 +190,7 @@ test('private meeting drafts in disposable PostgreSQL',{ timeout: 120000 },async
       await new Promise((resolve) => setTimeout(resolve,5));
     }
     const results=await Promise.all([schedule,settled(concurrentQuery(as(admin,saveSql(pending))))]);
-    query('drop trigger synthetic_schedule_pause on public.v2_live_batch_revisions; drop function public.synthetic_schedule_pause()');
+    query('drop trigger synthetic_schedule_pause on public.v2_course_batch_revisions; drop function public.synthetic_schedule_pause()');
     assert(held,'Schedule transaction did not acquire its test lock');
     assert.equal(results[0].status,'fulfilled'); assert.equal(results[1].status,'rejected');
     assert.match(results[1].reason.message,/Batch revision changed/);

@@ -4,7 +4,9 @@ Status: Active
 Owner: Product owner and Engineering
 Last updated: 20 October 2026
 
-Start with the [supplied decision record](owner-decisions-2026-10-20.md).
+First apply the [25 October course-model correction](course-model-correction-2026-10-25.md). Phase 2 review is paused; complete individual courses replace compressed-course assumptions.
+
+Then read the [supplied decision record](owner-decisions-2026-10-20.md).
 The approved rows supersede conflicting older V2 planning requirements. Pending
 and Deferred rows do not authorize dependent implementation. The source's Draft
 heading, qualified approval wording and blank dates are preserved.

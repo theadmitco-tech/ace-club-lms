@@ -1,12 +1,13 @@
 'use client';
+import type { V2CourseCode } from '@/lib/v2Templates';
 
 import { useRef, useState, type FormEvent } from 'react';
 import { DraftRecoveryNotice, useDraftRecovery } from '@/components/DraftRecovery';
 import { isTemplateWorkspace, type TemplateWorkspace } from '@/lib/v2WorkspaceRecovery';
 import { useAdminDraftGuard } from '@/components/AdminDraftNavigation';
 import { useRouter } from 'next/navigation';
-import { V2_TEMPLATE_PRODUCTS, validateV2TemplateSave, type V2TemplateDraft, type V2TemplateEvent } from '@/lib/v2Templates';
-import type { V2ProductCode, V2Section } from '@/lib/v2Products';
+import { V2_SESSION_CONTENT_LABELS, emptyV2SessionContent, type V2SessionContentKind, type V2SessionContentItem, V2_TEMPLATE_PRODUCTS, validateV2TemplateSave, type V2TemplateDraft, type V2TemplateEvent } from '@/lib/v2Templates';
+import type { V2Section } from '@/lib/v2Products';
 import { saveTemplateDraftAction } from './actions';
 import styles from './templates.module.css';
 
@@ -41,7 +42,7 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
     retry.current = null;
   }
 
-  function newDraft(productCode: V2ProductCode) {
+  function newDraft(productCode: V2CourseCode) {
     open({ id: crypto.randomUUID(), productCode, revision: 0, document: {
       title: '', summary: '', durationDays: V2_TEMPLATE_PRODUCTS[productCode].suggestedDays, events: [],
     } });
@@ -65,8 +66,14 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
     if (!draft) return;
     change({ ...draft, document: { ...draft.document, events: [...draft.document.events, {
       key: crypto.randomUUID(), title: '', section: V2_TEMPLATE_PRODUCTS[draft.productCode].sections[0],
-      kind, dayOffset: kind === 'live' ? 0 : null, localStartTime: kind === 'live' ? '18:00' : null, durationMinutes: kind === 'live' ? 60 : null, capacity: 8, instructor: '',
+      kind, dayOffset: kind === 'live' ? 0 : null, localStartTime: kind === 'live' ? '18:00' : null, durationMinutes: kind === 'live' ? 60 : null, capacity: 8, instructor: '', content: emptyV2SessionContent(),
     }] } });
+  }
+
+  function updateContent(sessionKey: string, kind: V2SessionContentKind, items: V2SessionContentItem[]) {
+    const session = draft?.document.events.find((item) => item.key === sessionKey);
+    if (!session) return;
+    updateEvent(sessionKey, { content: { ...(session.content ?? emptyV2SessionContent()), [kind]: items } });
   }
 
   function moveEvent(index: number, direction: -1 | 1) {
@@ -123,7 +130,7 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
         </ul>}
         <h3>Create a template</h3>
         <div className={styles.buttons}>
-          {(Object.entries(V2_TEMPLATE_PRODUCTS) as [V2ProductCode, typeof V2_TEMPLATE_PRODUCTS[V2ProductCode]][]).map(([code, product]) => (
+          {(Object.entries(V2_TEMPLATE_PRODUCTS) as [V2CourseCode, typeof V2_TEMPLATE_PRODUCTS[V2CourseCode]][]).map(([code, product]) => (
             <button key={code} type="button" className="btn btn-secondary" disabled={pending} onClick={() => newDraft(code)}>{product.label}</button>
           ))}
         </div>
@@ -141,14 +148,14 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
           <label htmlFor="template-summary">Summary
             <textarea id="template-summary" className="form-input" rows={3} value={draft.document.summary} maxLength={2000} onChange={(event) => change({ ...draft, document: { ...draft.document, summary: event.target.value } })} />
           </label>
-          <label htmlFor="template-duration">Duration in days
-            <input id="template-duration" className="form-input" type="number" min={1} max={366} step={1} required value={draft.document.durationDays || ''} onChange={(event) => change({ ...draft, document: { ...draft.document, durationDays: Number(event.target.value) } })} />
+          <label htmlFor="template-duration">Live schedule span in days (optional without live classes)
+            <input id="template-duration" className="form-input" type="number" min={1} max={366} step={1} required={draft.document.events.some((event) => event.kind !== 'outline')} value={draft.document.durationDays || ''} onChange={(event) => change({ ...draft, document: { ...draft.document, durationDays: event.target.value === '' ? null : Number(event.target.value) } })} />
           </label>
-          <p>Suggested duration: {V2_TEMPLATE_PRODUCTS[draft.productCode].suggestedDays} days. Actual batch dates and time zone are selected when scheduling a batch.</p>
-          <h3>Course outline</h3>
-          <p>Outline items can remain unscheduled, including blank placeholders. Only live sessions need a time. Live-course registration is limited to eight students; no individual session reservations are used.</p>
+          <p>Course duration is configurable; individual offerings retain their complete curriculum. Only actual live classes require dates and times.</p>
+          <h3>Course sessions and content</h3>
+          <p>Each course retains its sessions, materials, recordings, pre-session reads and post-session reads. Sessions can remain unscheduled; only actual live classes need a time. Live-course registration is limited to eight students; no individual session reservations are used.</p>
           {draft.document.events.map((event, index) => <fieldset key={event.key} className={styles.event}>
-            <legend>{event.kind === 'outline' ? 'Outline item' : 'Live session'} {index + 1}</legend>
+            <legend>{event.kind === 'outline' ? 'Course session' : 'Live class'} {index + 1}</legend>
             <div className={styles.grid}>
               <label htmlFor={`${event.key}-title`}>Title
                 <input id={`${event.key}-title`} className="form-input" value={event.title} required={event.kind !== 'outline'} maxLength={120} onChange={(e) => updateEvent(event.key, { title: e.target.value })} />
@@ -160,7 +167,7 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
               </label>
               {event.kind !== 'outline' && <>
               <label htmlFor={`${event.key}-day`}>Day
-                <input id={`${event.key}-day`} className="form-input" type="number" min={1} max={draft.document.durationDays} step={1} required value={(event.dayOffset ?? 0) + 1 || ''} onChange={(e) => updateEvent(event.key, { dayOffset: Number(e.target.value) - 1 })} />
+                <input id={`${event.key}-day`} className="form-input" type="number" min={1} max={draft.document.durationDays ?? 366} step={1} required value={(event.dayOffset ?? 0) + 1 || ''} onChange={(e) => updateEvent(event.key, { dayOffset: Number(e.target.value) - 1 })} />
               </label>
               <label htmlFor={`${event.key}-start`}>Local start time
                 <input id={`${event.key}-start`} className="form-input" type="time" required value={event.localStartTime ?? ''} onChange={(e) => updateEvent(event.key, { localStartTime: e.target.value })} />
@@ -173,14 +180,41 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
                 <input id={`${event.key}-instructor`} className="form-input" value={event.instructor} maxLength={120} onChange={(e) => updateEvent(event.key, { instructor: e.target.value })} />
               </label>
             </div>
+            <div>
+              {(Object.entries(V2_SESSION_CONTENT_LABELS) as [V2SessionContentKind, string][]).map(([kind, label]) => {
+                const items = (event.content ?? emptyV2SessionContent())[kind];
+                return <fieldset key={kind} className={styles.event}>
+                  <legend>{label} ({items.length})</legend>
+                  {items.map((item, itemIndex) => <div key={item.key} className={styles.fields}>
+                    <label htmlFor={`${item.key}-title`}>Title
+                      <input id={`${item.key}-title`} className="form-input" required maxLength={120} value={item.title}
+                        onChange={(e) => updateContent(event.key, kind, items.map((value) => value.key === item.key ? { ...value, title: e.target.value } : value))} />
+                    </label>
+                    <label htmlFor={`${item.key}-url`}>HTTPS link
+                      <input id={`${item.key}-url`} className="form-input" type="url" required maxLength={2048} value={item.url}
+                        onChange={(e) => updateContent(event.key, kind, items.map((value) => value.key === item.key ? { ...value, url: e.target.value } : value))} />
+                    </label>
+                    <div className={styles.buttons}>
+                      <button type="button" className="btn btn-secondary" disabled={itemIndex === 0} onClick={() => {
+                        const reordered = [...items]; [reordered[itemIndex - 1], reordered[itemIndex]] = [reordered[itemIndex], reordered[itemIndex - 1]];
+                        updateContent(event.key, kind, reordered);
+                      }}>Move {label.toLowerCase()} item {itemIndex + 1} up</button>
+                      <button type="button" className="btn btn-secondary" onClick={() => updateContent(event.key, kind, items.filter((value) => value.key !== item.key))}>Remove {label.toLowerCase()} item {itemIndex + 1}</button>
+                    </div>
+                  </div>)}
+                  <button type="button" className="btn btn-secondary" disabled={items.length >= 50}
+                    onClick={() => updateContent(event.key, kind, [...items, { key: crypto.randomUUID(), title: '', url: '' }])}>Add {label.toLowerCase()} item</button>
+                </fieldset>;
+              })}
+            </div>
             <div className={styles.buttons}>
               <button type="button" className="btn btn-secondary" disabled={index === 0} aria-label={`Move event ${index + 1} up`} onClick={() => moveEvent(index, -1)}>Move up</button>
               <button type="button" className="btn btn-secondary" disabled={index === draft.document.events.length - 1} aria-label={`Move event ${index + 1} down`} onClick={() => moveEvent(index, 1)}>Move down</button>
               <button type="button" className="btn btn-secondary" onClick={() => change({ ...draft, document: { ...draft.document, events: draft.document.events.filter((item) => item.key !== event.key) } })}>Remove event {index + 1}</button>
             </div>
           </fieldset>)}
-          <button type="button" className="btn btn-secondary" disabled={draft.document.events.length >= 100} onClick={() => addEvent('live')}>Add live session</button>
-          <button type="button" className="btn btn-secondary" disabled={draft.document.events.length >= 100} onClick={() => addEvent('outline')}>Add undated outline item</button>
+          <button type="button" className="btn btn-secondary" disabled={draft.document.events.length >= 100} onClick={() => addEvent('live')}>Add live class</button>
+          <button type="button" className="btn btn-secondary" disabled={draft.document.events.length >= 100} onClick={() => addEvent('outline')}>Add course session</button>
         </fieldset>
         <p role="alert" className={styles.error}>{error}</p>
         <p role="status" aria-live="polite">{pending ? 'Saving draft…' : message || (dirty ? 'Unsaved changes' : '')}</p>

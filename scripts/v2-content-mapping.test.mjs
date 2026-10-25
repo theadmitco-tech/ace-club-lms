@@ -16,7 +16,7 @@ function fixture() {
       { id: id(1), hash: 'b'.repeat(64) }, { id: id(2), hash: 'c'.repeat(64) },
     ] })),
   };
-  const templates = ['full_batch', 'quant_crash', 'verbal_crash', 'di_crash'].map((productCode, i) => ({
+  const templates = ['full_course', 'quant', 'verbal', 'di'].map((productCode, i) => ({
     id: id(10 + i), productCode, revision: 2,
     document: { title: 'PRIVATE-TARGET-TITLE', summary: '', durationDays: 7, events: [{
       key: id(20 + i), title: 'PRIVATE-EVENT', section: ['quant', 'quant', 'verbal', 'di'][i],
@@ -35,7 +35,7 @@ test('prepares explicit scope for an undated outline without inventing live even
   const f = fixture(); const original = JSON.stringify(f);
   const result = review(f);
   assert.equal(result.status, 'review_required');
-  assert.deepEqual(result.products, ['quant_crash']);
+  assert.deepEqual(result.products, ['quant']);
   assert.deepEqual(result.counts, { bindings: 1, sourceItems: 1, targetEvents: 1 });
   assert.equal(result.bindings[0].eventKind, 'outline');
   assert.equal(result.bindings[0].section, 'quant');
@@ -55,7 +55,7 @@ test('shared content requires an explicit binding for each product; it never exp
     } });
   }
   const result = review(f);
-  assert.deepEqual(result.products, ['di_crash', 'full_batch', 'quant_crash', 'verbal_crash']);
+  assert.deepEqual(result.products, ['di', 'full_course', 'quant', 'verbal']);
   assert.deepEqual(result.counts, { bindings: 4, sourceItems: 1, targetEvents: 4 });
   assert.equal(result.unboundTargetEventCount, 0);
 });
