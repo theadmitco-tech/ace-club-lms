@@ -287,3 +287,17 @@ test('unfinished content remains recoverable without becoming valid for a server
   content.materials[0].url = 'x'.repeat(2049);
   assert.equal(domain.isV2SessionContent(content, true), false);
 });
+
+test('course sessions are separate from optional live events and cannot carry dates', () => {
+  const value=input(); value.document.durationDays=null; value.document.events=[];
+  value.document.sessions=[{key:randomUUID(),title:'Quant fundamentals',section:'quant',content:clone(domain.emptyV2SessionContent())}];
+  assert.equal(domain.validateV2TemplateSave(value),null);
+  const saved=clone(value.document); saved.sessions[0].title='Changed topic';
+  assert.equal(domain.sameV2TemplateDocument(value.document,saved),false);
+  for (const patch of [{localDate:'2028-01-01'},{dayOffset:0},{section:'di'},{title:''}]) {
+    const changed=clone(value); Object.assign(changed.document.sessions[0],patch);
+    assert.equal(typeof domain.validateV2TemplateSave(changed),'string');
+  }
+  value.document.events=[{...input().document.events[0],kind:'outline',dayOffset:null,localStartTime:null,durationMinutes:null}];
+  assert.equal(typeof domain.validateV2TemplateSave(value),'string');
+});

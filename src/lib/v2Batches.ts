@@ -1,5 +1,5 @@
 import type { V2CourseCode } from './v2Templates';
-import { isV2TemplateProduct, isV2SessionContent, V2_TEMPLATE_PRODUCTS, type V2SessionContent } from './v2Templates';
+import { isV2TemplateProduct, isV2SessionContent, isV2CourseSessions, type V2CourseSession, V2_TEMPLATE_PRODUCTS, type V2SessionContent } from './v2Templates';
 import type { V2Section } from './v2Products';
 
 export const V2_BATCH_TIME_ZONE = 'Asia/Kolkata' as const;
@@ -21,6 +21,7 @@ export type V2BatchEvent = V2BatchEventInput & {
   endsAt: string | null;
 };
 export type V2BatchInput = {
+  sessions?: V2CourseSession[];
   id: string;
   templateId: string;
   templateRevision: number;
@@ -32,6 +33,7 @@ export type V2BatchInput = {
   events: V2BatchEventInput[] | null;
 };
 export type V2BatchDraft = {
+  sessions?: V2CourseSession[];
   id: string;
   productCode: V2CourseCode;
   templateId: string;
@@ -77,12 +79,13 @@ function eventValid(value: unknown): value is V2BatchEventInput {
 }
 
 export function validateV2BatchInput(value: unknown): string | null {
-  if (!object(value) || !keys(value, ['id', 'templateId', 'templateRevision', 'expectedRevision', 'requestId', 'title', 'startDate', 'timeZone', 'events'])) return 'Invalid batch request.';
+  if (!object(value) || !keys(value, ['id', 'templateId', 'templateRevision', 'expectedRevision', 'requestId', 'title', 'startDate', 'timeZone', 'events', ...(Object.hasOwn(value, 'sessions') ? ['sessions'] : [])])) return 'Invalid batch request.';
   if (!uuid(value.id) || !uuid(value.templateId) || !uuid(value.requestId)) return 'Invalid batch or template identifier.';
   if (!integer(value.expectedRevision, 0, 2147483646) || !integer(value.templateRevision, 1, 2147483647)) return 'Invalid batch or template revision.';
   if (!label(value.title, 1)) return 'Enter a batch title of up to 120 characters without surrounding spaces.';
   if (value.startDate !== '' && !isV2BatchDate(value.startDate)) return 'Choose a valid template start date between 2000 and 2099.';
   if (value.timeZone !== V2_BATCH_TIME_ZONE) return 'The supported scheduling time zone is Asia/Kolkata.';
+  if (value.sessions !== undefined && (value.expectedRevision === 0 || !isV2CourseSessions(value.sessions, ['quant', 'verbal', 'di']))) return 'Invalid course content edits.';
   if (value.expectedRevision === 0) return value.events === null ? null : 'A new batch must derive its schedule from the saved template.';
   if (!Array.isArray(value.events) || value.events.length > 100 || !value.events.every(eventValid)) return 'Each event needs a valid date, time, duration, instructor and capacity.';
   if (new Set(value.events.map((event) => event.key)).size !== value.events.length) return 'Event identifiers must be distinct.';
@@ -95,9 +98,11 @@ export function editableV2BatchEvents(events: V2BatchEvent[]): V2BatchEventInput
 }
 
 export function isV2BatchDraft(value: unknown): value is V2BatchDraft {
-  if (!object(value) || !keys(value, ['id', 'productCode', 'templateId', 'templateRevision', 'revision', 'state', 'title', 'startDate', 'timeZone', 'events'])
+  if (!object(value) || !keys(value, ['id', 'productCode', 'templateId', 'templateRevision', 'revision', 'state', 'title', 'startDate', 'timeZone', 'events', ...(Object.hasOwn(value, 'sessions') ? ['sessions'] : [])])
     || value.state !== 'draft' || !isV2TemplateProduct(value.productCode) || !integer(value.revision, 1, 2147483647)
     || !Array.isArray(value.events) || value.events.length > 100) return false;
+  if (value.sessions !== undefined && !isV2CourseSessions(value.sessions, V2_TEMPLATE_PRODUCTS[value.productCode].sections)) return false;
+  if (value.sessions !== undefined && value.events.some((event) => object(event) && (value.sessions as V2CourseSession[]).some((session) => session.key === event.key))) return false;
   const edits: V2BatchEventInput[] = [];
   for (const event of value.events) {
     if (!object(event) || !keys(event, ['key', 'title', 'section', 'localDate', 'localStartTime', 'durationMinutes', 'instructor', 'capacity', 'startsAt', 'endsAt', ...(Object.hasOwn(event, 'kind') ? ['kind'] : []), ...(Object.hasOwn(event, 'content') ? ['content'] : [])])) return false;

@@ -12,6 +12,7 @@ export type V2PublicationEvent = {
   startsAt: string | null; endsAt: string | null; instructor: string;
 };
 export type V2Publication = {
+  sessions?: { key: string; title: string; section: V2Section }[];
   batchId: string; batchRevision: number; revision: number; state: 'published' | 'unpublished';
   productCode: V2CourseCode; title: string; sections: V2Section[];
   timeZone: 'Asia/Kolkata'; liveRegistrationLimit: 8 | null; events: V2PublicationEvent[];
@@ -37,14 +38,18 @@ export function isV2PublicationInput(value: unknown): value is V2PublicationInpu
 }
 
 export function isV2Publication(value: unknown): value is V2Publication {
-  if (!object(value) || !keys(value, ['batchId', 'batchRevision', 'revision', 'state', 'productCode', 'title', 'sections', 'timeZone', 'liveRegistrationLimit', 'events'])
+  if (!object(value) || !keys(value, ['batchId', 'batchRevision', 'revision', 'state', 'productCode', 'title', 'sections', 'timeZone', 'liveRegistrationLimit', 'events', ...(Object.hasOwn(value, 'sessions') ? ['sessions'] : [])])
     || !isV2MeetingBatchId(value.batchId) || !revision(value.batchRevision, 1) || !revision(value.revision, 1)
     || !['published', 'unpublished'].includes(String(value.state)) || !isV2ProductCode(value.productCode)
     || !label(value.title, 1) || value.timeZone !== 'Asia/Kolkata'
     || JSON.stringify(value.sections) !== JSON.stringify(V2_TEMPLATE_PRODUCTS[value.productCode].sections)
     || !Array.isArray(value.events) || value.events.length > 100) return false;
+  if (value.sessions !== undefined && (!Array.isArray(value.sessions) || value.sessions.length > 100
+    || value.sessions.some((session) => !object(session) || !keys(session, ['key','title','section'])
+      || !isV2MeetingBatchId(session.key) || !label(session.title,1) || !isV2ProductSection(value.productCode as V2CourseCode, session.section))
+    || new Set(value.sessions.map((session) => session.key)).size !== value.sessions.length)) return false;
   let live = false;
-  const ids = new Set<string>();
+  const ids = new Set<string>((value.sessions as V2Publication['sessions'])?.map((session) => session.key));
   for (const event of value.events) {
     if (!object(event) || !keys(event, ['key', 'title', 'section', 'kind', 'startsAt', 'endsAt', 'instructor'])
       || !isV2MeetingBatchId(event.key) || ids.has(event.key) || !isV2ProductSection(value.productCode, event.section)

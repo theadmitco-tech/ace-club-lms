@@ -57,7 +57,7 @@ create or replace function public.build_v2_batch_publication(p_request jsonb)
 returns jsonb language plpgsql stable security definer set search_path = '' as $$
 declare
   v_draft jsonb; v_previous jsonb; v_sections text[]; v_current integer;
-  v_event jsonb; v_events jsonb := '[]'; v_live boolean := false;
+  v_event jsonb; v_events jsonb := '[]'; v_live boolean := false; v_sessions jsonb;
 begin
   perform public.assert_v2_publication_request(p_request);
   select r.document, p.sections into v_draft, v_sections from public.v2_course_batches b
@@ -87,10 +87,17 @@ begin
       'kind',coalesce(v_event->>'kind','live'),'startsAt',v_event->'startsAt',
       'endsAt',v_event->'endsAt','instructor',v_event->>'instructor'));
   end loop;
+  -- Publish course headings independently from live events. Private content is
+  -- pinned by batch_revision and stays in the Admin-only course revision.
+  if v_draft ? 'sessions' then
+    select coalesce(jsonb_agg(jsonb_build_object('key',value->>'key','title',value->>'title','section',value->>'section') order by n),'[]'::jsonb)
+      into v_sessions from jsonb_array_elements(v_draft->'sessions') with ordinality as item(value,n);
+  end if;
   return jsonb_build_object('batchId',p_request->>'batchId','batchRevision',p_request->'batchRevision',
     'revision',coalesce(v_current,0)+1,'state',case when p_request->>'action'='publish' then 'published' else 'unpublished' end,
     'productCode',v_draft->>'productCode','title',v_draft->>'title','sections',to_jsonb(v_sections),
-    'timeZone','Asia/Kolkata','liveRegistrationLimit',case when v_live then 8 else null end,'events',v_events);
+    'timeZone','Asia/Kolkata','liveRegistrationLimit',case when v_live then 8 else null end,'events',v_events)
+    || case when v_sessions is not null then jsonb_build_object('sessions',v_sessions) else '{}'::jsonb end;
 end;
 $$;
 

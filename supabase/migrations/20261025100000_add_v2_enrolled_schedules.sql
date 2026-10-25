@@ -92,7 +92,10 @@ returns jsonb language sql stable security definer set search_path = '' as $$
       'key',ev.value->'key','title',ev.value->'title','section',ev.value->'section','kind',ev.value->'kind',
       'startsAt',ev.value->'startsAt','endsAt',ev.value->'endsAt','instructor',ev.value->'instructor'
     ) order by ev.ordinality) from jsonb_array_elements(r.document->'events') with ordinality ev(value,ordinality)),'[]'::jsonb)
-  ) order by b.id),'[]'::jsonb)
+  ) || case when r.document ? 'sessions' then jsonb_build_object('sessions',
+    coalesce((select jsonb_agg(jsonb_build_object('key',s.value->'key','title',s.value->'title','section',s.value->'section') order by s.n)
+      from jsonb_array_elements(r.document->'sessions') with ordinality s(value,n)),'[]'::jsonb)) else '{}'::jsonb end
+    order by b.id),'[]'::jsonb)
   from public.v2_batch_enrollments e join public.v2_course_batches b on b.id=e.batch_id
   join lateral (select batch_revision,revision,document from public.v2_batch_publication_revisions
     where batch_id=b.id order by revision desc limit 1) r on true

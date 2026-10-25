@@ -30,7 +30,10 @@ export type V2TemplateEvent = {
   content?: V2SessionContent;
 };
 
+export type V2CourseSession = { key: string; title: string; section: V2Section; content: V2SessionContent };
+
 export type V2TemplateDocument = {
+  sessions?: V2CourseSession[];
   title: string;
   summary: string;
   durationDays: number | null;
@@ -90,17 +93,19 @@ export function validateV2TemplateSave(value: unknown): string | null {
   if (!isV2TemplateProduct(value.productCode)) return 'Select a supported product.';
   if (!integerFits(value.expectedRevision, 0, 2147483646)) return 'Invalid template revision.';
   const doc = value.document;
-  if (!object(doc) || !keysAre(doc, ['title', 'summary', 'durationDays', 'events'])) return 'Invalid template fields.';
+  if (!object(doc) || !keysAre(doc, ['title', 'summary', 'durationDays', 'events', ...(Object.hasOwn(doc, 'sessions') ? ['sessions'] : [])])) return 'Invalid template fields.';
   if (!textFits(doc.title, 1, 120) || !textFits(doc.summary, 0, 2000)) return 'Enter a title (up to 120 characters) and summary (up to 2,000 characters), without surrounding spaces.';
   if (doc.durationDays !== null && !integerFits(doc.durationDays, 1, 366)) return 'Duration must be between 1 and 366 days.';
   if (!Array.isArray(doc.events) || doc.events.length > 100) return 'A draft supports up to 100 events.';
-  const keys = new Set<string>();
+  if (doc.sessions !== undefined && !isV2CourseSessions(doc.sessions, V2_TEMPLATE_PRODUCTS[value.productCode].sections)) return 'Invalid course sessions or content.';
+  const keys = new Set<string>((doc.sessions as V2CourseSession[] | undefined)?.map((session) => session.key));
   for (const [index, event] of doc.events.entries()) {
     const label = `Event ${index + 1}`;
     if (!object(event) || !keysAre(event, ['key', 'title', 'section', 'dayOffset', 'localStartTime', 'durationMinutes', 'capacity', 'instructor', ...(Object.hasOwn(event, 'kind') ? ['kind'] : []), ...(Object.hasOwn(event, 'content') ? ['content'] : [])])) return `${label}: invalid fields.`;
     if (event.content !== undefined && !isV2SessionContent(event.content)) return `${label}: each content item needs a title and an HTTPS link, with no duplicate identifiers.`;
     if (typeof event.key !== 'string' || !uuid.test(event.key) || keys.has(event.key)) return `${label}: invalid or duplicate event identifier.`;
     keys.add(event.key);
+    if (doc.sessions !== undefined && event.kind === 'outline') return `${label}: course sessions belong outside the live schedule.`;
     if (event.kind !== undefined && event.kind !== 'live' && event.kind !== 'outline') return `${label}: invalid item type.`;
     if (!textFits(event.title, event.kind === 'outline' ? 0 : 1, 120) || !textFits(event.instructor, 0, 120)) return `${label}: enter a title and an optional instructor, each up to 120 characters.`;
     if (!V2_TEMPLATE_PRODUCTS[value.productCode].sections.includes(event.section as V2Section)) return `${label}: the section must belong to the selected product.`;
@@ -127,7 +132,7 @@ export function isV2TemplateDraft(value: unknown): value is V2TemplateDraft {
 }
 
 export function sameV2TemplateDocument(left: V2TemplateDocument, right: V2TemplateDocument): boolean {
-  return left.title === right.title && left.summary === right.summary && left.durationDays === right.durationDays
+  return sameV2CourseSessions(left.sessions, right.sessions) && left.title === right.title && left.summary === right.summary && left.durationDays === right.durationDays
     && left.events.length === right.events.length && left.events.every((event, index) => {
       const other = right.events[index];
       return event.key === other.key && event.title === other.title && event.section === other.section
@@ -149,4 +154,25 @@ export function sameV2SessionContent(left?: V2SessionContent, right?: V2SessionC
       const other = b[kind][index];
       return item.key === other.key && item.title === other.title && item.url === other.url;
     }));
+}
+
+// Course sessions have content and ordering, but no scheduling fields.
+export function isV2CourseSessions(value: unknown, sections: readonly string[], incomplete = false): value is V2CourseSession[] {
+  if (!Array.isArray(value) || value.length > 100) return false;
+  const ids = new Set<string>();
+  return value.every((session) => {
+    if (!object(session) || !keysAre(session, ['key', 'title', 'section', 'content'])
+      || typeof session.key !== 'string' || !uuid.test(session.key) || ids.has(session.key)
+      || !(incomplete ? typeof session.title === 'string' && session.title.length <= 120 : textFits(session.title, 1, 120))
+      || typeof session.section !== 'string' || !sections.includes(session.section)
+      || !isV2SessionContent(session.content, incomplete)) return false;
+    ids.add(session.key); return true;
+  });
+}
+export function sameV2CourseSessions(left?: V2CourseSession[], right?: V2CourseSession[]): boolean {
+  return (left ?? []).length === (right ?? []).length && (left ?? []).every((session, index) => {
+    const other = right![index];
+    return session.key === other.key && session.title === other.title && session.section === other.section
+      && sameV2SessionContent(session.content, other.content);
+  });
 }

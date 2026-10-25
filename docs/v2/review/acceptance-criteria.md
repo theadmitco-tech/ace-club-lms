@@ -126,7 +126,23 @@ The implementation supports a gradual migration from Notion-authored material to
 
 ### AC-V2-ADMIN-01 — Product templates
 
-The Admin can publish Full Course and individual course details using clear product-specific templates. The template makes product type, included sections, delivery mode, duration, schedule, recordings, and materials explicit.
+The Admin can create Full Course (Quant + Verbal + DI) and individual Quant, Verbal and DI offerings. Course sessions have their own ordered content structure with materials, recordings, pre-session reads and post-session reads. Optional live events are separate; an unscheduled course requires neither dates nor a duration.
+
+### AC-V2-ADMIN-01A — Current PR #24 review scope
+
+Before resuming review, verify the following Admin workflow against the corrected
+candidate: create each offering; add course sessions and all four content types;
+add optional live events with exact dates; leave non-live content undated; preview
+course content and live schedule before publishing; edit, unpublish and republish
+with stale-revision protection; preserve independent batches; keep private Meet
+details Admin-only. A course must not be represented solely as scheduled events.
+
+The publication revision pins the complete private course revision. Draft edits
+must not change published content until confirmed. Public schedule responses may
+contain course headings, but never private material/recording or Meet URLs.
+This scoped Admin review does not establish protected Student content delivery,
+a full Student-facing rendered-content preview, universal publication, a content
+import, or hosted migration acceptance. Those broader criteria remain separate.
 
 ### AC-V2-ADMIN-02 — Immediate publishing
 

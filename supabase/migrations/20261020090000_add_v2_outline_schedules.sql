@@ -11,7 +11,7 @@ declare
   v_end integer;
 begin
   if jsonb_typeof(p_document) is distinct from 'object' or p_sections is null then return false; end if;
-  if (select count(*) from jsonb_object_keys(p_document)) <> 4
+  if (select count(*) from jsonb_object_keys(p_document)) <> (4 + case when p_document ? 'sessions' then 1 else 0 end)
     or not (p_document ?& array['title', 'summary', 'durationDays', 'events']) then return false; end if;
   if jsonb_typeof(p_document->'title') is distinct from 'string'
     or length(p_document->>'title') not between 1 and 120
@@ -22,12 +22,17 @@ begin
     or jsonb_typeof(p_document->'durationDays') not in ('number','null')
     or (p_document->>'durationDays') !~ '^[0-9]{1,3}$'
     or jsonb_typeof(p_document->'events') is distinct from 'array' then return false; end if;
+  if p_document ? 'sessions' then
+    if not public.v2_course_sessions_valid(p_document->'sessions',p_sections) then return false; end if;
+    select coalesce(array_agg(value->>'key'),array[]::text[]) into v_keys from jsonb_array_elements(p_document->'sessions');
+  end if;
   v_days := (p_document->>'durationDays')::integer;
   if v_days not between 1 and 366 or jsonb_array_length(p_document->'events') > 100 then return false; end if;
   for v_event in select value from jsonb_array_elements(p_document->'events') loop
     if jsonb_typeof(v_event) is distinct from 'object' then return false; end if;
     if (select count(*) from jsonb_object_keys(v_event)) <> (8 + case when v_event ? 'kind' then 1 else 0 end + case when v_event ? 'content' then 1 else 0 end)
       or not (v_event ?& array['key', 'title', 'section', 'dayOffset', 'localStartTime', 'durationMinutes', 'capacity', 'instructor']) then return false; end if;
+    if p_document ? 'sessions' and v_event->>'kind'='outline' then return false; end if;
     if v_event ? 'content' and not public.v2_session_content_valid(v_event->'content') then return false; end if;
     if jsonb_typeof(v_event->'key') is distinct from 'string'
       or (v_event->>'key') !~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
@@ -76,7 +81,7 @@ returns void language plpgsql immutable set search_path = '' as $$
 declare v_event jsonb; v_keys text[] := array[]::text[]; v_field text;
 begin
   if jsonb_typeof(p_request) is distinct from 'object' then raise exception 'Invalid batch request' using errcode='22023'; end if;
-  if (select count(*) from jsonb_object_keys(p_request)) <> 9
+  if (select count(*) from jsonb_object_keys(p_request)) <> (9 + case when p_request ? 'sessions' then 1 else 0 end)
     or not (p_request ?& array['id','templateId','templateRevision','expectedRevision','requestId','title','startDate','timeZone','events']) then
     raise exception 'Invalid batch fields' using errcode='22023';
   end if;
@@ -103,6 +108,7 @@ begin
   end if;
   if p_request->>'startDate' <> '' then perform public.v2_batch_date(p_request->>'startDate'); end if;
   if (p_request->>'expectedRevision')::integer = 0 then
+    if p_request ? 'sessions' then raise exception 'New batch content must come from the template' using errcode='22023'; end if;
     if p_request->'events' <> 'null'::jsonb then raise exception 'New batch events must come from the template' using errcode='22023'; end if;
     return;
   end if;
@@ -152,7 +158,7 @@ declare
   v_head public.v2_course_batches%rowtype;
   v_source jsonb; v_product text; v_event jsonb; v_edit jsonb;
   v_events jsonb := '[]'; v_date date; v_start timestamptz; v_end timestamptz;
-  v_revision integer;
+  v_revision integer; v_sessions jsonb; v_sections text[];
 begin
   perform public.assert_v2_batch_request(p_request);
   v_revision := (p_request->>'expectedRevision')::integer;
@@ -179,6 +185,14 @@ begin
     end if;
     if jsonb_array_length(v_source->'events') <> jsonb_array_length(p_request->'events') then
       raise exception 'Draft event identities must be preserved' using errcode='22023';
+    end if;
+  end if;
+  v_sessions := case when p_request ? 'sessions' then p_request->'sessions' else v_source->'sessions' end;
+  if v_sessions is not null then
+    select sections into v_sections from public.v2_course_offerings where code=v_product;
+    if not public.v2_course_sessions_valid(v_sessions,v_sections) then raise exception 'Invalid course sessions or content scope' using errcode='22023'; end if;
+    if exists(select 1 from jsonb_array_elements(v_sessions) s join jsonb_array_elements(v_source->'events') e on s->>'key'=e->>'key') then
+      raise exception 'Course session and live event identifiers must be distinct' using errcode='22023';
     end if;
   end if;
   for v_event in select value from jsonb_array_elements(v_source->'events') loop
@@ -212,7 +226,8 @@ begin
   end loop;
   return jsonb_build_object('id',p_request->>'id','productCode',v_product,'templateId',p_request->>'templateId',
     'templateRevision',p_request->'templateRevision','revision',v_revision+1,'state','draft',
-    'title',p_request->>'title','startDate',p_request->>'startDate','timeZone','Asia/Kolkata','events',v_events);
+    'title',p_request->>'title','startDate',p_request->>'startDate','timeZone','Asia/Kolkata','events',v_events)
+    || case when v_sessions is not null then jsonb_build_object('sessions',v_sessions) else '{}'::jsonb end;
 end;
 $$;
 

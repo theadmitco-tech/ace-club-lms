@@ -1,3 +1,4 @@
+import { sameV2CourseSessions } from '@/lib/v2Templates';
 import 'server-only';
 
 import { getPortalIdentity } from '@/lib/server/portalAuthorization';
@@ -19,6 +20,7 @@ function matches(draft: V2BatchDraft, input: V2BatchInput) {
   return draft.id === input.id && draft.templateId === input.templateId && draft.templateRevision === input.templateRevision
     && draft.revision === input.expectedRevision + 1 && draft.title === input.title && draft.startDate === input.startDate
     && draft.timeZone === input.timeZone
+    && (input.sessions === undefined || sameV2CourseSessions(draft.sessions,input.sessions))
     && (input.events === null || (draft.events.length === input.events.length && input.events.every((event) => {
       const saved = draft.events.find((candidate) => candidate.key === event.key);
       return saved && (saved.kind ?? 'live') === (event.kind ?? 'live') && saved.localDate === event.localDate && saved.localStartTime === event.localStartTime

@@ -25,6 +25,7 @@ export const sources = [
   'src/components/BrandLogo.tsx',
   'src/app/admin/v2/templates/page.tsx',
   'src/app/admin/v2/templates/TemplateEditor.tsx',
+  'src/app/admin/v2/templates/CourseSessions.tsx',
   'src/app/admin/v2/templates/actions.ts',
   'src/app/admin/v2/templates/templates.module.css',
   'src/app/admin/v2/batches/page.tsx',

@@ -1,4 +1,5 @@
 'use client';
+import { CourseSessionsEditor } from './CourseSessions';
 import type { V2CourseCode } from '@/lib/v2Templates';
 
 import { useRef, useState, type FormEvent } from 'react';
@@ -44,7 +45,7 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
 
   function newDraft(productCode: V2CourseCode) {
     open({ id: crypto.randomUUID(), productCode, revision: 0, document: {
-      title: '', summary: '', durationDays: V2_TEMPLATE_PRODUCTS[productCode].suggestedDays, events: [],
+      title: '', summary: '', durationDays: V2_TEMPLATE_PRODUCTS[productCode].suggestedDays, sessions: [], events: [],
     } });
   }
 
@@ -66,7 +67,7 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
     if (!draft) return;
     change({ ...draft, document: { ...draft.document, events: [...draft.document.events, {
       key: crypto.randomUUID(), title: '', section: V2_TEMPLATE_PRODUCTS[draft.productCode].sections[0],
-      kind, dayOffset: kind === 'live' ? 0 : null, localStartTime: kind === 'live' ? '18:00' : null, durationMinutes: kind === 'live' ? 60 : null, capacity: 8, instructor: '', content: emptyV2SessionContent(),
+      kind, dayOffset: kind === 'live' ? 0 : null, localStartTime: kind === 'live' ? '18:00' : null, durationMinutes: kind === 'live' ? 60 : null, capacity: 8, instructor: '', ...(draft.document.sessions === undefined ? {content: emptyV2SessionContent()} : {}),
     }] } });
   }
 
@@ -152,7 +153,9 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
             <input id="template-duration" className="form-input" type="number" min={1} max={366} step={1} required={draft.document.events.some((event) => event.kind !== 'outline')} value={draft.document.durationDays || ''} onChange={(event) => change({ ...draft, document: { ...draft.document, durationDays: event.target.value === '' ? null : Number(event.target.value) } })} />
           </label>
           <p>Course duration is configurable; individual offerings retain their complete curriculum. Only actual live classes require dates and times.</p>
-          <h3>Course sessions and content</h3>
+          {draft.document.sessions && <CourseSessionsEditor sessions={draft.document.sessions} sections={V2_TEMPLATE_PRODUCTS[draft.productCode].sections}
+            onChange={(sessions) => change({...draft,document:{...draft.document,sessions}})} />}
+          <h3>Optional live-class events</h3>
           <p>Each course retains its sessions, materials, recordings, pre-session reads and post-session reads. Sessions can remain unscheduled; only actual live classes need a time. Live-course registration is limited to eight students; no individual session reservations are used.</p>
           {draft.document.events.map((event, index) => <fieldset key={event.key} className={styles.event}>
             <legend>{event.kind === 'outline' ? 'Course session' : 'Live class'} {index + 1}</legend>
@@ -180,7 +183,7 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
                 <input id={`${event.key}-instructor`} className="form-input" value={event.instructor} maxLength={120} onChange={(e) => updateEvent(event.key, { instructor: e.target.value })} />
               </label>
             </div>
-            <div>
+            {draft.document.sessions === undefined && <div>
               {(Object.entries(V2_SESSION_CONTENT_LABELS) as [V2SessionContentKind, string][]).map(([kind, label]) => {
                 const items = (event.content ?? emptyV2SessionContent())[kind];
                 return <fieldset key={kind} className={styles.event}>
@@ -206,7 +209,7 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
                     onClick={() => updateContent(event.key, kind, [...items, { key: crypto.randomUUID(), title: '', url: '' }])}>Add {label.toLowerCase()} item</button>
                 </fieldset>;
               })}
-            </div>
+            </div>}
             <div className={styles.buttons}>
               <button type="button" className="btn btn-secondary" disabled={index === 0} aria-label={`Move event ${index + 1} up`} onClick={() => moveEvent(index, -1)}>Move up</button>
               <button type="button" className="btn btn-secondary" disabled={index === draft.document.events.length - 1} aria-label={`Move event ${index + 1} down`} onClick={() => moveEvent(index, 1)}>Move down</button>
@@ -214,7 +217,7 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
             </div>
           </fieldset>)}
           <button type="button" className="btn btn-secondary" disabled={draft.document.events.length >= 100} onClick={() => addEvent('live')}>Add live class</button>
-          <button type="button" className="btn btn-secondary" disabled={draft.document.events.length >= 100} onClick={() => addEvent('outline')}>Add course session</button>
+          {draft.document.sessions === undefined && <button type="button" className="btn btn-secondary" disabled={draft.document.events.length >= 100} onClick={() => addEvent('outline')}>Add course session</button>}
         </fieldset>
         <p role="alert" className={styles.error}>{error}</p>
         <p role="status" aria-live="polite">{pending ? 'Saving draft…' : message || (dirty ? 'Unsaved changes' : '')}</p>

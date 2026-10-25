@@ -92,7 +92,7 @@ test('batch authoring needs both explicit flags and remains disabled on Vercel P
 function harness() {
   const state = { enabled: true,identity: { role: 'admin' },identityCalls: 0,clients: 0,calls: [],fault: '',result: { data: [],error: null } };
   const api = load('src/lib/server/v2Batches.ts', {
-    'server-only': {},'@/lib/v2Batches': domain,
+    'server-only': {},'@/lib/v2Batches': domain, '@/lib/v2Templates': templates,
     '@/lib/server/v2BatchFeature': { isV2BatchAuthoringEnabled: () => state.enabled },
     '@/lib/server/portalAuthorization': { getPortalIdentity: async () => {
       state.identityCalls++;
@@ -257,4 +257,16 @@ test('the batch page authorizes before loading either templates or batches and h
   calls.length=0; deny=false;
   await page.default();
   assert.deepEqual(calls,['admin','batches','templates','publications']);
+});
+
+test('course content edits are validated and a missing or changed save receipt cannot discard them', async () => {
+  const app=harness(), input={...request(),expectedRevision:1,events:[],sessions:[{key:randomUUID(),title:'Quant fundamentals',section:'quant',content:clone(templates.emptyV2SessionContent())}]};
+  const draft={...draftFor(input),events:[],sessions:clone(input.sessions)};
+  assert.equal(domain.validateV2BatchInput(input),null);
+  app.state.result={data:{draft,replayed:false},error:null};
+  assert.equal((await app.saveV2BatchDraft(input,fingerprint)).status,'success');
+  delete draft.sessions;
+  assert.equal((await app.saveV2BatchDraft(input,fingerprint)).status,'error');
+  input.sessions[0].localDate='2026-11-01';
+  assert.equal(typeof domain.validateV2BatchInput(input),'string');
 });

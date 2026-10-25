@@ -1,5 +1,5 @@
 import { isV2Publication, isV2PublicationInput, isV2PublicationFingerprint, publicationMatchesInput, type V2PublicationInput, type V2PublicationProposal } from './v2Publications';
-import { isV2SessionContent, isV2TemplateProduct, V2_TEMPLATE_PRODUCTS, type V2TemplateDraft } from './v2Templates';
+import { isV2SessionContent, isV2CourseSessions, isV2TemplateProduct, V2_TEMPLATE_PRODUCTS, type V2TemplateDraft } from './v2Templates';
 import { isV2BatchDraft, isV2BatchProposal, type V2BatchDraft, type V2BatchInput, type V2BatchProposal } from './v2Batches';
 import { isV2MeetingBatchId as uuid, validateV2MeetingInput, type V2MeetingInput, type V2MeetingLink } from './v2Meetings';
 
@@ -24,13 +24,13 @@ export function isTemplateWorkspace(value: unknown): value is TemplateWorkspace 
   const doc = draft.document;
   if (!uuid(draft.id) || !revision(draft.revision) || !isV2TemplateProduct(draft.productCode) || !object(doc)) return false;
   const sections: readonly string[] = V2_TEMPLATE_PRODUCTS[draft.productCode].sections;
-  return text(doc.title) && text(doc.summary, 4000) && nullableNumber(doc.durationDays)
+  return (doc.sessions === undefined || isV2CourseSessions(doc.sessions, sections, true)) && text(doc.title) && text(doc.summary, 4000) && nullableNumber(doc.durationDays)
     && events(doc.events, (event) => text(event.title) && typeof event.section === 'string' && sections.includes(event.section) && nullableNumber(event.dayOffset))
     && (value.retry === null || (object(value.retry) && uuid(value.retry.requestId) && text(value.retry.payload, 250_000)
       && value.retry.payload === JSON.stringify(draft)));
 }
 function batchInput(value: unknown): value is V2BatchInput {
-  return object(value) && uuid(value.id) && uuid(value.templateId) && uuid(value.requestId) && revision(value.templateRevision)
+  return object(value) && (value.sessions === undefined || isV2CourseSessions(value.sessions, ['quant','verbal','di'], true)) && uuid(value.id) && uuid(value.templateId) && uuid(value.requestId) && revision(value.templateRevision)
     && revision(value.expectedRevision) && text(value.title) && text(value.startDate) && value.timeZone === 'Asia/Kolkata'
     && (value.events === null || events(value.events, (event) => nullableText(event.localDate)));
 }

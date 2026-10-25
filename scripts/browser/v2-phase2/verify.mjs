@@ -194,11 +194,12 @@ async function runTests() {
       assert.deepEqual(await live.getByRole('combobox').locator('option').evaluateAll((els) => els.map((el) => el.value)), product.sections);
       await live.getByLabel('Title', { exact: true }).fill('Synthetic live lesson');
       await button(page, 'Add course session').click();
-      assert.equal(await page.getByRole('group', { name: 'Course session 2', exact: true }).getByLabel('Local start time').count(), 0);
+      assert.equal(await page.getByRole('group', { name: 'Course session 1', exact: true }).getByLabel('Local start time').count(), 0);
+      await page.getByLabel('Session title', {exact:true}).fill('Complete course session');
       await button(page, 'Save draft').focus();
       await page.keyboard.press('Enter');
       await text(page, 'Draft revision 1 saved.');
-      assert.equal(state.templates.find((t) => t.productCode === code).document.events.length, 2);
+      assert.equal(state.templates.find((t) => t.productCode === code).document.events.length, 1);
     }
     await screenshot(page, 'templates-desktop');
   });
@@ -210,7 +211,7 @@ async function runTests() {
     assert.equal(await page.locator('#template-duration').inputValue(), '');
     await button(page, 'Add course session').click();
     const session = page.getByRole('group', { name: 'Course session 1', exact: true });
-    await session.getByLabel('Title', { exact: true }).fill('Quant fundamentals');
+    await session.getByLabel('Session title', { exact: true }).fill('Quant fundamentals');
     assert.equal(await session.getByLabel('Local start time').count(), 0);
     for (const label of ['Materials', 'Recordings', 'Pre-session reads', 'Post-session reads']) {
       await button(session, `Add ${label.toLowerCase()} item`).click();
@@ -222,7 +223,7 @@ async function runTests() {
     await text(page, 'Draft revision 1 saved.');
     const saved = structuredClone(state.templates[0]);
     assert.equal(saved.document.durationDays, null);
-    assert.equal(Object.values(saved.document.events[0].content).every((items) => items.length === 1), true);
+    assert.equal(Object.values(saved.document.sessions[0].content).every((items) => items.length === 1), true);
     await page.reload();
     await button(page, 'Complete Quant course · Quant · revision 1').click();
     assert.equal(await page.getByLabel('HTTPS link').count(), 4);
@@ -231,6 +232,47 @@ async function runTests() {
     await noOverflow(page);
     await screenshot(page, 'complete-individual-content-mobile');
   }, { width: 390, height: 844 });
+  await test('Course content preview, edit and publication are independent of live scheduling', async (page) => {
+    const source=state.templates[1];
+    source.document.durationDays=null; source.document.events=[];
+    source.document.sessions=[{key:id(900),title:'Complete Quant curriculum',section:'quant',content:{
+      materials:[{key:id(901),title:'Quant material',url:'https://example.test/private-material'}],
+      recordings:[{key:id(902),title:'Quant recording',url:'https://example.test/private-recording'}],
+      preSessionReads:[],postSessionReads:[]}}];
+    state.templates=[source];state.drafts=[];
+    await page.goto(`${origin}/admin/v2/batches`);
+    await button(page,'New batch draft').click();
+    await page.getByLabel('Batch title',{exact:true}).fill('Complete Quant offering');
+    await button(page,'Review course and schedule').click();
+    await text(page,'Quant material');await text(page,'Quant recording');
+    assert.equal(state.drafts.length,0);
+    await button(page,'Confirm and save draft').click();
+    await text(page,'Draft revision 1 saved.');
+    assert.equal(state.drafts[0].startDate,'');assert.deepEqual(state.drafts[0].events,[]);
+    await button(page,'Preview publication').click();
+    const publication=page.getByRole('region',{name:'Review batch publication',exact:true});
+    await text(publication,'Quant material');await text(publication,'Quant recording');
+    await screenshot(page,'complete-course-content-preview-mobile');
+    assert.equal(state.publications.length,0);
+    await button(page,'Confirm publish').click();
+    await text(page,'Publication revision 1 published.');
+    assert.doesNotMatch(JSON.stringify(state.publications[0]),/https:|private-|content/);
+    await page.getByLabel('Session title',{exact:true}).fill('Revised Quant curriculum');
+    await button(page,'Review course and schedule').click();
+    await button(page,'Confirm and save draft').click();
+    await text(page,'Draft revision 2 saved.');
+    assert.equal(state.publications[0].sessions[0].title,'Complete Quant curriculum');
+    await button(page,'Preview publication').click();await text(publication,'Revised Quant curriculum');
+    await button(page,'Confirm publish').click();await text(page,'Publication revision 2 published.');
+    await button(page,'Review unpublish').click();await button(page,'Confirm unpublish').click();
+    await text(page,'Publication revision 3 unpublished.');
+    await button(page,'Preview publication').click();await button(page,'Confirm publish').click();
+    await text(page,'Publication revision 4 published.');
+    assert.equal(state.publications[0].sessions[0].title,'Revised Quant curriculum');
+    assert.equal(source.document.sessions[0].title,'Complete Quant curriculum');
+    await noOverflow(page);await screenshot(page,'complete-course-publication-mobile');
+  },{width:390,height:844});
+
   await test('Template interrupted save, busy state and retry identity', async (page) => {
     await page.goto(`${origin}/admin/v2/templates`);
     await button(page, 'Full Course').click();
@@ -256,11 +298,11 @@ async function runTests() {
     await button(page, 'New batch draft').click();
     await page.getByLabel('Batch title', { exact: true }).fill('Browser lifecycle batch');
     await page.getByLabel('Template start date', { exact: false }).fill('2026-11-02');
-    await button(page, 'Review schedule').click();
+    await button(page, 'Review course and schedule').click();
     await text(page, 'Review: Browser lifecycle batch');
     await page.getByLabel('Batch title', { exact: true }).fill('Browser revised batch');
     assert.equal(await button(page, 'Confirm and save draft').count(), 0);
-    await button(page, 'Review schedule').click();
+    await button(page, 'Review course and schedule').click();
     await button(page, 'Confirm and save draft').click();
     await text(page, 'Draft revision 1 saved.');
     const saved = state.drafts.find((b) => b.title === 'Browser revised batch');
@@ -273,7 +315,7 @@ async function runTests() {
     await button(page, 'Confirm publish').click();
     await text(page, 'Publication revision 1 published.');
     await page.getByLabel('Start time (IST)').fill('19:00');
-    await button(page, 'Review schedule').click();
+    await button(page, 'Review course and schedule').click();
     await button(page, 'Confirm and save draft').click();
     await text(page, 'Draft revision 2 saved.');
     assert.equal(state.publications[0].events[0].startsAt, '2026-11-02T12:30:00.000Z');
@@ -295,10 +337,10 @@ async function runTests() {
     await openBatch(page);
     await page.getByLabel('Batch title', { exact: true }).fill('Changed synthetic batch');
     state.faults.previewV2BatchDraft = { error: 'Synthetic stale draft. Reload the latest draft.' };
-    await button(page, 'Review schedule').click();
+    await button(page, 'Review course and schedule').click();
     await text(page, 'Synthetic stale draft.');
     assert.equal(await button(page, 'Confirm and save draft').count(), 0);
-    await button(page, 'Review schedule').click();
+    await button(page, 'Review course and schedule').click();
     await text(page, 'Review: Changed synthetic batch');
     state.faults.saveV2BatchDraft = { interruptAfterSave: true };
     await button(page, 'Confirm and save draft').click();
@@ -441,7 +483,7 @@ async function runTests() {
   await test('Batch recovery preserves the reviewed schedule and exact interrupted request', async (page) => {
     await openBatch(page);
     await page.getByLabel('Batch title', { exact: true }).fill('Recovered batch');
-    await button(page, 'Review schedule').click();
+    await button(page, 'Review course and schedule').click();
     state.faults.saveV2BatchDraft = { interruptAfterSave: true };
     await button(page, 'Confirm and save draft').click();
     await text(page, 'Save confirmation was interrupted.');

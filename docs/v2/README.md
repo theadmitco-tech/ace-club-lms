@@ -23,8 +23,9 @@ structures plus Full Course, optional live scheduling, private session content,
 Admin recovery, enrolled-batch schedules and offline content-preservation/mapping
 tools. Protected Student content publishing remains incomplete. The previous
 reconciliation at `c67cfe7` is historical evidence; its green Preview does not
-validate the correction. Publishing is currently blocked by missing Git credentials
-in the implementation session. Use the final handoff for the exact candidate and
+validate the correction. The earlier correction at `0f71843` is on PR #24. The supplemental
+[Admin checklist alignment](phase-2/evidence/owner-checklist-alignment-2026-10-25.md)
+requires its own updated Preview verification. Use the final handoff for the exact candidate and
 its own CI/Preview status.
 
 Phase 1 staging migration is complete and must not be rerun. Phase 2 migrations,

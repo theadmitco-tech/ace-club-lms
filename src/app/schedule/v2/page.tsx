@@ -29,6 +29,9 @@ export default async function EnrolledSchedulePage() {
       </section> : result.schedules.map((batch) => <section className="course-browser" key={batch.batchId} aria-labelledby={`batch-${batch.batchId}`}>
         <div className="browser-heading"><div><span className="student-eyebrow">{V2_TEMPLATE_PRODUCTS[batch.productCode].label}</span>
           <h2 id={`batch-${batch.batchId}`}>{batch.title}</h2></div></div>
+        {!!batch.sessions?.length && <section aria-label="Course sessions"><h3>Course sessions</h3>
+          <ol>{batch.sessions.map((session) => <li key={session.key}>{session.title} · {session.section}</li>)}</ol>
+        </section>}
         {batch.events.length === 0 ? <div className="student-state compact"><p>No events scheduled yet.</p></div>
           : <ol className="timeline-list">{batch.events.map((event) => <li className="student-state compact" key={event.key}>
             <span className="student-eyebrow">{event.section} · {event.kind === 'live' ? 'Live session' : 'Course outline'}</span>

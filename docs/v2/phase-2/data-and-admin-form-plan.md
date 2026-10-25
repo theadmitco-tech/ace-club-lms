@@ -1,5 +1,7 @@
 # V2 Phase 2 data relationships and Admin form plan
 
+> Current scope: the [supplemental Admin checklist](../review/acceptance-criteria.md#ac-v2-admin-01a--current-pr-24-review-scope) supersedes the earlier schedule-centric design below. Course sessions and content are independent from optional live events. Only live events require dates.
+
 Status: Superseded — historical draft design; use the current delivery report
 Owner: Engineering and product owner
 Last updated: 19 October 2026
@@ -308,7 +310,7 @@ publication, shared environment change or deployment has occurred.
 
 Line references are pinned conceptually to the inspected application commit above.
 
-[roadmap]: ../review/product-roadmap.md#phase-2--full-course-and-individual-course-publishing
+[roadmap]: ../review/product-roadmap.md#phase-2--full-course-and-individual-offering-publishing
 [live-criteria]: ../review/acceptance-criteria.md#3-live-delivery
 [security-criteria]: ../review/acceptance-criteria.md#6-security-and-quality
 [legacy-template-reader]: ../../../src/lib/server/courseTemplates.ts#L56

@@ -79,6 +79,45 @@ test('enrolled schedules in isolated PostgreSQL', { timeout: 120000 }, async (t)
     }
   });
 
+  await t.test('complete course structure publishes, edits, unpublishes and republishes independently of live events', () => {
+    const templateId=randomUUID();
+    const sessions=[{key:randomUUID(),title:'Complete Quant session',section:'quant',content:structuredClone(completeContent)}];
+    const doc={title:'Complete Quant course',summary:'',durationDays:null,sessions,events:[]};
+    query(as(admin,`select public.save_v2_template_draft('${templateId}','quant',0,'${randomUUID()}',${json(doc)})`));
+    const request={id:randomUUID(),templateId,templateRevision:1,expectedRevision:0,requestId:randomUUID(),title:'Complete course cohort',startDate:'',timeZone:'Asia/Kolkata',events:null};
+    const preview=(req)=>JSON.parse(query(as(admin,`select public.preview_v2_batch_draft(${json(req)})`)));
+    const save=(req,p)=>JSON.parse(query(as(admin,`select public.save_v2_batch_draft(${json(req)},${lit(p.fingerprint)})`))).draft;
+    const first=save(request,preview(request));
+    const independentRequest={...request,id:randomUUID(),requestId:randomUUID()};
+    const independent=save(independentRequest,preview(independentRequest));
+    assert.deepEqual(first.sessions,sessions);assert.deepEqual(first.events,[]);
+    const initial=publish(first);
+    assert.deepEqual(initial.sessions,sessions.map(({key,title,section})=>({key,title,section})));
+    assert.doesNotMatch(JSON.stringify(initial),/private-|https:|content|recordings/);
+    query(as(admin,enrollSql(first,other)));
+    assert.deepEqual(read(other)[0].sessions,initial.sessions);
+    const edited=structuredClone(sessions); edited[0].content.recordings[0].url='https://example.test/revised-private-recording';
+    edited[0].title='Revised Quant session';
+    const edit={...request,expectedRevision:1,requestId:randomUUID(),events:[],sessions:edited};
+    for (const invalid of [null,[{...edited[0],section:'di'}],[{...edited[0],localDate:'2026-11-01'}],[edited[0],edited[0]]]) {
+      rejects(as(admin,`select public.preview_v2_batch_draft(${json({...edit,sessions:invalid})})`),/Invalid course/);
+    }
+    const revised=save(edit,preview(edit));
+    assert.deepEqual(read(other)[0].sessions,initial.sessions,'draft edits must not change the published course');
+    assert.deepEqual(JSON.parse(query(`select document->'sessions' from public.v2_course_batch_revisions where batch_id='${independent.id}' and revision=1`)),sessions);
+    const updated=publish(revised,1);
+    assert.equal(read(other)[0].sessions[0].title,'Revised Quant session');
+    const pinned=JSON.parse(query(`select b.document->'sessions' from public.v2_batch_publication_revisions p join public.v2_course_batch_revisions b on b.batch_id=p.batch_id and b.revision=p.batch_revision where p.batch_id='${first.id}' and p.revision=2`));
+    assert.deepEqual(pinned,edited);
+    assert.doesNotMatch(JSON.stringify(updated),/private-|https:|content|recordings/);
+    publish(revised,2,'unpublish'); assert.deepEqual(read(other),[]);
+    publish(revised,3,'publish'); assert.equal(read(other)[0].sessions[0].title,'Revised Quant session');
+    query(`update public.v2_batch_publication_revisions set document=jsonb_set(document,'{sessions,0,content}','{"private":"hidden"}'::jsonb) where batch_id='${first.id}' and revision=4`);
+    assert.doesNotMatch(JSON.stringify(read(other)),/private|hidden|content/);
+    query(as(admin,enrollSql(first,other,false,1)));
+    rejects(as(admin,`select public.v2_course_sessions_valid(${json(sessions)},array['quant'])`),/permission denied/);
+  });
+
   await t.test('purchase alone exposes no batch; enrollment is explicit and scoped', () => {
     assert.deepEqual(read(),[]);
     query(as(admin,enrollSql(batch)));

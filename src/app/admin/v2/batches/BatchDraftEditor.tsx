@@ -1,4 +1,5 @@
 'use client';
+import { CourseSessionsEditor, CourseSessionsPreview } from '../templates/CourseSessions';
 
 import { useRef, useState, type FormEvent } from 'react';
 import { DraftRecoveryNotice, useDraftRecovery } from '@/components/DraftRecovery';
@@ -48,7 +49,7 @@ export default function BatchDraftEditor({ drafts, templates, ownerId }: { draft
     setInput(batch ? {
       id: batch.id, templateId: batch.templateId, templateRevision: batch.templateRevision,
       expectedRevision: batch.revision, requestId: crypto.randomUUID(), title: batch.title,
-      startDate: batch.startDate, timeZone: batch.timeZone, events: editableV2BatchEvents(batch.events),
+      startDate: batch.startDate, timeZone: batch.timeZone, events: editableV2BatchEvents(batch.events), ...(batch.sessions ? {sessions: structuredClone(batch.sessions)} : {}),
     } : {
       id: crypto.randomUUID(), templateId: liveTemplates[0].id, templateRevision: liveTemplates[0].revision,
       expectedRevision: 0, requestId: crypto.randomUUID(), title: '', startDate: '', timeZone: V2_BATCH_TIME_ZONE, events: null,
@@ -113,7 +114,7 @@ export default function BatchDraftEditor({ drafts, templates, ownerId }: { draft
       setOriginal(batch);
       setInput({ id: batch.id, templateId: batch.templateId, templateRevision: batch.templateRevision,
         expectedRevision: batch.revision, requestId: crypto.randomUUID(), title: batch.title,
-        startDate: batch.startDate, timeZone: batch.timeZone, events: editableV2BatchEvents(batch.events) });
+        startDate: batch.startDate, timeZone: batch.timeZone, events: editableV2BatchEvents(batch.events), ...(batch.sessions ? {sessions: structuredClone(batch.sessions)} : {}) });
       setDirty(false);
       setReview(null);
       setMessage(`Draft revision ${batch.revision} saved${result.replayed ? ' (previous submission recovered)' : ''}.`);
@@ -148,7 +149,9 @@ export default function BatchDraftEditor({ drafts, templates, ownerId }: { draft
       <h2>{original ? `Edit batch draft · revision ${original.revision}` : 'Create a batch draft'}</h2>
       {productCode && <p>{V2_TEMPLATE_PRODUCTS[productCode].label} · template revision {input.templateRevision} · {V2_BATCH_TIME_ZONE}</p>}
       <fieldset disabled={!!pending} className={styles.fields}>
-        <legend className={styles.legend}>Schedule details</legend>
+        <legend className={styles.legend}>Course and schedule details</legend>
+        {original && productCode && <CourseSessionsEditor sessions={input.sessions ?? []} sections={V2_TEMPLATE_PRODUCTS[productCode].sections}
+          onChange={(sessions) => change({...input,sessions})} />}
         {!original && <label htmlFor="v2-batch-template">Template
           <select id="v2-batch-template" className="form-input" value={input.templateId} onChange={(event) => {
             const selected = liveTemplates.find((template) => template.id === event.target.value);
@@ -164,8 +167,8 @@ export default function BatchDraftEditor({ drafts, templates, ownerId }: { draft
         </label>
         {!original ? <label htmlFor="v2-batch-start">Template start date (only needed for live sessions)
           <input id="v2-batch-start" className="form-input" type="date" required={templates.find((template) => template.id === input.templateId)?.document.events.some((event) => event.kind !== 'outline')} min="2000-01-01" max="2099-12-31" value={input.startDate} onChange={(event) => change({ ...input, startDate: event.target.value })} />
-        </label> : <p>Original template start date: {input.startDate}. Edit individual event dates below to reschedule this batch.</p>}
-        <p>All dates and times use Asia/Kolkata (IST). A review displays the exact event start and end times before saving.</p>
+        </label> : input.startDate ? <p>Original template start date: {input.startDate}. Edit individual live-event dates below to reschedule this batch.</p> : <p>This course has no live schedule.</p>}
+        <p>Review course content before saving. Any live-event dates and times use Asia/Kolkata (IST).</p>
         {input.events?.map((event, index) => <fieldset key={event.key} className={styles.event}>
           <legend>{index + 1}. {original?.events.find((item) => item.key === event.key)?.title}</legend>
           {event.kind === 'outline' && <p>Undated outline item. No attendance or session booking.</p>}
@@ -186,11 +189,12 @@ export default function BatchDraftEditor({ drafts, templates, ownerId }: { draft
             </label>
           </div>
         </fieldset>)}
-        <button type="submit" className="btn btn-secondary" disabled={!!pending || (!!original && !dirty)}>{pending === 'preview' ? 'Reviewing…' : 'Review schedule'}</button>
+        <button type="submit" className="btn btn-secondary" disabled={!!pending || (!!original && !dirty)}>{pending === 'preview' ? 'Reviewing…' : 'Review course and schedule'}</button>
       </fieldset>
       {review && <section className={styles.fields} aria-labelledby="batch-review-heading">
         <h3 id="batch-review-heading">Review: {review.proposal.draft.title}</h3>
         <p>Draft · {V2_TEMPLATE_PRODUCTS[review.proposal.draft.productCode].label} · all times IST</p>
+        <CourseSessionsPreview sessions={review.proposal.draft.sessions ?? []} />
         <ol className={styles.list}>{review.proposal.draft.events.map((event) => {
           const before = original?.events.find((item) => item.key === event.key);
           return <li key={event.key} className={styles.event}>
@@ -202,7 +206,7 @@ export default function BatchDraftEditor({ drafts, templates, ownerId }: { draft
         <button type="button" className="btn btn-primary" disabled={!!pending} onClick={save}>{pending === 'save' ? 'Saving…' : 'Confirm and save draft'}</button>
       </section>}
       <p role="alert" className={styles.error}>{error}</p>
-      <p role="status" aria-live="polite">{message || (dirty ? 'Unsaved schedule changes' : '')}</p>
+      <p role="status" aria-live="polite">{message || (dirty ? 'Unsaved course or schedule changes' : '')}</p>
       <button type="button" className="btn btn-secondary" disabled={!!pending} onClick={() => window.location.reload()}>Reload latest drafts</button>
     </form>}
   </div>;

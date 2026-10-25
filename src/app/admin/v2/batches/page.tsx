@@ -16,7 +16,7 @@ export default async function V2BatchesPage() {
   const [batches, templates, publications] = await Promise.all([listV2BatchDrafts(), listV2TemplateDrafts(), listV2BatchPublications()]);
   return <div>
     <h1 className="admin-page-title">V2 batch drafts</h1>
-    <p className="admin-page-subtitle">Review an independent schedule before saving. Draft batches remain private to Admins.</p>
+    <p className="admin-page-subtitle">Review course content and its optional independent live schedule before saving. Draft batches remain private to Admins.</p>
     <Link href="/admin/v2/templates" prefetch={false}>Manage course templates</Link>
     {batches.status === 'ready' && templates.status === 'ready'
       ? <>

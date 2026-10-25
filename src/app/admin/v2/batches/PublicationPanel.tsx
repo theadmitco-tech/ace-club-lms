@@ -1,4 +1,5 @@
 'use client';
+import { CourseSessionsPreview } from '../templates/CourseSessions';
 
 import { useRef, useState } from 'react';
 import { DraftRecoveryNotice, useDraftRecovery } from '@/components/DraftRecovery';
@@ -62,7 +63,7 @@ export default function PublicationPanel({ drafts, publications, ownerId }: { dr
       setReview(recovery.recovered); recovery.acknowledge();
     }} onDiscard={recovery.forget} />
     <h2 id="publication-heading">Review batch publication</h2>
-    <p>Publish a saved outline and schedule. Further draft edits need another review before they replace the published version.</p>
+    <p>Publish the saved course structure and its optional live schedule. Further draft edits need another review before they replace the published version.</p>
     <p>Published schedules are available to enrolled students with active product access when Student schedules are enabled.</p>
     {!drafts.length && <p>Save a batch draft to review publication.</p>}
     <ul className={styles.list}>{drafts.map((batch) => {
@@ -82,6 +83,9 @@ export default function PublicationPanel({ drafts, publications, ownerId }: { dr
       <p>Scope: this batch only · {V2_TEMPLATE_PRODUCTS[review.proposal.document.productCode].label} · {review.proposal.document.sections.join(', ')}</p>
       <p>Saved draft {review.input.batchRevision} → publication revision {review.proposal.document.revision}. All times IST.</p>
       <p>{review.proposal.document.liveRegistrationLimit === 8 ? 'Live-course registration limit: 8. Registration enforcement belongs to checkout; no session reservations.' : 'No scheduled live sessions.'}</p>
+      {drafts.find((batch) => batch.id===review.input.batchId && batch.revision===review.input.batchRevision)
+        ? <CourseSessionsPreview sessions={drafts.find((batch) => batch.id===review.input.batchId && batch.revision===review.input.batchRevision)!.sessions ?? []} />
+        : <p role="alert">The course draft changed. Cancel this review and preview the current revision.</p>}
       <ol className={styles.list}>{review.proposal.document.events.map((event) => <li key={event.key}>
         <strong>{event.title || 'Outline placeholder'} · {event.section}</strong>
         <p>{event.kind === 'outline' ? 'Undated outline item' : `${time(event.startsAt)} – ${time(event.endsAt)}`}</p>

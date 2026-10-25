@@ -24,7 +24,7 @@ export function template(code = 'full_course', index = 1) {
 export function batch(source = template(), index = 10) {
   return { id: id(index), productCode: source.productCode, templateId: source.id,
     templateRevision: source.revision, revision: 1, state: 'draft', title: 'Synthetic batch',
-    startDate: '2026-11-02', timeZone: 'Asia/Kolkata', events: source.document.events.map((event) => ({
+    startDate: '2026-11-02', timeZone: 'Asia/Kolkata', ...(source.document.sessions ? {sessions:structuredClone(source.document.sessions)} : {}), events: source.document.events.map((event) => ({
       key: event.key, kind: event.kind, title: event.title, section: event.section,
       ...(event.content ? { content: structuredClone(event.content) } : {}),
       localDate: event.kind === 'outline' ? null : '2026-11-02',
@@ -53,13 +53,15 @@ export function batchProposal(input, state) {
   });
   const draft = { id: input.id, templateId: input.templateId, templateRevision: input.templateRevision,
     productCode: source.productCode, revision: input.expectedRevision + 1, state: 'draft',
-    title: input.title, startDate: input.startDate, timeZone: input.timeZone, events };
+    title: input.title, startDate: input.startDate, timeZone: input.timeZone, events,
+    ...((input.sessions ?? previous?.sessions ?? source.document.sessions) ? {sessions:structuredClone(input.sessions ?? previous?.sessions ?? source.document.sessions)} : {}) };
   return { draft, fingerprint: fingerprint(draft) };
 }
 export function publicationProposal(input, state) {
   const draft = state.drafts.find((item) => item.id === input.batchId);
   const document = { batchId: draft.id, batchRevision: draft.revision, revision: input.expectedRevision + 1,
     state: input.action === 'publish' ? 'published' : 'unpublished', productCode: draft.productCode,
+    ...(draft.sessions ? {sessions:draft.sessions.map(({key,title,section})=>({key,title,section}))} : {}),
     title: draft.title, sections: products[draft.productCode].sections, timeZone: draft.timeZone,
     liveRegistrationLimit: draft.events.some((item) => item.kind !== 'outline') ? 8 : null,
     events: draft.events.map(({ key, title, section, kind, startsAt, endsAt, instructor }) => ({

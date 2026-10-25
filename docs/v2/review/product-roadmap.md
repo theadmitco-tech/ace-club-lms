@@ -88,15 +88,18 @@ Represent Full Course and the three individual courses as explicit products with
 - [ ] Expired access is denied consistently.
 - [ ] Cross-section and Full Course leakage tests pass.
 
-## Phase 2 — Full Course and individual course publishing
+## Phase 2 — Full Course and Individual Offering publishing
 
 ### Objective
 
-Allow an Admin to publish product-specific batch details without manually reconstructing schedules.
+Allow an Admin to create and publish complete Full Course, Quant, Verbal and DI structures, with optional independent live-class schedules.
 
 ### Work
 
-- Create separate Admin flows or templates for Full Course and individual course.
+- Create Full Course and individual Quant, Verbal and DI offerings.
+- Keep course sessions and their materials, recordings, pre-session and post-session reads separate from live-class events.
+- Leave non-live course content undated; only actual live classes need scheduling.
+- Preview the complete course structure and content references before confirming publication.
 - Support approximately eight-week Full Course schedules.
 - Support complete individual courses with optional live-class schedules; no compressed-duration assumption.
 - Allow Admins to configure other durations where approved.
@@ -108,7 +111,11 @@ Allow an Admin to publish product-specific batch details without manually recons
 
 ### Exit gate
 
-- [ ] Admin can publish a Full Course.
+- [ ] Admin can create and publish the Full Course structure, including all three sections.
+- [ ] Course sessions and all four content collections are preserved without requiring live events.
+- [ ] Draft edits do not alter published content until a new preview is confirmed.
+- [ ] Whole-course publish, edit, unpublish and republish preserve revision history and independent batches.
+- [ ] Private Google Meet details remain Admin-only.
 - [ ] Admin can publish Quant, Verbal, and DI individual courses.
 - [ ] Full Course and individual course schedules remain independent.
 - [ ] An individual course can be recording/materials-only when no live batch exists.

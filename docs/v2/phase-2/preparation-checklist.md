@@ -1,5 +1,7 @@
 # V2 Phase 2 preparation checklist
 
+> Current scope: the [supplemental Admin checklist](../review/acceptance-criteria.md#ac-v2-admin-01a--current-pr-24-review-scope) supersedes the earlier schedule-centric design below. Course sessions and content are independent from optional live events. Only live events require dates.
+
 Status: Active — mapping and approved local authoring verified; full acceptance pending
 Owner: Engineering and product owner
 Last updated: 20 October 2026
@@ -295,4 +297,4 @@ Line references apply to the inspected application commit; they may move after i
 [product-live-criteria]: ../review/acceptance-criteria.md#1-product-model
 [live-criteria]: ../review/acceptance-criteria.md#3-live-delivery
 [live-decisions]: ../review/product-and-business-decisions.md#b-live-classes-and-schedule
-[phase-2-scope]: ../review/product-roadmap.md#phase-2--full-course-and-individual-course-publishing
+[phase-2-scope]: ../review/product-roadmap.md#phase-2--full-course-and-individual-offering-publishing

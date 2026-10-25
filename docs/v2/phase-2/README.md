@@ -1,4 +1,4 @@
-# V2 Phase 2 — Admin authoring and reviewed batch publication
+# V2 Phase 2 — Full Course and Individual Offering publishing
 
 Status: Active — isolated review candidate; staging and full phase acceptance pending
 Owner: Engineering and product owner
@@ -9,6 +9,15 @@ Last updated: 25 October 2026
 Phase 2 review is paused under the [course-model correction](../decisions/course-model-correction-2026-10-25.md). PR #24 remains Draft. The corrected candidate replaces compressed-course assumptions with complete Quant, Verbal, DI and Full Course offerings, private per-session content collections and optional live scheduling. The earlier candidate/check results below are historical until the corrected head is verified and published.
 
 [Correction evidence](evidence/course-model-correction-2026-10-25.md) records the implementation and local checks.
+
+The [supplemental checklist verification](evidence/owner-checklist-alignment-2026-10-25.md) records the latest local results.
+
+The supplemental screenshot checklist is tracked in
+[Admin acceptance scope](../review/acceptance-criteria.md#ac-v2-admin-01a--current-pr-24-review-scope).
+Course sessions now live outside the optional live-event schedule. Admins can
+edit course content within an independent batch and inspect its exact content
+references before confirming publication. A publication pins the complete private
+course revision; Student schedule projections include headings only.
 
 ## Current local follow-up
 
@@ -35,8 +44,9 @@ reordering and shared worksheet recovery. That checkpoint passed 262 tests and 2
 enrolled-schedule follow-up passes 282 tests, 32 browser scenarios, lint,
 TypeScript and the production build.
 The corrected local candidate is integrated on `work/pr24-reconcile-2026-10-25`.
-Its application/test tree matches the locally verified correction. The push was
-blocked by missing Git credentials; no shared PR branch or hosted database was changed. The [enrolled-schedule follow-up](evidence/enrolled-schedules-2026-10-25.md)
+The earlier correction at `0f71843` is now on PR #24. This supplemental alignment
+adds independent course sessions and content-aware publication; its own Preview
+verification remains pending. Hosted databases remain unchanged. The [enrolled-schedule follow-up](evidence/enrolled-schedules-2026-10-25.md)
 implements the newly confirmed enrolled-batch-only rule. Full Phase 2 acceptance
 still needs reviewed content mapping/delivery and separately approved staging QA.
 The dated candidate information below describes the earlier submitted PR.

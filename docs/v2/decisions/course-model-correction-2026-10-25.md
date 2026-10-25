@@ -54,3 +54,19 @@ Prepare a corrected implementation, tests, documentation and exact-head Preview
 before resuming review. A passing build is not hosted acceptance: Phase 2 schema
 application remains prohibited until separately authorized. Preserve the prior
 reconciliation report as historical evidence, not approval of the corrected model.
+
+## Supplemental owner checklist supplied with the correction
+
+The accompanying screenshots name Phase 2 **Full Course and Individual Offering
+publishing**. PR #24 review is limited to the Admin workflow: create all four
+offerings, add course sessions/materials/recordings/pre-reads/post-reads, add
+optional live events and date only those events, preview before publication,
+edit/unpublish/republish safely, and keep private Meet details Admin-only.
+
+Course structure must exist independently of live-event scheduling. The corrected
+model therefore stores `sessions` separately from `events`; new Admin templates
+use the latter only for actual live classes. Publication pins an immutable course
+revision as well as its optional schedule. The existing prototype outline payload
+remains readable for compatibility, without being the structure of newly created
+courses. Canonical Phase 2 offerings never use the historical Phase 1 ledger names
+as their product concept.

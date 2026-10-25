@@ -114,7 +114,7 @@ Prices should be stored as versioned commercial configuration, not hard-coded in
 
 **Current decision (25 October correction; 20 October A1, B1 and D1):** The four offerings are Quant, Verbal, DI and Full Course (all three). Individual offerings retain the full course structure and content. An approximately eight-week Full Course schedule may be used where live delivery is configured; individual courses have no assumed one-week duration.
 
-Each course retains sessions, materials, recordings, pre-session reads and post-session reads. Course content can be authored without dates or a duration. Only actual live classes require scheduling. Preserve current course content before customization; legacy short-format seed templates do not define the complete individual courses.
+Each course retains sessions, materials, recordings, pre-session reads and post-session reads. Course sessions are stored independently of optional live-class events. The current Admin review covers content preview and safe whole-course publish/edit/unpublish/republish, with private Meet details remaining Admin-only. Course content can be authored without dates or a duration. Only actual live classes require scheduling. Preserve current course content before customization; legacy short-format seed templates do not define the complete individual courses.
 
 ---
 
