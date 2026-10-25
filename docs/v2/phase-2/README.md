@@ -2,7 +2,18 @@
 
 Status: Active — isolated review candidate; staging and full phase acceptance pending
 Owner: Engineering and product owner
-Last updated: 20 October 2026
+Last updated: 25 October 2026
+
+## Current local follow-up
+
+The [25 October implementation report](evidence/admin-completion-2026-10-25.md)
+records recovered Admin drafts, protected publication retries, template event
+reordering and shared worksheet recovery. The local candidate passes 262 tests
+and 28 synthetic browser scenarios, lint, TypeScript and the production build.
+Work is on `work/phase2-completion-2026-10-25`; no shared PR branch or hosted
+database was changed. Full Phase 2 acceptance still needs the Student eligibility
+decision, reviewed content mapping/delivery and separately approved staging QA.
+The dated candidate information below describes the earlier submitted PR.
 
 ## Scope and sequencing
 

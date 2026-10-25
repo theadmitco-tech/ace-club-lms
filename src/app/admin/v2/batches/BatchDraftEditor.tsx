@@ -1,6 +1,8 @@
 'use client';
 
 import { useRef, useState, type FormEvent } from 'react';
+import { DraftRecoveryNotice, useDraftRecovery } from '@/components/DraftRecovery';
+import { isBatchWorkspace, type BatchWorkspace } from '@/lib/v2WorkspaceRecovery';
 import { AdminDraftLink as Link, useAdminDraftGuard } from '@/components/AdminDraftNavigation';
 import { useRouter } from 'next/navigation';
 import { V2_TEMPLATE_PRODUCTS, type V2TemplateDraft } from '@/lib/v2Templates';
@@ -14,7 +16,7 @@ function formatInstant(value: string | null) {
   return new Intl.DateTimeFormat('en-GB', { timeZone: V2_BATCH_TIME_ZONE, dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
 }
 
-export default function BatchDraftEditor({ drafts, templates }: { drafts: V2BatchDraft[]; templates: V2TemplateDraft[] }) {
+export default function BatchDraftEditor({ drafts, templates, ownerId }: { drafts: V2BatchDraft[]; templates: V2TemplateDraft[]; ownerId: string }) {
   const router = useRouter();
   const [input, setInput] = useState<V2BatchInput | null>(null);
   const [original, setOriginal] = useState<V2BatchDraft | null>(null);
@@ -26,11 +28,22 @@ export default function BatchDraftEditor({ drafts, templates }: { drafts: V2Batc
   const busy = useRef(false);
   const liveTemplates = templates;
 
+  const recovery = useDraftRecovery<BatchWorkspace>(ownerId, 'v2-batch', isBatchWorkspace);
   useAdminDraftGuard(dirty || pending !== null);
 
+  function restore() {
+    if (!recovery.recovered) return;
+    setInput(recovery.recovered.input);
+    setOriginal(recovery.recovered.original);
+    setReview(recovery.recovered.review);
+    setDirty(true);
+    recovery.acknowledge();
+  }
+
   function begin(batch: V2BatchDraft | null) {
-    if (busy.current || (dirty && !window.confirm('Discard unsaved batch edits?'))) return;
+    if (busy.current || ((dirty || recovery.recovered) && !window.confirm('Discard unsaved batch edits?'))) return;
     if (!batch && !liveTemplates.length) return;
+    recovery.forget();
     setOriginal(batch);
     setInput(batch ? {
       id: batch.id, templateId: batch.templateId, templateRevision: batch.templateRevision,
@@ -47,7 +60,9 @@ export default function BatchDraftEditor({ drafts, templates }: { drafts: V2Batc
   }
 
   function change(next: V2BatchInput) {
-    setInput({ ...next, requestId: crypto.randomUUID() });
+    const changed = { ...next, requestId: crypto.randomUUID() };
+    recovery.remember({ input: changed, original, review: null });
+    setInput(changed);
     setDirty(true);
     setReview(null);
     setError('');
@@ -72,7 +87,9 @@ export default function BatchDraftEditor({ drafts, templates }: { drafts: V2Batc
     try {
       const result = await previewBatchDraftAction(input);
       if (result.status === 'error') { setError(result.message); return; }
-      setReview({ input: structuredClone(input), proposal: result.proposal });
+      const nextReview = { input: structuredClone(input), proposal: result.proposal };
+      recovery.remember({ input, original, review: nextReview });
+      setReview(nextReview);
       setMessage('Schedule reviewed. Confirmation saves this draft.');
     } catch {
       setError('The schedule could not be reviewed. Retry after checking the connection.');
@@ -92,6 +109,7 @@ export default function BatchDraftEditor({ drafts, templates }: { drafts: V2Batc
       const result = await saveBatchDraftAction(review.input, review.proposal.fingerprint);
       if (result.status === 'error') { setError(result.message); return; }
       const batch = result.draft;
+      recovery.forget();
       setOriginal(batch);
       setInput({ id: batch.id, templateId: batch.templateId, templateRevision: batch.templateRevision,
         expectedRevision: batch.revision, requestId: crypto.randomUUID(), title: batch.title,
@@ -110,6 +128,7 @@ export default function BatchDraftEditor({ drafts, templates }: { drafts: V2Batc
 
   const productCode = original?.productCode ?? templates.find((template) => template.id === input?.templateId)?.productCode;
   return <div className={styles.workspace}>
+    <DraftRecoveryNotice available={!!recovery.recovered} unavailable={recovery.unavailable} onRestore={restore} onDiscard={recovery.forget} />
     <section className={styles.card} aria-labelledby="batch-list-heading">
       <h2 id="batch-list-heading">Saved batch drafts</h2>
       {drafts.length ? <ul className={styles.list}>{drafts.map((batch) => <li key={batch.id}>

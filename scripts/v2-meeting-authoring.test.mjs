@@ -158,7 +158,7 @@ test('private page gates role and batch identity before loading meeting details'
     'react/jsx-runtime': { jsx: () => ({}),jsxs: () => ({}) },'next/link': {},'./MeetingDraftEditor': {},
     'next/navigation': { notFound: () => { throw new Error('Not found'); } },'@/lib/v2Meetings': domain,
     '@/lib/server/v2BatchFeature': { isV2BatchAuthoringEnabled: () => enabled },
-    '@/lib/server/portalAuthorization': { requirePortalRole: async (role) => { calls.push(role); if (deny) throw new Error('Denied'); } },
+    '@/lib/server/portalAuthorization': { requirePortalRole: async (role) => { calls.push(role); if (deny) throw new Error('Denied'); return { id: 'synthetic-admin', role }; } },
     '@/lib/server/v2Meetings': { readV2MeetingDraft: async (id) => { calls.push(id); return { status: 'unavailable' }; } },
   });
   const params=Promise.resolve({ batchId: randomUUID() });

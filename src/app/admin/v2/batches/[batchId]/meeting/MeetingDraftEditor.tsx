@@ -1,13 +1,15 @@
 'use client';
 
 import { useRef, useState, type FormEvent } from 'react';
+import { DraftRecoveryNotice, useDraftRecovery } from '@/components/DraftRecovery';
+import { isMeetingWorkspace, type MeetingWorkspace } from '@/lib/v2WorkspaceRecovery';
 import { useAdminDraftGuard } from '@/components/AdminDraftNavigation';
 import { useRouter } from 'next/navigation';
 import { validateV2MeetingInput, type V2MeetingDraft, type V2MeetingInput } from '@/lib/v2Meetings';
 import { saveMeetingDraftAction } from './actions';
 import styles from '../../../templates/templates.module.css';
 
-export default function MeetingDraftEditor({ draft }: { draft: V2MeetingDraft }) {
+export default function MeetingDraftEditor({ draft, ownerId }: { draft: V2MeetingDraft; ownerId: string }) {
   const router = useRouter();
   const [links, setLinks] = useState(draft.links);
   const [revision, setRevision] = useState(draft.revision);
@@ -19,7 +21,19 @@ export default function MeetingDraftEditor({ draft }: { draft: V2MeetingDraft })
   const [message, setMessage] = useState('');
   const busy = useRef(false);
 
+  const recovery = useDraftRecovery<MeetingWorkspace>(ownerId, `v2-meeting:${draft.batch.id}`, isMeetingWorkspace);
   useAdminDraftGuard(dirty || pending);
+
+  function restore() {
+    const saved = recovery.recovered;
+    if (!saved) return;
+    if (saved.batchRevision !== draft.batch.revision) {
+      setError('The batch schedule changed. Reload current links and review your changes against the latest schedule.');
+      return;
+    }
+    setLinks(saved.links); setRevision(saved.revision); setRequestId(saved.requestId);
+    setReview(saved.review); setDirty(true); recovery.acknowledge();
+  }
 
   function reviewChanges(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -27,6 +41,7 @@ export default function MeetingDraftEditor({ draft }: { draft: V2MeetingDraft })
     const input = { batchId: draft.batch.id, batchRevision: draft.batch.revision, expectedRevision: revision, requestId, links };
     const invalid = validateV2MeetingInput(input);
     if (invalid) { setError(invalid); return; }
+    recovery.remember({ batchRevision: draft.batch.revision, revision, requestId, links, review: input });
     setReview(structuredClone(input));
     setError('');
   }
@@ -39,6 +54,7 @@ export default function MeetingDraftEditor({ draft }: { draft: V2MeetingDraft })
     try {
       const result = await saveMeetingDraftAction(review);
       if (result.status === 'error') { setError(result.message); return; }
+      recovery.forget();
       setRevision(result.receipt.revision);
       setDirty(false);
       setReview(null);
@@ -53,9 +69,10 @@ export default function MeetingDraftEditor({ draft }: { draft: V2MeetingDraft })
   }
 
   return <form onSubmit={reviewChanges} className={`${styles.workspace} ${styles.card}`} aria-busy={pending}>
+    <DraftRecoveryNotice available={!!recovery.recovered} unavailable={recovery.unavailable} onRestore={restore} onDiscard={recovery.forget} />
     <h2>{draft.batch.title}</h2>
     <p>All times use Asia/Kolkata (IST). Empty links are allowed in a draft. Saving does not publish links or give students access.</p>
-    <fieldset className={styles.fields} disabled={pending}>
+    <fieldset className={styles.fields} disabled={pending || !!recovery.recovered}>
       <legend className={styles.legend}>Google Meet links</legend>
       <p id="meeting-format">Use the canonical link, for example https://meet.google.com/abc-defg-hij, without extra parameters.</p>
       {draft.batch.events.filter((event) => event.kind !== 'outline').map((event) => <label htmlFor={`${event.key}-meet`} key={event.key}>
@@ -63,8 +80,11 @@ export default function MeetingDraftEditor({ draft }: { draft: V2MeetingDraft })
         <input id={`${event.key}-meet`} type="url" className="form-input" maxLength={36} autoComplete="off" spellCheck={false}
           aria-describedby="meeting-format" value={links.find((link) => link.key === event.key)?.url ?? ''}
           onChange={(e) => {
-            setLinks(links.map((link) => link.key === event.key ? { ...link, url: e.target.value || null } : link));
-            setRequestId(crypto.randomUUID()); setDirty(true); setReview(null); setError(''); setMessage('');
+            const nextLinks = links.map((link) => link.key === event.key ? { ...link, url: e.target.value || null } : link);
+            const nextRequest = crypto.randomUUID();
+            recovery.remember({ batchRevision: draft.batch.revision, revision, requestId: nextRequest, links: nextLinks, review: null });
+            setLinks(nextLinks);
+            setRequestId(nextRequest); setDirty(true); setReview(null); setError(''); setMessage('');
           }} />
       </label>)}
       <button type="submit" className="btn btn-secondary" disabled={!dirty || pending}>Review meeting changes</button>

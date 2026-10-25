@@ -68,7 +68,7 @@ export function publicationProposal(input, state) {
 export function initialState() {
   const templates = Object.keys(products).map((code, index) => template(code, index + 1));
   return { templates, drafts: [batch(templates[0])], publications: [], meetings: {}, receipts: {},
-    calls: [], faults: {}, readError: false };
+    calls: [], faults: {}, readError: false, ownerId: 'synthetic-admin', worksheets: {} };
 }
 function upsert(items, record, key = 'id') {
   return [...items.filter((item) => item[key] !== record[key]), record];
@@ -82,6 +82,7 @@ export async function respond(state, method, args) {
     delete state.faults[method];
     if (fault.delay) await new Promise((resolve) => setTimeout(resolve, fault.delay));
     if (fault.error) return { status: 'error', message: fault.error };
+    if (fault.invalidReceipt) return { data: { id: 'wrong-question' }, error: null };
     if (fault.interrupt) throw new Error('Synthetic transport interruption');
   }
   const result = handlers[method](state, ...copy);
@@ -89,7 +90,20 @@ export async function respond(state, method, args) {
   return result;
 }
 // These adapters intentionally do not claim authentication, RLS or database validation.
+export function worksheet(state, materialId) {
+  const key = `${state.ownerId}:${materialId}`;
+  return state.worksheets[key] ??= { material_id: materialId, session_id: id(80), course_id: id(90), title: 'Synthetic worksheet',
+    session_title: 'Synthetic class', section: 'QA', week_number: 1,
+    questions: [1, 2].map(index => ({ id: id(300 + index), question_number: index, status: null, time_taken_seconds: null, comment: null, updated_at: null })) };
+}
 const handlers = {
+  fixtureIdentity: (state, role) => ({ id: state.ownerId, role }),
+  fixtureWorksheet: worksheet,
+  fixtureSaveQuestion: (state, input) => {
+    const question = worksheet(state, input.p_material_id).questions.find(q => q.id === input.p_question_id);
+    Object.assign(question, { status: input.p_status, time_taken_seconds: input.p_time_taken_seconds, comment: input.p_comment, updated_at: new Date().toISOString() });
+    return { data: question, error: null };
+  },
   listV2TemplateDrafts: (state) => state.readError ? { status: 'error' } : { status: 'ready', templates: state.templates },
   listV2BatchDrafts: (state) => state.readError ? { status: 'error' } : { status: 'ready', drafts: state.drafts },
   listV2BatchPublications: (state) => state.readError ? { status: 'error' } : { status: 'ready', publications: state.publications },
@@ -100,6 +114,7 @@ const handlers = {
   } }),
   saveV2TemplateDraft: (state, input) => {
     if (state.receipts[input.requestId]) return { ...state.receipts[input.requestId], replayed: true };
+    if ((state.templates.find(item => item.id === input.id)?.revision ?? 0) !== input.expectedRevision) return { status: 'error', message: 'Synthetic stale template. Reload the latest draft.' };
     const record = { id: input.id, productCode: input.productCode, revision: input.expectedRevision + 1, document: input.document };
     state.templates = upsert(state.templates, record);
     return state.receipts[input.requestId] = { status: 'success', template: record, replayed: false };
@@ -107,6 +122,7 @@ const handlers = {
   previewV2BatchDraft: (state, input) => ({ status: 'success', proposal: batchProposal(input, state) }),
   saveV2BatchDraft: (state, input) => {
     if (state.receipts[input.requestId]) return { ...state.receipts[input.requestId], replayed: true };
+    if ((state.drafts.find(item => item.id === input.id)?.revision ?? 0) !== input.expectedRevision) return { status: 'error', message: 'Synthetic stale batch. Reload the latest draft.' };
     const { draft } = batchProposal(input, state);
     state.drafts = upsert(state.drafts, draft);
     return state.receipts[input.requestId] = { status: 'success', draft, replayed: false };

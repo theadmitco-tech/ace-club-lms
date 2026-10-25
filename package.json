@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "test:v2:phase1": "node scripts/verify-v2-phase1.mjs",
+    "test:v2:browser": "node scripts/browser/v2-phase2/verify.mjs",
     "test:v2:phase2": "node scripts/verify-v2-phase2.mjs",
     "test:v2-products": "node --test scripts/v2-product-entitlements.test.mjs",
     "test:v2-readers": "node --test scripts/v2-product-readers.test.mjs",
@@ -46,6 +47,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "playwright-core": "1.58.2",
     "typescript": "^5"
   }
 }

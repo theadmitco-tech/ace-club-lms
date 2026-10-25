@@ -8,14 +8,14 @@ import TemplateEditor from './TemplateEditor';
 
 export default async function V2TemplatesPage() {
   if (!isV2TemplateAuthoringEnabled()) notFound();
-  await requirePortalRole('admin');
+  const identity = await requirePortalRole('admin');
   const result = await listV2TemplateDrafts();
   return (
     <div>
       <h1 className="admin-page-title">V2 course templates</h1>
       <p className="admin-page-subtitle">Draft teaching plans for Full Batch and Crash Courses. Templates remain private to Admins.</p>
       {isV2BatchAuthoringEnabled() && <Link href="/admin/v2/batches" prefetch={false}>Manage batch drafts</Link>}
-      {result.status === 'ready' ? <TemplateEditor templates={result.templates} /> : (
+      {result.status === 'ready' ? <TemplateEditor key={identity.id} ownerId={identity.id} templates={result.templates} /> : (
         <div className="admin-card" role="alert">
           <p>Templates could not be loaded. Check staging setup and Admin access before retrying.</p>
           <Link href="/admin/v2/templates" prefetch={false}>Retry loading templates</Link>

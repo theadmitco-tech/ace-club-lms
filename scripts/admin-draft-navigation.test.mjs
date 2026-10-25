@@ -59,6 +59,8 @@ function harness() {
   const router = { push: (url) => state.pushes.push(url), replace: (url) => state.replacements.push(url),
     refresh: () => { state.refreshes++; } };
   const dependencies = { react, 'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'next-link' },
+    '@/components/DraftRecovery': { DraftRecoveryNotice: 'recovery-notice', useDraftRecovery: () => ({ recovered: null, remember() {}, forget() {}, acknowledge() {}, unavailable: false }) },
+    '@/lib/v2WorkspaceRecovery': {},
     'next/navigation': { useRouter: () => router, usePathname: () => '/admin/v2/templates' } };
   const component = (path, extra = {}) => load(path, { ...dependencies, ...extra }, {
     window, crypto: { randomUUID }, structuredClone,

@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 // Phase 2 only. Run test:v2:phase1 separately for dependency and legacy coverage.
 // Database suites use disposable Unix-socket clusters and synthetic fixtures.
 const suites = [
+  'draft-recovery.test.mjs',
   'admin-draft-navigation.test.mjs',
   'v2-approved-authoring.test.mjs',
   'v2-publication-database.test.mjs',

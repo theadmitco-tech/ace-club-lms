@@ -233,7 +233,7 @@ test('the new page hides when disabled and requires Admin authorization before l
     'next/navigation': { notFound: () => { throw new Error('Not found'); } },
     '@/lib/server/v2TemplateFeature': { isV2TemplateAuthoringEnabled: () => enabled },
     '@/lib/server/v2BatchFeature': { isV2BatchAuthoringEnabled: () => false },
-    '@/lib/server/portalAuthorization': { requirePortalRole: async (role) => { calls.push(role); } },
+    '@/lib/server/portalAuthorization': { requirePortalRole: async (role) => { calls.push(role); return { id: 'synthetic-admin', role }; } },
     '@/lib/server/v2Templates': { listV2TemplateDrafts: async () => { calls.push('load'); return { status: 'ready', templates: [] }; } },
   });
   await assert.rejects(page.default(), /Not found/);

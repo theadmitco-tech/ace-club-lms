@@ -150,7 +150,7 @@ export default async function MaterialViewerPage({
                   <PdfViewer fileUrl={material.file_url} title={material.title} />
                 </div>
                 {worksheetLogResult?.status === 'ready' ? (
-                  <WorksheetLog worksheet={worksheetLogResult.data} />
+                  <WorksheetLog key={`${identity.id}:${material.id}`} ownerId={identity.id} worksheet={worksheetLogResult.data} />
                 ) : (
                   <section className="worksheet-log worksheet-log-error" id="worksheet-log" role="alert">
                     <span className="student-eyebrow">Manual tracker</span>

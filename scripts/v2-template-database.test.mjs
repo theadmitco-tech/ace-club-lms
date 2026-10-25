@@ -162,6 +162,15 @@ test('V2 draft authoring database behavior', { timeout: 120000 }, async (t) => w
     assert.match(results.find((item) => item.status === 'rejected').reason.message, /revision changed/);
     assert.equal(query(`select latest_revision from public.v2_course_templates where id='${first.id}'`), '3');
   });
+  await t.test('reordering events preserves identities and the earlier immutable revision', () => {
+    const input = request();
+    input.document.events.push({ ...input.document.events[0], key: randomUUID(), title: 'Second synthetic lesson', dayOffset: 1 });
+    query(as(actor, save(input)));
+    const reordered = { ...input, revision: 1, token: randomUUID(), document: { ...input.document, events: [...input.document.events].reverse() } };
+    const result = JSON.parse(query(as(actor, save(reordered))));
+    assert.deepEqual(result.template.document.events, reordered.document.events);
+    assert.deepEqual(JSON.parse(query(`select document from public.v2_course_template_revisions where template_id='${input.id}' and revision=1`)), input.document);
+  });
   await t.test('concurrent token reuse for different templates cannot create partial drafts', async () => {
     const token = randomUUID();
     const inputs = [request({ token }), request({ token })];

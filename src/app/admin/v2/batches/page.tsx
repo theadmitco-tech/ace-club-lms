@@ -10,7 +10,7 @@ import { listV2BatchPublications } from '@/lib/server/v2Publications';
 
 export default async function V2BatchesPage() {
   if (!isV2BatchAuthoringEnabled()) notFound();
-  await requirePortalRole('admin');
+  const identity = await requirePortalRole('admin');
   const [batches, templates, publications] = await Promise.all([listV2BatchDrafts(), listV2TemplateDrafts(), listV2BatchPublications()]);
   return <div>
     <h1 className="admin-page-title">V2 batch drafts</h1>
@@ -18,8 +18,8 @@ export default async function V2BatchesPage() {
     <Link href="/admin/v2/templates" prefetch={false}>Manage course templates</Link>
     {batches.status === 'ready' && templates.status === 'ready'
       ? <>
-        <BatchDraftEditor drafts={batches.drafts} templates={templates.templates} />
-        {publications.status === 'ready' ? <PublicationPanel drafts={batches.drafts} publications={publications.publications} />
+        <BatchDraftEditor key={identity.id} ownerId={identity.id} drafts={batches.drafts} templates={templates.templates} />
+        {publications.status === 'ready' ? <PublicationPanel key={identity.id} ownerId={identity.id} drafts={batches.drafts} publications={publications.publications} />
           : <div className="admin-card" role="alert">Publication history could not be loaded. Check the reviewed staging setup and reload before publishing.</div>}
       </>
       : <div className="admin-card" role="alert">

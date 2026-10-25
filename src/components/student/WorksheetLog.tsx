@@ -1,6 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import { DraftRecoveryNotice, useDraftRecovery } from '@/components/DraftRecovery';
+import { isWorksheetRecovery, isWorksheetSaveReceipt, type WorksheetEdit, type WorksheetRecovery } from '@/lib/worksheetRecovery';
 import {
   formatTrackerDuration,
   parseTrackerDuration,
@@ -10,15 +12,7 @@ import {
 } from '@/lib/studentPractice';
 import { createClient } from '@/utils/supabase/client';
 
-type SaveState = 'idle' | 'saving' | 'saved' | 'error';
-
-type SavedQuestion = {
-  id: string;
-  status: StudentQuestionStatus | null;
-  time_taken_seconds: number | null;
-  comment: string | null;
-  updated_at: string;
-};
+type SaveState = 'idle' | 'unsaved' | 'saving' | 'saved' | 'error';
 
 type PendingBulk = {
   ids: string[];
@@ -31,7 +25,7 @@ function statusLabel(status: StudentQuestionStatus | null) {
   return 'Not updated';
 }
 
-export function WorksheetLog({ worksheet }: { worksheet: StudentWorksheetLog }) {
+export function WorksheetLog({ worksheet, ownerId }: { worksheet: StudentWorksheetLog; ownerId: string }) {
   const [questions, setQuestions] = useState(worksheet.questions);
   const [timeValues, setTimeValues] = useState<Record<string, string>>(() => (
     Object.fromEntries(worksheet.questions.map((question) => [
@@ -47,6 +41,35 @@ export function WorksheetLog({ worksheet }: { worksheet: StudentWorksheetLog }) 
   const [bulkMessage, setBulkMessage] = useState<string | null>(null);
   const [bulkSaving, setBulkSaving] = useState(false);
 
+  const inFlight = useRef(new Set<string>());
+  const edits = useRef(new Map<string, WorksheetEdit>());
+  const recovery = useDraftRecovery<WorksheetRecovery>(ownerId, `worksheet:${worksheet.course_id}:${worksheet.material_id}`, isWorksheetRecovery);
+
+  function remember(question: StudentQuestionLog, timeValue: string) {
+    edits.current.set(question.id, { id: question.id, status: question.status, comment: question.comment,
+      timeValue, baseUpdatedAt: edits.current.get(question.id)?.baseUpdatedAt ?? question.updated_at });
+    recovery.remember({ edits: [...edits.current.values()] });
+  }
+
+  function restore() {
+    if (!recovery.recovered) return;
+    const restored: string[] = [];
+    let conflicts = 0;
+    for (const edit of recovery.recovered.edits) {
+      const current = worksheet.questions.find((question) => question.id === edit.id);
+      if (!current || current.updated_at !== edit.baseUpdatedAt) { conflicts++; continue; }
+      edits.current.set(edit.id, edit);
+      restored.push(edit.id);
+      updateQuestion(edit.id, { status: edit.status, comment: edit.comment });
+      setTimeValues((values) => ({ ...values, [edit.id]: edit.timeValue }));
+      setSaveStates((values) => ({ ...values, [edit.id]: 'error' }));
+      setErrors((values) => ({ ...values, [edit.id]: 'Restored edits have not been saved. Retry this question.' }));
+    }
+    if (edits.current.size) recovery.remember({ edits: [...edits.current.values()] });
+    else recovery.forget();
+    if (conflicts) setBulkMessage(`${restored.length} question edits restored. ${conflicts} changed or removed questions were kept as currently saved.`);
+  }
+
   const totals = useMemo(() => ({
     done: questions.filter((question) => question.status === 'done').length,
     review: questions.filter((question) => question.status === 'review').length,
@@ -59,6 +82,8 @@ export function WorksheetLog({ worksheet }: { worksheet: StudentWorksheetLog }) 
   }
 
   async function persistQuestion(question: StudentQuestionLog, timeValue: string) {
+    if (inFlight.current.has(question.id)) return { ok: false as const, message: 'This question is already saving.' };
+    remember(question, timeValue);
     const duration = parseTrackerDuration(timeValue);
     if (duration.error) {
       setSaveStates((current) => ({ ...current, [question.id]: 'error' }));
@@ -73,33 +98,47 @@ export function WorksheetLog({ worksheet }: { worksheet: StudentWorksheetLog }) 
       return next;
     });
 
-    const supabase = createClient();
-    const { data, error } = await supabase.rpc('update_student_question_log', {
-      p_material_id: worksheet.material_id,
-      p_question_id: question.id,
-      p_status: question.status,
-      p_time_taken_seconds: duration.seconds,
-      p_comment: question.comment,
-    });
+    inFlight.current.add(question.id);
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase.rpc('update_student_question_log', {
+        p_material_id: worksheet.material_id,
+        p_question_id: question.id,
+        p_status: question.status,
+        p_time_taken_seconds: duration.seconds,
+        p_comment: question.comment,
+      });
 
-    if (error || !data) {
+      if (error || !isWorksheetSaveReceipt(data, question.id)) {
+        const message = 'Could not save. Retry this question.';
+        setSaveStates((current) => ({ ...current, [question.id]: 'error' }));
+        setErrors((current) => ({ ...current, [question.id]: message }));
+        return { ok: false as const, message };
+      }
+
+      const saved = data;
+      edits.current.delete(question.id);
+      if (edits.current.size) recovery.remember({ edits: [...edits.current.values()] });
+      else recovery.forget();
+      updateQuestion(question.id, saved);
+      setTimeValues((current) => ({
+        ...current,
+        [question.id]: formatTrackerDuration(saved.time_taken_seconds),
+      }));
+      setSaveStates((current) => ({ ...current, [question.id]: 'saved' }));
+      return { ok: true as const };
+    } catch {
       const message = 'Could not save. Retry this question.';
       setSaveStates((current) => ({ ...current, [question.id]: 'error' }));
       setErrors((current) => ({ ...current, [question.id]: message }));
       return { ok: false as const, message };
+    } finally {
+      inFlight.current.delete(question.id);
     }
-
-    const saved = data as SavedQuestion;
-    updateQuestion(question.id, saved);
-    setTimeValues((current) => ({
-      ...current,
-      [question.id]: formatTrackerDuration(saved.time_taken_seconds),
-    }));
-    setSaveStates((current) => ({ ...current, [question.id]: 'saved' }));
-    return { ok: true as const };
   }
 
   async function saveStatus(question: StudentQuestionLog, status: StudentQuestionStatus) {
+    if (inFlight.current.has(question.id) || bulkSaving) return;
     const next = { ...question, status };
     updateQuestion(question.id, { status });
     await persistQuestion(next, timeValues[question.id] ?? '');
@@ -115,12 +154,13 @@ export function WorksheetLog({ worksheet }: { worksheet: StudentWorksheetLog }) 
   }
 
   function requestBulk(status: StudentQuestionStatus) {
-    if (selected.size === 0) return;
+    if (selected.size === 0 || inFlight.current.size > 0 || bulkSaving) return;
     setPendingBulk({ ids: Array.from(selected), status });
     setBulkMessage(null);
   }
 
   async function applyBulk(bulk: PendingBulk) {
+    if (inFlight.current.size > 0 || bulkSaving) return;
     setPendingBulk(null);
     setFailedBulk(null);
     setBulkSaving(true);
@@ -168,10 +208,13 @@ export function WorksheetLog({ worksheet }: { worksheet: StudentWorksheetLog }) 
     setBulkMessage(`${savedCount} question${savedCount === 1 ? '' : 's'} saved.`);
   }
 
+  const recoveryPending = !!recovery.recovered;
+  const anySaving = Object.values(saveStates).includes('saving');
   const allSelected = questions.length > 0 && selected.size === questions.length;
 
   return (
     <section className="worksheet-log worksheet-log-panel" id="worksheet-log" aria-labelledby="worksheet-log-title">
+      <DraftRecoveryNotice available={!!recovery.recovered} unavailable={recovery.unavailable} onRestore={restore} onDiscard={recovery.forget} />
       <div className="worksheet-log-heading">
         <div>
           <span className="student-eyebrow">Manual tracker</span>
@@ -189,7 +232,7 @@ export function WorksheetLog({ worksheet }: { worksheet: StudentWorksheetLog }) 
           <input
             type="checkbox"
             checked={allSelected}
-            disabled={bulkSaving}
+            disabled={bulkSaving || anySaving || recoveryPending}
             onChange={() => setSelected(allSelected
               ? new Set<string>()
               : new Set(questions.map((question) => question.id)))}
@@ -197,14 +240,14 @@ export function WorksheetLog({ worksheet }: { worksheet: StudentWorksheetLog }) 
           Select all
         </label>
         <span>{selected.size} selected</span>
-        <button type="button" disabled={selected.size === 0 || bulkSaving} onClick={() => requestBulk('done')}>
+        <button type="button" disabled={selected.size === 0 || bulkSaving || anySaving || recoveryPending} onClick={() => requestBulk('done')}>
           Mark selected Done
         </button>
-        <button type="button" disabled={selected.size === 0 || bulkSaving} onClick={() => requestBulk('review')}>
+        <button type="button" disabled={selected.size === 0 || bulkSaving || anySaving || recoveryPending} onClick={() => requestBulk('review')}>
           Mark selected for review
         </button>
         {selected.size > 0 && (
-          <button className="bulk-clear" type="button" disabled={bulkSaving} onClick={() => setSelected(new Set())}>Clear</button>
+          <button className="bulk-clear" type="button" disabled={bulkSaving || anySaving || recoveryPending} onClick={() => setSelected(new Set())}>Clear</button>
         )}
       </div>
 
@@ -253,7 +296,7 @@ export function WorksheetLog({ worksheet }: { worksheet: StudentWorksheetLog }) 
                     <input
                       type="checkbox"
                       checked={selected.has(question.id)}
-                      disabled={bulkSaving}
+                      disabled={bulkSaving || anySaving || recoveryPending}
                       onChange={() => toggleSelected(question.id)}
                       aria-label={`Select question ${question.question_number}`}
                     />
@@ -265,7 +308,7 @@ export function WorksheetLog({ worksheet }: { worksheet: StudentWorksheetLog }) 
                         type="button"
                         className={question.status === 'done' ? 'active status-done' : ''}
                         aria-pressed={question.status === 'done'}
-                        disabled={saveState === 'saving'}
+                        disabled={saveState === 'saving' || bulkSaving || recoveryPending}
                         onClick={() => void saveStatus(question, 'done')}
                       >
                         Done
@@ -274,7 +317,7 @@ export function WorksheetLog({ worksheet }: { worksheet: StudentWorksheetLog }) 
                         type="button"
                         className={question.status === 'review' ? 'active status-review' : ''}
                         aria-pressed={question.status === 'review'}
-                        disabled={saveState === 'saving'}
+                        disabled={saveState === 'saving' || bulkSaving || recoveryPending}
                         onClick={() => void saveStatus(question, 'review')}
                       >
                         Review
@@ -289,25 +332,31 @@ export function WorksheetLog({ worksheet }: { worksheet: StudentWorksheetLog }) 
                       className="tracker-time-input"
                       inputMode="numeric"
                       value={timeValues[question.id] ?? ''}
-                      disabled={saveState === 'saving' || bulkSaving}
+                      disabled={saveState === 'saving' || bulkSaving || recoveryPending}
                       placeholder="2:30"
                       aria-label={`Time taken for question ${question.question_number}`}
-                      onChange={(event) => setTimeValues((current) => ({
-                        ...current,
-                        [question.id]: event.target.value,
-                      }))}
+                      onChange={(event) => {
+                        remember(question, event.target.value);
+                        setSaveStates((current) => ({ ...current, [question.id]: 'unsaved' }));
+                        setTimeValues((current) => ({ ...current, [question.id]: event.target.value }));
+                      }}
                       onBlur={() => void persistQuestion(question, timeValues[question.id] ?? '')}
                     />
                   </td>
                   <td>
                     <textarea
                       value={question.comment ?? ''}
-                      disabled={saveState === 'saving' || bulkSaving}
+                      disabled={saveState === 'saving' || bulkSaving || recoveryPending}
                       maxLength={2000}
                       rows={2}
                       placeholder="Optional reflection"
                       aria-label={`Comment for question ${question.question_number}`}
-                      onChange={(event) => updateQuestion(question.id, { comment: event.target.value })}
+                      onChange={(event) => {
+                        const next = { ...question, comment: event.target.value };
+                        remember(next, timeValues[question.id] ?? '');
+                        setSaveStates((current) => ({ ...current, [question.id]: 'unsaved' }));
+                        updateQuestion(question.id, { comment: event.target.value });
+                      }}
                       onBlur={(event) => void persistQuestion(
                         { ...question, comment: event.target.value },
                         timeValues[question.id] ?? '',
@@ -325,6 +374,7 @@ export function WorksheetLog({ worksheet }: { worksheet: StudentWorksheetLog }) 
                         </button>
                       </>
                     )}
+                    {saveState === 'unsaved' && 'Unsaved edits'}
                     {saveState === 'idle' && (question.updated_at ? 'Saved' : 'Not updated')}
                   </td>
                 </tr>

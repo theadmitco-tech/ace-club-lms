@@ -4,6 +4,14 @@ Status: Active — Phase 1 staging SQL verified; browser acceptance and Phase 2 
 Owner: Engineering and product owner
 Last updated: 24 October 2026
 
+25 October checkpoint: Phase 1 staging migration and verification are confirmed
+complete, with its final review handled separately. Do not rerun that migration.
+The owner confirmed Flexible Mocks is a pre-existing configuration issue unrelated
+to PR #23 and excluded it from the LMS merge gate. The
+[current Phase 2 local report](evidence/admin-completion-2026-10-25.md) records
+262 passing tests and 28 browser scenarios. Phase 2 migrations and hosted setup
+remain separately gated; the historical sequence below is not execution authority.
+
 The approved Phase 1 migration has been applied to staging after a private backup
 and recovery rehearsal. SQL verification passed, synthetic fixtures rolled back,
 and existing application data stayed unchanged. The

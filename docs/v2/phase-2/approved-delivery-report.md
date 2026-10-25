@@ -4,6 +4,11 @@ Status: Active — local candidate verified; draft review and staging acceptance
 Owner: Engineering and product owner
 Last updated: 20 October 2026
 
+Follow-up: the [25 October local implementation report](evidence/admin-completion-2026-10-25.md)
+supersedes the local QA counts and recovery limitations below. It records the
+current tested changes and remaining dependencies; it does not claim hosted
+verification or full phase acceptance. Historical candidate details are retained.
+
 ## Candidate and authority
 
 Branch: `intern/v2-phase-2-review`.

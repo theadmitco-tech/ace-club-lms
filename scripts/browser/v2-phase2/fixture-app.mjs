@@ -8,6 +8,12 @@ export const sources = [
   'src/app/admin/AdminShell.tsx',
   'src/app/admin/admin.css',
   'src/components/AdminDraftNavigation.tsx',
+  'src/components/DraftRecovery.tsx',
+  'src/components/student/WorksheetLog.tsx',
+  'src/lib/studentPractice.ts',
+  'src/lib/worksheetRecovery.ts',
+  'src/lib/draftRecovery.ts',
+  'src/lib/v2WorkspaceRecovery.ts',
   'src/components/BrandLogo.tsx',
   'src/app/admin/v2/templates/page.tsx',
   'src/app/admin/v2/templates/TemplateEditor.tsx',
@@ -67,12 +73,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return <h1>Synthetic sign-out destination</h1>;
 }`);
   await put('src/lib/AuthContext.tsx', `'use client';
-const user = { role: 'admin', full_name: 'Synthetic Admin', email: 'admin@example.test' };
+import { clearDraftRecovery } from '@/lib/draftRecovery';
+const user = { id: 'synthetic-admin', role: 'admin', full_name: 'Synthetic Admin', email: 'admin@example.test' };
 export function useAuth() {
-  return { user, isLoading: false, logout: async () => { window.location.href = '/login'; } };
+  return { user, isLoading: false, logout: async () => { clearDraftRecovery(window.sessionStorage); window.location.href = '/login'; } };
 }`);
   await put('src/lib/server/portalAuthorization.ts', `
-export async function requirePortalRole(role: string) { return { role }; }
+import { call } from './fixture';
+export async function requirePortalRole(role: string) { return call('fixtureIdentity', role); }
 `);
   await put('src/lib/server/v2TemplateFeature.ts', `
 export function isV2TemplateAuthoringEnabled() { return true; }
@@ -100,5 +108,31 @@ export async function call(method: string, ...args: unknown[]) {
     await put(`src/lib/server/${module}.ts`, `import { call } from './fixture';\n`
       + methods.map((method) => `export async function ${method}(...args: unknown[]) { return call('${method}', ...args); }`).join('\n'));
   }
+  await put('src/app/practice/fixture/[materialId]/page.tsx', `
+import { WorksheetLog } from '@/components/student/WorksheetLog';
+import { call } from '@/lib/server/fixture';
+export const dynamic = 'force-dynamic';
+export default async function Page({ params }: { params: Promise<{ materialId: string }> }) {
+  const { materialId } = await params;
+  const identity = await call('fixtureIdentity', 'student');
+  const worksheet = await call('fixtureWorksheet', materialId);
+  return <main><h1>Synthetic worksheet</h1><WorksheetLog key={identity.id + materialId} ownerId={identity.id} worksheet={worksheet} /></main>;
+}`);
+  await put('src/app/api/fixture-log/route.ts', `
+import { call } from '@/lib/server/fixture';
+export async function POST(request: Request) {
+  try { return Response.json(await call('fixtureSaveQuestion', await request.json())); }
+  catch { return new Response('Synthetic interruption', { status: 503 }); }
+}`);
+  await put('src/utils/supabase/client.ts', `
+export function createClient() {
+  return { rpc: async (name: string, input: unknown) => {
+    if (name !== 'update_student_question_log') throw new Error('Unexpected fixture RPC');
+    const response = await fetch('/api/fixture-log', { method: 'POST', body: JSON.stringify(input) });
+    if (!response.ok) throw new Error('Synthetic transport interruption');
+    const body = await response.json();
+    return body.status === 'error' ? { data: null, error: { message: body.message } } : body;
+  } };
+}`);
   return root;
 }
