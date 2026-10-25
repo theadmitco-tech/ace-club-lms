@@ -5,6 +5,10 @@ import { fileURLToPath } from 'node:url';
 
 export const repo = fileURLToPath(new URL('../../../', import.meta.url));
 export const sources = [
+  'src/app/admin/v2/templates/ReadingPreview.tsx',
+  'src/components/student/NotionReader.tsx',
+  'src/lib/v2ReadingPreview.ts',
+  'src/app/session/[id]/material/[materialId]/material.css',
   'src/app/schedule/v2/page.tsx',
   'src/app/dashboard/dashboard.css',
   'src/components/student/StudentHeader.tsx',
@@ -81,6 +85,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   await put('src/app/login/page.tsx', `export default function Page() {
   return <h1>Synthetic sign-out destination</h1>;
 }`);
+  await put('src/app/reading-fixture/page.tsx', `
+import { NotionReader } from '@/components/student/NotionReader';
+import '@/app/session/[id]/material/[materialId]/material.css';
+export default function Page() { return <main className="material-content"><NotionReader pageId="123456781234123412341234567890ab" title="Student reading" /></main>; }
+`);
   await put('src/lib/AuthContext.tsx', `'use client';
 import { clearDraftRecovery } from '@/lib/draftRecovery';
 const user = { id: 'synthetic-admin', role: 'admin', full_name: 'Synthetic Admin', email: 'admin@example.test' };

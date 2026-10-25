@@ -21,6 +21,13 @@ course revision; Student schedule projections include headings only.
 
 ## Current local follow-up
 
+The [draft reading preview](reading-preview.md) adds the existing Student Notion
+renderer to Admin reading editors and publication review. It shows current draft
+titles, pre/post-session placement and ordering without publishing or changing
+progress. It is a separate local follow-up; the [verification record](evidence/reading-preview-2026-10-25.md)
+distinguishes synthetic tests from pending hosted acceptance. The Phase 1 stored
+contract proposal and shared Phase 2 migrations remain unapplied.
+
 The [earlier source investigation](content-source-candidates.md) is superseded.
 Complete current course content is the source required by the approved correction.
 Exact source records and associations still require read-only inspection before

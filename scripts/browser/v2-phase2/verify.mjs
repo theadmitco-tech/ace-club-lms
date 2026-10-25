@@ -10,6 +10,7 @@ import { tmpdir } from 'node:os';
 import { createHash } from 'node:crypto';
 import { createFixtureApp, repo, sources } from './fixture-app.mjs';
 import { initialState, products, respond, id, publicationProposal } from './fixtures.mjs';
+import { readingId, secondReadingId, readingRecord } from './reading-fixtures.mjs';
 
 const require = createRequire(import.meta.url);
 const modulePath = process.env.PLAYWRIGHT_MODULE || require.resolve('playwright-core');
@@ -112,6 +113,128 @@ async function openBatch(page) {
   await button(page, 'Synthetic batch · Full Course · revision 1').click();
 }
 async function runTests() {
+  async function openReadingEditor(page) {
+    state.templates = [];
+    await page.goto(`${origin}/admin/v2/templates`);
+    await button(page, 'Quant').click();
+    await page.locator('#template-title').fill('Reading preview course');
+    await button(page, 'Add course session').click();
+    await page.getByLabel('Session title', { exact: true }).fill('Quant fundamentals');
+    for (const label of ['Pre-session reads', 'Post-session reads']) {
+      await button(page, `Add ${label.toLowerCase()} item`).click();
+      const group = page.getByRole('group', { name: `${label} (1)`, exact: true });
+      await group.getByLabel('Title', { exact: true }).fill(`${label} draft title`);
+      await group.getByLabel('HTTPS link').fill(`https://notion.so/${readingId}`);
+    }
+  }
+  async function mockReading(page, respond) {
+    await page.route('**/api/admin/v2/reading-preview?*', (route) => respond(route));
+    await page.route('**/*reading-fixture-image.svg*', (route) => route.fulfill({ contentType: 'image/svg+xml',
+      body: '<svg xmlns="http://www.w3.org/2000/svg" width="240" height="80"><rect width="240" height="80" fill="#19665a"/><text x="20" y="45" fill="white">Synthetic diagram</text></svg>' }));
+  }
+  await test('Reading preview renders draft title, rich content and placement without saving on mobile', async (page) => {
+    const requests = [];
+    await mockReading(page, (route) => { requests.push(route.request().url()); return route.fulfill({ json: readingRecord() }); });
+    await openReadingEditor(page);
+    assert.equal(requests.length, 0);
+    await button(page, 'Preview pre-read 1').focus(); await page.keyboard.press('Enter');
+    const before = page.getByRole('group', { name: 'Pre-session reads (1)', exact: true }).getByRole('region', { name: 'Draft reading preview' });
+    await text(before, 'Pre-session reads draft title');
+    await text(before, 'Before session: Quant fundamentals · Item 1');
+    await visible(before.locator('.notion b').filter({ hasText: 'Bold content' }));
+    assert.equal(await before.getByRole('link', { name: 'Reference link' }).getAttribute('href'), 'https://example.test/reading-reference');
+    await until(async () => assert.equal(await before.locator('.notion img').first().evaluate((img) => img.complete && img.naturalWidth > 0), true));
+    await button(page, 'Preview post-read 1').click();
+    const after = page.getByRole('group', { name: 'Post-session reads (1)', exact: true }).getByRole('region', { name: 'Draft reading preview' });
+    await text(after, 'After session: Quant fundamentals · Item 1'); await text(after, 'Synthetic reading body');
+    assert.equal(requests.length, 2); assert.equal(state.templates.length, 0); assert.equal(state.publications.length, 0);
+    assert.equal(state.calls.some((call) => /^(save|set|log)/.test(call.method)), false);
+    await noOverflow(page); await screenshot(page, 'reading-preview-mobile');
+  }, { width: 390, height: 844 });
+  await test('Reading preview replaces changed sources and never shows stale content after failure', async (page) => {
+    let release;
+    await mockReading(page, async (route) => {
+      const requested = new URL(route.request().url()).searchParams.get('pageId');
+      if (requested === secondReadingId) { await new Promise((resolve) => { release = resolve; }); return route.fulfill({ status: 502, json: { error: 'Unavailable' } }).catch(() => {}); }
+      return route.fulfill({ json: readingRecord() });
+    });
+    await openReadingEditor(page); await button(page, 'Preview pre-read 1').click();
+    await text(page, 'Synthetic reading body');
+    const group = page.getByRole('group', { name: 'Pre-session reads (1)', exact: true });
+    await group.getByLabel('Title', { exact: true }).fill('Edited title');
+    await visible(group.getByRole('heading', { name: 'Edited title', exact: true }));
+    await group.getByLabel('HTTPS link').fill(`https://notion.so/${secondReadingId}`);
+    await text(group, 'Loading pre-read');
+    assert.equal(await group.getByText('Synthetic reading body', { exact: false }).count(), 0);
+    await until(() => assert.equal(typeof release, 'function')); release();
+    await text(group, "We couldn't load this pre-read");
+    assert.equal(await group.locator('.custom-notion').count(), 0);
+    await group.getByLabel('HTTPS link').fill(`https://notion.so/${readingId}`);
+    await text(group, 'Synthetic reading body');
+    assert.equal(state.templates.length, 0);
+  });
+  await test('Reading preview reports empty and unsupported sources and retries a failed fetch', async (page) => {
+    let calls = 0;
+    await mockReading(page, (route) => {
+      calls++;
+      const empty = readingRecord();
+      for (const entry of Object.values(empty.block)) if (entry.value.type !== 'page') {
+        entry.value = { type: 'text', properties: { title: [['   ']] } };
+      }
+      return route.fulfill({ json: calls === 1 ? empty : readingRecord() });
+    });
+    await openReadingEditor(page); await button(page, 'Preview pre-read 1').click();
+    await text(page, "We couldn't load this pre-read");
+    await button(page, 'Retry pre-read').click(); await text(page, 'Synthetic reading body');
+    const group = page.getByRole('group', { name: 'Pre-session reads (1)', exact: true });
+    await group.getByLabel('HTTPS link').fill('https://example.test/unsupported');
+    await text(group, 'This source has not been previewed.');
+    assert.equal(await group.locator('.custom-notion').count(), 0); assert.equal(calls, 2);
+    await group.getByLabel('Title', { exact: true }).fill('');
+    await text(group, 'Add the student-facing title'); assert.equal(calls, 2);
+    assert.equal(state.templates.length, 0);
+  });
+  await test('Reading preview shared renderer keeps Student requests on the material-authorized endpoint', async (page) => {
+    let studentCalls = 0, adminCalls = 0;
+    await mockReading(page, (route) => { adminCalls++; return route.fulfill({ status: 403, json: {} }); });
+    await page.route('**/api/notion?*', (route) => { studentCalls++; return route.fulfill({ json: readingRecord() }); });
+    await page.goto(`${origin}/reading-fixture`); await text(page, 'Synthetic reading body');
+    assert.equal(studentCalls, 1); assert.equal(adminCalls, 0);
+    await visible(page.locator('.notion b').filter({ hasText: 'Bold content' }));
+  });
+  await test('Reading preview uses the reviewed batch revision and preserves reading order', async (page) => {
+    await mockReading(page, (route) => route.fulfill({ json: readingRecord() }));
+    const source = state.templates[1];
+    source.document.durationDays = null; source.document.events = [];
+    source.document.sessions = [{ key: id(900), title: 'Ordered reading session', section: 'quant', content: {
+      materials: [], recordings: [], postSessionReads: [], preSessionReads: [
+        { key: id(901), title: 'First reading', url: `https://notion.so/${readingId}` },
+        { key: id(902), title: 'Second reading', url: `https://notion.so/${readingId}` },
+      ],
+    } }];
+    state.templates = [source]; state.drafts = [];
+    await page.goto(`${origin}/admin/v2/batches`); await button(page, 'New batch draft').click();
+    await page.getByLabel('Batch title', { exact: true }).fill('Reading batch');
+    await button(page, 'Review course and schedule').click(); await button(page, 'Confirm and save draft').click();
+    await text(page, 'Draft revision 1 saved.');
+    await button(page, 'Move pre-session reads item 2 up').click();
+    await button(page, 'Preview pre-read 1').click();
+    let preview = page.getByRole('region', { name: 'Draft reading preview' });
+    await visible(preview.getByRole('heading', { name: 'Second reading', exact: true }));
+    await text(preview, 'Item 1'); await text(preview, 'Synthetic reading body');
+    await button(page, 'Review course and schedule').click(); await button(page, 'Confirm and save draft').click();
+    await text(page, 'Draft revision 2 saved.');
+    const saved = structuredClone(state.drafts[0]);
+    await button(page, 'Preview publication').click();
+    const review = page.getByRole('region', { name: 'Review batch publication', exact: true });
+    await button(review, 'Preview pre-read 1').click();
+    preview = review.getByRole('region', { name: 'Draft reading preview' });
+    await visible(preview.getByRole('heading', { name: 'Second reading', exact: true }));
+    await text(preview, 'Before session: Ordered reading session · Item 1');
+    await text(preview, 'Synthetic reading body');
+    assert.deepEqual(state.drafts[0], saved); assert.equal(state.publications.length, 0);
+    await screenshot(page, 'reading-publication-preview');
+  });
   await test('Enrolled schedule renders published live times and undated outlines on mobile', async (page) => {
     const published = publicationProposal({ batchId: state.drafts[0].id, expectedRevision: 0, action: 'publish' }, state).document;
     state.studentSchedules = [published];

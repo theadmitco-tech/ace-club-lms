@@ -82,10 +82,15 @@ successful import of link metadata is not evidence of full student delivery.
 
 Available: preservation fingerprints, versioned offline session mappings,
 [a local transfer dry run](content-transfer-dry-run.md) producing unpublished drafts
-and an asset manifest, independent course sessions and Admin reference previews. Missing: reviewed real
-source manifest, shared asset store/importer, full student rendering preview,
+and an asset manifest, independent course sessions, and an
+[Admin reading preview](reading-preview.md) using the existing Student Notion
+renderer with draft titles and placement. This reading-only preview does not
+establish the complete Student journey.
+
+Missing: reviewed real source manifest, shared asset store/importer, protected V2
+content delivery, full Student list/card and recording previews,
 independent/universal item publication, hosted acceptance and feedback workflows.
-These gaps are not marked passed by the 34 synthetic Admin browser checks.
+Synthetic browser checks do not establish these outcomes.
 
 Next input for an eventual import is the exact authoritative source course/template
 IDs and asset sources. It does not require sending private URLs or credentials in

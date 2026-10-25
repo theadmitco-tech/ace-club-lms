@@ -1,3 +1,4 @@
+import { ReadingPreview } from './ReadingPreview';
 import type { V2Section } from '@/lib/v2Products';
 import { V2_SESSION_CONTENT_LABELS, emptyV2SessionContent, type V2CourseSession, type V2SessionContentKind } from '@/lib/v2Templates';
 import styles from './templates.module.css';
@@ -28,6 +29,7 @@ export function CourseSessionsEditor({ sessions, sections, onChange }: {
           <label htmlFor={`${item.key}-url`}>HTTPS link
             <input id={`${item.key}-url`} className="form-input" type="url" required maxLength={2048} value={item.url} onChange={(e) => update(session.key,{content:{...session.content,[kind]:session.content[kind].map((v) => v.key===item.key ? {...v,url:e.target.value} : v)}})} />
           </label>
+          {(kind === 'preSessionReads' || kind === 'postSessionReads') && <ReadingPreview item={item} sessionTitle={session.title} kind={kind} position={itemIndex} />}
           <div className={styles.buttons}>
             <button type="button" className="btn btn-secondary" disabled={itemIndex===0} onClick={() => {
               const items=[...session.content[kind]]; [items[itemIndex-1],items[itemIndex]]=[items[itemIndex],items[itemIndex-1]];
@@ -55,7 +57,9 @@ export function CourseSessionsPreview({ sessions }: { sessions: V2CourseSession[
       <strong>{session.title} · {session.section}</strong><p>Undated course content</p>
       {(Object.entries(V2_SESSION_CONTENT_LABELS) as [V2SessionContentKind,string][]).map(([kind,label]) => <div key={kind}>
         <p>{label}: {session.content[kind].length}</p>
-        <ul>{session.content[kind].map((item) => <li key={item.key}>{item.title} — <span style={{overflowWrap:'anywhere'}}>{item.url}</span></li>)}</ul>
+        <ul>{session.content[kind].map((item, position) => <li key={item.key}>{item.title} — <span style={{overflowWrap:'anywhere'}}>{item.url}</span>
+          {(kind === 'preSessionReads' || kind === 'postSessionReads') && <ReadingPreview item={item} sessionTitle={session.title} kind={kind} position={position} />}
+        </li>)}</ul>
       </div>)}
     </li>)}</ol>}
   </section>;
