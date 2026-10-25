@@ -81,7 +81,8 @@ successful import of link metadata is not evidence of full student delivery.
 ## Current deliverables and gaps
 
 Available: preservation fingerprints, versioned offline session mappings,
-independent course sessions and Admin reference previews. Missing: reviewed real
+[a local transfer dry run](content-transfer-dry-run.md) producing unpublished drafts
+and an asset manifest, independent course sessions and Admin reference previews. Missing: reviewed real
 source manifest, shared asset store/importer, full student rendering preview,
 independent/universal item publication, hosted acceptance and feedback workflows.
 These gaps are not marked passed by the 34 synthetic Admin browser checks.

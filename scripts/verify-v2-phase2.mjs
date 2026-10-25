@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 // Database suites use disposable Unix-socket clusters and synthetic fixtures.
 const suites = [
   'v2-content-mapping.test.mjs',
+  'v2-content-transfer.test.mjs',
   'v2-content-preservation.test.mjs',
   'v2-enrolled-schedules.test.mjs',
   'v2-enrolled-schedules-database.test.mjs',

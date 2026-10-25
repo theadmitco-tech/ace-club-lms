@@ -69,7 +69,9 @@ Format 1 remains readable for older event-based proposals and produces a format-
 review. It is historical compatibility, not the format for new course transfers.
 Current format-2 output reports target sessions rather than target events.
 
-The tool does not fetch remote content, copy assets or import records. A real
+A reviewed format-2 mapping can feed the [offline transfer planner](content-transfer-dry-run.md)
+to prepare unpublished course documents from matching source row exports.
+The mapping tool does not fetch remote content, copy assets or import records. A real
 import must re-read authoritative sources, enforce authorization and revisions,
 preserve titles/ordering/shared assets, and verify the actual student renderer.
 See the [content transfer and journey plan](content-transfer-plan.md) for rollout,
