@@ -6,6 +6,10 @@ Last updated: 20 October 2026
 
 First apply the [25 October course-model correction](course-model-correction-2026-10-25.md). Phase 2 review is paused; complete individual courses replace compressed-course assumptions.
 
+The [Phase 1 stored-contract audit and separate proposal](../phase-1/proposals/README.md)
+and [journey-aligned content transfer plan](../phase-2/content-transfer-plan.md)
+record the subsequent 25 October clarification. Neither authorizes shared writes.
+
 Then read the [supplied decision record](owner-decisions-2026-10-20.md).
 The approved rows supersede conflicting older V2 planning requirements. Pending
 and Deferred rows do not authorize dependent implementation. The source's Draft

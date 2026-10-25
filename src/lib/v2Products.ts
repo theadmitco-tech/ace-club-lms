@@ -1,4 +1,4 @@
-/** Product identity is independent of display names, content sections, and schedules. */
+/** Legacy Phase 1 ledger contracts. Do not rename keys without a compatibility migration. */
 export type V2ProductCode = 'full_batch' | 'quant_crash' | 'verbal_crash' | 'di_crash';
 export type V2Section = 'quant' | 'verbal' | 'di';
 
@@ -87,4 +87,12 @@ export function isV2AccessList(value: unknown): value is V2ProductAccess[] {
     && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/.test(access.expires_at)
     && Number.isFinite(Date.parse(access.expires_at)))
     && new Set(value.map((access) => access.product_code)).size === value.length;
+}
+
+/** Approved names for display; payment/grant identifiers remain unchanged. */
+export function v2ProductDisplayName(code: V2ProductCode): string {
+  const names: Record<V2ProductCode, string> = {
+    full_batch: 'Full Course', quant_crash: 'Quant', verbal_crash: 'Verbal', di_crash: 'DI',
+  };
+  return names[code];
 }

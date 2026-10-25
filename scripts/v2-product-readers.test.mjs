@@ -199,3 +199,13 @@ test('configuration and transport failures never expose private diagnostics thro
   app.state.authFailure = true;
   await assert.rejects(app.getMyV2Access(), /^Error: Unable to verify V2 access\.$/);
 });
+
+test('approved display names leave legacy quote and grant identities unchanged', async () => {
+  const app = harness();
+  const codes=['full_batch','quant_crash','verbal_crash','di_crash'];
+  app.state.result={ data: codes.map((code,i)=>({code,name:'Old Crash Course label',product_kind:i===0?'full_batch':'crash_course',sections:i===0?['quant','verbal','di']:[['quant','verbal','di'][i-1]]})),error:null };
+  const products=JSON.parse(JSON.stringify(await app.listV2Products()));
+  assert.deepEqual(products.map(p=>p.name),['Full Course','Quant','Verbal','DI']);
+  assert.deepEqual(products.map(p=>p.code),codes);
+  assert.equal(app.state.result.data[1].name,'Old Crash Course label');
+});

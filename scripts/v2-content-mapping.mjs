@@ -25,9 +25,11 @@ export function reviewContentMapping(inventory, templates, proposal) {
     || !templates.every(isV2TemplateDraft)
     || new Set(templates.map((template) => template.id)).size !== templates.length) invalid();
   if (!keysAre(proposal, ['format', 'source', 'bindings'])
-    || proposal.format !== 'v2-content-mapping-proposal-1' || proposal.source !== inventory.source
+    || !['v2-content-mapping-proposal-1', 'v2-content-mapping-proposal-2'].includes(proposal.format) || proposal.source !== inventory.source
     || !Array.isArray(proposal.bindings) || proposal.bindings.length === 0 || proposal.bindings.length > 10000) invalid();
 
+  const sessionMapping = proposal.format === 'v2-content-mapping-proposal-2';
+  const sourceTables = sessionMapping ? [...SOURCE_TABLES, 'sessions', 'master_sessions'] : SOURCE_TABLES;
   const templateMap = new Map(templates.map((template) => [template.id, template]));
   const tableMap = new Map(inventory.tables.map((table) => [table.name, {
     schemaHash: table.schemaHash, rows: new Map(table.rows.map((row) => [row.id, row.hash])),
@@ -38,27 +40,30 @@ export function reviewContentMapping(inventory, templates, proposal) {
   const bindings = proposal.bindings.map((binding) => {
     if (!keysAre(binding, ['source', 'target'])
       || !keysAre(binding.source, ['table', 'id', 'rowHash', 'schemaHash'])
-      || !keysAre(binding.target, ['templateId', 'revision', 'eventKey'])) invalid();
+      || !keysAre(binding.target, sessionMapping ? ['templateId', 'revision', 'sessionKey', 'contentKind'] : ['templateId', 'revision', 'eventKey'])) invalid();
     const source = binding.source; const target = binding.target;
-    if (!SOURCE_TABLES.includes(source.table) || !matches(source.id, uuid)
+    if (!sourceTables.includes(source.table) || !matches(source.id, uuid)
       || !matches(source.rowHash, hash) || !matches(source.schemaHash, hash)
-      || !matches(target.templateId, uuid) || !matches(target.eventKey, uuid)
+      || !matches(target.templateId, uuid) || !matches(sessionMapping ? target.sessionKey : target.eventKey, uuid)
       || !Number.isInteger(target.revision) || target.revision < 1) invalid();
     const table = tableMap.get(source.table);
     const template = templateMap.get(target.templateId);
     if (table.schemaHash !== source.schemaHash || table.rows.get(source.id) !== source.rowHash
       || !template || template.revision !== target.revision) invalid();
-    const event = template.document.events.find((item) => item.key === target.eventKey);
+    if (sessionMapping && (!['materials', 'recordings', 'preSessionReads', 'postSessionReads'].includes(target.contentKind)
+      || (['sessions', 'master_sessions'].includes(source.table) && target.contentKind !== 'recordings'))) invalid();
+    const event = sessionMapping ? template.document.sessions?.find((item) => item.key === target.sessionKey)
+      : template.document.events.find((item) => item.key === target.eventKey);
     if (!event) invalid();
     const sourceKey = `${source.table}:${source.id}`;
-    const targetKey = `${target.templateId}:${target.eventKey}`;
-    const key = `${sourceKey}:${targetKey}`;
+    const targetKey = `${target.templateId}:${sessionMapping ? target.sessionKey : target.eventKey}`;
+    const key = `${sourceKey}:${targetKey}:${sessionMapping ? target.contentKind : ''}`;
     if (seen.has(key)) invalid();
     seen.add(key); sources.add(sourceKey); targets.add(targetKey);
     return {
       source: { ...source }, target: { ...target },
       productCode: template.productCode, section: event.section,
-      eventKind: event.kind ?? 'live', templateHash: digest(template),
+      ...(sessionMapping ? { targetKind: 'course_session' } : { eventKind: event.kind ?? 'live' }), templateHash: digest(template),
     };
   });
   // Binding order has no delivery meaning. No universal/all-events expansion.
@@ -70,12 +75,14 @@ export function reviewContentMapping(inventory, templates, proposal) {
   };
   const scope = { source: inventory.source, inventoryHash: digest(contentInventory), bindings };
   return {
-    format: 'v2-content-mapping-review-1', status: 'review_required',
+    format: sessionMapping ? 'v2-content-mapping-review-2' : 'v2-content-mapping-review-1', status: 'review_required',
     reviewHash: digest(scope), ...scope,
-    counts: { bindings: bindings.length, sourceItems: sources.size, targetEvents: targets.size },
+    counts: { bindings: bindings.length, sourceItems: sources.size, ...(sessionMapping ? { targetSessions: targets.size } : { targetEvents: targets.size }) },
     products: [...new Set(bindings.map((binding) => binding.productCode))].sort(),
-    unmappedSourceCount: SOURCE_TABLES.reduce((count, name) => count + tableMap.get(name).rows.size, 0) - sources.size,
-    unboundTargetEventCount: templates.reduce((count, template) => count + template.document.events.length, 0) - targets.size,
+    unmappedSourceCount: sourceTables.reduce((count, name) => count + tableMap.get(name).rows.size, 0) - sources.size,
+    ...(sessionMapping
+      ? { unboundTargetSessionCount: templates.reduce((count, template) => count + (template.document.sessions?.length ?? 0), 0) - targets.size }
+      : { unboundTargetEventCount: templates.reduce((count, template) => count + template.document.events.length, 0) - targets.size }),
   };
 }
 

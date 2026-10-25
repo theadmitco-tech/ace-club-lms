@@ -158,3 +158,53 @@ test('CLI reads only supplied local files and produces a review, never approval 
     assert.doesNotMatch(bad.stdout + bad.stderr, /PRIVATE-MAPPING-VALUE/);
   } finally { rmSync(directory, { recursive: true, force: true }); }
 });
+
+function courseFixture() {
+  const f=fixture();
+  for (const template of f.templates) {
+    template.document.sessions=template.document.events.map(event=>({
+      key:event.key,title:event.title,section:event.section,
+      content:{materials:[],recordings:[],preSessionReads:[],postSessionReads:[]},
+    }));
+    template.document.events=[]; template.document.durationDays=null;
+  }
+  f.proposal.format='v2-content-mapping-proposal-2';
+  const binding=f.proposal.bindings[0];
+  binding.target={templateId:binding.target.templateId,revision:2,sessionKey:id(21),contentKind:'preSessionReads'};
+  return f;
+}
+
+test('current mapping targets undated course sessions and explicit content placement',()=>{
+  const f=courseFixture(); const before=JSON.stringify(f);
+  const result=review(f);
+  assert.equal(result.format,'v2-content-mapping-review-2');
+  assert.equal(result.bindings[0].targetKind,'course_session');
+  assert.equal(result.bindings[0].target.contentKind,'preSessionReads');
+  assert.deepEqual(result.counts,{bindings:1,sourceItems:1,targetSessions:1});
+  assert.equal(result.unboundTargetSessionCount,3);
+  assert.equal(JSON.stringify(f),before);
+  const first=result.reviewHash;
+  f.proposal.bindings[0].target.contentKind='postSessionReads';
+  assert.notEqual(review(f).reviewHash,first);
+});
+
+test('shared session recording uses an explicit source reference for each destination',()=>{
+  const f=courseFixture(); const binding=f.proposal.bindings[0];
+  binding.source.table='master_sessions';binding.target.contentKind='recordings';
+  f.proposal.bindings.push({source:{...binding.source},target:{...binding.target,templateId:id(10),sessionKey:id(20)}});
+  assert.deepEqual(review(f).counts,{bindings:2,sourceItems:1,targetSessions:2});
+  assert.deepEqual(review(f).products,['full_course','quant']);
+  f.proposal.bindings[0].target.contentKind='preSessionReads';
+  assert.throws(()=>review(f),/Invalid/);
+});
+
+test('course mapping rejects missing sessions, live-event targets, invalid placement and stale source evidence',()=>{
+  for (const mutate of [
+    f=>{f.templates[1].document.sessions=[];},
+    f=>{f.proposal.bindings[0].target.sessionKey=id(22);},
+    f=>{f.proposal.bindings[0].target.contentKind='live';},
+    f=>{f.proposal.bindings[0].target.eventKey=id(21);},
+    f=>{f.proposal.bindings[0].source.rowHash='e'.repeat(64);},
+    f=>{f.proposal.bindings.push(structuredClone(f.proposal.bindings[0]));},
+  ]) { const f=courseFixture();mutate(f);assert.throws(()=>review(f),/Invalid/); }
+});
