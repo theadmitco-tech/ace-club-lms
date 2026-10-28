@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { clearDraftRecovery } from '@/lib/draftRecovery';
 import type { Session } from '@supabase/supabase-js';
 import { User, Toast } from '@/lib/types';
 import { createClient, hasSupabaseConfig } from '@/utils/supabase/client';
@@ -139,6 +140,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth state changes (login/logout/magic link click)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT') {
+        try { clearDraftRecovery(window.sessionStorage); } catch { /* Storage disabled. */ }
         setUser(null);
         setIsLoading(false);
         return;
@@ -188,6 +190,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+    try { clearDraftRecovery(window.sessionStorage); } catch { /* Storage disabled. */ }
   }, [supabase]);
 
   const addToast = useCallback((type: Toast['type'], message: string) => {

@@ -1,0 +1,177 @@
+{
+  "baseCommit": "47f156946a356a91ba401771525c82889aaaf694",
+  "mode": "isolated UI fixture; synthetic auth and DAL; not staging or authorization evidence",
+  "stylesheetAdjustment": "Remove external font imports from fixture globals.css; other copied screen files remain exact.",
+  "browser": "155.0.8059.84",
+  "hashes": {
+    "src/app/schedule/v2/page.tsx": "a08188492f256bfcbed2bfaf2bcd519887904f50cb647acfe1e0f96a0c85fa7b",
+    "src/app/dashboard/dashboard.css": "1263275a91e701b9b7682669c62f0daac7e3845719df4c33feacf0cfcf9d5aac",
+    "src/components/student/StudentHeader.tsx": "8a196deccb0c6a7ec400fb1c103d7a084764bec32a0307cb0ec042982881bafe",
+    "src/components/student/SignOutButton.tsx": "9ada77d4cecad38d2d9729d8d20d975a919a6fa6b95fdc70516f009dc819622b",
+    "src/lib/v2Enrollments.ts": "ec5ceec1a5f25267e14072c7317af4027c19e9cb8d897f38716ba67ece44471b",
+    "src/app/admin/v2/batches/[batchId]/students/page.tsx": "49f3ca5b270d451c02a6bdaa6603cc2a9d60643616a04a17599aa2f93463648e",
+    "src/app/admin/v2/batches/[batchId]/students/EnrollmentEditor.tsx": "604d9d013c4879ff8924a327943186153dac13881c03bd9b2cfb7c38220cdfcb",
+    "src/app/admin/v2/batches/[batchId]/students/actions.ts": "75e9e9f19e935d0f3ed5f434995c4dff1641df53d263835e14797ed41c224d1e",
+    "src/app/admin/AdminShell.tsx": "17220e822d2269c8f80c7ce65ffe3640ae56c1f9e733e4850e001ee19a5e1bd5",
+    "src/app/admin/admin.css": "8a536bf66de9d105e8e2aa378eddd6434cfafba01dadfe6677158ccc97b6049e",
+    "src/components/AdminDraftNavigation.tsx": "66c2cb37d18fc5ef00d42ed852acba3ea8cfcac3e21b823ba611f98ff841d0ea",
+    "src/components/DraftRecovery.tsx": "f1a2f1d6113a849692b3642b2a07fcf6aa13d2846c11126b92ba7eeb487b7d33",
+    "src/components/student/WorksheetLog.tsx": "01bf0138827455325a31a54b096dfddc3c047d052d38639d8e505533f4e2aafa",
+    "src/lib/studentPractice.ts": "0518a13a95f4d1d7e23cc9f007d0d27ef3fa041111cf31623cc3a21bb07db007",
+    "src/lib/worksheetRecovery.ts": "207ff4f92b52bd45c9da5e0088538ce4ebdfb26b24cbd3dd0b52497a05997861",
+    "src/lib/draftRecovery.ts": "09185b2311f9a5b374d721216097f431a87c0f588847214b6601f8073980c788",
+    "src/lib/v2WorkspaceRecovery.ts": "8d0a24abd0dcef2f625fcae564d6e20175cdca3930e344085bb2329dd46ca7a8",
+    "src/components/BrandLogo.tsx": "56a57e01003d4195f1ae2a7b771fbd5ab9dccb84fc9765b88445165fcc583a0f",
+    "src/app/admin/v2/templates/page.tsx": "e593a5cbdbabca58a34fd07b36acf2629543d707b1b03f436f28614bc6962684",
+    "src/app/admin/v2/templates/TemplateEditor.tsx": "3d96229fa25cd0ca62d396da1744335a606fcafb9c6b3f05f41755b4b433b0a9",
+    "src/app/admin/v2/templates/actions.ts": "649e9f6e158f0ca8b46c1ee85e2b224bdb9519deb123dbb795f30338f35894ad",
+    "src/app/admin/v2/templates/templates.module.css": "b3744b2470ecbd57126b603d496f575504b5991fe843e14824ba4d81ce8c545a",
+    "src/app/admin/v2/batches/page.tsx": "87c620739ae1364a42ac15c86c4d048ec940b0e9679fe1792434bae5b3218eca",
+    "src/app/admin/v2/batches/BatchDraftEditor.tsx": "cecefc407ae49ba8ecda4799ca7ccda66a1a7eb63a7ecdb0ae400fedb57f5285",
+    "src/app/admin/v2/batches/PublicationPanel.tsx": "2d1cd152f09e94e61c92bb0642ec060abd1d12f313dc4037216239761859289d",
+    "src/app/admin/v2/batches/actions.ts": "2b315677034de2e5e02ee4946d2a9b1cfac7638243598e9496df94e438be40f4",
+    "src/app/admin/v2/batches/[batchId]/meeting/page.tsx": "80b7ff1ba548b8c88bbef565bbd79b19026292d38055526c5a4a7dd40a7940b0",
+    "src/app/admin/v2/batches/[batchId]/meeting/MeetingDraftEditor.tsx": "8c154456a3748a56e64368b87a732212df436d40c691b1ffc4b891778ace43c4",
+    "src/app/admin/v2/batches/[batchId]/meeting/actions.ts": "00a333d7415d92e22c747c1977980e33e95d6aafb1d170b3fb51e8d79e063297",
+    "src/lib/v2Products.ts": "90a094d4dec4b0d808b253a8c556b5ba91f4fd010ed15a75a371bfad79172fc4",
+    "src/lib/v2Templates.ts": "988692af060d334b93888dd747d96b575c232072b1d73877ac6fd8e027b30559",
+    "src/lib/v2Batches.ts": "9ac8b597e0baed4a29a28643fdabcab4128e2b86936270297890432627c76219",
+    "src/lib/v2Meetings.ts": "714ee6ea4ce540d73b18876d5822ba7df27e26de377f5e79d5f7399d4a345a85",
+    "src/lib/v2Publications.ts": "fdb44ad2c1cbcf57ad7043483e5ac4b10a73189a7e385b7af020c31becac9400",
+    "public/5.svg": "6712128c2ebc5febc738bda30b4eb69d794eaa96f4908ffa14ff213e5ca0f068",
+    "public/6.svg": "81cd3689a08965edb8cbc24aa4abc99887faa9d148e9a96ac99958e7481625b6",
+    "src/app/globals.css": "690066d83344100d091d06483c787145cb63558dbbe1d9d2494e73faf96545bd"
+  },
+  "results": [
+    {
+      "name": "Enrolled schedule renders published live times and undated outlines on mobile",
+      "status": "passed"
+    },
+    {
+      "name": "Enrolled schedule distinguishes empty and failed reads",
+      "status": "passed"
+    },
+    {
+      "name": "Enrollment review confirms by keyboard and removes on mobile",
+      "status": "passed"
+    },
+    {
+      "name": "Interrupted enrollment reloads committed state without repeating a stale confirmation",
+      "status": "passed"
+    },
+    {
+      "name": "Empty screens and recoverable list errors",
+      "status": "passed"
+    },
+    {
+      "name": "Four product forms, keyboard save and native validation",
+      "status": "passed"
+    },
+    {
+      "name": "Template interrupted save, busy state and retry identity",
+      "status": "passed"
+    },
+    {
+      "name": "Batch review, publish, independent edits, unpublish and republish",
+      "status": "passed"
+    },
+    {
+      "name": "Batch stale errors and interrupted confirmations preserve review",
+      "status": "passed"
+    },
+    {
+      "name": "An interrupted publication review cannot be silently replaced",
+      "status": "passed"
+    },
+    {
+      "name": "Template event reordering survives recovery and saving without moving an existing batch",
+      "status": "passed"
+    },
+    {
+      "name": "Publication review protects meeting-link navigation",
+      "status": "passed"
+    },
+    {
+      "name": "Publication stale and interrupted responses keep the confirmation safe",
+      "status": "passed"
+    },
+    {
+      "name": "Meeting validation, stale failure, lost confirmation and reload",
+      "status": "passed"
+    },
+    {
+      "name": "Unsaved navigation cancellation, reload and sign-out",
+      "status": "passed"
+    },
+    {
+      "name": "Template recovery survives navigation and a lost save confirmation after reload",
+      "status": "passed"
+    },
+    {
+      "name": "Batch recovery preserves the reviewed schedule and exact interrupted request",
+      "status": "passed"
+    },
+    {
+      "name": "Meeting recovery preserves private links and interrupted request across reload",
+      "status": "passed"
+    },
+    {
+      "name": "Publication recovery requires another explicit confirmation and retains replay identity",
+      "status": "passed"
+    },
+    {
+      "name": "Recovery isolates users, supports discard and clears on sign-out",
+      "status": "passed"
+    },
+    {
+      "name": "Unavailable tab storage reports recovery loss while server saving remains usable",
+      "status": "passed"
+    },
+    {
+      "name": "Student worksheet edits survive navigation, stay isolated and save after explicit retry",
+      "status": "passed"
+    },
+    {
+      "name": "Student thrown saves become retryable and partial bulk retries touch failed questions only",
+      "status": "passed"
+    },
+    {
+      "name": "Student recovery preserves newer server edits and ignores removed questions",
+      "status": "passed"
+    },
+    {
+      "name": "Recovered stale template cannot overwrite a newer saved revision",
+      "status": "passed"
+    },
+    {
+      "name": "Recovered private links stop when the batch schedule has changed",
+      "status": "passed"
+    },
+    {
+      "name": "Student saving disables overlapping bulk actions and malformed receipts retain edits",
+      "status": "passed"
+    },
+    {
+      "name": "Pending recovery requires an explicit choice before replacing worksheet, meeting or publication work",
+      "status": "passed"
+    },
+    {
+      "name": "Responsive forms and long titles at 320px",
+      "status": "passed"
+    },
+    {
+      "name": "Responsive forms and long titles at 390px",
+      "status": "passed"
+    },
+    {
+      "name": "Responsive forms and long titles at 768px",
+      "status": "passed"
+    },
+    {
+      "name": "Mobile navigation has an accessible name and avoids hidden keyboard targets",
+      "status": "passed"
+    }
+  ],
+  "blockedOrigins": [],
+  "browserErrors": []
+}

@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { isV2AccessList, isV2ProductCode, isV2ProductList, isV2ProductSection, isV2ProductSelection, isV2QuoteFor,
+import { v2ProductDisplayName, isV2AccessList, isV2ProductCode, isV2ProductList, isV2ProductSection, isV2ProductSelection, isV2QuoteFor,
   type V2Product, type V2ProductAccess, type V2ProductCode, type V2Quote, type V2Section } from '@/lib/v2Products';
 import { createClient } from '@/utils/supabase/server';
 
@@ -12,7 +12,7 @@ export async function listV2Products(): Promise<V2Product[]> {
     const { data, error } = await supabase.from('v2_products')
       .select('code, name, product_kind, sections')
       .eq('available_for_purchase', true).order('code');
-    if (!error && isV2ProductList(data)) return data;
+    if (!error && isV2ProductList(data)) return data.map((product) => ({ ...product, name: v2ProductDisplayName(product.code) }));
   } catch {
     // Configuration and transport failures use the same controlled response.
   }

@@ -1,16 +1,36 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { BrandLogo } from '@/components/BrandLogo';
+import { AdminDraftNavigationProvider, useAdminDraftNavigation } from '@/components/AdminDraftNavigation';
 import { useAuth } from '@/lib/AuthContext';
 import './admin.css';
 
-export default function AdminShell({ children }: { children: React.ReactNode }) {
+type AdminShellProps = { children: React.ReactNode; showCoursePublishing?: boolean };
+
+export default function AdminShell({ children, showCoursePublishing = false }: AdminShellProps) {
+  return <AdminDraftNavigationProvider><AdminShellContent showCoursePublishing={showCoursePublishing}>{children}</AdminShellContent></AdminDraftNavigationProvider>;
+}
+
+function AdminShellContent({ children, showCoursePublishing = false }: AdminShellProps) {
+  const { confirmLeave } = useAdminDraftNavigation();
   const { user, isLoading, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const sidebarToggle = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setSidebarOpen(false);
+      sidebarToggle.current?.focus();
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [sidebarOpen]);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -30,6 +50,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
   const navItems = [
     { href: '/admin', label: 'Dashboard', icon: '📊' },
+    ...(showCoursePublishing ? [{ href: '/admin/v2', label: 'Course publishing', icon: '📖' }] : []),
     { href: '/admin/templates', label: 'Course templates', icon: '🧩' },
     { href: '/admin/curriculum', label: 'Full Course Master Base', icon: '🏛️' },
     { href: '/admin/resources', label: 'Resources', icon: '📚' },
@@ -42,7 +63,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   return (
     <div className="admin-layout">
       {/* Sidebar */}
-      <aside className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
+      <aside id="admin-navigation" className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-brand">
             <BrandLogo
@@ -59,8 +80,9 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           {navItems.map((item) => (
             <button
               key={item.href}
-              className={`sidebar-nav-item ${pathname === item.href ? 'active' : ''}`}
+              className={`sidebar-nav-item ${(pathname === item.href || (item.href === '/admin/v2' && pathname.startsWith('/admin/v2/'))) ? 'active' : ''}`}
               onClick={() => {
+                if (!confirmLeave()) return;
                 router.push(item.href);
                 setSidebarOpen(false);
               }}
@@ -79,7 +101,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
               <span className="sidebar-user-email">{user.email}</span>
             </div>
           </div>
-          <button className="btn btn-ghost btn-sm" onClick={logout}>
+          <button className="btn btn-ghost btn-sm" onClick={() => { if (confirmLeave()) void logout(); }}>
             Sign Out
           </button>
         </div>
@@ -87,7 +109,12 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
       {/* Mobile Sidebar Toggle */}
       <button
+        ref={sidebarToggle}
+        type="button"
         className="admin-sidebar-toggle"
+        aria-label={sidebarOpen ? 'Close admin navigation' : 'Open admin navigation'}
+        aria-expanded={sidebarOpen}
+        aria-controls="admin-navigation"
         onClick={() => setSidebarOpen(!sidebarOpen)}
       >
         {sidebarOpen ? '✕' : '☰'}

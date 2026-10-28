@@ -4,6 +4,7 @@ import { StudentHeader } from '@/components/student/StudentHeader';
 import { TimelineItem } from '@/components/student/TimelineItem';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { loadStudentTimeline } from '@/lib/server/studentTimeline';
+import { isV2StudentScheduleEnabled } from '@/lib/server/v2StudentScheduleFeature';
 import {
   getCurrentProgrammeWeek,
   groupTimelineByDay,
@@ -15,12 +16,14 @@ import '../dashboard/dashboard.css';
 export default async function SchedulePage() {
   const identity = await requirePortalRole('student');
   const result = await loadStudentTimeline(identity.id);
+  const enrolledSchedules = isV2StudentScheduleEnabled()
+    ? <div className="student-container"><Link className="student-button" href="/schedule/v2">View enrolled batch schedules</Link></div> : null;
 
   if (result.status === 'failed') {
     return (
       <div className="student-page">
         <StudentHeader studentName={result.studentName} />
-        <main className="student-main"><section className="student-state student-state-error" role="alert">
+        <main className="student-main">{enrolledSchedules}<section className="student-state student-state-error" role="alert">
           <h1>We couldn&apos;t load your Schedule</h1><p>{result.message}</p>
           <Link className="student-button" href="/schedule">Retry Schedule</Link>
         </section></main>
@@ -32,7 +35,7 @@ export default async function SchedulePage() {
   if (!timeline.course) {
     return (
       <div className="student-page"><StudentHeader studentName={studentName} />
-        <main className="student-main"><section className="student-state">
+        <main className="student-main">{enrolledSchedules}<section className="student-state">
           <h1>No Schedule yet</h1><p>Your published events will appear after a course is assigned.</p>
         </section></main>
       </div>
@@ -62,6 +65,7 @@ export default async function SchedulePage() {
     <div className="student-page">
       <StudentHeader studentName={studentName} />
       <main className="student-main">
+        {enrolledSchedules}
         <div className="student-container">
           <header className="student-intro">
             <div><span className="student-eyebrow">{course.name}</span><h1>Schedule</h1>
@@ -70,7 +74,7 @@ export default async function SchedulePage() {
           </header>
           <section className="course-browser" aria-labelledby="schedule-browser-title">
             <div className="browser-heading">
-              <div><span className="student-eyebrow">{crashCourse ? 'Crash course' : 'Full Course'}</span>
+              <div><span className="student-eyebrow">{crashCourse ? 'Course schedule' : 'Full Course'}</span>
                 <h2 id="schedule-browser-title">Published events</h2></div>
               <span className="schedule-grouping-label">Grouped by {crashCourse ? 'day' : 'week'}</span>
             </div>

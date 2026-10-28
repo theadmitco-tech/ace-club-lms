@@ -1,0 +1,25 @@
+{
+  "phase1": {
+    "tests": 140,
+    "pass": 140,
+    "fail": 0,
+    "skipped": 0
+  },
+  "phase2": {
+    "tests": 208,
+    "pass": 208,
+    "fail": 0,
+    "skipped": 0
+  },
+  "date": "2026-10-28",
+  "baseline": "19d20a79a51bd28eefd076532f89df4911f95edc",
+  "browser_scenarios": 39,
+  "lint": "passed",
+  "typescript": "passed",
+  "webpack_build": "passed",
+  "environment": "synthetic localhost configuration and disposable Unix-socket PostgreSQL; no shared data",
+  "applied_phase1_sha256": "ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7",
+  "shared_migrations_applied": false,
+  "production_changed": false,
+  "hosted_acceptance": "pending"
+}

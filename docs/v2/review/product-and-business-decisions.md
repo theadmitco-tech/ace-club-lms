@@ -1,10 +1,12 @@
 # Ace Club LMS V2 — Product and Business Decisions
 
-> Authority update — 20 October 2026: [preserved approvals](../decisions/README.md) supersede conflicting older requirements. The later [expiry confirmation](../decisions/phase-1-expiry-confirmation-2026-10-20.md) confirms denial after six months. This candidate implements Phase 1 only; later-phase implementation remains separate.
+> Current correction — 25 October 2026: [approved course model](../decisions/course-model-correction-2026-10-25.md) controls terminology and structure. Quant, Verbal and DI are complete individual courses; Full Course contains all three. Every course retains sessions, materials, recordings, pre-session reads and post-session reads. Only actual live classes require scheduling. Phase 2 review is paused; PR #24 stays Draft.
+
+> Authority update — 20 October 2026: [preserved approvals](../decisions/README.md) supersede conflicting older requirements. The later [expiry confirmation](../decisions/phase-1-expiry-confirmation-2026-10-20.md) confirms denial after six months. PR #24 contains the Phase 2 Admin-authoring candidate. Broader journey requirements are not a claim of implemented or hosted acceptance; see the [28 October alignment audit](../phase-2/evidence/journey-decision-alignment-2026-10-28.md).
 
 Status: Draft for Product Owner review
 Owner: Product owner and Engineering
-Last updated: 2 October 2026
+Last updated: 28 October 2026
 
 ## How to review this document
 
@@ -29,26 +31,26 @@ This document is not implementation authorization. It defines product and busine
 
 **Decision:** Approved
 
-**Owner notes:** 
+**Owner notes:**
 
 ### V2-DEC-02 — Product types and offers
 
 **Proposed decision:** V2 has two product types:
 
-1. **Full Batch:** Quant + Verbal + DI together.
-2. **Crash Course:** Quant, Verbal, or DI selected individually.
+1. **Full Course:** Quant + Verbal + DI together.
+2. **Individual course:** Quant, Verbal, or DI selected individually.
 
-Crash Courses are delivered in approximately one week and may include live classes. Recordings are always available. A Crash Course must be publishable as a live batch when live delivery is offered; if there is no upcoming live Crash Course batch, an entitled student can use the recordings and website materials.
+Individual courses retain their complete curriculum and may include live classes. Published recordings remain accessible to entitled students independently of live attendance. A missing or unpublished recording must show its actual availability state. An individual course must be publishable as a live batch when live delivery is offered; if there is no upcoming live individual course batch, an entitled student can use the recordings and website materials.
 
-Quant, Verbal, and DI Crash Courses follow the same product model: topic access is sold separately, live delivery is published when available, and recordings remain available regardless of live attendance.
+Quant, Verbal, and DI individual courses follow the same product model: topic access is sold separately, live delivery is published when available, and recordings remain available regardless of live attendance.
 
 **Decision:** Approved
 
-**Owner notes:** Full Batch is spread across approximately eight weeks. Exact schedules will be provided separately.
+**Owner notes:** Full Course is spread across approximately eight weeks. Exact schedules will be provided separately.
 
 ### V2-DEC-03 — Product pricing
 
-**Proposed decision:** Replace the previous seven-combination pricing model with separate prices for Full Batch and each Crash Course.
+**Proposed decision:** Replace the previous seven-combination pricing model with separate prices for Full Course and each individual course.
 
 Prices should be stored as versioned commercial configuration, not hard-coded into UI components.
 
@@ -56,12 +58,12 @@ Prices should be stored as versioned commercial configuration, not hard-coded in
 
 | Product | Price |
 |---|---:|
-| Full Batch — Quant + Verbal + DI | ₹25,000 |
-| Any one Crash Course | ₹10,000  |
-| Any two Crash Courses | ₹18,000 |
-| All three Crash Courses | ₹25,000 |
+| Full Course — Quant + Verbal + DI | ₹25,000 |
+| Any one individual course | ₹10,000  |
+| Any two individual courses | ₹18,000 |
+| All three individual courses | ₹25,000 |
 
-**Owner notes:** Full Batch is ₹25,000; one Crash Course is ₹10,000; two Crash Courses are ₹18,000; all three sections are ₹25,000.
+**Owner notes:** Full Course is ₹25,000; one individual course is ₹10,000; two individual courses are ₹18,000; all three sections are ₹25,000.
 
 ### V2-DEC-04 — Access duration
 
@@ -80,11 +82,13 @@ Prices should be stored as versioned commercial configuration, not hard-coded in
 
 ### V2-DEC-05 — Upgrades
 
-**Proposed decision:** Crash Courses are sold independently by section. Full Batch is a complete product containing Quant, Verbal, and DI together; it cannot be assembled or purchased in parts. Buying one or more Crash Courses does not automatically create Full Batch entitlement or Full Batch live-schedule access.
+**Proposed decision:** individual courses are sold independently by section. Full Course is a complete product containing Quant, Verbal, and DI together; it cannot be assembled or purchased in parts. Buying one or more individual courses does not automatically create Full Course entitlement or Full Course live-schedule access.
 
-**Decision:** Approved — Full Batch must be purchased as a complete product. No part-by-part Full Batch upgrade is included at launch.
+**Decision:** Approved — Full Course must be purchased as a complete product. No part-by-part Full Course upgrade is included at launch.
 
-**Owner notes:** Sections describe the content structure. They do not mean that the Full Batch product can be bought in parts. Full Batch and Crash Course live-delivery schedules may differ.
+**Owner notes:** Sections describe the content structure. They do not mean that the Full Course product can be bought in parts. Full Course and individual course live-delivery schedules may differ.
+
+**Current clarification (20 October B3):** Standalone package upgrades charge the package-price difference (for example, one to two subjects adds ₹8,000). This does not create Full Course entitlement. Upgrade credit eligibility, refunded/expired purchases and the resulting expiry remain unspecified; no automated upgrade contract is claimed implemented.
 
 ### V2-DEC-06 — Downgrades, refunds, and cancellations
 
@@ -102,36 +106,17 @@ Prices should be stored as versioned commercial configuration, not hard-coded in
 
 **Proposed decision:** Live classes are optional and Admin-configurable. The LMS publishes the schedule and Google Meet details, but website access does not depend on attendance.
 
-**Decision:** Approved — live attendance is optional, but students reserve a live seat separately from their ongoing website access.
-
-**Owner notes:** The live session has eight seats. Once eight students reserve seats, additional students join a waitlist of up to four people. A student who reserves a seat but does not attend keeps full website access; the reservation only governs live-session capacity and Google Meet link sharing. Admins can change the live capacity and waitlist limit later.
-
-**Decision:** Waitlist implementation is deferred. Keep the eight-seat live-session rule as a product constraint, but do not include waitlist development in the first launch unless separately approved.
+**Current decision (20 October, C1–C2):** Live-course registration is limited to eight students. Attendance is optional. No per-session seat reservation or waitlist is in scope; material and recording access follows the applicable entitlement.
 
 ### V2-DEC-08 — Schedule changes
 
-**Proposed decision:** Admins can publish schedule updates once, and all entitled students see the current schedule. The system does not need attendance rescheduling workflows.
+**Current decision (20 October, A2 and G):** Admins can update published live-class schedules. Students see schedules only for their enrolled batches, subject to access rules. WhatsApp groups and messaging are out of scope.
 
-**Decision needed:** Should students receive schedule-change notifications?
+### V2-DEC-09 — Complete course templates
 
-- [ ] Yes, by email.
-- [ x] Yes, by WhatsApp or another channel.
-- [ ] No; the website is the source of truth.
-- [ ] Other: ____________________
+**Current decision (25 October correction; 20 October A1, B1 and D1):** The four offerings are Quant, Verbal, DI and Full Course (all three). Individual offerings retain the full course structure and content. An approximately eight-week Full Course schedule may be used where live delivery is configured; individual courses have no assumed one-week duration.
 
-**Decision:** Approved — schedule changes are communicated through WhatsApp or another Admin-selected channel.
-
-**Owner notes:**
-
-### V2-DEC-09 — Full Batch and Crash Course templates
-
-**Proposed decision:** Admins can publish Full Batch and Crash Course batch details from separate templates. Weekly and two-month templates remain available, while Admins may configure other durations where needed.
-
-The template must make the product type, included topics, delivery mode, live sessions, schedule, recordings, and website materials explicit.
-
-**Decision:** Approved — provide an approximately eight-week Full Batch template and an approximately one-week Crash Course template; allow Admins to configure other durations where needed.
-
-**Owner notes:** Full Batch is approximately eight weeks. Crash Courses are approximately one week. The detailed schedule will be supplied separately.
+Each course retains sessions, materials, recordings, pre-session reads and post-session reads. Course sessions are stored independently of optional live-class events. The current Admin review covers content preview and safe whole-course publish/edit/unpublish/republish, with private Meet details remaining Admin-only. Course content can be authored without dates or a duration. Only actual live classes require scheduling. Preserve current course content before customization; legacy short-format seed templates do not define the complete individual courses.
 
 ---
 
@@ -191,13 +176,13 @@ The template must make the product type, included topics, delivery mode, live se
 
 ### V2-DEC-14 — Recordings by product type
 
-**Proposed decision:** Recordings are mandatory for every product. A Full Batch has one shared recording set covering Quant, Verbal, and DI. Each Crash Course has its own topic recording set. Students can attend live, watch recordings, or mix both.
+**Proposed decision:** Recordings are mandatory for every product. A Full Course has one shared recording set covering Quant, Verbal, and DI. Each individual course has its own topic recording set. Students can attend live, watch recordings, or mix both.
 
 Recordings are not duplicated per student or attendance mode.
 
 **Decision:** Approved, subject to the product/pricing decisions above.
 
-**Owner notes:** the structure of full classes and topic-wise classes is the same. At its core every class is the same. If I have Quant 1, Quant 2, Quant 3, Quant 4, Quant 5, and Quant 6, the same will be delivered across the full batch and the crash course. The difference is that we can give access separately.  the recording for full batch QA1 will be the same for crash course QA1 Verbal. Similarly for Verbal for DI. A class is a unit. You can think of it in those terms. It's the basic unit and pre-read, etc., will be around that 
+**Owner notes:** the structure of full classes and topic-wise classes is the same. At its core every class is the same. If I have Quant 1, Quant 2, Quant 3, Quant 4, Quant 5, and Quant 6, the same will be delivered across the Full Course and the individual course. The difference is that we can give access separately.  the recording for Full Course QA1 will be the same for individual course QA1 Verbal. Similarly for Verbal for DI. A class is a unit. You can think of it in those terms. It's the basic unit and pre-read, etc., will be around that
 
 ### V2-DEC-15 — Recording hosting
 
@@ -216,7 +201,7 @@ Recordings are not duplicated per student or attendance mode.
 
 **Decision:** Approved — the Admin must also be able to upload additional videos/class recordings and delete or replace recordings.
 
-**Owner notes:** There should also be an option to upload additional video/class. Delete video from admin side. 
+**Owner notes:** There should also be an option to upload additional video/class. Delete video from admin side.
 
 ### V2-DEC-16 — Material availability
 
@@ -241,6 +226,8 @@ Recordings are not duplicated per student or attendance mode.
 
 **Owner notes:**
 
+**Current clarification (20 October D3):** Notion remains the authoring source for now. Controlled student rendering is not approval to replace Notion with a native editor or to import existing material without reviewed mappings and separate execution authorization.
+
 ### V2-DEC-18 — Pre-read completion
 
 **Decision needed:** Does V2 need to record that a student has opened or completed a pre-read?
@@ -256,17 +243,19 @@ Recordings are not duplicated per student or attendance mode.
 
 ### V2-DEC-19 — Video-adjacent reading material
 
-**Proposed decision:** V2 supports reading material in three publication placements for each topic course:
+**Current decision (20 October D2):** V2 supports five reading publication placements:
 
-1. Topic-level material at the top of the Quant, Verbal, or DI course.
-2. Material published before a video.
-3. Material published after a video.
+1. Before the course area.
+2. At the top of the Quant, Verbal, or DI subject area.
+3. Before a video.
+4. After a video.
+5. After the course area.
 
 The material may be published independently of live attendance. A student with access to the relevant topic sees the current published version in the appropriate location.
 
 **Decision:** Approved
 
-**Owner notes:** one more reading material place before the start of the course at the top of qa, va, di. 
+**Owner notes:** one more reading material place before the start of the course at the top of qa, va, di.
 
 ### V2-DEC-20 — Admin publishing workflow
 
@@ -334,9 +323,9 @@ The preview should show:
 
 ### V2-DEC-23 — Layout and visual design
 
-**Proposed decision:** The implementation/design owner may recommend the exact layout, navigation, spacing, and visual treatment, provided the three placements remain clear and students can distinguish topic-level, pre-video, and post-video reading.
+**Proposed decision:** The implementation/design owner may recommend the exact layout, navigation, spacing, and visual treatment, provided all five approved placements remain clear and students can distinguish course-level, subject-level, pre-video, and post-video reading.
 
-The recommendation must include desktop/mobile layouts, empty states, unpublished states, content errors, and accessibility considerations for Product Owner review before implementation is finalized.
+The 24 October journey brief requests desktop wireframes, with empty states, unpublished states, content errors and accessibility considerations. Preserve existing mobile usability; separate mobile wireframes are not required for this review.
 
 **Decision:** Approved — delivery is web-only for launch. Detailed layout and visual treatment are implementation decisions, subject to the existing placement, accessibility, and visual-progress requirements.
 
@@ -381,11 +370,11 @@ The recommendation must include desktop/mobile layouts, empty states, unpublishe
 
 ### V2-DEC-27 — First launch scope
 
-**Recommended default:** Launch the complete online-first purchase/access foundation for Full Batch plus the three Crash Courses. Defer advanced analytics, attendance tracking, automated grading, and complex content authoring until the core flow is stable.
+**Recommended default:** Launch the complete online-first purchase/access foundation for Full Course plus the three individual courses. Defer advanced analytics, attendance tracking, automated grading, and complex content authoring until the core flow is stable.
 
 **Decision:** Approved
 
-**Owner notes:** approved 
+**Owner notes:** approved
 
 ### V2-DEC-28 — Product Owner approval gates
 
@@ -419,8 +408,8 @@ Please refer to the comments above
 
 ### Product Owner sign-off
 
-Name: ____________________  
-Date: ____________________  
+Name: ____________________
+Date: ____________________
 Status: Draft / Approved with changes / Approved
 
 Comments:

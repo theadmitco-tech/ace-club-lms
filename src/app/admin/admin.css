@@ -1254,10 +1254,12 @@
 @media (max-width: 768px) {
   .admin-sidebar {
     transform: translateX(-100%);
+    visibility: hidden;
   }
 
   .admin-sidebar.open {
     transform: translateX(0);
+    visibility: visible;
   }
 
   .admin-sidebar-toggle {

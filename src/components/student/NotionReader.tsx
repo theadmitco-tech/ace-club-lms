@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { ExtendedRecordMap } from 'notion-types';
+import { hasV2ReadingContent } from '@/lib/v2ReadingPreview';
 import { NotionRenderer } from 'react-notion-x';
 import 'react-notion-x/src/styles.css';
 import 'prismjs/themes/prism-tomorrow.css';
@@ -26,20 +27,25 @@ function getNotionUrl(sourceUrl?: string | null) {
   }
 }
 
-export function NotionReader({
+type NotionReaderProps = {
+  pageId: string; sourceUrl?: string | null; title?: string;
+  mode?: 'student' | 'admin-preview'; readingType?: 'pre-read' | 'post-read';
+};
+
+export function NotionReader(props: NotionReaderProps) {
+  return <NotionReaderContent key={`${props.mode}:${props.pageId}:${props.sourceUrl}`} {...props} />;
+}
+
+function NotionReaderContent({
   pageId,
   sourceUrl,
-  title = 'Notion pre-read',
-}: {
-  pageId: string;
-  sourceUrl?: string | null;
-  title?: string;
-}) {
+  title = 'Notion pre-read', mode = 'student', readingType = 'pre-read',
+}: NotionReaderProps) {
   const [recordMap, setRecordMap] = useState<ExtendedRecordMap | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'failed'>('loading');
   const [requestKey, setRequestKey] = useState(0);
   const notionUrl = getNotionUrl(sourceUrl);
-  const embedUrl = notionUrl && new URL(notionUrl).pathname.split('/').includes('ebd')
+  const embedUrl = mode === 'student' && notionUrl && new URL(notionUrl).pathname.split('/').includes('ebd')
     ? notionUrl
     : null;
 
@@ -47,24 +53,27 @@ export function NotionReader({
     if (embedUrl) return;
 
     let ignore = false;
-    fetch(`/api/notion?pageId=${encodeURIComponent(pageId)}`)
+    const controller = new AbortController();
+    const endpoint = mode === 'admin-preview' ? '/api/admin/v2/reading-preview' : '/api/notion';
+    fetch(`${endpoint}?pageId=${encodeURIComponent(pageId)}`, { signal: controller.signal, cache: 'no-store', credentials: 'same-origin' })
       .then(async (response) => {
         if (!response.ok) throw new Error(`Notion request failed with ${response.status}`);
         const data = await response.json() as ExtendedRecordMap;
+        if (mode === 'admin-preview' && !hasV2ReadingContent(data, pageId)) throw new Error('Reading content is unavailable');
         if (!ignore) {
           setRecordMap(data);
           setStatus('ready');
         }
       })
-      .catch((error: unknown) => {
-        console.error('Pre-read load failed:', error);
+      .catch(() => {
         if (!ignore) setStatus('failed');
       });
 
     return () => {
       ignore = true;
+      controller.abort();
     };
-  }, [embedUrl, pageId, requestKey]);
+  }, [embedUrl, pageId, requestKey, mode]);
 
   if (embedUrl) {
     return (
@@ -82,13 +91,13 @@ export function NotionReader({
   }
 
   if (status === 'loading') {
-    return <div className="material-status" role="status"><strong>Loading pre-read</strong><p>Fetching the Notion page…</p></div>;
+    return <div className="material-status" role="status"><strong>Loading {readingType}</strong><p>Fetching the Notion page…</p></div>;
   }
 
   if (status === 'failed' || !recordMap) {
     return (
       <div className="material-status material-status-error" role="alert">
-        <strong>We couldn&apos;t load this pre-read</strong>
+        <strong>We couldn&apos;t load this {readingType}</strong>
         <p>Retry the embedded view or open the Notion page in a new tab.</p>
         <div className="material-status-actions">
           <button
@@ -99,7 +108,7 @@ export function NotionReader({
               setRequestKey((current) => current + 1);
             }}
           >
-            Retry pre-read
+            Retry {readingType}
           </button>
           {notionUrl && (
             <a className="student-button student-button-secondary" href={notionUrl} target="_blank" rel="noreferrer">

@@ -82,9 +82,9 @@ export default async function DashboardPage() {
               <h1>Welcome back, {firstName}</h1>
               <p>See what is available now, what happens next, and where you are in the programme.</p>
             </div>
-            <div className="programme-position" aria-label={crashCourse ? 'Crash course' : `Current programme week ${currentWeek}`}>
+            <div className="programme-position" aria-label={crashCourse ? 'Course schedule' : `Current programme week ${currentWeek}`}>
               <span>Programme position</span>
-              <strong>{crashCourse ? 'Crash course' : `Week ${currentWeek}`}</strong>
+              <strong>{crashCourse ? 'Course schedule' : `Week ${currentWeek}`}</strong>
             </div>
           </header>
 

@@ -6,7 +6,9 @@ import { fileURLToPath } from 'node:url';
 const suites = [
   'v2-product-entitlements.test.mjs',
   'v2-product-readers.test.mjs',
+  'v2-canonical-product-contracts.test.mjs',
   'v2-staging-catalogue-probe.test.mjs',
+  'v2-phase1-role-probe.test.mjs',
   'batch-enrollment-feedback.test.mjs',
   'bulk-enroll-route.test.mjs',
   'release-safety.test.mjs',

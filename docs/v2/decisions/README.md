@@ -2,9 +2,15 @@
 
 Status: Active
 Owner: Product owner and Engineering
-Last updated: 20 October 2026
+Last updated: 28 October 2026
 
-Start with the [supplied decision record](owner-decisions-2026-10-20.md).
+First apply the [25 October course-model correction](course-model-correction-2026-10-25.md). Phase 2 review is paused; complete individual courses replace compressed-course assumptions.
+
+The [Phase 1 stored-contract audit and separate proposal](../phase-1/proposals/README.md)
+and [journey-aligned content transfer plan](../phase-2/content-transfer-plan.md)
+record the subsequent 25 October clarification. Neither authorizes shared writes.
+
+Then read the [supplied decision record](owner-decisions-2026-10-20.md).
 The approved rows supersede conflicting older V2 planning requirements. Pending
 and Deferred rows do not authorize dependent implementation. The source's Draft
 heading, qualified approval wording and blank dates are preserved.
@@ -62,8 +68,9 @@ data. The migration tooling and synthetic tests can be prepared locally.
 1. Six-month access denial is now confirmed for Phase 1. Notifications and
    upgrade access periods remain later-phase decisions, not blockers to reviewing
    the initial-purchase entitlement foundation.
-2. Specify whether purchased products expose all published batches or one
-   registered batch. B2 remains Pending and does not resolve this reader rule.
+2. Resolved on 25 October: Students see only their enrolled batch, subject to
+   active product entitlement. See [enrolled-batch access](enrolled-batch-access-2026-10-25.md).
+   Public registration B2 remains Pending.
 3. Define the registration unit for Full Course's three components and payment
    concurrency at the eight-student limit.
 4. Confirm the accepted code baseline and exact staging setup/release sequence.
@@ -72,9 +79,13 @@ data. The migration tooling and synthetic tests can be prepared locally.
 
 ## Reporting entry point
 
-Use the [Phase 1 completion report](../phase-1/completion-report.md)
-for this isolated branch, implementation evidence, remaining gates and next action.
-Phase 2 remains on `intern/v2-approved-phase-1-2` at `208ceaa`; no Phase 2 code
-or migration is included in the Phase 1 candidate.
+Use the [Phase 1 completion report](../phase-1/completion-report.md) for historical
+Phase 1 evidence. PR #24 targets `codex/v2-integration` from
+`intern/v2-phase-2-review` and remains Draft. The [28 October alignment audit](../phase-2/evidence/journey-decision-alignment-2026-10-28.md)
+compares the current journey and decisions with implementation and wireframes.
+The current Student/Admin journey source is `V2-student-and-admin-journeys.md`
+(24 October); its incorporated current-rules section supersedes its historical
+annotations. It extends the design brief without claiming those journeys are
+already implemented in PR #24. Existing-content migration remains pending.
 Historical evidence remains unchanged. New local checks never retroactively
 approve a previous PR or establish staging results.
