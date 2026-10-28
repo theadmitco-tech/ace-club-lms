@@ -6,7 +6,7 @@ import { DraftRecoveryNotice, useDraftRecovery } from '@/components/DraftRecover
 import { isBatchWorkspace, type BatchWorkspace } from '@/lib/v2WorkspaceRecovery';
 import { AdminDraftLink as Link, useAdminDraftGuard } from '@/components/AdminDraftNavigation';
 import { useRouter } from 'next/navigation';
-import { V2_TEMPLATE_PRODUCTS, type V2TemplateDraft } from '@/lib/v2Templates';
+import { V2_TEMPLATE_PRODUCTS, v2CourseDeliveryLabel, type V2TemplateDraft } from '@/lib/v2Templates';
 import { editableV2BatchEvents, validateV2BatchInput, V2_BATCH_TIME_ZONE,
   type V2BatchDraft, type V2BatchEventInput, type V2BatchInput, type V2BatchProposal } from '@/lib/v2Batches';
 import { previewBatchDraftAction, saveBatchDraftAction } from './actions';
@@ -150,6 +150,7 @@ export default function BatchDraftEditor({ drafts, templates, ownerId }: { draft
       {productCode && <p>{V2_TEMPLATE_PRODUCTS[productCode].label} · template revision {input.templateRevision} · {V2_BATCH_TIME_ZONE}</p>}
       <fieldset disabled={!!pending} className={styles.fields}>
         <legend className={styles.legend}>Course and schedule details</legend>
+        <p>Delivery: {v2CourseDeliveryLabel(input.events ?? templates.find((template) => template.id === input.templateId)?.document.events ?? [])}</p>
         {original && productCode && <CourseSessionsEditor sessions={input.sessions ?? []} sections={V2_TEMPLATE_PRODUCTS[productCode].sections}
           onChange={(sessions) => change({...input,sessions})} />}
         {!original && <label htmlFor="v2-batch-template">Template
@@ -194,6 +195,7 @@ export default function BatchDraftEditor({ drafts, templates, ownerId }: { draft
       {review && <section className={styles.fields} aria-labelledby="batch-review-heading">
         <h3 id="batch-review-heading">Review: {review.proposal.draft.title}</h3>
         <p>Draft · {V2_TEMPLATE_PRODUCTS[review.proposal.draft.productCode].label} · all times IST</p>
+        <p>Delivery: {v2CourseDeliveryLabel(review.proposal.draft.events)}</p>
         <CourseSessionsPreview sessions={review.proposal.draft.sessions ?? []} />
         <ol className={styles.list}>{review.proposal.draft.events.map((event) => {
           const before = original?.events.find((item) => item.key === event.key);

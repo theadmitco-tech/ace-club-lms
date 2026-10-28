@@ -7,7 +7,7 @@ import { DraftRecoveryNotice, useDraftRecovery } from '@/components/DraftRecover
 import { isTemplateWorkspace, type TemplateWorkspace } from '@/lib/v2WorkspaceRecovery';
 import { useAdminDraftGuard } from '@/components/AdminDraftNavigation';
 import { useRouter } from 'next/navigation';
-import { V2_SESSION_CONTENT_LABELS, emptyV2SessionContent, type V2SessionContentKind, type V2SessionContentItem, V2_TEMPLATE_PRODUCTS, validateV2TemplateSave, type V2TemplateDraft, type V2TemplateEvent } from '@/lib/v2Templates';
+import { V2_SESSION_CONTENT_LABELS, emptyV2SessionContent, type V2SessionContentKind, type V2SessionContentItem, V2_TEMPLATE_PRODUCTS, v2CourseDeliveryLabel, validateV2TemplateSave, type V2TemplateDraft, type V2TemplateEvent } from '@/lib/v2Templates';
 import type { V2Section } from '@/lib/v2Products';
 import { saveTemplateDraftAction } from './actions';
 import styles from './templates.module.css';
@@ -143,6 +143,7 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
         <p><strong>{V2_TEMPLATE_PRODUCTS[draft.productCode].label}</strong> · Included sections: {V2_TEMPLATE_PRODUCTS[draft.productCode].sections.join(', ')}</p>
         <fieldset className={styles.fields} disabled={pending}>
           <legend className={styles.legend}>Template details</legend>
+          <p>Delivery: {v2CourseDeliveryLabel(draft.document.events)}</p>
           <label htmlFor="template-title">Title
             <input id="template-title" className="form-input" value={draft.document.title} required maxLength={120} onChange={(event) => change({ ...draft, document: { ...draft.document, title: event.target.value } })} />
           </label>

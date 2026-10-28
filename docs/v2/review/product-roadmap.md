@@ -106,7 +106,7 @@ Allow an Admin to create and publish complete Full Course, Quant, Verbal and DI 
 - Specify included sections, delivery mode, dates, times, instructors, Google Meet details, recordings, and materials.
 - Allow Full Course and individual course schedules to differ.
 - Publish, edit, unpublish, and republish batch details.
-- Limit live-course registration to eight students.
+- Publish the approved eight-student live-course registration limit as metadata. Phase 3 must enforce paid seat allocation; Phase 2 schedule membership is not a registration allocator.
 - Exclude per-session reservations and waitlists from the current scope.
 
 ### Exit gate

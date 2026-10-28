@@ -1,0 +1,165 @@
+{
+  "date": "2026-10-28",
+  "browser": "156.0.8078.47",
+  "scenarios": [
+    {
+      "scenario": "browse",
+      "label": "Browse four recordings offerings",
+      "heading": "A complete course. Your way to learn.",
+      "status": "passed"
+    },
+    {
+      "scenario": "detail",
+      "label": "Compare outline, price and access",
+      "heading": "Full Course",
+      "status": "passed"
+    },
+    {
+      "scenario": "live-catalogue",
+      "label": "Browse live classes and availability",
+      "heading": "A complete course. Your way to learn.",
+      "status": "passed"
+    },
+    {
+      "scenario": "full",
+      "label": "Live registration full \u00b7 8 of 8",
+      "heading": "Full Course",
+      "status": "passed"
+    },
+    {
+      "scenario": "quant4",
+      "label": "Choose Quant 4 first",
+      "heading": "Quant \u00b7 Your course",
+      "status": "passed"
+    },
+    {
+      "scenario": "reading",
+      "label": "Read preparation \u00b7 no feedback lock",
+      "heading": "Quant 4 \u00b7 Ratios and mixtures",
+      "status": "passed"
+    },
+    {
+      "scenario": "watch",
+      "label": "Watch the shared recording",
+      "heading": "Quant 4 \u00b7 Ratios and mixtures",
+      "status": "passed"
+    },
+    {
+      "scenario": "locked",
+      "label": "Quant feedback due \u00b7 subject locked",
+      "heading": "Quant \u00b7 Your course",
+      "status": "passed"
+    },
+    {
+      "scenario": "other-subject",
+      "label": "Verbal remains available",
+      "heading": "Verbal \u00b7 Your course",
+      "status": "passed"
+    },
+    {
+      "scenario": "live",
+      "label": "Registered live student \u00b7 own batch",
+      "heading": "Quant 4 \u00b7 Ratios and mixtures",
+      "status": "passed"
+    },
+    {
+      "scenario": "missed",
+      "label": "Missed live class \u00b7 feedback due",
+      "heading": "A little feedback. Then keep learning.",
+      "status": "passed"
+    },
+    {
+      "scenario": "missing",
+      "label": "Recording unavailable \u00b7 non-attendance valid",
+      "heading": "Quant 4 \u00b7 Ratios and mixtures",
+      "status": "passed"
+    },
+    {
+      "scenario": "delayed",
+      "label": "Feedback sent \u00b7 awaiting confirmation",
+      "heading": "Your feedback is being confirmed.",
+      "status": "passed"
+    },
+    {
+      "scenario": "confirmed",
+      "label": "Feedback confirmed \u00b7 subject reopened",
+      "heading": "Feedback confirmed. Keep going.",
+      "status": "passed"
+    },
+    {
+      "scenario": "expired",
+      "label": "Expired access \u00b7 history preserved",
+      "heading": "Your access has expired.",
+      "status": "passed"
+    },
+    {
+      "scenario": "unpaid",
+      "label": "Unpurchased offering \u00b7 upgrade option",
+      "heading": "Add DI to your learning.",
+      "status": "passed"
+    },
+    {
+      "scenario": "editor",
+      "label": "Admin \u00b7 complete course content",
+      "heading": "A complete course, beyond the calendar.",
+      "status": "passed"
+    },
+    {
+      "scenario": "preview",
+      "label": "Admin \u00b7 exact draft reading preview",
+      "heading": "A complete course, beyond the calendar.",
+      "status": "passed"
+    },
+    {
+      "scenario": "publish",
+      "label": "Admin \u00b7 universal publishing scope",
+      "heading": "Check the content. Confirm the scope.",
+      "status": "passed"
+    },
+    {
+      "scenario": "live-admin",
+      "label": "Admin \u00b7 independent schedules & completion",
+      "heading": "Schedule the live class. Keep content independent.",
+      "status": "passed"
+    },
+    {
+      "scenario": "support",
+      "label": "Admin \u00b7 feedback support & override",
+      "heading": "Resolve the lock. Preserve the history.",
+      "status": "passed"
+    },
+    {
+      "scenario": "mocks",
+      "label": "Existing Mocks \u00b7 unchanged",
+      "heading": "Mocks stay as they are.",
+      "status": "passed"
+    },
+    {
+      "scenario": "decisions",
+      "label": "Review unresolved choices",
+      "heading": "Three decisions, clearly separated.",
+      "status": "passed"
+    }
+  ],
+  "printScreens": 23,
+  "externalRequests": [],
+  "browserErrors": [],
+  "scope": "Offline wireframe rendering and export; not hosted application acceptance",
+  "interactions": {
+    "scenarios": 23,
+    "failures": [],
+    "errors": []
+  },
+  "pdf_pages": 24,
+  "validation": {
+    "eslint": "passed",
+    "pdf_visual_inspection": "catalogue page checked for readable text and intact layout"
+  },
+  "sha256": {
+    "index.html": "831b5a748b26ee62da131c25fb67ecb532d1efa893e55e33b8e720dd4d574938",
+    "styles.css": "b9960c0fd4c74a278cf66efde8c8bedecd321edf1f2d6604d22ebbe97f7709f7",
+    "prototype.js": "2a1d1058dc55fb0f02c532d4b9f2e3446812c2eec4317511f57f0c7f9c28bece",
+    "verify.mjs": "a6398669aee16a596a864bfcc823649167aa2a558b7655ccb0fad5fce9e13947",
+    "ace-v2-wireframes-2026-10-28.pdf": "c2b4856864d36b06e0e6a7642cf1a1d022d662f4524d043df88c00d7d2d38c94"
+  }
+}

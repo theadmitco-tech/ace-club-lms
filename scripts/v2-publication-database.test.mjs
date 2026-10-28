@@ -102,6 +102,55 @@ test('approved outlines and Admin publication in disposable PostgreSQL', { timeo
         assert.throws(() => template('quant',[{ ...outline('quant'),...patch }]),/Invalid/);
       }
     });
+    for (const [product,sections] of [
+      ['full_course',['quant','verbal','di']], ['quant',['quant']], ['verbal',['verbal']], ['di',['di']],
+    ]) await t.test(`${product}: complete undated content survives publish, edit, unpublish and republish independently`, () => {
+      const sessions=sections.map((section) => ({ key:randomUUID(),title:`Complete ${section} session`,section,
+        content:Object.fromEntries(['materials','recordings','preSessionReads','postSessionReads'].map((kind) =>
+          [kind,[{ key:randomUUID(),title:`${section} ${kind}`,url:`https://example.test/private/${product}/${section}/${kind}` }]])) }));
+      const templateId=randomUUID();
+      query(as(admin,`select public.save_v2_template_draft('${templateId}',${lit(product)},0,'${randomUUID()}',
+        ${json({title:`Complete ${product}`,summary:'',durationDays:null,sessions,events:[]})})`));
+      const batch=createBatch(templateId), independent=createBatch(templateId);
+      assert.deepEqual(batch.sessions,sessions);
+      assert.equal(batch.startDate,'');
+      assert.deepEqual(batch.events,[]);
+      const initialRequest=publicationInput(batch), initialReview=preview(initialRequest);
+      const initial=save(initialRequest,initialReview).document;
+      const independentPublication=save(publicationInput(independent)).document;
+      assert.deepEqual(initial.sections,sections);
+      assert.equal(initial.liveRegistrationLimit,null);
+      assert.deepEqual(initial.sessions,sessions.map(({key,title,section}) => ({key,title,section})));
+      assert.doesNotMatch(JSON.stringify(initial),/https:|materials|recordings|preSessionReads|postSessionReads/);
+      const pinned=(id,revision) => JSON.parse(query(`select b.document->'sessions'
+        from public.v2_batch_publication_revisions p join public.v2_course_batch_revisions b
+          on b.batch_id=p.batch_id and b.revision=p.batch_revision
+        where p.batch_id='${id}' and p.revision=${revision}`));
+      assert.deepEqual(pinned(batch.id,1),sessions);
+      const changed=structuredClone(sessions).reverse();
+      changed[0].title='Edited course heading';
+      for (const items of Object.values(changed[0].content)) {
+        items[0].title=`Replaced ${items[0].title}`;
+        items[0].url += '/replacement';
+        items.unshift({key:randomUUID(),title:'First item',url:'https://example.test/private/new'});
+      }
+      const staleRequest=publicationInput(batch,1), staleReview=preview(staleRequest);
+      const revised=saveBatch({id:batch.id,templateId,templateRevision:1,expectedRevision:1,
+        requestId:randomUUID(),title:batch.title,startDate:'',timeZone:'Asia/Kolkata',events:[],sessions:changed});
+      assert.deepEqual(pinned(batch.id,1),sessions,'draft changes must not alter the pinned published content');
+      rejects(as(admin,saveSql(staleRequest,staleReview.fingerprint)),/revision changed/);
+      const updated=save(publicationInput(revised,1)).document;
+      assert.equal(updated.batchRevision,2);
+      assert.deepEqual(pinned(batch.id,2),changed);
+      assert.equal(save(publicationInput(revised,2,'unpublish')).document.state,'unpublished');
+      assert.equal(save(publicationInput(revised,3)).document.state,'published');
+      assert.deepEqual(pinned(batch.id,4),changed);
+      assert.deepEqual(pinned(batch.id,1),sessions,'older course revisions stay intact after republishing');
+      assert.deepEqual(pinned(independent.id,1),sessions,'another batch must retain its complete content');
+      const latest=JSON.parse(query(as(admin,'select public.list_v2_batch_publications()')));
+      assert.deepEqual(latest.find((item) => item.batchId===independent.id),independentPublication);
+      assert.deepEqual(existing(),before);
+    });
     await t.test('private meeting drafts accept only live item identities and support no-live batches', () => {
       const initial=JSON.parse(query(as(admin,`select public.read_v2_meeting_draft('${mixed.id}')`)));
       assert.equal(initial.links.length,1);

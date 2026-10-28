@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useAdminDraftGuard } from '@/components/AdminDraftNavigation';
 import type { V2BatchDraft } from '@/lib/v2Batches';
 import type { V2Publication, V2PublicationInput, V2PublicationProposal } from '@/lib/v2Publications';
-import { V2_TEMPLATE_PRODUCTS } from '@/lib/v2Templates';
+import { V2_TEMPLATE_PRODUCTS, v2CourseDeliveryLabel } from '@/lib/v2Templates';
 import { previewBatchPublicationAction, saveBatchPublicationAction } from './actions';
 import styles from '../templates/templates.module.css';
 
@@ -81,6 +81,7 @@ export default function PublicationPanel({ drafts, publications, ownerId }: { dr
       <h3 id="publication-scope">{review.input.action === 'publish' ? 'Publish' : 'Unpublish'}: {review.proposal.document.title}</h3>
       <p>Confirm or cancel this review before starting another.</p>
       <p>Scope: this batch only · {V2_TEMPLATE_PRODUCTS[review.proposal.document.productCode].label} · {review.proposal.document.sections.join(', ')}</p>
+      <p>Delivery: {v2CourseDeliveryLabel(review.proposal.document.events)}</p>
       <p>Saved draft {review.input.batchRevision} → publication revision {review.proposal.document.revision}. All times IST.</p>
       <p>{review.proposal.document.liveRegistrationLimit === 8 ? 'Live-course registration limit: 8. Registration enforcement belongs to checkout; no session reservations.' : 'No scheduled live sessions.'}</p>
       {drafts.find((batch) => batch.id===review.input.batchId && batch.revision===review.input.batchRevision)

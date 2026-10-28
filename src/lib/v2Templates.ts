@@ -17,6 +17,14 @@ export const V2_TEMPLATE_PRODUCTS: Record<V2CourseCode, { label: string; section
   di: { label: 'DI', sections: ['di'], suggestedDays: null },
 };
 
+// Delivery follows the actual schedule; a separate flag could contradict it.
+// Historical events without a kind are live. Outline items never imply attendance.
+export function v2CourseDeliveryLabel(events: readonly { kind?: 'live' | 'outline' }[]): string {
+  return events.some((event) => event.kind !== 'outline')
+    ? 'Course content with live classes'
+    : 'Course content only · no live classes';
+}
+
 export type V2TemplateEvent = {
   key: string;
   title: string;
