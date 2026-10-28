@@ -42,13 +42,12 @@ See [machine-readable verification](verification-2026-10-28.json),
 [browser results and source hashes](browser-2026-10-28.json), and
 [independent source review](review-2026-10-28.md).
 
-## Wireframes and phase boundaries
+## Phase boundaries
 
-The [desktop wireframes](../../wireframes/index.html) demonstrate the broader
-Student recordings/live and Admin journeys. They are review simulations, not a
-claim that payment, feedback, shared assets or Student content delivery is live.
-All 23 scenarios passed interaction/rendering checks. A [24-page PDF](../../wireframes/ace-v2-wireframes-2026-10-28.pdf)
-is ready for review. The accompanying screen map records unresolved interaction choices.
+The desktop wireframes are a separate design deliverable, excluded from PR #24.
+Their design checks are not Phase 2 application acceptance evidence. The earlier
+combined package has been separated; the local HTML/PDF and design archive remain
+available for independent review.
 
 Paid eight-seat allocation is Phase 3. Protected Student content delivery is
 Phase 4. Shared recording management, five reading placements and independent/

@@ -5,6 +5,10 @@ and the offline design; it does not establish hosted acceptance or authorize a
 migration. The last recorded hosted checks belong to `ace8f8c8f5ddfa1141da6cd704483043fea8bf2c`.
 The later calm-design and alignment changes require their own checks if pushed.
 
+> Packaging correction: wireframes and their test scripts are now a separate
+> design deliverable, excluded from PR #24. References to offline design checks
+> below record the separate design audit; they are not application acceptance.
+
 ## Sources and precedence
 
 Both supplied originals were available and read; no replacement upload is needed:

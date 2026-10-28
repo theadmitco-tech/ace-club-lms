@@ -34,10 +34,12 @@ Phase 2 migrations; none has been applied to a shared environment.
 
 ## Review package
 
+Wireframes are a separate design deliverable and are excluded from PR #24.
+They are not Phase 2 application functionality or part of its acceptance evidence.
+
 - [Completion and gate evidence](evidence/completion-2026-10-28.md)
 - [Independent code review](evidence/review-2026-10-28.md)
 - [Current release and staging handoff](review-and-release.md)
-- [Clickable desktop journey wireframes](../wireframes/index.html)
 - [Phase 1 stored-contract proposal and rollback](../phase-1/proposals/README.md)
 - [Content-transfer plan](content-transfer-plan.md) and [offline dry run](content-transfer-dry-run.md)
 - [Draft reading preview and limitations](reading-preview.md)
