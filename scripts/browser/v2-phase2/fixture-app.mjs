@@ -5,6 +5,10 @@ import { fileURLToPath } from 'node:url';
 
 export const repo = fileURLToPath(new URL('../../../', import.meta.url));
 export const sources = [
+  'src/app/admin/v2/layout.tsx',
+  'src/app/admin/v2/WorkspaceNavigation.tsx',
+  'src/app/admin/v2/workspace.module.css',
+  'src/app/admin/v2/page.tsx',
   'src/app/admin/v2/templates/ReadingPreview.tsx',
   'src/components/student/NotionReader.tsx',
   'src/lib/v2ReadingPreview.ts',
@@ -119,7 +123,7 @@ export async function call(method: string, ...args: unknown[]) {
   return response.json();
 }`);
   const returnTypes = {
-    listV2BatchDrafts: "Promise<{ status: 'ready'; drafts: import('@/lib/v2Batches').V2BatchDraft[] } | { status: 'unavailable' }>",
+    listV2BatchDrafts: "Promise<{ status: 'ready'; drafts: import('@/lib/v2Batches').V2BatchDraft[] } | { status: 'unavailable'; drafts: [] }>",
     getMyV2BatchSchedules: "Promise<{ status: 'ready'; schedules: import('@/lib/v2Publications').V2Publication[] } | { status: 'unavailable' }>",
     listV2EnrollmentOptions: "Promise<{ status: 'ready'; options: import('@/lib/v2Enrollments').V2EnrollmentOption[] } | { status: 'unavailable' }>",
   };

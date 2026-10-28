@@ -7,12 +7,13 @@ export function CourseSessionsEditor({ sessions, sections, onChange }: {
   sessions: V2CourseSession[]; sections: V2Section[]; onChange: (sessions: V2CourseSession[]) => void;
 }) {
   const update = (key: string, patch: Partial<V2CourseSession>) => onChange(sessions.map((session) => session.key === key ? { ...session, ...patch } : session));
-  return <section aria-label="Course sessions and content">
-    <h3>Course sessions and content</h3>
+  return <section className={styles.sessions} aria-label="Course sessions and content">
+    <div className={styles.sectionHeading}><h3>Course sessions and content</h3><span className={styles.badge}>{sessions.length} sessions · undated</span></div>
     <p>Keep the complete curriculum here. Materials, recordings and readings do not require a live event or date.</p>
+    {sessions.length === 0 && <div className={styles.emptyState}><strong>Start with a session</strong><p>Add its materials, recordings and readings. You can arrange the curriculum before setting any live dates.</p></div>}
     {sessions.map((session, index) => <fieldset className={styles.event} key={session.key}>
       <legend>Course session {index + 1}</legend>
-      <label htmlFor={`${session.key}-title`}>Session title
+      <div className={styles.grid}><label htmlFor={`${session.key}-title`}>Session title
         <input id={`${session.key}-title`} className="form-input" required maxLength={120} value={session.title} onChange={(e) => update(session.key,{title:e.target.value})} />
       </label>
       <label htmlFor={`${session.key}-section`}>Section
@@ -20,7 +21,7 @@ export function CourseSessionsEditor({ sessions, sections, onChange }: {
           {sections.map((section) => <option key={section} value={section}>{section}</option>)}
         </select>
       </label>
-      {(Object.entries(V2_SESSION_CONTENT_LABELS) as [V2SessionContentKind,string][]).map(([kind,label]) => <fieldset key={kind} className={styles.event}>
+      </div><div className={styles.resources}>{(Object.entries(V2_SESSION_CONTENT_LABELS) as [V2SessionContentKind,string][]).map(([kind,label]) => <fieldset key={kind} className={styles.event}>
         <legend>{label} ({session.content[kind].length})</legend>
         {session.content[kind].map((item,itemIndex) => <div className={styles.fields} key={item.key}>
           <label htmlFor={`${item.key}-title`}>Title
@@ -39,7 +40,7 @@ export function CourseSessionsEditor({ sessions, sections, onChange }: {
           </div>
         </div>)}
         <button type="button" className="btn btn-secondary" disabled={session.content[kind].length>=50} onClick={() => update(session.key,{content:{...session.content,[kind]:[...session.content[kind],{key:crypto.randomUUID(),title:'',url:''}]}})}>Add {label.toLowerCase()} item</button>
-      </fieldset>)}
+      </fieldset>)}</div>
       <div className={styles.buttons}>
         <button type="button" className="btn btn-secondary" disabled={index===0} onClick={() => {
           const next=[...sessions]; [next[index-1],next[index]]=[next[index],next[index-1]]; onChange(next);

@@ -131,7 +131,7 @@ export default function BatchDraftEditor({ drafts, templates, ownerId, setupPend
 
   const productCode = original?.productCode ?? templates.find((template) => template.id === input?.templateId)?.productCode;
   return <div className={styles.workspace}>
-    <>{setupPending && <section className={styles.card} role="status"><h2>Explore batch settings</h2><p>Review the batch workspace while staging setup is completed. Saved templates, schedule review, saving and publication are not available yet.</p></section>}</>
+    <>{setupPending && <section className={styles.notice} role="status"><h2>Explore batch settings</h2><p>Review the batch workspace while staging setup is completed. Saved templates, schedule review, saving and publication are not available yet.</p></section>}</>
     <DraftRecoveryNotice available={!!recovery.recovered} unavailable={recovery.unavailable} onRestore={restore} onDiscard={recovery.forget} />
     <section className={styles.card} aria-labelledby="batch-list-heading">
       <h2 id="batch-list-heading">Saved batch drafts</h2>

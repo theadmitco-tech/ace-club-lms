@@ -120,7 +120,7 @@ export default function TemplateEditor({ templates, ownerId, setupPending = fals
 
   return (
     <div className={styles.workspace}>
-      <>{setupPending && <section className={styles.card} role="status"><h2>Explore the course editor</h2><p>You can arrange course sessions, resources and optional live classes here. Saving is unavailable until staging setup is complete. These edits have not been saved to the LMS.</p></section>}</>
+      <>{setupPending && <section className={styles.notice} role="status"><h2>Explore the course editor</h2><p>You can arrange course sessions, resources and optional live classes here. Saving is unavailable until staging setup is complete. These edits have not been saved to the LMS.</p></section>}</>
       <DraftRecoveryNotice available={!!recovery.recovered} unavailable={recovery.unavailable} onRestore={restore} onDiscard={recovery.forget} />
       <section className={styles.card} aria-labelledby="template-list-heading">
         <h2 id="template-list-heading">Saved drafts</h2>
@@ -132,16 +132,20 @@ export default function TemplateEditor({ templates, ownerId, setupPending = fals
           </li>)}
         </ul>}
         <h3>Create a template</h3>
-        <div className={styles.buttons}>
+        <div className={styles.offerings}>
           {(Object.entries(V2_TEMPLATE_PRODUCTS) as [V2CourseCode, typeof V2_TEMPLATE_PRODUCTS[V2CourseCode]][]).map(([code, product]) => (
-            <button key={code} type="button" className="btn btn-secondary" disabled={pending} onClick={() => newDraft(code)}>{product.label}</button>
+            <div key={code} className={styles.offering} data-selected={draft?.productCode === code || undefined}>
+              <span className={styles.eyebrow}>{product.sections.length === 3 ? 'ALL THREE SUBJECTS' : 'INDIVIDUAL OFFERING'}</span>
+              <button type="button" className="btn btn-secondary" disabled={pending} onClick={() => newDraft(code)}>{product.label}</button>
+              <p>{product.sections.length === 3 ? 'Quant + Verbal + DI' : `Complete ${product.label} curriculum`}</p>
+            </div>
           ))}
         </div>
         <p>A saved draft does not create a live batch or change student access.</p>
       </section>
 
       {draft && <form className={styles.card} onSubmit={save} aria-busy={pending}>
-        <h2>{draft.revision === 0 ? 'New template' : `Edit draft · revision ${draft.revision}`}</h2>
+        <div className={styles.sectionHeading}><h2>{draft.revision === 0 ? 'New template' : `Edit draft · revision ${draft.revision}`}</h2><span className={styles.badge}>{dirty ? 'Unsaved changes' : 'Private draft'}</span></div>
         <p><strong>{V2_TEMPLATE_PRODUCTS[draft.productCode].label}</strong> · Included sections: {V2_TEMPLATE_PRODUCTS[draft.productCode].sections.join(', ')}</p>
         <fieldset className={styles.fields} disabled={pending}>
           <legend className={styles.legend}>Template details</legend>
@@ -158,7 +162,7 @@ export default function TemplateEditor({ templates, ownerId, setupPending = fals
           <p>Course duration is configurable; individual offerings retain their complete curriculum. Only actual live classes require dates and times.</p>
           {draft.document.sessions && <CourseSessionsEditor sessions={draft.document.sessions} sections={V2_TEMPLATE_PRODUCTS[draft.productCode].sections}
             onChange={(sessions) => change({...draft,document:{...draft.document,sessions}})} />}
-          <h3>Optional live-class events</h3>
+          <h3 className={styles.sectionTitle}>Optional live-class events</h3>
           <p>Each course retains its sessions, materials, recordings, pre-session reads and post-session reads. Sessions can remain unscheduled; only actual live classes need a time. Live-course registration is limited to eight students; no individual session reservations are used.</p>
           {draft.document.events.map((event, index) => <fieldset key={event.key} className={styles.event}>
             <legend>{event.kind === 'outline' ? 'Course session' : 'Live class'} {index + 1}</legend>
