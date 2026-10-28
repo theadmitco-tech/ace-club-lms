@@ -340,7 +340,7 @@ export default function TemplateEditor({
 
         <section className="admin-card template-editor-header">
           <div>
-            <span className="badge badge-admin">{selectedTemplate.mode === 'full' ? 'Full Course' : 'Crash Course'}</span>
+            <span className="badge badge-admin">{selectedTemplate.mode === 'full' ? 'Full Course' : 'Course template'}</span>
             <label className="template-title-field">
               Template title
               <input

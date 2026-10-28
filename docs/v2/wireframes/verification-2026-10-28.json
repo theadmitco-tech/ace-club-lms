@@ -145,12 +145,6 @@
   "externalRequests": [],
   "browserErrors": [],
   "scope": "Offline wireframe rendering and export; not hosted application acceptance",
-  "revision": "calm study workspace",
-  "interactions": {
-    "scenarios": 23,
-    "failures": [],
-    "errors": []
-  },
   "readability_checks": {
     "contrast": [
       {
@@ -176,18 +170,35 @@
     ],
     "scope": "Sample normal-text pairs; not a full accessibility audit",
     "focusScreenshot": true,
-    "largeTextScreenshot": true
+    "largeTextScreenshot": true,
+    "recorded_scope": "Sample measurements from the prior calm iteration; typography/CSS unchanged in this audit."
+  },
+  "stitch_used": false,
+  "stitch_status": "No connected Stitch tool; plugin search returned no Stitch integration. Awaiting access for a separate Stitch pass.",
+  "revision": "calm study workspace with journey alignment",
+  "interactions": {
+    "scenarios": 23,
+    "failures": [],
+    "errors": []
   },
   "pdf_pages": 24,
   "eslint": "passed",
-  "stitch_used": false,
-  "stitch_status": "No connected Stitch tool; plugin search returned no Stitch integration. Awaiting access for a separate Stitch pass.",
+  "alignment_regressions": [
+    "live browsing cannot grant Meet",
+    "registered subjects isolated",
+    "public session availability without protected assets",
+    "selected offering and unsaved draft preview in new tab",
+    "physical reading placement and order",
+    "preview does not create feedback",
+    "saved schedule and explicit completion confirmation",
+    "audited correction preserves submissions and unresolved locks"
+  ],
   "sha256": {
     "index.html": "358ea7d978ff69b15a90c4f53a3c1b94304453b3a6462318af891c171ea04c2c",
     "styles.css": "b9960c0fd4c74a278cf66efde8c8bedecd321edf1f2d6604d22ebbe97f7709f7",
     "calm.css": "4ededeb11a84e9c3513f51f61d50df080127d86d81b82da9c4fc6c1d9fbad32d",
-    "prototype.js": "44df85202cc1e274ec8d9362e652aff7bb0b0bd4639b5e36933a15c5e69d2788",
-    "verify.mjs": "02493dc34eeb0019b429f0f1763c527f3751d9196623db38dacba797d13fd70b",
-    "ace-v2-wireframes-2026-10-28.pdf": "0a149a0b1a6669e7d4cf2dd47d3353e192b5384617e9e51d7cadf980e9d01b28"
+    "prototype.js": "ee85b5446311fb3c7603d791c2317587a1bc38878ca290e285ca25558f266427",
+    "verify.mjs": "181086a053964e7f8e2b6555f2728148875ae3312aa9cedbfb71c05c506c40ed",
+    "ace-v2-wireframes-2026-10-28.pdf": "7dd1cde7fa04b37660f92a682c1efb6bcc65e61336ab087a1b2ca21b15e3d06c"
   }
 }

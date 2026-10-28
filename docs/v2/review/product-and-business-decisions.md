@@ -2,11 +2,11 @@
 
 > Current correction — 25 October 2026: [approved course model](../decisions/course-model-correction-2026-10-25.md) controls terminology and structure. Quant, Verbal and DI are complete individual courses; Full Course contains all three. Every course retains sessions, materials, recordings, pre-session reads and post-session reads. Only actual live classes require scheduling. Phase 2 review is paused; PR #24 stays Draft.
 
-> Authority update — 20 October 2026: [preserved approvals](../decisions/README.md) supersede conflicting older requirements. The later [expiry confirmation](../decisions/phase-1-expiry-confirmation-2026-10-20.md) confirms denial after six months. This candidate implements Phase 1 only; later-phase implementation remains separate.
+> Authority update — 20 October 2026: [preserved approvals](../decisions/README.md) supersede conflicting older requirements. The later [expiry confirmation](../decisions/phase-1-expiry-confirmation-2026-10-20.md) confirms denial after six months. PR #24 contains the Phase 2 Admin-authoring candidate. Broader journey requirements are not a claim of implemented or hosted acceptance; see the [28 October alignment audit](../phase-2/evidence/journey-decision-alignment-2026-10-28.md).
 
 Status: Draft for Product Owner review
 Owner: Product owner and Engineering
-Last updated: 2 October 2026
+Last updated: 28 October 2026
 
 ## How to review this document
 
@@ -40,7 +40,7 @@ This document is not implementation authorization. It defines product and busine
 1. **Full Course:** Quant + Verbal + DI together.
 2. **Individual course:** Quant, Verbal, or DI selected individually.
 
-Individual courses retain their complete curriculum and may include live classes. Recordings are always available. An individual course must be publishable as a live batch when live delivery is offered; if there is no upcoming live individual course batch, an entitled student can use the recordings and website materials.
+Individual courses retain their complete curriculum and may include live classes. Published recordings remain accessible to entitled students independently of live attendance. A missing or unpublished recording must show its actual availability state. An individual course must be publishable as a live batch when live delivery is offered; if there is no upcoming live individual course batch, an entitled student can use the recordings and website materials.
 
 Quant, Verbal, and DI individual courses follow the same product model: topic access is sold separately, live delivery is published when available, and recordings remain available regardless of live attendance.
 
@@ -87,6 +87,8 @@ Prices should be stored as versioned commercial configuration, not hard-coded in
 **Decision:** Approved — Full Course must be purchased as a complete product. No part-by-part Full Course upgrade is included at launch.
 
 **Owner notes:** Sections describe the content structure. They do not mean that the Full Course product can be bought in parts. Full Course and individual course live-delivery schedules may differ.
+
+**Current clarification (20 October B3):** Standalone package upgrades charge the package-price difference (for example, one to two subjects adds ₹8,000). This does not create Full Course entitlement. Upgrade credit eligibility, refunded/expired purchases and the resulting expiry remain unspecified; no automated upgrade contract is claimed implemented.
 
 ### V2-DEC-06 — Downgrades, refunds, and cancellations
 
@@ -224,6 +226,8 @@ Recordings are not duplicated per student or attendance mode.
 
 **Owner notes:**
 
+**Current clarification (20 October D3):** Notion remains the authoring source for now. Controlled student rendering is not approval to replace Notion with a native editor or to import existing material without reviewed mappings and separate execution authorization.
+
 ### V2-DEC-18 — Pre-read completion
 
 **Decision needed:** Does V2 need to record that a student has opened or completed a pre-read?
@@ -239,11 +243,13 @@ Recordings are not duplicated per student or attendance mode.
 
 ### V2-DEC-19 — Video-adjacent reading material
 
-**Proposed decision:** V2 supports reading material in three publication placements for each topic course:
+**Current decision (20 October D2):** V2 supports five reading publication placements:
 
-1. Topic-level material at the top of the Quant, Verbal, or DI course.
-2. Material published before a video.
-3. Material published after a video.
+1. Before the course area.
+2. At the top of the Quant, Verbal, or DI subject area.
+3. Before a video.
+4. After a video.
+5. After the course area.
 
 The material may be published independently of live attendance. A student with access to the relevant topic sees the current published version in the appropriate location.
 
@@ -317,9 +323,9 @@ The preview should show:
 
 ### V2-DEC-23 — Layout and visual design
 
-**Proposed decision:** The implementation/design owner may recommend the exact layout, navigation, spacing, and visual treatment, provided the three placements remain clear and students can distinguish topic-level, pre-video, and post-video reading.
+**Proposed decision:** The implementation/design owner may recommend the exact layout, navigation, spacing, and visual treatment, provided all five approved placements remain clear and students can distinguish course-level, subject-level, pre-video, and post-video reading.
 
-The recommendation must include desktop/mobile layouts, empty states, unpublished states, content errors, and accessibility considerations for Product Owner review before implementation is finalized.
+The 24 October journey brief requests desktop wireframes, with empty states, unpublished states, content errors and accessibility considerations. Preserve existing mobile usability; separate mobile wireframes are not required for this review.
 
 **Decision:** Approved — delivery is web-only for launch. Detailed layout and visual treatment are implementation decisions, subject to the existing placement, accessibility, and visual-progress requirements.
 

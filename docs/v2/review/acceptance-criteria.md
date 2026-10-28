@@ -2,11 +2,11 @@
 
 > Current correction — 25 October 2026: [approved course model](../decisions/course-model-correction-2026-10-25.md) controls terminology and structure. Quant, Verbal and DI are complete individual courses; Full Course contains all three. Every course retains sessions, materials, recordings, pre-session reads and post-session reads. Only actual live classes require scheduling. Phase 2 review is paused; PR #24 stays Draft.
 
-> Authority update — 20 October 2026: [preserved approvals](../decisions/README.md) supersede conflicting older requirements. The later [expiry confirmation](../decisions/phase-1-expiry-confirmation-2026-10-20.md) confirms denial after six months. This candidate implements Phase 1 only; later-phase implementation remains separate.
+> Authority update — 20 October 2026: [preserved approvals](../decisions/README.md) supersede conflicting older requirements. The later [expiry confirmation](../decisions/phase-1-expiry-confirmation-2026-10-20.md) confirms denial after six months. PR #24 contains the Phase 2 Admin-authoring candidate. Broader journey requirements are not a claim of implemented or hosted acceptance; see the [28 October alignment audit](../phase-2/evidence/journey-decision-alignment-2026-10-28.md).
 
 Status: Draft for Product Owner review
 Owner: Product owner and Engineering
-Last updated: 18 October 2026
+Last updated: 28 October 2026
 
 This document converts the approved V2 product direction into testable outcomes for implementation and intern handoff. It does not authorize code changes, Supabase changes, merging, or Production deployment.
 
@@ -108,11 +108,13 @@ Pre-reads are available continuously to entitled students and are not locked beh
 
 ### AC-V2-MATERIAL-04 — Video-adjacent reading
 
-Reading material can be published in three locations:
+Following 20 October D2, reading material can be published in five locations:
 
-1. At the top of the Quant, Verbal, or DI course.
-2. Before a video.
-3. After a video.
+1. Before the course area.
+2. At the top of the Quant, Verbal, or DI subject area.
+3. Before a video.
+4. After a video.
+5. After the course area.
 
 ### AC-V2-MATERIAL-05 — Visual progress only
 
@@ -120,7 +122,7 @@ The student UI may show opened/read/completed progress through a color or visual
 
 ### AC-V2-MATERIAL-06 — Notion migration
 
-The implementation supports a gradual migration from Notion-authored material to the controlled ACE renderer. The intern must document the migration path and preserve a safe working path for content not yet migrated.
+Notion remains the authoring source for now (20 October D3). The implementation supports a gradual transition of student rendering to the controlled ACE renderer; this is not a native-editor cutover. The intern must document the migration path and preserve a safe working path for content not yet migrated.
 
 ## 5. Admin publishing workflow
 

@@ -74,7 +74,7 @@ export default async function SchedulePage() {
           </header>
           <section className="course-browser" aria-labelledby="schedule-browser-title">
             <div className="browser-heading">
-              <div><span className="student-eyebrow">{crashCourse ? 'Crash course' : 'Full Course'}</span>
+              <div><span className="student-eyebrow">{crashCourse ? 'Course schedule' : 'Full Course'}</span>
                 <h2 id="schedule-browser-title">Published events</h2></div>
               <span className="schedule-grouping-label">Grouped by {crashCourse ? 'day' : 'week'}</span>
             </div>

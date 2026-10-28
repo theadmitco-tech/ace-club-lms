@@ -2,11 +2,11 @@
 
 > Current correction — 25 October 2026: [approved course model](../decisions/course-model-correction-2026-10-25.md) controls terminology and structure. Quant, Verbal and DI are complete individual courses; Full Course contains all three. Every course retains sessions, materials, recordings, pre-session reads and post-session reads. Only actual live classes require scheduling. Phase 2 review is paused; PR #24 stays Draft.
 
-> Authority update — 20 October 2026: [preserved approvals](../decisions/README.md) supersede conflicting older requirements. The later [expiry confirmation](../decisions/phase-1-expiry-confirmation-2026-10-20.md) confirms denial after six months. This candidate implements Phase 1 only; later-phase implementation remains separate.
+> Authority update — 20 October 2026: [preserved approvals](../decisions/README.md) supersede conflicting older requirements. The later [expiry confirmation](../decisions/phase-1-expiry-confirmation-2026-10-20.md) confirms denial after six months. PR #24 contains the Phase 2 Admin-authoring candidate. Broader journey requirements are not a claim of implemented or hosted acceptance; see the [28 October alignment audit](../phase-2/evidence/journey-decision-alignment-2026-10-28.md).
 
 Status: Draft for Product Owner review
 Owner: Product owner and Engineering
-Last updated: 18 October 2026
+Last updated: 28 October 2026
 
 This roadmap sequences the V2 acceptance criteria into intern-sized delivery phases. It is a planning document only. It does not authorize application changes, database migrations, merging, Production deployment, or changes to student/course data.
 
@@ -14,7 +14,7 @@ This roadmap sequences the V2 acceptance criteria into intern-sized delivery pha
 
 V2 is an online-first LMS with two product types:
 
-- **Full Course:** Quant + Verbal + DI together, delivered over approximately eight weeks.
+- **Full Course:** Quant + Verbal + DI together. Optional live delivery may run over approximately eight weeks; undated course content has no required schedule.
 - **Individual course:** Quant, Verbal, or DI individually, complete courses with optional live classes and recording/material access.
 
 Launch pricing:
@@ -181,10 +181,12 @@ Reduce routine Admin work for recordings, pre-reads, and video-adjacent reading 
 ### Work
 
 - Allow Admins to upload, replace, and delete recordings or additional class videos.
-- Provide reading-material placements:
+- Provide all five reading-material placements (20 October D2):
+  - before the course area;
   - top of Quant, Verbal, or DI;
   - before a video;
-  - after a video.
+  - after a video;
+  - after the course area.
 - Allow Admin create, edit, preview, publish, unpublish, and replace actions.
 - Use immediate publishing only; no scheduled publishing at launch.
 - Open a full student-facing preview in a new tab before publishing.
@@ -194,7 +196,7 @@ Reduce routine Admin work for recordings, pre-reads, and video-adjacent reading 
 
 ### Exit gate
 
-- [ ] Admin can manage all three reading placements.
+- [ ] Admin can manage all five reading placements.
 - [ ] Preview reflects the intended student-facing placement.
 - [ ] Published and unpublished states are clear.
 - [ ] Unsupported or failed Notion content is handled safely.

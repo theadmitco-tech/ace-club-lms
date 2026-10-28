@@ -33,7 +33,7 @@ read or written. Reloading the page discards the simulated changes.
    then simulate confirmation. Unlocking does not require watching a recording.
 4. **Admin:** Select **Admin · complete course content**. Edit the pre/post-read
    titles, preview either selected draft and change reading placement. Reorder
-   the pre-session item. Review shared recording reuse and student simulation.
+   the pre-session item. Choose an offering, edit without saving, then open the recordings/live student preview in a new tab. The preview carries the selected draft titles, placement and order without changing the editor or feedback. Review shared recording reuse.
 5. **Publication and support:** Select **Admin · universal publishing scope**.
    Confirm the representative placement and scope to publish, unpublish or
    republish. In **Feedback support**, provide a reason and confirm the affected
@@ -59,7 +59,7 @@ cover and one page for each scenario.
 | Admin content | Undated course session, editable pre/post titles, all five approved reading placements, pre-session reorder, shared recording references |
 | Publication | Selected item, single/universal scope, representative placement, explicit confirm, draft edit, unpublish/republish, automatic broad outline explanation |
 | Live Admin | Independent batch dates, private Meet editor, completion separate from attendance and recording, no Meet requirement to complete |
-| Support | Student/session/subject confirmation, required override reason, separate audit timestamp/reason, preserved submissions, correction review request |
+| Support | Student/session/subject confirmation, required override reason, separate audit timestamp/reason, preserved submissions, confirmed class-status correction |
 | Mocks | Existing entry point explicitly unchanged by V2 feedback locks |
 
 The five reading placements are before the course area, at the top of a subject
@@ -76,10 +76,10 @@ not grant new entitlements or create feedback obligations by itself.
   Simultaneous pending obligations within a subject need a defined rule. Other
   sessions remain navigable but direct the reviewer to the Quant 4 example
   instead of attributing their feedback to the wrong session.
-- **Completion reversal:** the correction workflow captures a class and reason
-  for review while preserving submissions. Its effect on existing locks remains
-  unresolved, so the prototype does not automatically reverse locks or change
-  completed-class state.
+- **Completion reversal:** the correction workflow confirms the class and reason,
+  changes its simulated status back to Scheduled and records the acting Admin
+  and time. Existing submissions and pending locks are preserved. The effect of
+  reversal on those locks remains unresolved; the prototype does not invent it.
 - Feedback question wording is illustrative; the owner supplies final questions.
   Form callbacks alone must not unlock production content. Secure verification
   is simulated with an explicit review control.

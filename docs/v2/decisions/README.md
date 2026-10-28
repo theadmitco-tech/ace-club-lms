@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: Product owner and Engineering
-Last updated: 20 October 2026
+Last updated: 28 October 2026
 
 First apply the [25 October course-model correction](course-model-correction-2026-10-25.md). Phase 2 review is paused; complete individual courses replace compressed-course assumptions.
 
@@ -79,9 +79,13 @@ data. The migration tooling and synthetic tests can be prepared locally.
 
 ## Reporting entry point
 
-Use the [Phase 1 completion report](../phase-1/completion-report.md)
-for this isolated branch, implementation evidence, remaining gates and next action.
-Phase 2 remains on `intern/v2-approved-phase-1-2` at `208ceaa`; no Phase 2 code
-or migration is included in the Phase 1 candidate.
+Use the [Phase 1 completion report](../phase-1/completion-report.md) for historical
+Phase 1 evidence. PR #24 targets `codex/v2-integration` from
+`intern/v2-phase-2-review` and remains Draft. The [28 October alignment audit](../phase-2/evidence/journey-decision-alignment-2026-10-28.md)
+compares the current journey and decisions with implementation and wireframes.
+The current Student/Admin journey source is `V2-student-and-admin-journeys.md`
+(24 October); its incorporated current-rules section supersedes its historical
+annotations. It extends the design brief without claiming those journeys are
+already implemented in PR #24. Existing-content migration remains pending.
 Historical evidence remains unchanged. New local checks never retroactively
 approve a previous PR or establish staging results.
