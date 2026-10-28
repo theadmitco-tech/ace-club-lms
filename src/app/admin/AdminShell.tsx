@@ -7,11 +7,13 @@ import { AdminDraftNavigationProvider, useAdminDraftNavigation } from '@/compone
 import { useAuth } from '@/lib/AuthContext';
 import './admin.css';
 
-export default function AdminShell({ children }: { children: React.ReactNode }) {
-  return <AdminDraftNavigationProvider><AdminShellContent>{children}</AdminShellContent></AdminDraftNavigationProvider>;
+type AdminShellProps = { children: React.ReactNode; showCoursePublishing?: boolean };
+
+export default function AdminShell({ children, showCoursePublishing = false }: AdminShellProps) {
+  return <AdminDraftNavigationProvider><AdminShellContent showCoursePublishing={showCoursePublishing}>{children}</AdminShellContent></AdminDraftNavigationProvider>;
 }
 
-function AdminShellContent({ children }: { children: React.ReactNode }) {
+function AdminShellContent({ children, showCoursePublishing = false }: AdminShellProps) {
   const { confirmLeave } = useAdminDraftNavigation();
   const { user, isLoading, logout } = useAuth();
   const router = useRouter();
@@ -48,6 +50,7 @@ function AdminShellContent({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { href: '/admin', label: 'Dashboard', icon: '📊' },
+    ...(showCoursePublishing ? [{ href: '/admin/v2', label: 'Course publishing', icon: '📖' }] : []),
     { href: '/admin/templates', label: 'Course templates', icon: '🧩' },
     { href: '/admin/curriculum', label: 'Full Course Master Base', icon: '🏛️' },
     { href: '/admin/resources', label: 'Resources', icon: '📚' },
@@ -77,7 +80,7 @@ function AdminShellContent({ children }: { children: React.ReactNode }) {
           {navItems.map((item) => (
             <button
               key={item.href}
-              className={`sidebar-nav-item ${pathname === item.href ? 'active' : ''}`}
+              className={`sidebar-nav-item ${(pathname === item.href || (item.href === '/admin/v2' && pathname.startsWith('/admin/v2/'))) ? 'active' : ''}`}
               onClick={() => {
                 if (!confirmLeave()) return;
                 router.push(item.href);

@@ -235,7 +235,7 @@ test('the new page hides when disabled and requires Admin authorization before l
     '@/lib/server/v2BatchFeature': { isV2BatchAuthoringEnabled: () => false },
     '@/lib/server/portalAuthorization': { requirePortalRole: async (role) => { calls.push(role); return { id: 'synthetic-admin', role }; } },
     '@/lib/server/v2Templates': { listV2TemplateDrafts: async () => { calls.push('load'); return { status: 'ready', templates: [] }; } },
-  });
+  }, { process: { env: { VERCEL_ENV: 'development' } } });
   await assert.rejects(page.default(), /Not found/);
   assert.equal(calls.length, 0);
   enabled = true;

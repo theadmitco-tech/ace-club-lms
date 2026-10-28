@@ -12,7 +12,7 @@ import type { V2Section } from '@/lib/v2Products';
 import { saveTemplateDraftAction } from './actions';
 import styles from './templates.module.css';
 
-export default function TemplateEditor({ templates, ownerId }: { templates: V2TemplateDraft[]; ownerId: string }) {
+export default function TemplateEditor({ templates, ownerId, setupPending = false }: { templates: V2TemplateDraft[]; ownerId: string; setupPending?: boolean }) {
   const router = useRouter();
   const [draft, setDraft] = useState<V2TemplateDraft | null>(null);
   const [dirty, setDirty] = useState(false);
@@ -88,6 +88,7 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
 
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (setupPending) { setError('Saving is unavailable until staging setup is complete.'); return; }
     if (!draft || inFlight.current) return;
     const payload = JSON.stringify(draft);
     if (!retry.current || retry.current.payload !== payload) retry.current = { payload, requestId: crypto.randomUUID() };
@@ -119,10 +120,11 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
 
   return (
     <div className={styles.workspace}>
+      <>{setupPending && <section className={styles.card} role="status"><h2>Explore the course editor</h2><p>You can arrange course sessions, resources and optional live classes here. Saving is unavailable until staging setup is complete. These edits have not been saved to the LMS.</p></section>}</>
       <DraftRecoveryNotice available={!!recovery.recovered} unavailable={recovery.unavailable} onRestore={restore} onDiscard={recovery.forget} />
       <section className={styles.card} aria-labelledby="template-list-heading">
         <h2 id="template-list-heading">Saved drafts</h2>
-        {templates.length === 0 ? <p>No templates have been created.</p> : <ul className={styles.list}>
+        {templates.length === 0 ? <p>{setupPending ? 'Saved templates are not available in this Preview yet. Choose a course below to explore its editor.' : 'No templates have been created.'}</p> : <ul className={styles.list}>
           {templates.map((item) => <li key={item.id}>
             <button type="button" className="btn btn-secondary" disabled={pending} onClick={() => open(item)}>
               {item.document.title} · {V2_TEMPLATE_PRODUCTS[item.productCode].label} · revision {item.revision}
@@ -223,7 +225,7 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
         <p role="alert" className={styles.error}>{error}</p>
         <p role="status" aria-live="polite">{pending ? 'Saving draft…' : message || (dirty ? 'Unsaved changes' : '')}</p>
         <div className={styles.buttons}>
-          <button type="submit" className="btn btn-primary" disabled={pending || (!dirty && draft.revision > 0)}>{pending ? 'Saving…' : 'Save draft'}</button>
+          <button type="submit" className="btn btn-primary" disabled={setupPending || pending || (!dirty && draft.revision > 0)}>{setupPending ? 'Saving awaits staging setup' : pending ? 'Saving…' : 'Save draft'}</button>
           {templates.some((item) => item.id === draft.id) && <button type="button" className="btn btn-secondary" disabled={pending} onClick={async () => {
             if ((dirty || recovery.recovered) && !window.confirm('Discard unsaved edits and reload the latest draft?')) return;
             window.location.reload();

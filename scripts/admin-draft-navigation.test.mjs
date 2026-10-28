@@ -227,13 +227,13 @@ test('links cancel same-tab navigation without attaching a click blocker to new-
   assert.equal(app.state.confirmations, 2);
 });
 
-function shell(app) {
+function shell(app, showCoursePublishing = false) {
   const { default: Shell } = app.component('src/app/admin/AdminShell.tsx', {
     '@/components/BrandLogo': { BrandLogo: 'brand-logo' }, './admin.css': {},
     '@/lib/AuthContext': { useAuth: () => ({ user: app.state.user, isLoading: false,
       logout: () => { app.state.logouts++; } }) },
   });
-  const content = Shell({ children: null }).props.children;
+  const content = Shell({ children: null, showCoursePublishing }).props.children;
   return app.render('shell', () => content.type(content.props));
 }
 
@@ -357,4 +357,78 @@ test('private meeting edits warn on shared navigation and clear on unmount', () 
   app.unmount('editor');
   assert.equal(app.guard.confirmLeave(), true);
   assert.equal(app.listeners.size, 0);
+});
+
+
+test('Preview course publishing navigation preserves unsaved drafts and is absent when not enabled', () => {
+  const app = harness();
+  const label = node => node.type === 'span' && node.props.children === 'Course publishing';
+  assert.equal(elements(shell(app), label).length, 0);
+  const tree = shell(app, true);
+  const button = element(tree, node => node.type === 'button' && elements(node, label).length === 1);
+  assert.match(button.props.className, /active/);
+  app.render('preview-editor', () => app.navigation.useAdminDraftGuard(true));
+  button.props.onClick();
+  assert.deepEqual(app.state.pushes, []);
+  app.state.accept = true;
+  button.props.onClick();
+  assert.deepEqual(app.state.pushes, ['/admin/v2']);
+});
+
+test('course publishing entry enforces Admin authorization, Production exclusion and disabled feature links', async () => {
+  const jsx = (type, props) => ({ type, props });
+  let calls = 0, authorized = true, enabled = false;
+  const env = { VERCEL_ENV: 'preview' };
+  const page = load('src/app/admin/v2/page.tsx', {
+    'react/jsx-runtime': { jsx, jsxs: jsx },
+    'next/navigation': { notFound: () => { throw Error('Not found'); } },
+    '@/components/AdminDraftNavigation': { AdminDraftLink: 'link' },
+    '@/lib/server/portalAuthorization': { requirePortalRole: async role => { calls++; assert.equal(role, 'admin'); if (!authorized) throw Error('Unauthorized'); } },
+    '@/lib/server/v2TemplateFeature': { isV2TemplateAuthoringEnabled: () => enabled },
+    '@/lib/server/v2BatchFeature': { isV2BatchAuthoringEnabled: () => enabled },
+  }, { process: { env } }).default;
+  let tree = await page();
+  assert.equal(calls, 1);
+  assert.equal(elements(tree, n => n.props?.href?.startsWith('/admin/v2/')).length, 2);
+  assert.equal(elements(tree, n => n.props?.role === 'status').length, 1);
+  enabled = true; tree = await page();
+  assert.deepEqual(elements(tree, n => n.type === 'link').map(n => n.props.href), ['/admin/v2/templates', '/admin/v2/batches', '/admin/courses']);
+  authorized = false; await assert.rejects(page, /Unauthorized/);
+  env.VERCEL_ENV = 'production'; authorized = true;
+  await assert.rejects(page, /Not found/);
+});
+
+
+test('Preview setup template editor exposes the real form but never submits a save', async () => {
+  const app = harness(); let saves = 0;
+  const { default: Editor } = app.component('src/app/admin/v2/templates/TemplateEditor.tsx', {
+    '@/lib/v2Templates': templates, './templates.module.css': { default: {} },
+    './actions': { saveTemplateDraftAction: async () => { saves++; throw Error('Must not save'); } },
+  });
+  const render = () => app.render('setup-template', () => Editor({ templates: [], ownerId: 'admin', setupPending: true }));
+  let tree = render();
+  element(tree, n => n.type === 'button' && n.props.children === 'Quant').props.onClick();
+  tree = render();
+  assert.equal(element(tree, n => n.type === 'button' && n.props.children === 'Saving awaits staging setup').props.disabled, true);
+  await element(tree, n => n.type === 'form').props.onSubmit(event());
+  assert.equal(saves, 0);
+});
+
+test('Preview course editor keeps Admin authorization and Production denial with flags disabled', async () => {
+  const jsx = (type, props) => ({ type, props });
+  let authorized = true; const env = { VERCEL_ENV: 'preview' };
+  const page = load('src/app/admin/v2/templates/page.tsx', {
+    'react/jsx-runtime': { jsx, jsxs: jsx },
+    'next/navigation': { notFound: () => { throw Error('Not found'); } },
+    '@/components/AdminDraftNavigation': { AdminDraftLink: 'link' },
+    '@/lib/server/portalAuthorization': { requirePortalRole: async role => { assert.equal(role,'admin'); if(!authorized) throw Error('Unauthorized'); return {id:'admin'}; } },
+    '@/lib/server/v2TemplateFeature': { isV2TemplateAuthoringEnabled: () => false },
+    '@/lib/server/v2BatchFeature': { isV2BatchAuthoringEnabled: () => false },
+    '@/lib/server/v2Templates': { listV2TemplateDrafts: async () => ({status:'disabled',templates:[]}) },
+    './TemplateEditor': { default:'template-editor' },
+  }, {process:{env}}).default;
+  const tree = await page();
+  assert.equal(element(tree,n=>n.type==='template-editor').props.setupPending,true);
+  authorized=false; await assert.rejects(page,/Unauthorized/);
+  env.VERCEL_ENV='production'; authorized=true; await assert.rejects(page,/Not found/);
 });

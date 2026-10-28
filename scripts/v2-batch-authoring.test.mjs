@@ -248,7 +248,7 @@ test('the batch page authorizes before loading either templates or batches and h
     '@/lib/server/v2Publications': { listV2BatchPublications: async () => { calls.push('publications'); return { status: 'ready',publications: [] }; } },
     '@/lib/server/v2Templates': { listV2TemplateDrafts: async () => { calls.push('templates'); return { status: 'ready',templates: [] }; } },
     '@/lib/server/v2Batches': { listV2BatchDrafts: async () => { calls.push('batches'); return { status: 'ready',drafts: [] }; } },
-  });
+  }, { process: { env: { VERCEL_ENV: 'development' } } });
   await assert.rejects(page.default(),/Not found/);
   assert.equal(calls.length,0);
   enabled=true; deny=true;
