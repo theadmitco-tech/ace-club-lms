@@ -2,7 +2,10 @@
 
 Open **[index.html](index.html)** in a browser. Everything runs offline; no install,
 server, credentials or network connection is required. Use the scenario selector
-for 23 review states, or follow the buttons through each journey. **Screen map**
+inside **Design preview** for 23 review states, or follow the buttons through each journey.
+The default screen is My learning. On course/session screens, **Focus mode** hides
+surrounding navigation and support panels; Escape restores them. **Larger text**
+increases reading copy from 18px to 21px without changing progress or access. **Screen map**
 provides the route overview. **Reset prototype** restores fictional starting data.
 
 The prototype uses the incorporated current rules in
@@ -91,7 +94,9 @@ not grant new entitlements or create feedback obligations by itself.
 ## Files
 
 - `index.html`: offline entry point and review navigation.
-- `styles.css`: desktop layout and printable review pack.
+- `styles.css`: base layout and printable review pack.
+- `calm.css`: quieter visual system, reading typography, focus mode and responsive refinements.
+- `DESIGN.md`: design rules and implementation notes for a future Stitch pass.
 - `prototype.js`: scenario data, isolated simulated state and interactions.
 - `README.md`: source rules, review walkthrough, coverage and limits.
 - `ace-v2-wireframes-2026-10-28.pdf`: ready-to-share review pack.
@@ -110,7 +115,17 @@ click-through flows, including denied access, individual offering scope,
 pre/post-read independence, publication confirmation and reasoned overrides.
 
 Recorded on 28 October 2026: **23 scenarios passed; zero assertion failures or
-browser page errors**. `node --check` and ESLint also passed. These tests verify
+browser page errors**. Focus/large-text controls, Escape exit, required feedback
+from focus mode, 1366/1024px layouts and a reading text-spacing override also passed.
+Sample normal-text pairs measured at least 4.5:1 contrast; this is not a complete
+accessibility audit or a clinical eye-strain assessment. `node --check` and ESLint also passed. These tests verify
 the wireframe interactions, not production payment, authorization or feedback
 integrations. Screenshot/PDF export checks are recorded separately by the main
 handoff.
+
+## Stitch connection
+
+The calmer revision was implemented locally. The available plugin search returned
+no Stitch integration, so no Stitch generation or project edit is claimed.
+Use DESIGN.md and the reference screenshots as context when a Stitch project is
+available. Keep business rules, access gates and unresolved decisions unchanged.

@@ -1,4 +1,34 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ace Club · V2 journey wireframes</title><link rel="stylesheet" href="styles.css"></head>
-<body><div class="prototype"><strong>WIREFRAME · V2 REVIEW</strong><span>Desktop journeys · Fictional content · All actions simulated locally</span><button data-action="reset" class="quiet">Reset prototype</button></div>
-<div class="workspace"><aside class="sidebar"><div class="brand"><span class="brandmark">A</span><div>Ace Club<small>Learning, with a plan.</small></div></div><div class="mode" id="mode"></div><nav id="nav" aria-label="Primary"></nav><div class="sidebar-foot"><span class="avatar">PY</span><div id="persona"></div></div></aside><div class="main"><header><div><span class="eyebrow">V2 / FULL COURSE & INDIVIDUAL OFFERINGS</span><p id="breadcrumb"></p></div><div class="tools"><button data-screen="map">Screen map</button><button data-screen="decisions">3 open decisions</button></div></header><div class="scenario"><label for="scenario">Jump to a review scenario</label><select id="scenario"></select><span id="scenario-note">No backend connection</span></div><main id="content" tabindex="-1"></main><footer>Review prototype only. No real enrollment, payment, publishing, attendance or feedback is recorded.</footer></div></div><div id="toast" role="status" aria-live="polite"></div><script src="prototype.js"></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Ace Club · A calmer place to learn</title>
+  <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="calm.css">
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<details class="review-tools" id="review-tools">
+  <summary><strong>Design preview</strong><span>Fictional content · review tools</span></summary>
+  <div class="review-controls">
+    <label for="scenario">Review scenario</label><select id="scenario"></select>
+    <button data-screen="map">Screen map</button><button data-screen="decisions">Open decisions</button>
+    <button data-action="reset">Reset prototype</button>
+    <small>No real payment, enrollment or feedback is recorded.</small>
+  </div>
+</details>
+<div class="workspace">
+  <aside class="sidebar">
+    <div class="brand"><span class="brandmark" aria-hidden="true">a.</span><div>Ace Club<small>A little clearer, every day.</small></div></div>
+    <div class="mode" id="mode"></div><nav id="nav" aria-label="Primary"></nav>
+    <div class="sidebar-foot"><span class="avatar" aria-hidden="true">DS</span><div id="persona"></div></div>
+  </aside>
+  <div class="main">
+    <header><div><span class="eyebrow">YOUR LEARNING SPACE</span><p id="breadcrumb"></p></div><span class="header-note">Room to focus.</span></header>
+    <div id="study-toolbar" class="study-toolbar" hidden></div>
+    <main id="content" tabindex="-1"></main>
+    <footer>Design prototype · Fictional content. All actions are simulated.</footer>
+  </div>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="prototype.js"></script>
+</body></html>
