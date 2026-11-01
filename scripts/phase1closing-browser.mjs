@@ -36,6 +36,7 @@ export async function createClient(){
         if(table==='profiles')return {eq(){return {maybeSingle:async()=>({data:{role,is_active:true},error:null})}}};
         return {
           then(resolve:(v:unknown)=>void){resolve({count:null,error:{code:'42501'}})},
+          limit(){return Promise.resolve({data:null,error:{code:'42501'}})},
           neq:async()=>({count:0,error:null})
         };
       }};

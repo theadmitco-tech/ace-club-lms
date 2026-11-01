@@ -8,6 +8,7 @@ import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { runInNewContext } from 'node:vm';
 import ts from 'typescript';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 const root = new URL('../', import.meta.url);
 const read = file => readFileSync(new URL(file, root), 'utf8');
@@ -22,7 +23,7 @@ function load(file, deps, env = {}) {
 const domain = load('src/lib/v2Products.ts', {});
 const publicKey = 'header.' + Buffer.from(JSON.stringify({ role: 'anon', ref: 'eyphkkginlgoaxflauog' })).toString('base64url') + '.signature';
 const env = { VERCEL_ENV: 'preview', NEXT_PUBLIC_SUPABASE_URL: 'https://eyphkkginlgoaxflauog.supabase.co', NEXT_PUBLIC_SUPABASE_ANON_KEY: publicKey, VERCEL_GIT_COMMIT_SHA: 'a'.repeat(40) };
-function harness(overrides = {}) {
+function harness(overrides = {}, purchaseClient = null) {
   const state = {
     user: { id: '10000000-0000-4000-8000-000000000001' }, authError: null,
     profile: { role: 'student', is_active: true }, profileError: null,
@@ -33,13 +34,16 @@ function harness(overrides = {}) {
     auth: { getUser: async () => ({ data: { user: state.user }, error: state.authError }) },
     from(table) {
       assert.ok(['profiles', 'v2_purchases'].includes(table));
+      if (table === 'v2_purchases' && purchaseClient) return purchaseClient.from(table);
       return { select(columns, options) {
         state.calls.push({ table, columns, options });
         if (table === 'profiles') return { eq(column, id) {
           assert.equal(column, 'id'); assert.equal(id, state.user.id);
           return { maybeSingle: async () => ({ data: state.profile, error: state.profileError }) };
         } };
-        assert.equal(columns, 'id'); assert.equal(options.head, true); assert.equal(options.count, 'exact');
+        assert.equal(columns, 'id');
+        if (!options) return { limit: async count => { assert.equal(count, 0); return state.privateRead; } };
+        assert.equal(options.head, true); assert.equal(options.count, 'exact');
         return { then(resolve) { return Promise.resolve(state.privateRead).then(resolve); },
           neq: async (column, id) => { assert.equal(column, 'student_id'); assert.equal(id, state.user.id); return state.foreign; } };
       } };
@@ -91,6 +95,25 @@ test('signed-out session checks real anonymous RPC/table permissions without ass
   const result = await h.verifyPhase1CallerSession(); assert.equal(result.role, 'signed_out');
   for (const id of ['access_rpc', 'private_purchase_read', 'browser_role_grant_permission']) assert.equal(result.checks.find(c => c.id === id).status, 'pass');
   assert.ok(!h.state.calls.some(c => c.table === 'profiles'));
+});
+test('anonymous table probe uses a zero-row GET so real SDK preserves permission errors; unexpected success fails', async () => {
+  for (const permitted of [false, true]) {
+    const requests = [];
+    const client = createSupabaseClient('https://staging.example.test', 'public-test-key', {
+      auth: { persistSession: false, autoRefreshToken: false },
+      global: { fetch: async (input, init) => {
+        const url = new URL(input); requests.push({ method: init.method, limit: url.searchParams.get('limit') });
+        // Real HEAD responses have no error body, including on permission denial.
+        return new Response(init.method === 'HEAD' ? null : permitted ? '[]' : JSON.stringify({ code: '42501', message: 'permission denied' }),
+          { status: permitted ? 200 : 401, headers: { 'Content-Type': 'application/json' } });
+      } },
+    });
+    const h = harness({}, client); h.state.user = null;
+    h.state.access = { data: null, error: { code: '42501' } };
+    const result = await h.verifyPhase1CallerSession();
+    assert.deepEqual(requests, [{ method: 'GET', limit: '0' }]);
+    assert.equal(result.checks.find(c => c.id === 'private_purchase_read').status, permitted ? 'fail' : 'pass');
+  }
 });
 test('inactive and Admin identities cannot be interpreted as active Student access', async () => {
   for (const profile of [{ role: 'student', is_active: false }, { role: 'admin', is_active: true }]) {

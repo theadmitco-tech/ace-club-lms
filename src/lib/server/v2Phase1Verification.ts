@@ -106,9 +106,10 @@ export async function verifyPhase1CallerSession(): Promise<Phase1VerificationRep
       add('access_rpc', 'pass', 'The active Student access RPC returned a validated list; fixture-state correctness is separate.', access.data.length);
     }
 
-    // HEAD/count only: never fetch purchase IDs, payment references or other rows.
+    // Never fetch purchase rows. Anonymous GET limit=0 preserves the SQL error
+    // body: HEAD strips it, so the SDK cannot recover permission code 42501.
     if (!user) {
-      const privateRead = await client.from('v2_purchases').select('id', { count: 'exact', head: true });
+      const privateRead = await client.from('v2_purchases').select('id').limit(0);
       add('private_purchase_read', privateRead.error?.code === '42501' ? 'pass' : 'fail',
         privateRead.error?.code === '42501' ? 'Anonymous private purchase reads are denied.' : 'Anonymous private purchase read did not return the required permission denial.');
     } else if (report.role === 'student' || report.role === 'inactive') {
