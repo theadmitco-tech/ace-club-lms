@@ -1,0 +1,382 @@
+npm notice run ace-club-lms@0.1.0 test:v2:phase1
+npm notice run node scripts/verify-v2-phase1.mjs
+
+Running v2-product-entitlements.test.mjs
+▶ V2 product catalogue and entitlement database boundaries
+  ✔ Phase 1 inspection reports missing objects in a read-only transaction (281.522691ms)
+  ✔ a migration failure rolls back earlier DDL and leaves legacy state intact (307.94029ms)
+  ✔ applying the migration preserves the complete baseline schema and synthetic rows (294.710297ms)
+  ✔ Phase 1 inspection identifies access privileges and drift without reading private rows (328.558755ms)
+  ✔ four products have exact section scopes and no inferred schedule (25.783263ms)
+  ✔ configured prices cover all eight valid selections (157.919667ms)
+  ✔ anonymous and student callers cannot manufacture or edit grants (735.365787ms)
+  ✔ service grant authorizes only the bought product and its section (146.007379ms)
+  ✔ replays are idempotent and mismatches fail without extending access (157.922933ms)
+  ✔ all three Crash Courses remain distinct from Full Batch; a later Full purchase works (129.58428ms)
+  ✔ expiry uses UTC calendar months, leap years, and original confirmation precision (103.93363ms)
+  ✔ the shared access window includes start, excludes expiry, and denies invalid values (74.934319ms)
+  ✔ expired purchases deny all product access without deleting history or needing a cleanup job (33.80811ms)
+  ✔ revocation, deactivation, and closed sales have distinct access behavior (111.479417ms)
+  ✔ new price versions affect quotes without rewriting past prices or access (73.377746ms)
+  ✔ a failed bundle grant rolls back the purchase and all partial grants (49.699799ms)
+  ✔ overlapping purchases survive one revocation and summarize only valid expiry (30.053087ms)
+  ✔ concurrent duplicate payment delivery creates one purchase and one grant (29.838522ms)
+  ✔ concurrent conflicting buyers cannot share a payment reference (28.492265ms)
+  ✔ migration is repeatable and preserves legacy access, enrollment, and new purchase data (319.790579ms)
+✔ V2 product catalogue and entitlement database boundaries (4466.626708ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4469.701697
+
+Running v2-product-readers.test.mjs
+✔ signed-out or failed authentication never queries product authorization (3.248801ms)
+✔ only an explicit successful database boolean can authorize access (4.378939ms)
+✔ configuration, authentication transport, and database transport failures fail closed (1.616488ms)
+✔ access is rechecked on later calls rather than cached after a grant or revocation (0.741194ms)
+✔ purchase history is not requested by caller-supplied identity (1.287146ms)
+✔ catalogue selects public fields and available products; prices come from the database (1.079661ms)
+✔ malformed or overbroad catalogue and access replies fail closed (1.761324ms)
+✔ quotes must match the exact selection, valid configured amount and price revision (2.15219ms)
+✔ invalid product selections and cross-section checks never reach the database (0.906316ms)
+✔ configuration and transport failures never expose private diagnostics through readers (1.780477ms)
+✔ approved display names leave legacy quote and grant identities unchanged (0.812966ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 26.249222
+
+Running v2-course-workspace.test.mjs
+✔ all eight canonical course selections preserve distinct Full Course identity (1.392275ms)
+✔ Preview exposure is denied in Production and unset production builds (13.85346ms)
+✔ purchase display uses start-inclusive and expiry-exclusive boundaries and preserves revoked history (0.250988ms)
+✔ catalogue reads configured prices and fails visibly instead of inventing prices (16.988337ms)
+✔ history uses caller identity, explicit owner filtering, pagination and minimal columns (10.062333ms)
+✔ signed-out, wrong-role and disabled requests never query private purchases (24.986218ms)
+✔ Admin history requires an Admin and can review other student purchases (10.774137ms)
+✔ history rejects wrong-owner, malformed and overbroad grant responses (56.154851ms)
+✔ history distinguishes database failures from genuinely empty results (6.631591ms)
+✔ history uses one lookahead row without dropping records and validates pagination (7.876495ms)
+✔ all new pages deny Production before authentication or data access (36.187985ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 192.230403
+
+Running v2-upgrade-quotes.test.mjs
+✔ all individual strict-superset upgrades use configured package differences (102.325881ms)
+✔ the policy is off by default and strictly confined to staging Preview (51.798525ms)
+✔ signed-out, inactive-resolved-null and Admin identities never query purchase data (18.559644ms)
+✔ purchase reads are caller-filtered, active-only, bounded and exclude payment references (6.895545ms)
+✔ no purchases, multiple purchases, Full Course and already-three-subject packages are not eligible (25.322654ms)
+✔ replacements, duplicates, empty selections and Full Course upgrades are rejected (57.993884ms)
+✔ wrong owner, malformed, revoked, expired and not-yet-started data fail closed (76.91713ms)
+✔ database-time access must agree with the active purchase scope and expiry (24.16042ms)
+✔ prices come from configuration, not historical paid amounts or hardcoded launch values (5.862523ms)
+✔ changed price revisions during a request reject the estimate (5.371835ms)
+✔ invalid price data and non-positive differences never produce an upgrade estimate (59.258522ms)
+✔ provider failures and unexpected row counts remain unavailable without private errors (20.986726ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 462.643025
+
+Running phase1closing-verification.test.mjs
+✔ verification refuses Production, other projects, unknown environment and service-role keys before client creation (74.663488ms)
+✔ Student session is derived from auth and no foreign rows is inconclusive without independent fixtures (10.152346ms)
+✔ foreign row visibility is failure and never returns row identifiers or foreign counts (6.402887ms)
+✔ grant permission drift, missing function and unexpected success never pass (16.551365ms)
+✔ signed-out session checks real anonymous RPC/table permissions without assuming authenticated identity (5.734627ms)
+✔ inactive and Admin identities cannot be interpreted as active Student access (12.827971ms)
+✔ unverified auth/profile fails closed and returns no provider diagnostics (16.84644ms)
+✔ manual endpoint blocks disabled, cross-origin, non-JSON and caller-supplied targets; replies are private no-store (8.218535ms)
+✔ null grant diagnostic is non-mutating even with simulated execution-permission drift in a disposable database (727.746537ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 886.008743
+
+Running v2-canonical-product-contracts.test.mjs
+▶ canonical product contract proposal on a disposable Phase 1 database
+  ✔ read-only inspection records hashes without exposing purchase or student values (12.031057ms)
+  ✔ an incompatible existing view rolls back the entire forward transaction (53.704484ms)
+  ✔ expansion preserves all legacy product, price, purchase, grant and profile values (41.014732ms)
+  ✔ canonical catalogue uses approved names and retains sales visibility policy (60.11717ms)
+  ✔ all eight valid quotes preserve price versions and amounts; invalid aliases fail closed (240.687442ms)
+  ✔ canonical and legacy replay return the identical purchase without duplicating grants (46.002627ms)
+  ✔ authorization, subject scope, expiry and revocation stay delegated to Phase 1 (168.394194ms)
+  ✔ three individual offerings do not grant Full Course and private helpers remain inaccessible (97.511505ms)
+  ✔ rollback preserves new canonical purchases and permits old payment retries (122.83786ms)
+  ✔ Phase 2 enrollment and published course access survive compatibility expansion and rollback (654.341687ms)
+✔ canonical product contract proposal on a disposable Phase 1 database (2332.819549ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2339.468612
+
+Running v2-staging-catalogue-probe.test.mjs
+✔ reads only the public catalogue and a GET quote, without session data or credential output (4.334903ms)
+✔ refuses any other Preview or Production origin before network access (0.73221ms)
+✔ accepts the verified PR branch link while retaining staging checks (1.6399ms)
+✔ requires observed staging traffic and rejects mixed backend targets (1.681252ms)
+✔ does not use service-role, user-session or another project JWTs (3.041805ms)
+✔ accepts a public publishable key only alongside the expected staging URL (1.644749ms)
+✔ rejects ambiguous public configuration before database access (0.727853ms)
+✔ reports a missing table without exposing the raw database message (0.947578ms)
+✔ detects an incomplete catalogue or a wrong section scope (2.393548ms)
+✔ distinguishes a missing quote function from a wrong price (1.778527ms)
+✔ does not print credentials or transport details on a failed request (0.862393ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 26.094817
+
+Running v2-phase1-role-probe.test.mjs
+✔ sends only empty validation payloads to the two fixed Admin endpoints (6.819177ms)
+✔ accepts the verified branch alias using only its own origin (0.920513ms)
+✔ rejects an old deployment, unrelated host or lookalike before any request (1.717243ms)
+✔ distinguishes Student denial from signed-out denial (1.436233ms)
+✔ requires both status and exact route-specific validation before recognizing Admin (3.353247ms)
+✔ reports a session or authorization change between requests as inconclusive (0.726972ms)
+✔ does not treat transport failures or login HTML as authorization evidence (1.740563ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 22.833076
+
+Running batch-enrollment-feedback.test.mjs
+✔ HTTP enrollment failures preserve input and display an error instead of batch success (47.567641ms)
+✔ network, HTML and malformed responses cannot clear the form or claim enrollment (32.324711ms)
+✔ partial enrollment reports counts and retains the entered list for review (6.383946ms)
+✔ failed batch saves stop before enrollment and always release the submitting state (9.919436ms)
+✔ invalid email entries stop all writes rather than silently dropping students (5.359115ms)
+✔ confirmed enrollment normalizes duplicate emails and closes the editor (4.239262ms)
+✔ saving without enrollment keeps the existing batch-only flow (3.07326ms)
+✔ a failed list refresh after successful enrollment releases loading and identifies saved changes (5.853159ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 127.346547
+
+Running bulk-enroll-route.test.mjs
+✔ Admin authorization is required before constructing the privileged client (5.270554ms)
+✔ a failed profile lookup cannot fall through to account creation or writes (2.835083ms)
+✔ an existing Student profile is enrolled without creating an Auth account (1.368368ms)
+✔ an existing non-Student account is never demoted or activated by enrollment (2.602255ms)
+✔ a confirmed absent profile retains the new-Student provisioning path (1.058729ms)
+✔ failed account creation is distinguished from profile lookup and cannot enroll (1.809832ms)
+✔ profile activation failure stops enrollment while identifying the failing stage (0.848359ms)
+✔ enrollment failure reports that profile activation may already have happened (0.909614ms)
+✔ mixed batches keep truthful partial counts and identify failure by input position (0.934216ms)
+✔ configuration and unexpected lookup failures do not expose raw diagnostics (1.751953ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 25.574139
+
+Running release-safety.test.mjs
+✔ create-order returns a controlled error for Error, database objects, and non-error rejections (59.917848ms)
+✔ verify-payment returns a controlled error for Error, database objects, and non-error rejections (38.119325ms)
+✔ register/batches returns a controlled error for Error, database objects, and non-error rejections (19.441401ms)
+✔ register/create-order returns a controlled error for Error, database objects, and non-error rejections (43.644437ms)
+✔ register/verify-payment returns a controlled error for Error, database objects, and non-error rejections (33.209346ms)
+✔ register/webhook returns a controlled error for Error, database objects, and non-error rejections (33.877898ms)
+✔ standard checkout preserves order success and rejects invalid amounts before contacting the provider (4.735932ms)
+✔ standard checkout keeps provider-authentication errors at 401 (4.80468ms)
+✔ standard payment verification accepts both existing field formats and rejects invalid signatures (4.188286ms)
+✔ registration verification and webhook reject invalid signatures before any database access (9.916364ms)
+✔ public batches preserve their successful response (4.023355ms)
+✔ worksheet loading preserves scoped questions and normalizes legacy null options (0.768623ms)
+✔ a worksheet without a question set returns an empty editable worksheet (0.281361ms)
+✔ missing sessions and session network failures stop loading without querying questions (0.265164ms)
+✔ worksheet table errors and transport failures resolve to a recoverable result (0.528783ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 280.629644
+
+Running course-template-validation.test.mjs
+(node:37967) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///tmp/ace-phase1-integration-2026-11-01/src/lib/courseTemplates.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /tmp/ace-phase1-integration-2026-11-01/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ accepts the approved crash-course event shape (2.255925ms)
+✔ reordering events moves them into the destination schedule slots (0.741226ms)
+✔ accepts reusable Starter Pack, pre-read and worksheet content for a crash template (0.681595ms)
+✔ extracts a Notion URL when the complete iframe embed code is pasted (0.19913ms)
+✔ requires template Starter Packs to use Notion (0.355868ms)
+✔ rejects duplicate order and an unknown Section (0.268839ms)
+✔ rejects recording and Session-material template resources (0.178395ms)
+✔ rejects the removed Window event type (0.160314ms)
+✔ migration seeds exactly four template identities and the approved crash curricula (2.744811ms)
+✔ Phase 3 migration adds editable template content, atomic inheritance and reviewed sync (0.669073ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13.455682
+
+Running batch-schedule.test.mjs
+(node:37978) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///tmp/ace-phase1-integration-2026-11-01/src/lib/batchSchedule.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /tmp/ace-phase1-integration-2026-11-01/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ builds an IST proposal without writing and pins the immutable revision (1.504561ms)
+✔ rejects a stale template revision (0.406625ms)
+✔ shift preview includes only eligible selected and subsequent events (0.639042ms)
+✔ Phase 2 migration is additive, idempotent and protects stale schedules (1.91396ms)
+✔ reorder correction avoids unresolved temporary relations (1.033486ms)
+✔ Phase 2 correction makes conflicts non-retryable and shifts materials after events (0.377575ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10.028956
+
+Running flexible-resources.test.mjs
+(node:37996) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///tmp/ace-phase1-integration-2026-11-01/src/lib/flexibleResources.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /tmp/ace-phase1-integration-2026-11-01/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ accepts standalone and batch starter packs without fake sessions (1.003265ms)
+✔ accepts Section text instructions and rejects an event association (0.211672ms)
+✔ keeps recordings and Session materials event-owned (0.453575ms)
+✔ accepts only supported Notion hosts (0.135582ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7.457223
+
+Running student-portal.test.mjs
+(node:38004) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///tmp/ace-phase1-integration-2026-11-01/src/lib/studentTimeline.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /tmp/ace-phase1-integration-2026-11-01/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ groups Full Course events into non-empty chronological weeks (1.429853ms)
+✔ groups crash-course events by their IST calendar day (10.121596ms)
+✔ recognizes legacy crash-course timelines before course_mode is projected (0.276653ms)
+✔ groups only represented Sections without inventing placeholders (0.250989ms)
+✔ selects next event and next mock independently (0.215228ms)
+✔ Student projection preserves authorization, publication, release, and least-privilege boundaries (4.647962ms)
+✔ Student surfaces keep Home compact and use Day/Week plus contextual resource filters (0.558003ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 22.37895
+
+Running student-timeline-recommendations.test.mjs
+(node:38019) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///tmp/ace-phase1-integration-2026-11-01/src/lib/studentTimeline.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /tmp/ace-phase1-integration-2026-11-01/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ returns every unique worksheet from the previous class in each section window (6.518569ms)
+✔ removes a previous worksheet when the next same-section class starts (0.252912ms)
+✔ isolates empty and partial sections (0.193381ms)
+✔ recommends every unique pre-read for each section's next class (0.363331ms)
+✔ hides a section pre-read during class and shows the following one after class ends (0.916706ms)
+✔ shows all released Session materials after class and removes them at the next same-section class start (0.424826ms)
+✔ does not recommend locked Session materials (0.144968ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14.429947
+
+Running session-material-files.test.mjs
+(node:38026) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///tmp/ace-phase1-integration-2026-11-01/src/lib/materialFiles.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /tmp/ace-phase1-integration-2026-11-01/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ round-trips canonical protected Session-material references (0.969948ms)
+✔ keeps worksheet and Session-material namespaces distinct (0.146109ms)
+✔ rejects cross-session, traversal, non-PDF and non-UUID paths (0.127348ms)
+✔ rejects external, duplicated and decorated protected references (0.165953ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7.096847
+
+Running phase5-integrated-safety.test.mjs
+✔ Student and Admin route groups enforce active role authorization (6.404373ms)
+✔ every Pilot V2 Admin mutation entry point re-authorizes the caller (0.719981ms)
+✔ protected PDFs authorize through RLS before service-role signing and never cache (0.311121ms)
+✔ tracker ownership and Admin progress remain least-privilege and read-only (0.91873ms)
+✔ Pilot V2 migrations never rewrite canonical Student tracker rows (1.537517ms)
+✔ schedule changes move only unreleased material timestamps and keep material identity (0.604833ms)
+✔ template and projection migrations preserve existing batch snapshots (0.498702ms)
+✔ recordings and Session materials remain bound to one batch event (1.16487ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18.793894
+
+All 18 Phase 1 local suites passed. Staging acceptance remains separate.

@@ -1,0 +1,26 @@
+{
+  "runId": "7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719",
+  "project": "eyphkkginlgoaxflauog",
+  "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+  "recordedAt": "2026-11-01T18:49:52.369Z",
+  "checks": [
+    {
+      "id": "six-concurrent-identical-replays-return-original-purchase",
+      "status": "pass"
+    },
+    {
+      "id": "concurrent-conflicting-buyer-or-subject-replays-rejected",
+      "status": "pass"
+    },
+    {
+      "id": "original-purchase-price-and-expiry-unchanged",
+      "status": "pass"
+    },
+    {
+      "id": "exactly-original-subject-grant-remains",
+      "status": "pass"
+    }
+  ],
+  "status": "passed",
+  "scope": "Concurrent replay against an existing synthetic purchase. Concurrent first-insert race is covered separately by the local database suite. No new purchases or payments."
+}

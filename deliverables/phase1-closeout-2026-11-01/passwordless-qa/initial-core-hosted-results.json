@@ -1,0 +1,746 @@
+{
+  "runId": "7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719",
+  "project": "eyphkkginlgoaxflauog",
+  "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+  "startedAt": "2026-11-01T18:37:47.050Z",
+  "checks": [
+    {
+      "id": "sql-fixtures-complete-and-owned",
+      "status": "pass"
+    },
+    {
+      "id": "exact-hosted-candidate",
+      "status": "pass"
+    },
+    {
+      "id": "access-list:q",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:q:quant_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:q:verbal_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:q:di_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:q:full_batch",
+      "status": "pass"
+    },
+    {
+      "id": "section:q:quant_crash:quant",
+      "status": "pass"
+    },
+    {
+      "id": "section:q:quant_crash:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "section:q:quant_crash:di",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-price:q->qv",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-expiry:q->qv",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-price:q->qd",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-expiry:q->qd",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-price:q->qvd",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-expiry:q->qvd",
+      "status": "pass"
+    },
+    {
+      "id": "access-list:v",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:v:quant_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:v:verbal_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:v:di_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:v:full_batch",
+      "status": "pass"
+    },
+    {
+      "id": "section:v:verbal_crash:quant",
+      "status": "pass"
+    },
+    {
+      "id": "section:v:verbal_crash:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "section:v:verbal_crash:di",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-price:v->qv",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-expiry:v->qv",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-price:v->vd",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-expiry:v->vd",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-price:v->qvd",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-expiry:v->qvd",
+      "status": "pass"
+    },
+    {
+      "id": "access-list:d",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:d:quant_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:d:verbal_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:d:di_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:d:full_batch",
+      "status": "pass"
+    },
+    {
+      "id": "section:d:di_crash:quant",
+      "status": "pass"
+    },
+    {
+      "id": "section:d:di_crash:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "section:d:di_crash:di",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-price:d->qd",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-expiry:d->qd",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-price:d->vd",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-expiry:d->vd",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-price:d->qvd",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-expiry:d->qvd",
+      "status": "pass"
+    },
+    {
+      "id": "access-list:qv",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:qv:quant_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:qv:verbal_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:qv:di_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:qv:full_batch",
+      "status": "pass"
+    },
+    {
+      "id": "section:qv:quant_crash:quant",
+      "status": "pass"
+    },
+    {
+      "id": "section:qv:quant_crash:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "section:qv:quant_crash:di",
+      "status": "pass"
+    },
+    {
+      "id": "section:qv:verbal_crash:quant",
+      "status": "pass"
+    },
+    {
+      "id": "section:qv:verbal_crash:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "section:qv:verbal_crash:di",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-price:qv->qvd",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-expiry:qv->qvd",
+      "status": "pass"
+    },
+    {
+      "id": "access-list:qd",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:qd:quant_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:qd:verbal_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:qd:di_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:qd:full_batch",
+      "status": "pass"
+    },
+    {
+      "id": "section:qd:quant_crash:quant",
+      "status": "pass"
+    },
+    {
+      "id": "section:qd:quant_crash:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "section:qd:quant_crash:di",
+      "status": "pass"
+    },
+    {
+      "id": "section:qd:di_crash:quant",
+      "status": "pass"
+    },
+    {
+      "id": "section:qd:di_crash:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "section:qd:di_crash:di",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-price:qd->qvd",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-expiry:qd->qvd",
+      "status": "pass"
+    },
+    {
+      "id": "access-list:vd",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:vd:quant_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:vd:verbal_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:vd:di_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:vd:full_batch",
+      "status": "pass"
+    },
+    {
+      "id": "section:vd:verbal_crash:quant",
+      "status": "pass"
+    },
+    {
+      "id": "section:vd:verbal_crash:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "section:vd:verbal_crash:di",
+      "status": "pass"
+    },
+    {
+      "id": "section:vd:di_crash:quant",
+      "status": "pass"
+    },
+    {
+      "id": "section:vd:di_crash:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "section:vd:di_crash:di",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-price:vd->qvd",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-expiry:vd->qvd",
+      "status": "pass"
+    },
+    {
+      "id": "access-list:qvd",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:qvd:quant_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:qvd:verbal_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:qvd:di_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:qvd:full_batch",
+      "status": "pass"
+    },
+    {
+      "id": "section:qvd:quant_crash:quant",
+      "status": "pass"
+    },
+    {
+      "id": "section:qvd:quant_crash:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "section:qvd:quant_crash:di",
+      "status": "pass"
+    },
+    {
+      "id": "section:qvd:verbal_crash:quant",
+      "status": "pass"
+    },
+    {
+      "id": "section:qvd:verbal_crash:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "section:qvd:verbal_crash:di",
+      "status": "pass"
+    },
+    {
+      "id": "section:qvd:di_crash:quant",
+      "status": "pass"
+    },
+    {
+      "id": "section:qvd:di_crash:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "section:qvd:di_crash:di",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-rejected:qvd",
+      "status": "pass"
+    },
+    {
+      "id": "access-list:full",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:full:quant_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:full:verbal_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:full:di_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:full:full_batch",
+      "status": "pass"
+    },
+    {
+      "id": "section:full:full_batch:quant",
+      "status": "pass"
+    },
+    {
+      "id": "section:full:full_batch:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "section:full:full_batch:di",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-rejected:full",
+      "status": "pass"
+    },
+    {
+      "id": "access-list:expired",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:expired:quant_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:expired:verbal_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:expired:di_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:expired:full_batch",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-rejected:expired",
+      "status": "pass"
+    },
+    {
+      "id": "access-list:revoked",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:revoked:quant_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:revoked:verbal_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:revoked:di_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:revoked:full_batch",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-rejected:revoked",
+      "status": "pass"
+    },
+    {
+      "id": "access-list:inactive",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:inactive:quant_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:inactive:verbal_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:inactive:di_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:inactive:full_batch",
+      "status": "pass"
+    },
+    {
+      "id": "inactive-page-redirect",
+      "status": "pass"
+    },
+    {
+      "id": "access-list:multiple",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:multiple:quant_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:multiple:verbal_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:multiple:di_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:multiple:full_batch",
+      "status": "pass"
+    },
+    {
+      "id": "section:multiple:quant_crash:quant",
+      "status": "pass"
+    },
+    {
+      "id": "section:multiple:quant_crash:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "section:multiple:quant_crash:di",
+      "status": "pass"
+    },
+    {
+      "id": "section:multiple:verbal_crash:quant",
+      "status": "pass"
+    },
+    {
+      "id": "section:multiple:verbal_crash:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "section:multiple:verbal_crash:di",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-rejected:multiple",
+      "status": "pass"
+    },
+    {
+      "id": "access-list:mixed",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:mixed:quant_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:mixed:verbal_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:mixed:di_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:mixed:full_batch",
+      "status": "pass"
+    },
+    {
+      "id": "section:mixed:verbal_crash:quant",
+      "status": "pass"
+    },
+    {
+      "id": "section:mixed:verbal_crash:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "section:mixed:verbal_crash:di",
+      "status": "pass"
+    },
+    {
+      "id": "access-list:empty",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:empty:quant_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:empty:verbal_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:empty:di_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:empty:full_batch",
+      "status": "pass"
+    },
+    {
+      "id": "upgrade-rejected:empty",
+      "status": "pass"
+    },
+    {
+      "id": "access-list:admin",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:admin:quant_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:admin:verbal_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:admin:di_crash",
+      "status": "pass"
+    },
+    {
+      "id": "access-boundary:admin:full_batch",
+      "status": "pass"
+    },
+    {
+      "id": "foreign-fixture-confirmed",
+      "status": "pass"
+    },
+    {
+      "id": "cross-student:q:v2_purchases",
+      "status": "pass"
+    },
+    {
+      "id": "cross-student:q:v2_product_grants",
+      "status": "pass"
+    },
+    {
+      "id": "cross-student:inactive:v2_purchases",
+      "status": "pass"
+    },
+    {
+      "id": "cross-student:inactive:v2_product_grants",
+      "status": "pass"
+    },
+    {
+      "id": "grant-denied:anon",
+      "status": "pass"
+    },
+    {
+      "id": "insert-denied:anon:v2_purchases",
+      "status": "pass"
+    },
+    {
+      "id": "update-denied:anon:v2_purchases",
+      "status": "pass"
+    },
+    {
+      "id": "delete-denied:anon:v2_purchases",
+      "status": "pass"
+    },
+    {
+      "id": "insert-denied:anon:v2_product_grants",
+      "status": "pass"
+    },
+    {
+      "id": "update-denied:anon:v2_product_grants",
+      "status": "pass"
+    },
+    {
+      "id": "delete-denied:anon:v2_product_grants",
+      "status": "pass"
+    },
+    {
+      "id": "grant-denied:student",
+      "status": "pass"
+    },
+    {
+      "id": "insert-denied:student:v2_purchases",
+      "status": "pass"
+    },
+    {
+      "id": "update-denied:student:v2_purchases",
+      "status": "pass"
+    },
+    {
+      "id": "delete-denied:student:v2_purchases",
+      "status": "pass"
+    },
+    {
+      "id": "insert-denied:student:v2_product_grants",
+      "status": "pass"
+    },
+    {
+      "id": "update-denied:student:v2_product_grants",
+      "status": "pass"
+    },
+    {
+      "id": "delete-denied:student:v2_product_grants",
+      "status": "pass"
+    },
+    {
+      "id": "grant-denied:admin",
+      "status": "pass"
+    },
+    {
+      "id": "insert-denied:admin:v2_purchases",
+      "status": "pass"
+    },
+    {
+      "id": "update-denied:admin:v2_purchases",
+      "status": "pass"
+    },
+    {
+      "id": "delete-denied:admin:v2_purchases",
+      "status": "pass"
+    },
+    {
+      "id": "insert-denied:admin:v2_product_grants",
+      "status": "pass"
+    },
+    {
+      "id": "update-denied:admin:v2_product_grants",
+      "status": "pass"
+    },
+    {
+      "id": "delete-denied:admin:v2_product_grants",
+      "status": "pass"
+    },
+    {
+      "id": "student-admin-route-denied",
+      "status": "fail"
+    }
+  ],
+  "status": "failed",
+  "limitations": [
+    "Legacy worksheet/editor/enrollment journeys are separate. Fixture cleanup is required before final sign-off."
+  ],
+  "failure": "Check failed: student-admin-route-denied",
+  "finishedAt": "2026-11-01T18:40:59.562Z"
+}

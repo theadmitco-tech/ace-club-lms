@@ -1,0 +1,13 @@
+{
+  "source": "User-pasted SQL Editor report",
+  "received_date": "2026-11-02",
+  "expected_project": "eyphkkginlgoaxflauog",
+  "project_identity_in_report": false,
+  "metadata_checks": "passed",
+  "does_not_establish": [
+    "Migration version/application count",
+    "Definition equivalence",
+    "Cross-student fixture isolation",
+    "Successful browser journeys"
+  ]
+}

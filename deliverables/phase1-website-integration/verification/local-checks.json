@@ -1,0 +1,17 @@
+{
+  "base": "5398aad5b49b574ef628414127dabbe7fe139614",
+  "head": "07154f02c466cd17a940257f4c2b0f56096c453f",
+  "phase1_tests": 151,
+  "phase1_suites": 16,
+  "navigation_tests": 14,
+  "phase1_browser_scenarios": 12,
+  "phase2_browser_regressions": 39,
+  "lint": "passed, zero warnings",
+  "typescript": "passed",
+  "webpack_build": "passed",
+  "phase1_migration_sha256": "ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7",
+  "migration_files_changed": false,
+  "sql_executed_on_shared_databases": false,
+  "environment_changes": false,
+  "note": "Browser results use local synthetic session/database adapters. Hosted authentication acceptance is separate."
+}

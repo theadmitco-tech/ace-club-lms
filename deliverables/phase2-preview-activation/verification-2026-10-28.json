@@ -1,0 +1,109 @@
+{
+  "observed_at": "2026-10-28T16:19:45.367Z",
+  "repository": "theadmitco-tech/ace-club-lms",
+  "pr": {
+    "number": 24,
+    "url": "https://github.com/theadmitco-tech/ace-club-lms/pull/24",
+    "head": "18f4bfedb1e4f927e49d8d535e0db2e7e93916ed",
+    "branch": "intern/v2-phase-2-review",
+    "draft": true,
+    "merged": false
+  },
+  "vercel": {
+    "project_id": "prj_2lW0zANcAnI81eURRZrJTMSCxuLr",
+    "project_name": "ace-club-lms",
+    "team_id": "team_QLYbRLmq67A0KhcbXftPVtx8",
+    "team_access": "Authorized through connected plugin following initial 403",
+    "preview": {
+      "id": "dpl_7EXSFr9Vqr4ZFUEkHB96jzq64hRZ",
+      "url": "https://ace-club-nlf5f3d1r-theadmitco-techs-projects.vercel.app",
+      "alias": "ace-club-lms-git-intern-v2-pha-9a969c-theadmitco-techs-projects.vercel.app",
+      "state": "READY",
+      "head": "18f4bfedb1e4f927e49d8d535e0db2e7e93916ed",
+      "supabase_host": "eyphkkginlgoaxflauog.supabase.co",
+      "verification": "HTTP 200 deployed browser asset scanned via Vercel plugin; branch alias resolves to this immutable deployment",
+      "asset_path": "/_next/static/chunks/0bepfud8r.zfw.js",
+      "all_login_script_assets_scanned": 12
+    },
+    "environment_metadata": [
+      {
+        "id": "Fv5Q8PthwaEq85GJ",
+        "key": "NEXT_PUBLIC_SUPABASE_URL",
+        "target": [
+          "preview"
+        ],
+        "gitBranch": null,
+        "type": "sensitive",
+        "updatedAt": 1792313436772
+      },
+      {
+        "id": "pO9BG6q10YFbHDK9",
+        "key": "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "target": [
+          "preview"
+        ],
+        "gitBranch": null,
+        "type": "sensitive",
+        "updatedAt": 1792313439606
+      },
+      {
+        "id": "eyS64KcVDUOOOlxD",
+        "key": "SUPABASE_SERVICE_ROLE_KEY",
+        "target": [
+          "preview"
+        ],
+        "gitBranch": null,
+        "type": "sensitive",
+        "updatedAt": 1792314765294
+      }
+    ],
+    "phase2_flags": "All three manifest flags absent; unchanged pending schema and recovery gates",
+    "sensitive_values": "Omitted by plugin, including URL; server service-key association and current encrypted values not independently verified",
+    "environment_mutations": 0,
+    "deployment_mutations": 0,
+    "read_access_note": "Protected fetch tool may create/reuse a temporary Preview share link; no share tokens retained in evidence"
+  },
+  "phase1": {
+    "migration": "20261018090000",
+    "sha256": "ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7",
+    "previous_application": "Recorded in staging evidence 2026-10-24; not re-applied or re-verified against hosted database in this continuation"
+  },
+  "navigation_patch": {
+    "base": "18f4bfedb1e4f927e49d8d535e0db2e7e93916ed",
+    "sha256": "de0a09b8d47bb83d0811f792e75eb20d30d27783fa8c66aa9288cccfa85cf685",
+    "patch_applies_cleanly": true,
+    "local_checks": {
+      "navigation_access_tests": 12,
+      "targeted_lint": "passed",
+      "typescript": "passed",
+      "webpack_build": "passed"
+    },
+    "published": false,
+    "publication_blocker": "GitHub create_tree returned HTTP 403 Resource not accessible by integration; branch untouched"
+  },
+  "supabase": {
+    "project": "eyphkkginlgoaxflauog",
+    "oauth": "Blocked per user",
+    "hosted_sql_executed": false,
+    "backup_restore_rehearsal": "Fresh Phase 2 staging recovery evidence pending",
+    "sql_packet": "STAGING-SQL-EDITOR.md"
+  },
+  "production_changed": false,
+  "pr_marked_ready": false,
+  "merged": false,
+  "hosted_acceptance": "pending",
+  "final_checks": {
+    "checked_at": "2026-10-28T16:21:22.031Z",
+    "pr": {
+      "draft": true,
+      "head": "18f4bfedb1e4f927e49d8d535e0db2e7e93916ed",
+      "merged": false,
+      "state": "open"
+    },
+    "environment_metadata_unchanged": true,
+    "sql_packet_local_checks": 9,
+    "pinned_migration_checksums": "all six match",
+    "phase1_source_unchanged": true,
+    "runbook_links": "verified"
+  }
+}

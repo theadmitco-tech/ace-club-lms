@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-01",
+  "local_unit_and_database_tests": {
+    "passed": 9,
+    "failed": 0,
+    "scope": "Synthetic callers and disposable PostgreSQL only"
+  },
+  "local_browser_scenarios": {
+    "passed": 5,
+    "failed": 0,
+    "runtime_errors": 0,
+    "scope": "Actual QA UI/route with synthetic local Supabase adapter"
+  },
+  "targeted_lint": "passed",
+  "source_sha256": {
+    "src/lib/server/v2Phase1Verification.ts": "5693dbdd89a026a1b551529f322f0085e8c6bc1c2f02562d2a1bc3095190ebb3",
+    "src/app/api/v2/phase1-verification/route.ts": "bc0e74cbaea7a17bc5d7186131d0d213fae4455d340981b66d5d04179f260369",
+    "src/app/qa/phase1/page.tsx": "267a00af8bd77d5c601dfe7e357c642cac8c04c7e8b75712e67f9a773150fd53",
+    "src/app/qa/phase1/VerificationRunner.tsx": "7490825f17bbb7f80d5570e1652e69a59750418734008cd2dda938a5d30c4069",
+    "scripts/phase1closing-verification.test.mjs": "3f124a3d5dbf127eafe82ca1bd35f253c983db625753806b992567fef17f8ccf",
+    "scripts/phase1closing-browser.mjs": "d82dff191a65832844690465a1b18d5f57ccb0ad28b0609f5a52658ebaa9dc5d"
+  },
+  "hosted_authenticated_checks": "not executed; no authenticated LMS session available to agent",
+  "document_control": "No connected sessions",
+  "hosted_public_batches": {
+    "deployment": "dpl_Eh3mkarH2b5WkHfzybBNCF2fdpQA",
+    "commit": "07154f02c466cd17a940257f4c2b0f56096c453f",
+    "status": 200,
+    "batches_count": 0,
+    "observed_utc": "2026-11-01T17:30:07Z"
+  },
+  "enrollment_log_investigation": {
+    "recent_window": "2026-11-01T16:42:25.644Z/2026-11-01T17:32:25.644Z",
+    "recent_result": "no matching bulk-enroll logs",
+    "24_hour_result": "query timed out; no evidence retrieved",
+    "root_cause": "unknown"
+  },
+  "database_writes_on_shared_services": false,
+  "environment_changes": false,
+  "production_changed": false,
+  "phase1_complete": false
+}

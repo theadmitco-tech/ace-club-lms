@@ -1,0 +1,411 @@
+diff --git a/scripts/admin-draft-navigation.test.mjs b/scripts/admin-draft-navigation.test.mjs
+index e9d79b2..1de205e 100644
+--- a/scripts/admin-draft-navigation.test.mjs
++++ b/scripts/admin-draft-navigation.test.mjs
+@@ -227,13 +227,13 @@ test('links cancel same-tab navigation without attaching a click blocker to new-
+   assert.equal(app.state.confirmations, 2);
+ });
+ 
+-function shell(app) {
++function shell(app, showCoursePublishing = false) {
+   const { default: Shell } = app.component('src/app/admin/AdminShell.tsx', {
+     '@/components/BrandLogo': { BrandLogo: 'brand-logo' }, './admin.css': {},
+     '@/lib/AuthContext': { useAuth: () => ({ user: app.state.user, isLoading: false,
+       logout: () => { app.state.logouts++; } }) },
+   });
+-  const content = Shell({ children: null }).props.children;
++  const content = Shell({ children: null, showCoursePublishing }).props.children;
+   return app.render('shell', () => content.type(content.props));
+ }
+ 
+@@ -358,3 +358,77 @@ test('private meeting edits warn on shared navigation and clear on unmount', ()
+   assert.equal(app.guard.confirmLeave(), true);
+   assert.equal(app.listeners.size, 0);
+ });
++
++
++test('Preview course publishing navigation preserves unsaved drafts and is absent when not enabled', () => {
++  const app = harness();
++  const label = node => node.type === 'span' && node.props.children === 'Course publishing';
++  assert.equal(elements(shell(app), label).length, 0);
++  const tree = shell(app, true);
++  const button = element(tree, node => node.type === 'button' && elements(node, label).length === 1);
++  assert.match(button.props.className, /active/);
++  app.render('preview-editor', () => app.navigation.useAdminDraftGuard(true));
++  button.props.onClick();
++  assert.deepEqual(app.state.pushes, []);
++  app.state.accept = true;
++  button.props.onClick();
++  assert.deepEqual(app.state.pushes, ['/admin/v2']);
++});
++
++test('course publishing entry enforces Admin authorization, Production exclusion and disabled feature links', async () => {
++  const jsx = (type, props) => ({ type, props });
++  let calls = 0, authorized = true, enabled = false;
++  const env = { VERCEL_ENV: 'preview' };
++  const page = load('src/app/admin/v2/page.tsx', {
++    'react/jsx-runtime': { jsx, jsxs: jsx },
++    'next/navigation': { notFound: () => { throw Error('Not found'); } },
++    '@/components/AdminDraftNavigation': { AdminDraftLink: 'link' },
++    '@/lib/server/portalAuthorization': { requirePortalRole: async role => { calls++; assert.equal(role, 'admin'); if (!authorized) throw Error('Unauthorized'); } },
++    '@/lib/server/v2TemplateFeature': { isV2TemplateAuthoringEnabled: () => enabled },
++    '@/lib/server/v2BatchFeature': { isV2BatchAuthoringEnabled: () => enabled },
++  }, { process: { env } }).default;
++  let tree = await page();
++  assert.equal(calls, 1);
++  assert.equal(elements(tree, n => n.props?.href?.startsWith('/admin/v2/')).length, 2);
++  assert.equal(elements(tree, n => n.props?.role === 'status').length, 1);
++  enabled = true; tree = await page();
++  assert.deepEqual(elements(tree, n => n.type === 'link').map(n => n.props.href), ['/admin/v2/templates', '/admin/v2/batches', '/admin/courses']);
++  authorized = false; await assert.rejects(page, /Unauthorized/);
++  env.VERCEL_ENV = 'production'; authorized = true;
++  await assert.rejects(page, /Not found/);
++});
++
++
++test('Preview setup template editor exposes the real form but never submits a save', async () => {
++  const app = harness(); let saves = 0;
++  const { default: Editor } = app.component('src/app/admin/v2/templates/TemplateEditor.tsx', {
++    '@/lib/v2Templates': templates, './templates.module.css': { default: {} },
++    './actions': { saveTemplateDraftAction: async () => { saves++; throw Error('Must not save'); } },
++  });
++  const render = () => app.render('setup-template', () => Editor({ templates: [], ownerId: 'admin', setupPending: true }));
++  let tree = render();
++  element(tree, n => n.type === 'button' && n.props.children === 'Quant').props.onClick();
++  tree = render();
++  assert.equal(element(tree, n => n.type === 'button' && n.props.children === 'Saving awaits staging setup').props.disabled, true);
++  await element(tree, n => n.type === 'form').props.onSubmit(event());
++  assert.equal(saves, 0);
++});
++
++test('Preview course editor keeps Admin authorization and Production denial with flags disabled', async () => {
++  const jsx = (type, props) => ({ type, props });
++  let authorized = true; const env = { VERCEL_ENV: 'preview' };
++  const page = load('src/app/admin/v2/templates/page.tsx', {
++    'react/jsx-runtime': { jsx, jsxs: jsx },
++    'next/navigation': { notFound: () => { throw Error('Not found'); } },
++    '@/components/AdminDraftNavigation': { AdminDraftLink: 'link' },
++    '@/lib/server/portalAuthorization': { requirePortalRole: async role => { assert.equal(role,'admin'); if(!authorized) throw Error('Unauthorized'); return {id:'admin'}; } },
++    '@/lib/server/v2TemplateFeature': { isV2TemplateAuthoringEnabled: () => false },
++    '@/lib/server/v2BatchFeature': { isV2BatchAuthoringEnabled: () => false },
++    '@/lib/server/v2Templates': { listV2TemplateDrafts: async () => ({status:'disabled',templates:[]}) },
++    './TemplateEditor': { default:'template-editor' },
++  }, {process:{env}}).default;
++  const tree = await page();
++  assert.equal(element(tree,n=>n.type==='template-editor').props.setupPending,true);
++  authorized=false; await assert.rejects(page,/Unauthorized/);
++  env.VERCEL_ENV='production'; authorized=true; await assert.rejects(page,/Not found/);
++});
+diff --git a/scripts/v2-batch-authoring.test.mjs b/scripts/v2-batch-authoring.test.mjs
+index 52caa83..40fa107 100644
+--- a/scripts/v2-batch-authoring.test.mjs
++++ b/scripts/v2-batch-authoring.test.mjs
+@@ -248,7 +248,7 @@ test('the batch page authorizes before loading either templates or batches and h
+     '@/lib/server/v2Publications': { listV2BatchPublications: async () => { calls.push('publications'); return { status: 'ready',publications: [] }; } },
+     '@/lib/server/v2Templates': { listV2TemplateDrafts: async () => { calls.push('templates'); return { status: 'ready',templates: [] }; } },
+     '@/lib/server/v2Batches': { listV2BatchDrafts: async () => { calls.push('batches'); return { status: 'ready',drafts: [] }; } },
+-  });
++  }, { process: { env: { VERCEL_ENV: 'development' } } });
+   await assert.rejects(page.default(),/Not found/);
+   assert.equal(calls.length,0);
+   enabled=true; deny=true;
+diff --git a/scripts/v2-template-authoring.test.mjs b/scripts/v2-template-authoring.test.mjs
+index ed16528..50edee8 100644
+--- a/scripts/v2-template-authoring.test.mjs
++++ b/scripts/v2-template-authoring.test.mjs
+@@ -235,7 +235,7 @@ test('the new page hides when disabled and requires Admin authorization before l
+     '@/lib/server/v2BatchFeature': { isV2BatchAuthoringEnabled: () => false },
+     '@/lib/server/portalAuthorization': { requirePortalRole: async (role) => { calls.push(role); return { id: 'synthetic-admin', role }; } },
+     '@/lib/server/v2Templates': { listV2TemplateDrafts: async () => { calls.push('load'); return { status: 'ready', templates: [] }; } },
+-  });
++  }, { process: { env: { VERCEL_ENV: 'development' } } });
+   await assert.rejects(page.default(), /Not found/);
+   assert.equal(calls.length, 0);
+   enabled = true;
+diff --git a/src/app/admin/AdminShell.tsx b/src/app/admin/AdminShell.tsx
+index a079e9d..447ff57 100644
+--- a/src/app/admin/AdminShell.tsx
++++ b/src/app/admin/AdminShell.tsx
+@@ -7,11 +7,13 @@ import { AdminDraftNavigationProvider, useAdminDraftNavigation } from '@/compone
+ import { useAuth } from '@/lib/AuthContext';
+ import './admin.css';
+ 
+-export default function AdminShell({ children }: { children: React.ReactNode }) {
+-  return <AdminDraftNavigationProvider><AdminShellContent>{children}</AdminShellContent></AdminDraftNavigationProvider>;
++type AdminShellProps = { children: React.ReactNode; showCoursePublishing?: boolean };
++
++export default function AdminShell({ children, showCoursePublishing = false }: AdminShellProps) {
++  return <AdminDraftNavigationProvider><AdminShellContent showCoursePublishing={showCoursePublishing}>{children}</AdminShellContent></AdminDraftNavigationProvider>;
+ }
+ 
+-function AdminShellContent({ children }: { children: React.ReactNode }) {
++function AdminShellContent({ children, showCoursePublishing = false }: AdminShellProps) {
+   const { confirmLeave } = useAdminDraftNavigation();
+   const { user, isLoading, logout } = useAuth();
+   const router = useRouter();
+@@ -48,6 +50,7 @@ function AdminShellContent({ children }: { children: React.ReactNode }) {
+ 
+   const navItems = [
+     { href: '/admin', label: 'Dashboard', icon: '📊' },
++    ...(showCoursePublishing ? [{ href: '/admin/v2', label: 'Course publishing', icon: '📖' }] : []),
+     { href: '/admin/templates', label: 'Course templates', icon: '🧩' },
+     { href: '/admin/curriculum', label: 'Full Course Master Base', icon: '🏛️' },
+     { href: '/admin/resources', label: 'Resources', icon: '📚' },
+@@ -77,7 +80,7 @@ function AdminShellContent({ children }: { children: React.ReactNode }) {
+           {navItems.map((item) => (
+             <button
+               key={item.href}
+-              className={`sidebar-nav-item ${pathname === item.href ? 'active' : ''}`}
++              className={`sidebar-nav-item ${(pathname === item.href || (item.href === '/admin/v2' && pathname.startsWith('/admin/v2/'))) ? 'active' : ''}`}
+               onClick={() => {
+                 if (!confirmLeave()) return;
+                 router.push(item.href);
+diff --git a/src/app/admin/layout.tsx b/src/app/admin/layout.tsx
+index 64cb908..f79ca22 100644
+--- a/src/app/admin/layout.tsx
++++ b/src/app/admin/layout.tsx
+@@ -3,5 +3,5 @@ import { requirePortalRole } from '@/lib/server/portalAuthorization';
+ 
+ export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+   await requirePortalRole('admin');
+-  return <AdminShell>{children}</AdminShell>;
++  return <AdminShell showCoursePublishing={process.env.VERCEL_ENV !== 'production'}>{children}</AdminShell>;
+ }
+diff --git a/src/app/admin/v2/batches/BatchDraftEditor.tsx b/src/app/admin/v2/batches/BatchDraftEditor.tsx
+index b02443e..3f7c5c5 100644
+--- a/src/app/admin/v2/batches/BatchDraftEditor.tsx
++++ b/src/app/admin/v2/batches/BatchDraftEditor.tsx
+@@ -17,7 +17,7 @@ function formatInstant(value: string | null) {
+   return new Intl.DateTimeFormat('en-GB', { timeZone: V2_BATCH_TIME_ZONE, dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
+ }
+ 
+-export default function BatchDraftEditor({ drafts, templates, ownerId }: { drafts: V2BatchDraft[]; templates: V2TemplateDraft[]; ownerId: string }) {
++export default function BatchDraftEditor({ drafts, templates, ownerId, setupPending = false }: { drafts: V2BatchDraft[]; templates: V2TemplateDraft[]; ownerId: string; setupPending?: boolean }) {
+   const router = useRouter();
+   const [input, setInput] = useState<V2BatchInput | null>(null);
+   const [original, setOriginal] = useState<V2BatchDraft | null>(null);
+@@ -43,7 +43,7 @@ export default function BatchDraftEditor({ drafts, templates, ownerId }: { draft
+ 
+   function begin(batch: V2BatchDraft | null) {
+     if (busy.current || ((dirty || recovery.recovered) && !window.confirm('Discard unsaved batch edits?'))) return;
+-    if (!batch && !liveTemplates.length) return;
++    if (!batch && !liveTemplates.length && !setupPending) return;
+     recovery.forget();
+     setOriginal(batch);
+     setInput(batch ? {
+@@ -51,7 +51,7 @@ export default function BatchDraftEditor({ drafts, templates, ownerId }: { draft
+       expectedRevision: batch.revision, requestId: crypto.randomUUID(), title: batch.title,
+       startDate: batch.startDate, timeZone: batch.timeZone, events: editableV2BatchEvents(batch.events), ...(batch.sessions ? {sessions: structuredClone(batch.sessions)} : {}),
+     } : {
+-      id: crypto.randomUUID(), templateId: liveTemplates[0].id, templateRevision: liveTemplates[0].revision,
++      id: crypto.randomUUID(), templateId: liveTemplates[0]?.id ?? '', templateRevision: liveTemplates[0]?.revision ?? 0,
+       expectedRevision: 0, requestId: crypto.randomUUID(), title: '', startDate: '', timeZone: V2_BATCH_TIME_ZONE, events: null,
+     });
+     setDirty(false);
+@@ -77,6 +77,7 @@ export default function BatchDraftEditor({ drafts, templates, ownerId }: { draft
+ 
+   async function preview(event: FormEvent<HTMLFormElement>) {
+     event.preventDefault();
++    if (setupPending) { setError('Schedule review is unavailable until staging setup is complete.'); return; }
+     if (!input || busy.current) return;
+     const invalid = validateV2BatchInput(input);
+     if (invalid) { setError(invalid); return; }
+@@ -101,6 +102,7 @@ export default function BatchDraftEditor({ drafts, templates, ownerId }: { draft
+   }
+ 
+   async function save() {
++    if (setupPending) { setError('Saving is unavailable until staging setup is complete.'); return; }
+     if (!review || busy.current) return;
+     busy.current = true;
+     setPending('save');
+@@ -129,6 +131,7 @@ export default function BatchDraftEditor({ drafts, templates, ownerId }: { draft
+ 
+   const productCode = original?.productCode ?? templates.find((template) => template.id === input?.templateId)?.productCode;
+   return <div className={styles.workspace}>
++    <>{setupPending && <section className={styles.card} role="status"><h2>Explore batch settings</h2><p>Review the batch workspace while staging setup is completed. Saved templates, schedule review, saving and publication are not available yet.</p></section>}</>
+     <DraftRecoveryNotice available={!!recovery.recovered} unavailable={recovery.unavailable} onRestore={restore} onDiscard={recovery.forget} />
+     <section className={styles.card} aria-labelledby="batch-list-heading">
+       <h2 id="batch-list-heading">Saved batch drafts</h2>
+@@ -139,8 +142,8 @@ export default function BatchDraftEditor({ drafts, templates, ownerId }: { draft
+         <Link href={`/admin/v2/batches/${batch.id}/meeting`} prefetch={false} onNavigate={(event) => {
+           if (busy.current) event.preventDefault();
+         }}>Private meeting drafts for {batch.title}</Link>
+-      </li>)}</ul> : <p>No batch drafts have been saved.</p>}
+-      <button type="button" className="btn btn-primary" disabled={!!pending || !liveTemplates.length} onClick={() => begin(null)}>New batch draft</button>
++      </li>)}</ul> : <p>{setupPending ? 'Saved batch drafts are not available in this Preview yet.' : 'No batch drafts have been saved.'}</p>}
++      <button type="button" className="btn btn-primary" disabled={!!pending || (!liveTemplates.length && !setupPending)} onClick={() => begin(null)}>{setupPending ? 'Explore batch settings' : 'New batch draft'}</button>
+       {!liveTemplates.length && <p>Save a course template before creating a batch. Templates may contain undated outlines or no live sessions.</p>}
+       <p>Each batch keeps its own schedule. Later template edits do not move existing batch events.</p>
+     </section>
+@@ -154,10 +157,11 @@ export default function BatchDraftEditor({ drafts, templates, ownerId }: { draft
+         {original && productCode && <CourseSessionsEditor sessions={input.sessions ?? []} sections={V2_TEMPLATE_PRODUCTS[productCode].sections}
+           onChange={(sessions) => change({...input,sessions})} />}
+         {!original && <label htmlFor="v2-batch-template">Template
+-          <select id="v2-batch-template" className="form-input" value={input.templateId} onChange={(event) => {
++          <select id="v2-batch-template" className="form-input" disabled={!liveTemplates.length} value={input.templateId} onChange={(event) => {
+             const selected = liveTemplates.find((template) => template.id === event.target.value);
+             if (selected) change({ ...input, templateId: selected.id, templateRevision: selected.revision });
+           }}>
++            {!liveTemplates.length && <option value="">A saved course template is required</option>}
+             {liveTemplates.map((template) => <option key={template.id} value={template.id}>
+               {template.document.title} · {V2_TEMPLATE_PRODUCTS[template.productCode].label} · revision {template.revision}
+             </option>)}
+@@ -190,7 +194,7 @@ export default function BatchDraftEditor({ drafts, templates, ownerId }: { draft
+             </label>
+           </div>
+         </fieldset>)}
+-        <button type="submit" className="btn btn-secondary" disabled={!!pending || (!!original && !dirty)}>{pending === 'preview' ? 'Reviewing…' : 'Review course and schedule'}</button>
++        <button type="submit" className="btn btn-secondary" disabled={setupPending || !!pending || (!!original && !dirty)}>{pending === 'preview' ? 'Reviewing…' : 'Review course and schedule'}</button>
+       </fieldset>
+       {review && <section className={styles.fields} aria-labelledby="batch-review-heading">
+         <h3 id="batch-review-heading">Review: {review.proposal.draft.title}</h3>
+@@ -205,7 +209,7 @@ export default function BatchDraftEditor({ drafts, templates, ownerId }: { draft
+             <p>Proposed: {formatInstant(event.startsAt)} – {formatInstant(event.endsAt)} · {event.instructor || 'Instructor pending'}</p>
+           </li>;
+         })}</ol>
+-        <button type="button" className="btn btn-primary" disabled={!!pending} onClick={save}>{pending === 'save' ? 'Saving…' : 'Confirm and save draft'}</button>
++        <button type="button" className="btn btn-primary" disabled={setupPending || !!pending} onClick={save}>{pending === 'save' ? 'Saving…' : 'Confirm and save draft'}</button>
+       </section>}
+       <p role="alert" className={styles.error}>{error}</p>
+       <p role="status" aria-live="polite">{message || (dirty ? 'Unsaved course or schedule changes' : '')}</p>
+diff --git a/src/app/admin/v2/batches/page.tsx b/src/app/admin/v2/batches/page.tsx
+index d1b0825..a9495bf 100644
+--- a/src/app/admin/v2/batches/page.tsx
++++ b/src/app/admin/v2/batches/page.tsx
+@@ -11,21 +11,22 @@ import { isV2StudentScheduleEnabled } from '@/lib/server/v2StudentScheduleFeatur
+ import styles from '../templates/templates.module.css';
+ 
+ export default async function V2BatchesPage() {
+-  if (!isV2BatchAuthoringEnabled()) notFound();
++  const previewWorkspace = process.env.VERCEL_ENV === 'preview';
++  if (!isV2BatchAuthoringEnabled() && !previewWorkspace) notFound();
+   const identity = await requirePortalRole('admin');
+   const [batches, templates, publications] = await Promise.all([listV2BatchDrafts(), listV2TemplateDrafts(), listV2BatchPublications()]);
+   return <div>
+     <h1 className="admin-page-title">V2 batch drafts</h1>
+     <p className="admin-page-subtitle">Review course content and its optional independent live schedule before saving. Draft batches remain private to Admins.</p>
+     <Link href="/admin/v2/templates" prefetch={false}>Manage course templates</Link>
+-    {batches.status === 'ready' && templates.status === 'ready'
++    {(batches.status === 'ready' && templates.status === 'ready') || previewWorkspace
+       ? <>
+-        <BatchDraftEditor key={identity.id} ownerId={identity.id} drafts={batches.drafts} templates={templates.templates} />
++        <BatchDraftEditor key={identity.id} ownerId={identity.id} drafts={batches.drafts} templates={templates.templates} setupPending={batches.status !== 'ready' || templates.status !== 'ready'} />
+         {isV2StudentScheduleEnabled() && <section className={styles.card}><h2>Batch students</h2>
+           <ul className={styles.list}>{batches.drafts.map((batch) => <li key={batch.id}><Link href={`/admin/v2/batches/${batch.id}/students`} prefetch={false}>{batch.title} — Manage students</Link></li>)}</ul>
+         </section>}
+         {publications.status === 'ready' ? <PublicationPanel key={identity.id} ownerId={identity.id} drafts={batches.drafts} publications={publications.publications} />
+-          : <div className="admin-card" role="alert">Publication history could not be loaded. Check the reviewed staging setup and reload before publishing.</div>}
++          : <div className="admin-card" role="alert">Publishing and publication history will become available after staging setup is complete.</div>}
+       </>
+       : <div className="admin-card" role="alert">
+         <p>Batch drafts could not be loaded. Check staging setup and Admin access before retrying.</p>
+diff --git a/src/app/admin/v2/page.tsx b/src/app/admin/v2/page.tsx
+new file mode 100644
+index 0000000..8a67fdf
+--- /dev/null
++++ b/src/app/admin/v2/page.tsx
+@@ -0,0 +1,37 @@
++import { notFound } from 'next/navigation';
++import { AdminDraftLink as Link } from '@/components/AdminDraftNavigation';
++import { requirePortalRole } from '@/lib/server/portalAuthorization';
++import { isV2TemplateAuthoringEnabled } from '@/lib/server/v2TemplateFeature';
++import { isV2BatchAuthoringEnabled } from '@/lib/server/v2BatchFeature';
++
++export default async function CoursePublishingPage() {
++  if (process.env.VERCEL_ENV === 'production') notFound();
++  await requirePortalRole('admin');
++  const templatesEnabled = isV2TemplateAuthoringEnabled();
++  const batchesEnabled = isV2BatchAuthoringEnabled();
++  const previewWorkspace = process.env.VERCEL_ENV === 'preview';
++  return <div>
++    <h1 className="admin-page-title">Course publishing</h1>
++    <p className="admin-page-subtitle">Create Full Course or individual Quant, Verbal and DI offerings, then prepare each batch for publication.</p>
++    {(!templatesEnabled || !batchesEnabled) && <section className="admin-card" role="status">
++      <h2>Preview setup is pending</h2>
++      <p>Explore the course editors below. Saving drafts and publishing will become available after staging setup is complete.</p>
++      <p>Existing courses and materials have not been imported into this workspace.</p>
++    </section>}
++    <section className="admin-card">
++      <h2>1. Prepare course content</h2>
++      <p>Arrange sessions with materials, recordings and pre-session and post-session readings. Content without a live class does not need a date.</p>
++      {(templatesEnabled || previewWorkspace) ? <Link href="/admin/v2/templates" prefetch={false}>Open course templates</Link> : <p>Course templates are awaiting Preview setup.</p>}
++    </section>
++    <section className="admin-card">
++      <h2>2. Prepare and publish a batch</h2>
++      <p>Create an independent batch, schedule its live classes, keep meeting details private, and preview before publishing. Published batches can be edited, unpublished and republished.</p>
++      {(batchesEnabled || previewWorkspace) ? <Link href="/admin/v2/batches" prefetch={false}>Open batches and publishing</Link> : <p>Batch publishing is awaiting Preview setup.</p>}
++    </section>
++    <section className="admin-card">
++      <h2>Existing courses</h2>
++      <p>Existing batches remain in their current workspace until their content transfer is reviewed and completed.</p>
++      <Link href="/admin/courses" prefetch={false}>Open existing batches</Link>
++    </section>
++  </div>;
++}
+diff --git a/src/app/admin/v2/templates/TemplateEditor.tsx b/src/app/admin/v2/templates/TemplateEditor.tsx
+index 4ff2140..5251220 100644
+--- a/src/app/admin/v2/templates/TemplateEditor.tsx
++++ b/src/app/admin/v2/templates/TemplateEditor.tsx
+@@ -12,7 +12,7 @@ import type { V2Section } from '@/lib/v2Products';
+ import { saveTemplateDraftAction } from './actions';
+ import styles from './templates.module.css';
+ 
+-export default function TemplateEditor({ templates, ownerId }: { templates: V2TemplateDraft[]; ownerId: string }) {
++export default function TemplateEditor({ templates, ownerId, setupPending = false }: { templates: V2TemplateDraft[]; ownerId: string; setupPending?: boolean }) {
+   const router = useRouter();
+   const [draft, setDraft] = useState<V2TemplateDraft | null>(null);
+   const [dirty, setDirty] = useState(false);
+@@ -88,6 +88,7 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
+ 
+   async function save(event: FormEvent<HTMLFormElement>) {
+     event.preventDefault();
++    if (setupPending) { setError('Saving is unavailable until staging setup is complete.'); return; }
+     if (!draft || inFlight.current) return;
+     const payload = JSON.stringify(draft);
+     if (!retry.current || retry.current.payload !== payload) retry.current = { payload, requestId: crypto.randomUUID() };
+@@ -119,10 +120,11 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
+ 
+   return (
+     <div className={styles.workspace}>
++      <>{setupPending && <section className={styles.card} role="status"><h2>Explore the course editor</h2><p>You can arrange course sessions, resources and optional live classes here. Saving is unavailable until staging setup is complete. These edits have not been saved to the LMS.</p></section>}</>
+       <DraftRecoveryNotice available={!!recovery.recovered} unavailable={recovery.unavailable} onRestore={restore} onDiscard={recovery.forget} />
+       <section className={styles.card} aria-labelledby="template-list-heading">
+         <h2 id="template-list-heading">Saved drafts</h2>
+-        {templates.length === 0 ? <p>No templates have been created.</p> : <ul className={styles.list}>
++        {templates.length === 0 ? <p>{setupPending ? 'Saved templates are not available in this Preview yet. Choose a course below to explore its editor.' : 'No templates have been created.'}</p> : <ul className={styles.list}>
+           {templates.map((item) => <li key={item.id}>
+             <button type="button" className="btn btn-secondary" disabled={pending} onClick={() => open(item)}>
+               {item.document.title} · {V2_TEMPLATE_PRODUCTS[item.productCode].label} · revision {item.revision}
+@@ -223,7 +225,7 @@ export default function TemplateEditor({ templates, ownerId }: { templates: V2Te
+         <p role="alert" className={styles.error}>{error}</p>
+         <p role="status" aria-live="polite">{pending ? 'Saving draft…' : message || (dirty ? 'Unsaved changes' : '')}</p>
+         <div className={styles.buttons}>
+-          <button type="submit" className="btn btn-primary" disabled={pending || (!dirty && draft.revision > 0)}>{pending ? 'Saving…' : 'Save draft'}</button>
++          <button type="submit" className="btn btn-primary" disabled={setupPending || pending || (!dirty && draft.revision > 0)}>{setupPending ? 'Saving awaits staging setup' : pending ? 'Saving…' : 'Save draft'}</button>
+           {templates.some((item) => item.id === draft.id) && <button type="button" className="btn btn-secondary" disabled={pending} onClick={async () => {
+             if ((dirty || recovery.recovered) && !window.confirm('Discard unsaved edits and reload the latest draft?')) return;
+             window.location.reload();
+diff --git a/src/app/admin/v2/templates/page.tsx b/src/app/admin/v2/templates/page.tsx
+index 7f20484..4da8714 100644
+--- a/src/app/admin/v2/templates/page.tsx
++++ b/src/app/admin/v2/templates/page.tsx
+@@ -7,15 +7,16 @@ import { isV2BatchAuthoringEnabled } from '@/lib/server/v2BatchFeature';
+ import TemplateEditor from './TemplateEditor';
+ 
+ export default async function V2TemplatesPage() {
+-  if (!isV2TemplateAuthoringEnabled()) notFound();
++  const previewWorkspace = process.env.VERCEL_ENV === 'preview';
++  if (!isV2TemplateAuthoringEnabled() && !previewWorkspace) notFound();
+   const identity = await requirePortalRole('admin');
+   const result = await listV2TemplateDrafts();
+   return (
+     <div>
+       <h1 className="admin-page-title">V2 course templates</h1>
+       <p className="admin-page-subtitle">Draft teaching plans for Full Course and individual courses. Templates remain private to Admins.</p>
+-      {isV2BatchAuthoringEnabled() && <Link href="/admin/v2/batches" prefetch={false}>Manage batch drafts</Link>}
+-      {result.status === 'ready' ? <TemplateEditor key={identity.id} ownerId={identity.id} templates={result.templates} /> : (
++      {(isV2BatchAuthoringEnabled() || previewWorkspace) && <Link href="/admin/v2/batches" prefetch={false}>Manage batch drafts</Link>}
++      {result.status === 'ready' || previewWorkspace ? <TemplateEditor key={identity.id} ownerId={identity.id} templates={result.templates} setupPending={result.status !== 'ready'} /> : (
+         <div className="admin-card" role="alert">
+           <p>Templates could not be loaded. Check staging setup and Admin access before retrying.</p>
+           <Link href="/admin/v2/templates" prefetch={false}>Retry loading templates</Link>

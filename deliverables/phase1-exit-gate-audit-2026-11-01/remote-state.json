@@ -1,0 +1,24 @@
+{
+  "checked_utc": "2026-11-01T16:17:26Z",
+  "production": [
+    {
+      "id": "dpl_8axtycbJUpFX8cPWhVtkhGf6p9Kj",
+      "url": "ace-club-ncy27sq8f-theadmitco-techs-projects.vercel.app",
+      "state": "READY",
+      "target": "production"
+    }
+  ],
+  "preview": {
+    "id": "dpl_Eh3mkarH2b5WkHfzybBNCF2fdpQA",
+    "url": "ace-club-79m530i0p-theadmitco-techs-projects.vercel.app",
+    "state": "READY",
+    "commit": "07154f02c466cd17a940257f4c2b0f56096c453f",
+    "branch": "intern/v2-phase-2-review"
+  },
+  "pr": {
+    "number": 24,
+    "head": "07154f02c466cd17a940257f4c2b0f56096c453f",
+    "draft": true,
+    "merged": false
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "base": "18f4bfedb1e4f927e49d8d535e0db2e7e93916ed",
+  "branch": "intern/v2-phase-2-review",
+  "staging_project": "eyphkkginlgoaxflauog",
+  "applied": true,
+  "application_scope": "LMS Preview Phase 1 catalogue, quotes and read-only access/history; existing guarded Phase 2 setup-state editors",
+  "migrations_applied": false,
+  "current_preview_head": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+  "preview_flags": {
+    "V2_TEMPLATE_AUTHORING_ENABLED": "true",
+    "V2_BATCH_AUTHORING_ENABLED": "true",
+    "V2_STUDENT_SCHEDULE_ENABLED": "true"
+  },
+  "migration_sha256": {
+    "20261019090000_add_v2_template_drafts.sql": "ac8ffd1121f548764b053a1913c726193c115bd1de38a5309e795c9d93940526",
+    "20261019100000_add_v2_batch_drafts.sql": "56dc2a297441ecfa9a685a3d470789045b46e2ba7b92fe4c80c4ce000fcd20a9",
+    "20261019110000_add_v2_private_meeting_drafts.sql": "ebbed93aad1b6fb7b5264848689c594b7856a8c3ad2346fa112a242bb01b0c9f",
+    "20261020090000_add_v2_outline_schedules.sql": "60ad573ecb52e3f52d3e9bbf4e74e04d8cdd52a8a82bde1694be37eb8b075c7b",
+    "20261020100000_add_v2_batch_publication.sql": "67dfa87d955b7cbf27dee0e45fe6b6ed469d0dd51c9d3df2c7466a67f2ee7b6e",
+    "20261025100000_add_v2_enrolled_schedules.sql": "73949fb28c3e9692406efd509a83974806a588fac5e81f898e9ddc6e30b73a0a"
+  },
+  "checks": {
+    "navigation_tests": 14,
+    "template_tests": 19,
+    "batch_tests": 17,
+    "targeted_lint": "passed",
+    "typescript": "passed",
+    "webpack_build": "passed"
+  },
+  "publication": "Phase 1 foundation complete on READY Preview dpl_EWB7tYjTYzhrndN7WS1waXKKCMaG; PR #24 Draft. Phase 2 SQL and write flags remain pending.",
+  "verification_record": "verification-2026-10-28.json",
+  "sql_editor_runbook": "STAGING-SQL-EDITOR.md",
+  "preview_flags_applied": false,
+  "hosted_acceptance": "pending",
+  "production_changed": false,
+  "pr_draft_verified": true,
+  "ui_refinement_evidence": "wireframe-ui-refinement-2026-10-28.json",
+  "phase1_website_evidence": "../phase1-website-integration/deployment-2026-11-01.json",
+  "phase1_closeout_evidence": "../phase1-closeout-2026-11-01/README.md",
+  "phase1_status": "complete",
+  "current_preview_deployment": "dpl_EWB7tYjTYzhrndN7WS1waXKKCMaG",
+  "phase1_hosted_acceptance": "passed; synthetic QA cleanup complete",
+  "phase2_activation": false
+}

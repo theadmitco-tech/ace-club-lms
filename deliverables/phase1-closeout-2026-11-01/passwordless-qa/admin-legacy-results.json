@@ -1,0 +1,82 @@
+{
+  "runId": "7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719",
+  "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+  "project": "eyphkkginlgoaxflauog",
+  "startedAt": "2026-11-01T18:56:42.888Z",
+  "checks": [
+    {
+      "id": "candidate-and-admin-session",
+      "status": "pass"
+    },
+    {
+      "id": "admin-editor-add-refresh",
+      "status": "pass"
+    },
+    {
+      "id": "admin-editor-edit-persists",
+      "status": "pass"
+    },
+    {
+      "id": "admin-editor-delete-refresh",
+      "status": "pass"
+    },
+    {
+      "id": "admin-editor-csv-import-persists",
+      "status": "pass"
+    },
+    {
+      "id": "admin-editor-failed-delete-retains-question",
+      "status": "pass"
+    },
+    {
+      "id": "admin-editor-retry-after-network-failure",
+      "status": "pass"
+    },
+    {
+      "id": "legacy-public-batch-list-responds",
+      "status": "pass"
+    }
+  ],
+  "status": "passed-scoped-legacy-checks",
+  "cleanup": "complete",
+  "responses": [
+    {
+      "table": "master_practice_sets",
+      "method": "POST",
+      "status": 201,
+      "code": null
+    },
+    {
+      "table": "master_practice_questions",
+      "method": "POST",
+      "status": 201,
+      "code": null
+    },
+    {
+      "table": "master_practice_questions",
+      "method": "PATCH",
+      "status": 204,
+      "code": null
+    },
+    {
+      "table": "master_practice_questions",
+      "method": "DELETE",
+      "status": 204,
+      "code": null
+    },
+    {
+      "table": "master_practice_questions",
+      "method": "POST",
+      "status": 201,
+      "code": null
+    },
+    {
+      "table": "master_practice_questions",
+      "method": "DELETE",
+      "status": 204,
+      "code": null
+    }
+  ],
+  "stage": "complete",
+  "finishedAt": "2026-11-01T18:57:11.611Z"
+}

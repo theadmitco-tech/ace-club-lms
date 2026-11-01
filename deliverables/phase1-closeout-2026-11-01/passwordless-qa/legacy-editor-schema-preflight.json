@@ -1,0 +1,52 @@
+{
+  "recordedAt": "2026-11-01T18:54:52.098Z",
+  "table": "master_practice_questions",
+  "scope": "Zero-row schema-cache probes only",
+  "checks": [
+    {
+      "column": "question_type",
+      "present": false,
+      "code": "42703"
+    },
+    {
+      "column": "di_question_type",
+      "present": false,
+      "code": "42703"
+    },
+    {
+      "column": "answer_mode",
+      "present": false,
+      "code": "42703"
+    },
+    {
+      "column": "stimulus_group_key",
+      "present": false,
+      "code": "42703"
+    },
+    {
+      "column": "stimulus_title",
+      "present": false,
+      "code": "42703"
+    },
+    {
+      "column": "stimulus_text",
+      "present": false,
+      "code": "42703"
+    },
+    {
+      "column": "stimulus_data",
+      "present": false,
+      "code": "42703"
+    },
+    {
+      "column": "content_format",
+      "present": false,
+      "code": "42703"
+    },
+    {
+      "column": "admin_notes",
+      "present": false,
+      "code": "42703"
+    }
+  ]
+}

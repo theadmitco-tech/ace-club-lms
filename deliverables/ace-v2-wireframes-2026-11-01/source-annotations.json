@@ -1,0 +1,352 @@
+{
+  "source": "User-supplied ace-v2-wireframes-2026-10-28.pdf (see source-manifest.json for SHA256)",
+  "pages": 24,
+  "annotations": 22,
+  "page_annotations": [
+    {
+      "page": 1,
+      "annotations": []
+    },
+    {
+      "page": 2,
+      "annotations": []
+    },
+    {
+      "page": 3,
+      "annotations": []
+    },
+    {
+      "page": 4,
+      "annotations": []
+    },
+    {
+      "page": 5,
+      "annotations": []
+    },
+    {
+      "page": 6,
+      "annotations": []
+    },
+    {
+      "page": 7,
+      "annotations": [
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            38.25,
+            729.42,
+            75,
+            745.17
+          ]
+        },
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            78.75,
+            729.42,
+            111,
+            745.17
+          ]
+        },
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            114.75,
+            729.42,
+            151.5,
+            745.17
+          ]
+        },
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            154.5,
+            729.42,
+            188.25,
+            745.17
+          ]
+        },
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            411.75,
+            428.67,
+            483,
+            436.17
+          ]
+        },
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            483,
+            428.67,
+            486,
+            436.17
+          ]
+        }
+      ]
+    },
+    {
+      "page": 8,
+      "annotations": [
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            42,
+            670.92,
+            104.25,
+            697.92
+          ]
+        },
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            109.5,
+            670.92,
+            165.75,
+            697.92
+          ]
+        },
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            171,
+            670.92,
+            233.25,
+            697.92
+          ]
+        },
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            238.5,
+            670.92,
+            295.5,
+            697.92
+          ]
+        }
+      ]
+    },
+    {
+      "page": 9,
+      "annotations": []
+    },
+    {
+      "page": 10,
+      "annotations": []
+    },
+    {
+      "page": 11,
+      "annotations": [
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            42,
+            670.92,
+            104.25,
+            697.92
+          ]
+        },
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            109.5,
+            670.92,
+            165.75,
+            697.92
+          ]
+        },
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            171,
+            670.92,
+            233.25,
+            697.92
+          ]
+        },
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            238.5,
+            670.92,
+            295.5,
+            697.92
+          ]
+        }
+      ]
+    },
+    {
+      "page": 12,
+      "annotations": []
+    },
+    {
+      "page": 13,
+      "annotations": [
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            43.5,
+            567.42,
+            114,
+            597.42
+          ]
+        },
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            120,
+            567.42,
+            183,
+            597.42
+          ]
+        },
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            189,
+            567.42,
+            259.5,
+            597.42
+          ]
+        },
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            265.5,
+            567.42,
+            329.25,
+            597.42
+          ]
+        }
+      ]
+    },
+    {
+      "page": 14,
+      "annotations": []
+    },
+    {
+      "page": 15,
+      "annotations": []
+    },
+    {
+      "page": 16,
+      "annotations": []
+    },
+    {
+      "page": 17,
+      "annotations": []
+    },
+    {
+      "page": 18,
+      "annotations": []
+    },
+    {
+      "page": 19,
+      "annotations": [
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            789,
+            354.42,
+            882,
+            363.42
+          ]
+        },
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            882,
+            354.42,
+            886.5,
+            363.42
+          ]
+        }
+      ]
+    },
+    {
+      "page": 20,
+      "annotations": [
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            240.75,
+            227.67,
+            327.75,
+            235.92
+          ]
+        },
+        {
+          "subtype": "Link",
+          "contents": "",
+          "title": "",
+          "rect": [
+            327.75,
+            227.67,
+            331.5,
+            235.92
+          ]
+        }
+      ]
+    },
+    {
+      "page": 21,
+      "annotations": []
+    },
+    {
+      "page": 22,
+      "annotations": []
+    },
+    {
+      "page": 23,
+      "annotations": []
+    },
+    {
+      "page": 24,
+      "annotations": []
+    }
+  ],
+  "note": "Visible green handwritten feedback was inspected on rendered pages. It may be flattened into the page and absent from structured annotation objects."
+}

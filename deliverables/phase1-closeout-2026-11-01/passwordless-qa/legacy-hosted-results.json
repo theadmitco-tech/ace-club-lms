@@ -1,0 +1,112 @@
+{
+  "runId": "7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719",
+  "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+  "project": "eyphkkginlgoaxflauog",
+  "startedAt": "2026-11-01T18:52:09.335Z",
+  "checks": [
+    {
+      "id": "candidate-and-admin-session",
+      "status": "pass"
+    },
+    {
+      "id": "existing-student-bulk-enrollment",
+      "status": "pass"
+    },
+    {
+      "id": "enrollment-persisted",
+      "status": "pass"
+    },
+    {
+      "id": "enrolled-dashboard",
+      "status": "pass"
+    },
+    {
+      "id": "draft-session-hidden-from-student-timeline",
+      "status": "pass"
+    },
+    {
+      "id": "unenrolled-material-hidden",
+      "status": "pass"
+    },
+    {
+      "id": "future-worksheet-rpc-denied",
+      "status": "pass"
+    },
+    {
+      "id": "future-file-route-denied",
+      "status": "pass"
+    },
+    {
+      "id": "unenrolled-file-route-denied",
+      "status": "pass"
+    },
+    {
+      "id": "released-protected-pdf-opens",
+      "status": "pass"
+    },
+    {
+      "id": "draft-session-page-denied",
+      "status": "pass"
+    },
+    {
+      "id": "student-schedule-published-session",
+      "status": "pass"
+    },
+    {
+      "id": "worksheet-status-persists",
+      "status": "pass"
+    },
+    {
+      "id": "worksheet-comment-persists",
+      "status": "pass"
+    },
+    {
+      "id": "worksheet-save-reached-database",
+      "status": "pass"
+    },
+    {
+      "id": "practice-overview-retains-worksheet",
+      "status": "pass"
+    },
+    {
+      "id": "enrolled-inactive-batch-stays-accessible",
+      "status": "pass"
+    },
+    {
+      "id": "inactive-batch-worksheet-stays-accessible",
+      "status": "pass"
+    },
+    {
+      "id": "admin-editor-add-refresh",
+      "status": "pass"
+    }
+  ],
+  "status": "failed",
+  "cleanup": "complete",
+  "enrollment": {
+    "status": 200,
+    "success": 1,
+    "failed": 0,
+    "stages": []
+  },
+  "dashboardDiagnostic": {
+    "rpcCode": null,
+    "rpcCourseMatches": true,
+    "path": "/dashboard",
+    "heading": "Welcome back, Phase"
+  },
+  "legacyObservations": {
+    "draftMetadataReadableToEnrolledStudent": true,
+    "explanation": "Existing baseline sessions policy permits enrolled-course metadata; timeline projection filters unpublished sessions. No Phase 1 policy change."
+  },
+  "stage": "admin-editor",
+  "worksheetDiagnostic": {
+    "questions": 2,
+    "pageText": "← Back to Timeline\nWORKSHEET\nQA released worksheet\n\nAvailable now\n\nLoading PDF\n\nPreparing the protected PDF…\n\nMANUAL TRACKER\nUpdate log\n0 Done\n0 Review\n2 Not updated\nSelect all\n0 selected\nMark selected Done\nMark selected for review\nSELECT\n\tQUESTION\tSTATUS\tTIME (MM:SS)\tCOMMENT\tSAVE STATE\n\t1\t\nDone\nReview\nNot updated\n\t\t\tNot updated\n\t2\t\nDone\nReview\nNot updated\n\t\t\tNot updated"
+  },
+  "errorType": "TimeoutError",
+  "failureHint": "locator.click: Timeout 15000ms exceeded.",
+  "studentPageText": "← Back to Timeline\nWORKSHEET\nQA released worksheet\n\nAvailable now\n\nOpen or download PDF\nMANUAL TRACKER\nUpdate log\n1 Done\n0 Review\n1 Not updated\nSelect all\n0 selected\nMark selected Done\nMark selected for review\nSELECT\n\tQUESTION\tSTATUS\tTIME (MM:SS)\tCOMMENT\tSAVE STATE\n\t1\t\nDone\nReview\nDone\n\t\t\tSaved\n\t2\t\nDone\nReview\nNot updated\n\t\t\tNot updated",
+  "failure": "Legacy execution failed; inspect completed check IDs and fixture manifest. Provider/browser details withheld.",
+  "finishedAt": "2026-11-01T18:53:25.460Z"
+}

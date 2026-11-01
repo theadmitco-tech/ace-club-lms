@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-28",
+  "head": "18f4bfedb1e4f927e49d8d535e0db2e7e93916ed",
+  "pr": 24,
+  "draft": true,
+  "command": "node scripts/verify-v2-phase1.mjs",
+  "suite_files": 15,
+  "tests": 140,
+  "pass": 140,
+  "fail": 0,
+  "skipped": 0,
+  "database_scope": "Disposable local Unix-socket PostgreSQL clusters; synthetic fixtures only",
+  "correction_package": "Code and proposal already pushed; proposal NOT applied to staging or Production",
+  "shared_operations_performed": false,
+  "canonical_consumer_cutover": "Not enabled; current consumers retain legacy RPCs until the proposal and cutover are approved",
+  "source_sha256": {
+    "supabase/migrations/20261018090000_add_v2_product_entitlements.sql": "ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7",
+    "docs/v2/phase-1/proposals/20261025120000_canonical_product_contracts.sql": "32606b582af4f6d14f80c5ffd54ebf06359786ba869301dd15dcd8a4329fd406",
+    "docs/v2/phase-1/proposals/20261025120000_canonical_product_contracts.rollback.sql": "7f17b200cae5a750cf549bde8960b943b899c852a743068a13ccec3d42cafd1c",
+    "docs/v2/phase-1/proposals/canonical-contract-inspection.sql": "ecdba003e9c4f14354e30cde1a6969acdcdfbaa26ed2306ca6716a7557ed7ff6",
+    "src/lib/server/v2Products.ts": "9e9e0bc74cfb5999eee0f86dd8a83143d6b5f14f096dc007ed439faf1f03f537",
+    "src/lib/v2Products.ts": "cf0833e5cc92920a48215c06760a69cfc42e7cf37c096bba459ca439268cbd1e",
+    "scripts/v2-canonical-product-contracts.test.mjs": "fcfadeb963432c446feee862adf71fd95d76eaf73d4de554eec5282cc1b4994e",
+    "scripts/v2-product-readers.test.mjs": "8222ef640ff754f9bc7098050e93c2df62771788ea64e21dc51c85beee7d04cc"
+  }
+}

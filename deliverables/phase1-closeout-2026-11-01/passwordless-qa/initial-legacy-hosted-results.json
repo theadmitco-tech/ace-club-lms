@@ -1,0 +1,28 @@
+{
+  "runId": "7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719",
+  "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+  "project": "eyphkkginlgoaxflauog",
+  "startedAt": "2026-11-01T18:38:58.956Z",
+  "checks": [
+    {
+      "id": "candidate-and-admin-session",
+      "status": "pass"
+    },
+    {
+      "id": "existing-student-bulk-enrollment",
+      "status": "fail"
+    }
+  ],
+  "status": "failed",
+  "cleanup": "complete",
+  "enrollment": {
+    "status": 200,
+    "success": 0,
+    "failed": 1,
+    "stages": [
+      "account_creation"
+    ]
+  },
+  "failure": "Check failed: existing-student-bulk-enrollment",
+  "finishedAt": "2026-11-01T18:39:18.225Z"
+}

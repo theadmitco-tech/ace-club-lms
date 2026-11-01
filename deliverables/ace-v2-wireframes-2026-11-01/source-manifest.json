@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-01",
+  "source_pdf": {
+    "file_name": "ace-v2-wireframes-2026-10-28.pdf",
+    "sha256": "11534c49281d8f88ca69cd8474439fb621a66b1844147a9ac762f2afa2c480d0",
+    "pages": 24,
+    "all_pages_visually_reviewed": true,
+    "structured_annotations": 22,
+    "structured_annotation_types": {
+      "Link": 22
+    },
+    "structured_text_comments": 0,
+    "handwritten_feedback": "Flattened green marks reviewed from rendered page images; not present as text annotation objects.",
+    "manually_grouped_review_items": 26
+  },
+  "exit_gates": {
+    "file_name": "Pasted text.txt",
+    "sha256": "969b3271da46f3ee9ed92df65a63ec7ae9ed14774f75c80003f42da233f8ee45",
+    "status_in_document": "Review draft"
+  },
+  "existing_design_source": "docs/v2/wireframes (preserved)",
+  "new_artifact_scope": "Offline design review only",
+  "production_changed": false,
+  "preview_changed": false,
+  "database_changed": false,
+  "migrations_changed": false,
+  "decision_D01": "Confirmed by user on 2026-11-01: three individual package tiers plus distinct Full Course",
+  "decision_D01_response": "Yes—three tiers, Full Course separate",
+  "pdf_export": "19 pages: cover plus18 review screens including calendar and upsell dialogs",
+  "generated_pdf_sha256": "a501805e0ea3d74727919e071b97b60820f4b91821e8e2b098422c2418721e57",
+  "verification": {
+    "passed": 63,
+    "failed": 0,
+    "page_errors": 0
+  }
+}

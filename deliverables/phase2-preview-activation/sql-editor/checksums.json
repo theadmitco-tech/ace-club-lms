@@ -1,0 +1,17 @@
+{
+  "source_commit": "18f4bfedb1e4f927e49d8d535e0db2e7e93916ed",
+  "staging_project": "eyphkkginlgoaxflauog",
+  "phase1_preserved_sha256": "ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7",
+  "files": {
+    "00-schema-preflight.sql": "666f649f35f73964550359852347e48444cf2d36869df556c7a6ef284df175ed",
+    "01-ledger-and-definitions.sql": "d4f9ac9852ea5a4d4ca4d9fa0e57ea0ad551cc0729d03256aa7fcffc78d215ba",
+    "02-apply-all-six-if-absent.sql": "3a02a666964865ab75a6906a4699b4d0f9d8b244db8a851efadcdb984698482c",
+    "03-postflight.sql": "0b460c3633212b592bad9a413fa81fd17f03ac52660a0fdea0219319d0405500",
+    "source-migrations/20261019090000_add_v2_template_drafts.sql": "ac8ffd1121f548764b053a1913c726193c115bd1de38a5309e795c9d93940526",
+    "source-migrations/20261019100000_add_v2_batch_drafts.sql": "56dc2a297441ecfa9a685a3d470789045b46e2ba7b92fe4c80c4ce000fcd20a9",
+    "source-migrations/20261019110000_add_v2_private_meeting_drafts.sql": "ebbed93aad1b6fb7b5264848689c594b7856a8c3ad2346fa112a242bb01b0c9f",
+    "source-migrations/20261020090000_add_v2_outline_schedules.sql": "60ad573ecb52e3f52d3e9bbf4e74e04d8cdd52a8a82bde1694be37eb8b075c7b",
+    "source-migrations/20261020100000_add_v2_batch_publication.sql": "67dfa87d955b7cbf27dee0e45fe6b6ed469d0dd51c9d3df2c7466a67f2ee7b6e",
+    "source-migrations/20261025100000_add_v2_enrolled_schedules.sql": "73949fb28c3e9692406efd509a83974806a588fac5e81f898e9ddc6e30b73a0a"
+  }
+}

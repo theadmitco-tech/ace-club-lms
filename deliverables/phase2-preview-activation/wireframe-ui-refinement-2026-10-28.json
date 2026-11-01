@@ -1,0 +1,46 @@
+{
+  "checked_at": "2026-10-28T16:56:18.228815+00:00",
+  "head": "5398aad5b49b574ef628414127dabbe7fe139614",
+  "previous_head": "ee79f1174db4e3fd91ae3ea49dcfbb8e2a614845",
+  "branch": "intern/v2-phase-2-review",
+  "preview": {
+    "deployment": "dpl_3mFV3sLhPYNu6axippjC6C1XBqFN",
+    "state": "READY",
+    "url": "https://ace-club-lms-git-intern-v2-pha-9a969c-theadmitco-techs-projects.vercel.app/admin/v2"
+  },
+  "pr": {
+    "number": 24,
+    "draft": true,
+    "merged": false
+  },
+  "production": {
+    "before": "dpl_8axtycbJUpFX8cPWhVtkhGf6p9Kj",
+    "after": "dpl_8axtycbJUpFX8cPWhVtkhGf6p9Kj",
+    "changed": false
+  },
+  "staging_browser_host": "eyphkkginlgoaxflauog.supabase.co",
+  "staging_host_evidence_asset": "https://ace-club-9d7r7xw1j-theadmitco-techs-projects.vercel.app/_next/static/chunks/0bepfud8r.zfw.js",
+  "server_service_key_association": "Not independently verified; sensitive values omitted by plugin.",
+  "shared_sql_executed": false,
+  "migration_files_changed": false,
+  "phase1_migration_preserved": true,
+  "feature_flags_changed": false,
+  "publishing_available": false,
+  "checks": {
+    "browser": {
+      "passed": 39,
+      "failed": 0,
+      "mode": "Local actual screens with synthetic auth/DAL; not hosted acceptance"
+    },
+    "targeted_checks": 50,
+    "lint": "passed",
+    "typescript": "passed",
+    "webpack_build": "passed",
+    "github_verify": {
+      "run": 40730439156,
+      "conclusion": "success"
+    }
+  },
+  "hosted_signed_out_check": "Normal LMS login returned; authoring requires Admin authentication.",
+  "hosted_authenticated_acceptance": "Pending; no authorized Admin browser session available to agent."
+}

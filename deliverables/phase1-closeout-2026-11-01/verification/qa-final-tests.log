@@ -1,0 +1,18 @@
+✔ verification refuses Production, other projects, unknown environment and service-role keys before client creation (69.121229ms)
+✔ Student session is derived from auth and no foreign rows is inconclusive without independent fixtures (6.093729ms)
+✔ foreign row visibility is failure and never returns row identifiers or foreign counts (5.315065ms)
+✔ grant permission drift, missing function and unexpected success never pass (15.811139ms)
+✔ signed-out session checks real anonymous RPC/table permissions without assuming authenticated identity (5.489821ms)
+✔ anonymous table probe uses a zero-row GET so real SDK preserves permission errors; unexpected success fails (20.24276ms)
+✔ inactive and Admin identities cannot be interpreted as active Student access (12.765387ms)
+✔ unverified auth/profile fails closed and returns no provider diagnostics (10.216808ms)
+✔ manual endpoint blocks disabled, cross-origin, non-JSON and caller-supplied targets; replies are private no-store (8.362542ms)
+✔ null grant diagnostic is non-mutating even with simulated execution-permission drift in a disposable database (709.986531ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 869.486656

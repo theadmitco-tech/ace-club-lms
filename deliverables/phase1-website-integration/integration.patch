@@ -1,0 +1,1588 @@
+diff --git a/docs/v2/phase-1/website-integration-2026-11-01.md b/docs/v2/phase-1/website-integration-2026-11-01.md
+new file mode 100644
+index 0000000..12f97c4
+--- /dev/null
++++ b/docs/v2/phase-1/website-integration-2026-11-01.md
+@@ -0,0 +1,66 @@
++# Phase 1 website integration — 1 November 2026
++
++Scope: integrate the applied product catalogue and entitlement foundation into the
++existing LMS Preview. Phase 2 activation follows separately. Base is PR #24 at
++`5398aad5b49b574ef628414127dabbe7fe139614`; retain that Draft PR and Production.
++
++## Implemented flow
++
++- Preview landing page → Courses → `/courses/v2`: Full Course, Quant, Verbal and
++  DI come from the database. Individual and package prices are server-side quotes
++  from the applied Phase 1 RPC. Canonical selection identifiers are validated;
++  Full Course cannot be mixed with individuals. Unavailable data is an explicit
++  error, never a fabricated catalogue, fallback price or saved purchase.
++- Student navigation → My access → `/account/access`: the current authenticated
++  Student sees only their active product access and paginated purchase history.
++  Sections and stored expiry are displayed. Expired/revoked records remain in
++  history. Current legacy batch access is preserved.
++- Admin → Course publishing → Products & access → `/admin/v2/access`: authorized
++  Admins review available offerings/prices and paginated purchase/access records.
++  There is no browser grant, revocation or commercial-configuration mutation.
++- Existing LMS login, role checks and RLS remain in force. Reads use the caller's
++  session, not a service-role key. History is explicitly scoped to the Student ID
++  and validates returned ownership; payment references are never selected.
++- New routes and navigation are enabled only in Vercel Preview/local development.
++  Production always denies the new routes, including when other flags are true.
++  The landing component was moved intact into HomePage.tsx so its server wrapper
++  can pass the Preview navigation setting without exposing private configuration.
++
++The Phase 1 ledger compatibility keys remain internal. The website exposes the
++approved names and canonical URL selections without depending on the unapplied
++canonical-contract proposal. No migration, ledger, price, purchase, profile,
++enrollment, content or feature-flag change is made by this integration.
++
++The original migration remains unchanged:
++`20261018090000_add_v2_product_entitlements.sql`, SHA-256
++`ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7`.
++
++## Verification
++
++- `npm run test:v2:phase1`: 151 tests across 16 suites passed. Includes local
++  PostgreSQL entitlement/expiry/replay/isolation tests and legacy regressions.
++- New workspace tests cover all eight selections, wrong-role and wrong-owner
++  denial, Production exclusion, malformed data, error/empty distinction and
++  pagination. Price lookup failures never supply a fallback amount.
++- `CHROMIUM_EXECUTABLE=/usr/bin/chromium npm run test:v2:phase1:browser`:
++  12 browser scenarios passed, using the actual screens and server readers with
++  synthetic session/database adapters in a disposable local application.
++- Desktop and 390/768px views have no horizontal overflow. Keyboard package
++  submission, signed-out redirects, Student/Admin boundaries, active/expired/
++  revoked histories and unavailable data states passed.
++- Full lint with zero warnings, TypeScript and webpack build passed.
++- All 39 existing Phase 2 browser regression scenarios passed after adding the
++  shared navigation dependency. Local browser fixtures are never deployed.
++- Hosted deployment and acceptance evidence are recorded after publication.
++
++## Acceptance boundaries
++
++This completes the website surface for the Phase 1 foundation; it does not add
++checkout (Phase 3), grant product access from legacy enrollment, enable Phase 2
++publishing, import existing content or cut protected content over to a new model.
++
++Hosted authenticated acceptance needs designated staging Admin/Student sessions.
++Verify Admin records and a Student's own records; compare empty states with actual
++staging data. Check another Student cannot read those purchases. Do not treat a
++fixture screenshot as hosted data evidence or alter real students to manufacture
++an acceptance result. The canonical database expansion remains a separate proposal.
+diff --git a/package.json b/package.json
+index 1883007..aa16004 100644
+--- a/package.json
++++ b/package.json
+@@ -25,7 +25,8 @@
+     "question-bank:dry-run": "node scratch/import_question_bank_csv.js --dry-run",
+     "worksheets:convert": "node scratch/convert_worksheet_pdfs.js",
+     "worksheets:dry-run": "node scratch/convert_worksheet_pdfs.js --dry-run",
+-    "lint": "eslint"
++    "lint": "eslint",
++    "test:v2:phase1:browser": "node scripts/browser/v2-phase1/verify.mjs"
+   },
+   "dependencies": {
+     "@dnd-kit/core": "^6.3.1",
+diff --git a/scripts/admin-draft-navigation.test.mjs b/scripts/admin-draft-navigation.test.mjs
+index 1de205e..936b1ef 100644
+--- a/scripts/admin-draft-navigation.test.mjs
++++ b/scripts/admin-draft-navigation.test.mjs
+@@ -389,10 +389,10 @@ test('course publishing entry enforces Admin authorization, Production exclusion
+   }, { process: { env } }).default;
+   let tree = await page();
+   assert.equal(calls, 1);
+-  assert.equal(elements(tree, n => n.props?.href?.startsWith('/admin/v2/')).length, 2);
++  assert.equal(elements(tree, n => n.props?.href?.startsWith('/admin/v2/')).length, 3);
+   assert.equal(elements(tree, n => n.props?.role === 'status').length, 1);
+   enabled = true; tree = await page();
+-  assert.deepEqual(elements(tree, n => n.type === 'link').map(n => n.props.href), ['/admin/v2/templates', '/admin/v2/batches', '/admin/courses']);
++  assert.deepEqual(elements(tree, n => n.type === 'link').map(n => n.props.href), ['/admin/v2/access', '/admin/v2/templates', '/admin/v2/batches', '/admin/courses']);
+   authorized = false; await assert.rejects(page, /Unauthorized/);
+   env.VERCEL_ENV = 'production'; authorized = true;
+   await assert.rejects(page, /Not found/);
+diff --git a/scripts/browser/v2-phase1/verify.mjs b/scripts/browser/v2-phase1/verify.mjs
+new file mode 100644
+index 0000000..bc76c3b
+--- /dev/null
++++ b/scripts/browser/v2-phase1/verify.mjs
+@@ -0,0 +1,53 @@
++import assert from 'node:assert/strict';
++import { createServer } from 'node:http';
++import { spawn } from 'node:child_process';
++import { mkdir, writeFile, copyFile, rm } from 'node:fs/promises';
++import { createWriteStream } from 'node:fs';
++import path from 'node:path';
++import { chromium } from 'playwright-core';
++import { createFixtureApp, repo } from '../v2-phase2/fixture-app.mjs';
++
++const output=path.resolve(process.env.V2_PHASE1_BROWSER_OUTPUT||'/tmp/ace-phase1-browser-results');await mkdir(output,{recursive:true});
++const root=await createFixtureApp(9);
++const sources=['src/app/courses/v2/page.tsx','src/app/account/access/page.tsx','src/app/admin/v2/access/page.tsx','src/lib/server/v2Products.ts','src/lib/server/v2CourseWorkspace.ts','src/lib/v2CoursePresentation.ts','src/components/courses/PurchaseHistory.tsx','src/components/courses/courses.module.css'];
++for(const file of sources){await mkdir(path.dirname(path.join(root,file)),{recursive:true});await copyFile(path.join(repo,file),path.join(root,file));}
++const put=async(file,text)=>{await mkdir(path.dirname(path.join(root,file)),{recursive:true});await writeFile(path.join(root,file),text);};
++await put('src/lib/server/portalAuthorization.ts', `import { cookies } from 'next/headers';import { redirect } from 'next/navigation';
++export async function getPortalIdentity(){const role=(await cookies()).get('qa-role')?.value;return role==='student'||role==='admin'?{id:'10000000-0000-4000-8000-000000000001',role}:null;}
++export async function requirePortalRole(role:string){const identity=await getPortalIdentity();if(!identity)redirect('/login');if(identity.role!==role)redirect(identity.role==='admin'?'/admin':'/dashboard');return identity;}`);
++await put('src/app/dashboard/page.tsx',`import {StudentHeader} from '@/components/student/StudentHeader';import './dashboard.css';export default function Page(){return <><StudentHeader studentName="Synthetic Student"/><h1>Synthetic learning dashboard</h1></>}`);
++await put('src/utils/supabase/server.ts', `import {cookies} from 'next/headers';
++export async function createClient(){
++ const jar=await cookies();const scenario=jar.get('qa-state')?.value;const role=jar.get('qa-role')?.value;
++ const id='10000000-0000-4000-8000-000000000001';
++ const products=[{code:'full_batch',name:'Full Batch',product_kind:'full_batch',sections:['quant','verbal','di']},...['quant','verbal','di'].map(s=>({code:s+'_crash',name:s+' Crash Course',product_kind:'crash_course',sections:[s]}))];
++ const base={student_id:id,amount_paise:1000000,currency:'INR',confirmed_at:'2026-10-01T00:00:00Z',expires_at:'2099-04-01T00:00:00Z',revoked_at:null,profiles:{full_name:'Synthetic Student',is_active:true}};
++ const purchases=[{...base,id,v2_product_grants:[{product_code:'quant_crash'}]}, {...base,id:'10000000-0000-4000-8000-000000000002',confirmed_at:'2020-01-01T00:00:00Z',expires_at:'2020-07-01T00:00:00Z',v2_product_grants:[{product_code:'verbal_crash'}]}, {...base,id:'10000000-0000-4000-8000-000000000003',revoked_at:'2026-10-02T00:00:00Z',v2_product_grants:[{product_code:'di_crash'}]}];
++ return {auth:{getUser:async()=>({data:{user:role?{id}:null},error:null})},from(table:string): any {let lo=0,hi=25;const q={select(){return q},eq(){return q},order(){return q},range(a:number,b:number){lo=a;hi=b;return q},maybeSingle:async()=>({data:{full_name:'Synthetic Student'},error:null}),then(resolve:(v:unknown)=>void){const data=table==='v2_products'?products:scenario==='empty'?[]:purchases.slice(lo,hi+1);resolve({data:scenario==='unavailable'?null:data,error:scenario==='unavailable'?{message:'synthetic failure'}:null})}};return q},rpc:async(name:string,args?:{p_product_codes?:string[];p_product_code?:string;p_section?:string|null}):Promise<{data:any;error:any}>=>{if(scenario==='unavailable'||scenario==='quote-error'&&name==='quote_v2_products')return {data:null,error:{message:'synthetic failure'}};if(name==='get_my_v2_access')return {data:scenario==='empty'?[]:[{product_code:'quant_crash',sections:['quant'],expires_at:'2099-04-01T00:00:00Z'}],error:null};if(name==='can_access_v2_product')return {data:false,error:null};const codes=args!.p_product_codes!;return {data:{product_codes:codes,price_version_id:'a1000000-0000-4000-8000-000000000001',amount_paise:codes.includes('full_batch')?2500000:codes.length===1?1000000:codes.length===2?1800000:2500000,currency:'INR'},error:null}}};
++}`);
++const reservation=createServer();await new Promise(r=>reservation.listen(0,'127.0.0.1',r));const port=reservation.address().port;await new Promise(r=>reservation.close(r));
++const origin=`http://127.0.0.1:${port}`, next=path.join(repo,'node_modules/next/dist/bin/next');
++const env={PATH:process.env.PATH,NODE_ENV:'production',VERCEL_ENV:'preview',NEXT_TELEMETRY_DISABLED:'1'};
++const log=createWriteStream(path.join(output,'server.log'));let server,browser;const results=[],errors=[];
++const wait=ms=>new Promise(r=>setTimeout(r,ms));
++async function test(name,run,{role,scenario,width=1440}={}){const context=await browser.newContext({viewport:{width,height:1000},serviceWorkers:'block'});await context.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort());await context.addCookies([...(role?[{name:'qa-role',value:role,url:origin}]:[]),...(scenario?[{name:'qa-state',value:scenario,url:origin}]:[])]);const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));try{await run(page);results.push({name,status:'passed'});console.log('PASS '+name);}catch(e){results.push({name,status:'failed',error:e.message});console.error('FAIL '+name+': '+e.message);await page.screenshot({path:path.join(output,'failure-'+results.length+'.png'),fullPage:true});}finally{await context.close();}}
++async function visible(locator){await locator.waitFor({state:'visible',timeout:10000});}
++async function noOverflow(page){assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
++try{
++ const build=spawn(process.execPath,[next,'build','--webpack'],{cwd:root,env,stdio:['ignore','pipe','pipe']});build.stdout.pipe(log,{end:false});build.stderr.pipe(log,{end:false});assert.equal(await new Promise(r=>build.on('exit',r)),0,'Fixture build failed');
++ server=spawn(process.execPath,[next,'start','--hostname','127.0.0.1','--port',String(port)],{cwd:root,env,stdio:['ignore','pipe','pipe']});server.stdout.pipe(log,{end:false});server.stderr.pipe(log,{end:false});for(let i=0;i<100;i++){try{if((await fetch(origin+'/courses/v2')).ok)break}catch{}await wait(200);}
++ browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE||'/usr/bin/chromium',args:['--no-sandbox']});
++ await test('Public catalogue shows approved course names and live configured quotes',async p=>{await p.goto(origin+'/courses/v2');for(const name of ['Full Course','Quant','Verbal','DI'])await visible(p.getByRole('heading',{name,exact:true}));assert.equal(await p.getByRole('button',{name:/buy|pay|purchase/i}).count(),0);await p.getByRole('link',{name:'Review Full Course',exact:true}).click();await visible(p.locator('#quote').getByText('₹25,000',{exact:true}));await noOverflow(p);await p.screenshot({path:path.join(output,'catalogue-desktop.png'),fullPage:true});});
++ await test('Subject packages quote all combinations with keyboard submission',async p=>{for(const [subjects,price] of [[['Quant'],'₹10,000'],[['Quant','Verbal'],'₹18,000'],[['Quant','Verbal','DI'],'₹25,000']]){await p.goto(origin+'/courses/v2');for(const subject of subjects)await p.getByRole('checkbox',{name:subject,exact:true}).check();await p.getByRole('button',{name:'Review package price'}).focus();await p.keyboard.press('Enter');await visible(p.locator('#quote').getByText(price,{exact:true}));await visible(p.locator('#quote').getByText('Selecting all three does not create a Full Course purchase.',{exact:false}));}});
++ await test('Mixed, duplicate and legacy product identities cannot produce a quote',async p=>{for(const query of ['course=full_course&course=quant','course=quant&course=quant','course=full_batch','course=unknown']){await p.goto(origin+'/courses/v2?'+query);await visible(p.locator('#quote').getByRole('alert'));assert.equal(await p.locator('#quote').getByText(/₹/).count(),0);}});
++ await test('Price lookup failure never displays a stale or fallback amount',async p=>{await p.goto(origin+'/courses/v2?course=quant');await visible(p.locator('#quote').getByRole('alert'));assert.equal(await p.locator('#quote').getByText(/₹/).count(),0);},{scenario:'quote-error'});
++ await test('Signed-out private access redirects to login',async p=>{await p.goto(origin+'/account/access');assert.equal(new URL(p.url()).pathname,'/login');});
++ await test('Student sees scoped active access, expired and revoked history',async p=>{await p.goto(origin+'/account/access');await visible(p.getByRole('heading',{name:'My access',exact:true}));await visible(p.getByText('Expired',{exact:true}));await visible(p.getByText('Revoked',{exact:true}));assert.equal(await p.locator('section').first().getByRole('heading',{name:'Quant',exact:true}).count(),1);assert.equal(await p.locator('section').first().getByRole('heading',{name:'Verbal',exact:true}).count(),0);await noOverflow(p);await p.screenshot({path:path.join(output,'student-access-desktop.png'),fullPage:true});},{role:'student'});
++ await test('Student cannot open Admin access records',async p=>{await p.goto(origin+'/admin/v2/access');assert.equal(new URL(p.url()).pathname,'/dashboard');},{role:'student'});
++ await test('Empty access is distinct from an unavailable database',async p=>{await p.goto(origin+'/account/access');await visible(p.getByRole('heading',{name:'No active Phase 1 course access'}));await visible(p.getByText('No Phase 1 purchases are recorded here yet.',{exact:true}));},{role:'student',scenario:'empty'});
++ await test('Database failure retains explicit retry states',async p=>{await p.goto(origin+'/account/access');await visible(p.getByRole('link',{name:'Retry access check'}));await visible(p.getByRole('link',{name:'Retry history'}));assert.equal(await p.getByText('No Phase 1 purchases are recorded here yet.',{exact:true}).count(),0);},{role:'student',scenario:'unavailable'});
++ await test('Admin has readable purchase records and no manual grant action',async p=>{await p.goto(origin+'/admin/v2/access');await visible(p.getByRole('heading',{name:'Products & access'}));await visible(p.getByRole('heading',{name:'Purchase and access records'}));assert.equal(await p.getByRole('button',{name:/grant|revoke|purchase|pay/i}).count(),0);await p.screenshot({path:path.join(output,'admin-access-desktop.png'),fullPage:true});},{role:'admin'});
++ for(const width of [390,768])await test('Catalogue and access fit '+width+'px',async p=>{await p.goto(origin+'/courses/v2');await noOverflow(p);await p.screenshot({path:path.join(output,'catalogue-'+width+'.png'),fullPage:true});await p.goto(origin+'/account/access');await noOverflow(p);await p.screenshot({path:path.join(output,'access-'+width+'.png'),fullPage:true});},{role:'student',width});
++ assert.deepEqual(errors,[]);
++}catch(e){results.push({name:'Harness',status:'failed',error:e.message});console.error(e);}finally{await writeFile(path.join(output,'results.json'),JSON.stringify({mode:'Actual UI and readers with local synthetic session/database adapters; not hosted authentication evidence',results,errors},null,2)+'\n');await browser?.close();if(server){const ended=new Promise(r=>server.once('exit',r));server.kill();await ended;}log.end();await rm(root,{recursive:true,force:true});}
++console.log(results.filter(r=>r.status==='passed').length+' passed; '+results.filter(r=>r.status==='failed').length+' failed. '+output);process.exitCode=results.some(r=>r.status==='failed')?1:0;
+diff --git a/scripts/browser/v2-phase2/fixture-app.mjs b/scripts/browser/v2-phase2/fixture-app.mjs
+index c45d127..21f2835 100644
+--- a/scripts/browser/v2-phase2/fixture-app.mjs
++++ b/scripts/browser/v2-phase2/fixture-app.mjs
+@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
+ 
+ export const repo = fileURLToPath(new URL('../../../', import.meta.url));
+ export const sources = [
++  'src/lib/server/v2Phase1Feature.ts',
+   'src/app/admin/v2/layout.tsx',
+   'src/app/admin/v2/WorkspaceNavigation.tsx',
+   'src/app/admin/v2/workspace.module.css',
+diff --git a/scripts/v2-course-workspace.test.mjs b/scripts/v2-course-workspace.test.mjs
+new file mode 100644
+index 0000000..c693940
+--- /dev/null
++++ b/scripts/v2-course-workspace.test.mjs
+@@ -0,0 +1,81 @@
++import assert from 'node:assert/strict';
++import test from 'node:test';
++import { readFileSync } from 'node:fs';
++import { runInNewContext } from 'node:vm';
++import ts from 'typescript';
++function load(file, deps = {}, globals = {}) {
++  const exports = {};
++  const source = ts.transpileModule(readFileSync(new URL('../' + file, import.meta.url), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText;
++  runInNewContext(source, { exports, Date, ...globals, require(name) { assert.ok(Object.hasOwn(deps, name), name); return deps[name]; } });
++  return exports;
++}
++const domain = load('src/lib/v2Products.ts');
++const presentation = load('src/lib/v2CoursePresentation.ts', { './v2Products': domain });
++const id = '10000000-0000-4000-8000-000000000001';
++const other = '10000000-0000-4000-8000-000000000002';
++const row = () => ({ id, student_id: id, amount_paise: 1000000, currency: 'INR', confirmed_at: '2026-10-01T00:00:00Z', expires_at: '2027-04-01T00:00:00Z', revoked_at: null, profiles: { full_name: 'Test Student', is_active: true }, v2_product_grants: [{ product_code: 'quant_crash' }] });
++function harness() {
++  const state = { enabled: true, identity: { id, role: 'student' }, data: [row()], error: null, calls: [], products: [{ code: 'quant_crash', name: 'Quant', product_kind: 'crash_course', sections: ['quant'] }], quoteFails: false, listFails: false };
++  const query = { select(value) { state.calls.push(['select', value]); return this; }, eq(...args) { state.calls.push(['eq', ...args]); return this; }, order(...args) { state.calls.push(['order', ...args]); return this; }, async range(...args) { state.calls.push(['range', ...args]); return { data: state.data, error: state.error }; } };
++  const workspace = load('src/lib/server/v2CourseWorkspace.ts', {
++    'server-only': {}, '@/lib/v2Products': domain,
++    './v2Products': { listV2Products: async () => { if (state.listFails) throw Error('private'); return state.products; }, quoteV2Products: async (codes) => { state.calls.push(['quote', ...codes]); if (state.quoteFails) throw Error('private'); return { amount_paise: 1234500 }; } },
++    './portalAuthorization': { getPortalIdentity: async () => state.identity },
++    './v2Phase1Feature': { isV2Phase1PreviewEnabled: () => state.enabled },
++    '@/utils/supabase/server': { createClient: async () => ({ from(table) { state.calls.push(['from', table]); return query; } }) },
++  });
++  return { state, ...workspace };
++}
++test('all eight canonical course selections preserve distinct Full Course identity', () => {
++  for (const keys of [['full_course'], ['quant'], ['verbal'], ['di'], ['quant', 'verbal'], ['quant', 'di'], ['verbal', 'di'], ['quant', 'verbal', 'di']]) {
++    const codes = presentation.parseCourseSelection(keys); assert.ok(codes); assert.equal(codes.includes('full_batch'), keys.includes('full_course'));
++  }
++  for (const value of [undefined, [], ['quant', 'quant'], ['full_course', 'quant'], ['full_batch'], ['__proto__'], ['CR'], ['unknown']]) assert.equal(presentation.parseCourseSelection(value), null);
++});
++test('Preview exposure is denied in Production and unset production builds', () => {
++  for (const [env, expected] of [[{VERCEL_ENV:'production',NODE_ENV:'development'},false],[{VERCEL_ENV:'preview',NODE_ENV:'production'},true],[{NODE_ENV:'production'},false],[{NODE_ENV:'development'},true]]) {
++    const feature = load('src/lib/server/v2Phase1Feature.ts', {'server-only':{}}, {process:{env}}); assert.equal(feature.isV2Phase1PreviewEnabled(), expected);
++  }
++});
++test('purchase display uses start-inclusive and expiry-exclusive boundaries and preserves revoked history', () => {
++  const p = { ...row(), accountActive: true }; const start = Date.parse(p.confirmed_at), end = Date.parse(p.expires_at);
++  assert.equal(presentation.purchaseState(p, start-1), 'Not started'); assert.equal(presentation.purchaseState(p,start),'Active'); assert.equal(presentation.purchaseState(p,end-1),'Active'); assert.equal(presentation.purchaseState(p,end),'Expired');
++  assert.equal(presentation.purchaseState({...p,revoked_at:p.confirmed_at},start),'Revoked'); assert.equal(presentation.purchaseState({...p,accountActive:false},start),'Account inactive');
++});
++test('catalogue reads configured prices and fails visibly instead of inventing prices', async () => {
++  const app=harness(); assert.equal((await app.loadCourseCatalogue())[0].amountPaise,1234500);
++  app.state.quoteFails=true; assert.equal((await app.loadCourseCatalogue())[0].amountPaise,null);
++  app.state.listFails=true; assert.equal(await app.loadCourseCatalogue(),null);
++  app.state.enabled=false; app.state.calls=[]; assert.equal(await app.loadCourseCatalogue(),null); assert.equal(app.state.calls.length,0);
++});
++test('history uses caller identity, explicit owner filtering, pagination and minimal columns', async () => {
++  const app=harness(); const result=await app.loadPurchaseHistory('student',2); assert.equal(result.status,'ready'); assert.equal(result.items[0].studentName,'Test Student');
++  assert.ok(app.state.calls.some(c=>c[0]==='eq'&&c[1]==='student_id'&&c[2]===id)); assert.ok(app.state.calls.some(c=>c[0]==='range'&&c[1]===25&&c[2]===50));
++  assert.ok(!app.state.calls.find(c=>c[0]==='select')[1].includes('payment_reference')); assert.ok(!('student_id' in result.items[0]));
++});
++test('signed-out, wrong-role and disabled requests never query private purchases', async () => {
++  for (const identity of [null,{id,role:'student'}]) { const app=harness();app.state.identity=identity;assert.equal((await app.loadPurchaseHistory('admin',1)).status,'unavailable');assert.equal(app.state.calls.length,0); }
++  const app=harness();app.state.enabled=false;assert.equal((await app.loadPurchaseHistory('student',1)).status,'unavailable');assert.equal(app.state.calls.length,0);
++});
++test('Admin history requires an Admin and can review other student purchases', async () => {
++  const app=harness();app.state.identity={id:other,role:'admin'};assert.equal((await app.loadPurchaseHistory('admin',1)).status,'ready');assert.ok(!app.state.calls.some(c=>c[0]==='eq'));
++});
++test('history rejects wrong-owner, malformed and overbroad grant responses', async () => {
++  for (const patch of [{student_id:other},{amount_paise:NaN},{currency:'USD'},{expires_at:'bad'},{expires_at:'2026-09-01T00:00:00Z'},{profiles:null},{v2_product_grants:[{product_code:'full_batch'},{product_code:'quant_crash'}]},{v2_product_grants:[]}]) {
++    const app=harness();app.state.data=[{...row(),...patch}];assert.equal((await app.loadPurchaseHistory('student',1)).status,'unavailable');
++  }
++});
++test('history distinguishes database failures from genuinely empty results', async () => {
++  const app=harness();app.state.error={message:'private diagnostic'};assert.equal((await app.loadPurchaseHistory('student',1)).status,'unavailable');app.state.error=null;app.state.data=[];const result=await app.loadPurchaseHistory('student',1);assert.equal(result.status,'ready');assert.equal(result.items.length,0);
++});
++test('history uses one lookahead row without dropping records and validates pagination', async () => {
++  const app=harness();app.state.data=Array.from({length:26},row);const result=await app.loadPurchaseHistory('student',1);assert.equal(result.items.length,25);assert.equal(result.hasMore,true);
++  for(const value of [0,-1,1.1,100000,NaN]) assert.equal((await app.loadPurchaseHistory('student',value)).status,'unavailable');
++  for(const value of [undefined,'0','-1','1.5','100000',['2'],'garbage']) assert.equal(app.historyPage(value),1);assert.equal(app.historyPage('2'),2);
++});
++test('all new pages deny Production before authentication or data access', async () => {
++  for(const file of ['src/app/courses/v2/page.tsx','src/app/account/access/page.tsx','src/app/admin/v2/access/page.tsx']) {
++    const deps=new Proxy({'react/jsx-runtime':{},'next/navigation':{notFound(){throw Error('NOT_FOUND');}},'@/lib/server/v2Phase1Feature':{isV2Phase1PreviewEnabled:()=>false}}, {getOwnPropertyDescriptor(target,key){return {configurable:true,enumerable:true,value:target[key]??{}};},get(target,key){return target[key]??{};}});
++    await assert.rejects(load(file,deps).default({searchParams:Promise.resolve({})}),/NOT_FOUND/);
++  }
++});
+diff --git a/scripts/verify-v2-phase1.mjs b/scripts/verify-v2-phase1.mjs
+index f4812a6..4f548d7 100644
+--- a/scripts/verify-v2-phase1.mjs
++++ b/scripts/verify-v2-phase1.mjs
+@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
+ const suites = [
+   'v2-product-entitlements.test.mjs',
+   'v2-product-readers.test.mjs',
++  'v2-course-workspace.test.mjs',
+   'v2-canonical-product-contracts.test.mjs',
+   'v2-staging-catalogue-probe.test.mjs',
+   'v2-phase1-role-probe.test.mjs',
+diff --git a/src/app/HomePage.tsx b/src/app/HomePage.tsx
+new file mode 100644
+index 0000000..a31bd74
+--- /dev/null
++++ b/src/app/HomePage.tsx
+@@ -0,0 +1,477 @@
++'use client';
++
++import { useEffect, useMemo, useState } from 'react';
++import { useRouter } from 'next/navigation';
++import { BrandLogo } from '@/components/BrandLogo';
++import { useAuth } from '@/lib/AuthContext';
++import { DEFAULT_CURRICULUM } from '@/lib/curriculum';
++import type { PublicBatch } from '@/lib/registration';
++import './public.css';
++
++const NAV_ITEMS = [
++  { id: 'program', label: 'Program' },
++  { id: 'fit', label: 'Fit' },
++  { id: 'curriculum', label: 'Curriculum' },
++  { id: 'mentors', label: 'Mentors' },
++  { id: 'batches', label: 'Cohorts' },
++];
++
++function formatBatchDate(value: string | null) {
++  if (!value) return 'Dates coming soon';
++  return new Intl.DateTimeFormat('en-IN', {
++    weekday: 'short',
++    day: 'numeric',
++    month: 'short',
++    year: 'numeric',
++    timeZone: 'Asia/Kolkata',
++  }).format(new Date(value));
++}
++
++function formatMoney(amount: number, currency: string) {
++  if (!amount) return 'Price TBA';
++  return new Intl.NumberFormat('en-IN', {
++    style: 'currency',
++    currency,
++    maximumFractionDigits: 0,
++  }).format(amount / 100);
++}
++
++export default function Home({ showCourseCatalogue = false }: { showCourseCatalogue?: boolean }) {
++  const { user, isLoading } = useAuth();
++  const router = useRouter();
++  const [batches, setBatches] = useState<PublicBatch[]>([]);
++  const [loadingBatches, setLoadingBatches] = useState(true);
++  const [activeSection, setActiveSection] = useState('overview');
++  const [hasScrolled, setHasScrolled] = useState(false);
++
++  function handleNavClick(sectionId: string) {
++    const section = document.getElementById(sectionId);
++    if (section) {
++      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
++      window.history.pushState(null, '', `#${sectionId}`);
++    }
++    setActiveSection(sectionId);
++  }
++
++  useEffect(() => {
++    fetch('/api/register/batches')
++      .then((res) => res.json())
++      .then((payload) => setBatches(payload.batches || []))
++      .catch((error) => console.error('Failed to fetch public batches:', error))
++      .finally(() => setLoadingBatches(false));
++  }, []);
++
++  useEffect(() => {
++    function scrollToHashSection() {
++      const sectionId = window.location.hash.replace('#', '');
++      if (!sectionId) return;
++      const section = document.getElementById(sectionId);
++      if (section) {
++        section.scrollIntoView({ block: 'start' });
++        setActiveSection(sectionId);
++      }
++    }
++
++    function updateActiveSection() {
++      const scrollPosition = window.scrollY + window.innerHeight * 0.45;
++      setHasScrolled(window.scrollY > 24);
++      const currentSection = NAV_ITEMS
++        .map((item) => document.getElementById(item.id))
++        .filter((section): section is HTMLElement => Boolean(section))
++        .reverse()
++        .find((section) => section.offsetTop <= scrollPosition);
++
++      if (currentSection?.id) {
++        setActiveSection(currentSection.id);
++      }
++    }
++
++    updateActiveSection();
++    window.setTimeout(scrollToHashSection, 80);
++    window.addEventListener('scroll', updateActiveSection, { passive: true });
++    window.addEventListener('hashchange', scrollToHashSection);
++
++    return () => {
++      window.removeEventListener('scroll', updateActiveSection);
++      window.removeEventListener('hashchange', scrollToHashSection);
++    };
++  }, []);
++
++  const curriculumWeeks = useMemo(() => {
++    return Array.from({ length: 8 }, (_, index) => {
++      const week = index + 1;
++      const sessions = DEFAULT_CURRICULUM.filter((item) => item.week === week);
++      const categories = Array.from(new Set(sessions.map((item) => item.category).filter((category) => category !== 'Orientation')));
++      const focus = categories.length ? categories.join(' + ') : 'Orientation';
++      return {
++        week,
++        focus,
++        saturday: sessions.find((session) => session.day === 'Saturday'),
++        sunday: sessions.find((session) => session.day === 'Sunday'),
++      };
++    });
++  }, []);
++
++  if (isLoading) {
++    return (
++      <div className="public-loading">
++        <div className="spinner spinner-lg" />
++      </div>
++    );
++  }
++
++  return (
++    <main className="public-page">
++      <nav className={`public-nav ${hasScrolled ? 'is-compact' : ''}`}>
++        <div className="public-nav-inner">
++          <a className="public-brand" href="#overview" aria-label="Ace Club home">
++            <BrandLogo variant="light" className="public-brand-logo" preload />
++          </a>
++          <div className="public-nav-actions">
++            <div className="public-nav-links" aria-label="Landing page sections">
++              {showCourseCatalogue && <a href="/courses/v2">Courses</a>}
++              {NAV_ITEMS.map((item) => (
++                <a
++                  key={item.id}
++                  href={`#${item.id}`}
++                  className={activeSection === item.id ? 'is-active' : ''}
++                  onClick={(event) => {
++                    event.preventDefault();
++                    handleNavClick(item.id);
++                  }}
++                >
++                  {item.label}
++                </a>
++              ))}
++            </div>
++            <a
++              className="nav-register"
++              href="#batches"
++              onClick={(event) => {
++                event.preventDefault();
++                handleNavClick('batches');
++              }}
++            >
++              Apply
++            </a>
++            <button
++              className="btn btn-secondary btn-sm nav-login"
++              onClick={() => router.push(user ? (user.role === 'admin' ? '/admin' : '/dashboard') : '/login')}
++            >
++              {user ? (user.role === 'admin' ? 'Admin' : 'Dashboard') : 'Login'}
++            </button>
++          </div>
++        </div>
++      </nav>
++      <div className="public-shell">
++        <section id="overview" className="public-hero">
++          <div className="public-hero-copy">
++            <span className="public-eyebrow">The Admit Co. presents</span>
++            <h1>
++              Focused GMAT prep
++              <span>for students ready to build momentum.</span>
++            </h1>
++            <p>
++              Small cohorts. Weekly accountability. Personal intervention when your prep slips.
++            </p>
++            <div className="public-actions">
++              <a
++                className="btn btn-primary btn-lg"
++                href="#batches"
++                onClick={(event) => {
++                  event.preventDefault();
++                  handleNavClick('batches');
++                }}
++              >
++                Apply for a cohort
++              </a>
++              <a
++                className="btn btn-secondary btn-lg"
++                href="#program"
++                onClick={(event) => {
++                  event.preventDefault();
++                  handleNavClick('program');
++                }}
++              >
++                See how Ace Club works
++              </a>
++            </div>
++          </div>
++          <div className="hero-right">
++            <div className="hero-system-map" aria-label="Ace Club prep operating system graphic">
++              <svg viewBox="0 0 520 420" role="img" aria-labelledby="system-map-title">
++                <title id="system-map-title">Preparation system map with sessions, practice, review, and intervention checkpoints</title>
++                <path className="map-path" d="M72 250 C120 100, 242 110, 260 210 S390 330, 452 168" />
++                <path className="map-path map-path-soft" d="M92 300 C190 360, 310 350, 428 260" />
++                <g className="map-node map-node-strong" transform="translate(74 250)">
++                  <circle r="22" />
++                  <text y="5">01</text>
++                </g>
++                <g className="map-node" transform="translate(182 142)">
++                  <circle r="18" />
++                  <text y="5">02</text>
++                </g>
++                <g className="map-node" transform="translate(272 218)">
++                  <circle r="22" />
++                  <text y="5">03</text>
++                </g>
++                <g className="map-node" transform="translate(392 302)">
++                  <circle r="18" />
++                  <text y="5">04</text>
++                </g>
++                <g className="map-node map-node-strong" transform="translate(452 168)">
++                  <circle r="24" />
++                  <text y="5">05</text>
++                </g>
++                <text className="map-label" x="54" y="346">Live</text>
++                <text className="map-label" x="188" y="84">practice</text>
++                <text className="map-label" x="300" y="204">review</text>
++                <text className="map-label" x="358" y="360">mock</text>
++                <text className="map-label" x="394" y="108">intervention</text>
++              </svg>
++            </div>
++            <div className="hero-proof-line" aria-label="Ace Club highlights">
++              <span>8 students max</span>
++              <span>Weekly accountability</span>
++              <span>Clear weekly plan</span>
++            </div>
++          </div>
++        </section>
++
++        <section id="program" className="public-section program-section">
++          <div className="public-section-heading">
++            <div>
++              <span className="public-eyebrow">Program</span>
++              <h2>You do not have to decide what to study next.</h2>
++            </div>
++            <p>Every week turns into a daily plan inside the portal, with progress visible to you and your mentor.</p>
++          </div>
++          <div className="rhythm-graphic" aria-label="Weekly operating rhythm">
++            <div className="rhythm-line" />
++            <div className="rhythm-step">
++              <span>SAT/SUN</span>
++              <strong>Live session</strong>
++            </div>
++            <div className="rhythm-step">
++              <span>MON-FRI</span>
++              <strong>Daily portal plan</strong>
++            </div>
++            <div className="rhythm-step">
++              <span>WHEN NEEDED</span>
++              <strong>4 personal sessions</strong>
++            </div>
++          </div>
++          <div className="program-grid">
++            <div className="program-item">
++              <span>01</span>
++              <strong>Weekend live sessions</strong>
++              <p>Small-group classes set the direction for the week.</p>
++            </div>
++            <div className="program-item">
++              <span>02</span>
++              <strong>Daily plan in the portal</strong>
++              <p>Your worksheet targets, attempts, and gaps stay visible.</p>
++            </div>
++            <div className="program-item">
++              <span>03</span>
++              <strong>4 flexible 1:1 sessions</strong>
++              <p>Use them for catch-up, mock analysis, or momentum drops.</p>
++            </div>
++          </div>
++        </section>
++
++        <section id="fit" className="public-section fit-section public-snap-section">
++          <div className="public-section-heading">
++            <div>
++              <span className="public-eyebrow">Best fit</span>
++              <h2>You might need this if one of these feels true.</h2>
++            </div>
++            <p>Most students come in with one specific bottleneck, not every problem at once.</p>
++          </div>
++          <div className="fit-panel">
++            <div className="fit-list">
++              <strong>Good signal</strong>
++              <span>You have prepared for CAT, GRE, or GMAT before.</span>
++              <span>You know you are capable, but consistency keeps slipping.</span>
++              <span>Quant, Verbal, or DI is clearly holding you back.</span>
++              <span>You need a daily plan instead of deciding what to study.</span>
++              <span>You want mentor visibility, not just more material.</span>
++            </div>
++            <div className="fit-list fit-list-muted">
++              <strong>Less ideal if</strong>
++              <span>You only want recorded lessons.</span>
++              <span>You prefer studying completely independently.</span>
++              <span>You need first-principles coaching from zero.</span>
++            </div>
++          </div>
++        </section>
++
++        <section id="curriculum" className="public-section curriculum-section">
++          <div className="public-section-heading">
++            <div>
++              <span className="public-eyebrow">Curriculum</span>
++              <h2>A fixed 8-week curriculum, followed by test readiness.</h2>
++            </div>
++            <p>Plan for the GMAT around week 12; some students may need longer depending on starting point and consistency.</p>
++          </div>
++          <div className="curriculum-model" aria-label="Ace Club learning model">
++            <div>
++              <span>01</span>
++              <strong>Pre-read</strong>
++            </div>
++            <div>
++              <span>02</span>
++              <strong>Live session</strong>
++            </div>
++            <div>
++              <span>03</span>
++              <strong>Worksheet</strong>
++            </div>
++            <div>
++              <span>04</span>
++              <strong>Review</strong>
++            </div>
++          </div>
++          <div className="curriculum-table" aria-label="Ace Club 8-week curriculum">
++            <div className="curriculum-table-head">
++              <span>Week</span>
++              <span>Saturday</span>
++              <span>Sunday</span>
++            </div>
++            <div className="curriculum-table-body">
++              {curriculumWeeks.map((week) => (
++                <div
++                  key={week.week}
++                  className="curriculum-table-row"
++                >
++                  <div>
++                    <span>Week {week.week}</span>
++                    <strong>{week.focus}</strong>
++                  </div>
++                  <p>{week.saturday?.title || 'TBA'}</p>
++                  <p>{week.sunday?.title || 'TBA'}</p>
++                </div>
++              ))}
++            </div>
++          </div>
++          <a
++            className="curriculum-sample-link"
++            href="https://www.notion.so/Samples-to-Share-32ae9744253f80ee96e1e239fcce77c3?source=copy_link"
++            target="_blank"
++            rel="noreferrer"
++          >
++            View sample prep page
++          </a>
++        </section>
++
++        <section id="mentors" className="public-section about-section">
++          <div className="about-copy">
++            <span className="public-eyebrow">Mentors</span>
++            <h2>Three operators behind one tiny GMAT club.</h2>
++            <p>
++              Ace Club is run by mentors from The Admit Co. Built for students who need sharper feedback,
++              structure, and accountability.
++            </p>
++            <p className="about-scope">Quant, Verbal, DI, mock strategy, and study planning.</p>
++            <div className="about-actions">
++              <a className="btn btn-primary" href="https://wa.me/917689992562" target="_blank" rel="noreferrer">
++                WhatsApp us
++              </a>
++              <a className="btn btn-secondary" href="https://calendar.app.google/snra3b7Bzfd6Yutd7" target="_blank" rel="noreferrer">
++                Book a call
++              </a>
++            </div>
++          </div>
++          <div className="mentor-system" aria-label="Mentor coverage system">
++            <div className="mentor-line" />
++            <article className="mentor-node">
++              <span>IS</span>
++              <strong>Ishan</strong>
++              <p>Quant + planning</p>
++            </article>
++            <article className="mentor-node">
++              <span>UJ</span>
++              <strong>Unnati</strong>
++              <p>DI + tracking</p>
++            </article>
++            <article className="mentor-node">
++              <span>TT</span>
++              <strong>Tanya</strong>
++              <p>Verbal + reasoning</p>
++            </article>
++          </div>
++        </section>
++
++        <section id="batches" className="public-section">
++          <div className="public-section-heading">
++            <div>
++              <span className="public-eyebrow">Upcoming cohorts</span>
++              <h2 style={{ marginBottom: 0 }}>Apply for a small monthly cohort.</h2>
++            </div>
++            <p>Each batch is capped at 8 students. Payment confirms your seat.</p>
++          </div>
++
++          {loadingBatches ? (
++            <div className="empty-state" style={{ padding: 32 }}>
++              <div className="spinner" />
++            </div>
++          ) : batches.length > 0 ? (
++            <div className="batch-grid">
++              {batches.map((batch) => (
++                <article key={batch.id} className="batch-card">
++                  <h3>{batch.name}</h3>
++                  <p className="batch-meta">Starts {formatBatchDate(batch.starts_at)}</p>
++                  {batch.public_note && <p className="batch-meta">{batch.public_note}</p>}
++                  <div className="seat-meter" aria-label={`${batch.seats_taken} seats filled out of ${batch.capacity}`}>
++                    {Array.from({ length: batch.capacity }, (_, index) => (
++                      <span key={index} className={index < batch.seats_taken ? 'is-filled' : ''} />
++                    ))}
++                  </div>
++                  <div className="seat-line">{batch.seats_available} of {batch.capacity} seats available</div>
++                  <div className="batch-price">{formatMoney(batch.price_amount, batch.currency)}</div>
++                  <button
++                    className="btn btn-primary"
++                    onClick={() => router.push(`/register?course=${batch.id}`)}
++                    disabled={batch.seats_available <= 0}
++                  >
++                    {batch.seats_available > 0 ? 'Apply' : 'Batch full'}
++                  </button>
++                </article>
++              ))}
++            </div>
++          ) : (
++            <div className="empty-state" style={{ padding: 32 }}>
++              <h3 className="empty-state-title">New batches opening soon</h3>
++              <p className="empty-state-text">The next Ace Club cohorts will appear here once registration opens.</p>
++            </div>
++          )}
++          <div className="cohort-flow">
++            <span>Apply</span>
++            <span>Short call</span>
++            <span>Join cohort</span>
++          </div>
++        </section>
++
++        <section className="final-cta public-snap-section">
++          <svg className="final-map" viewBox="0 0 700 280" aria-hidden="true">
++            <path d="M38 204 C158 84, 254 250, 350 140 S530 52, 652 156" />
++            <circle cx="38" cy="204" r="7" />
++            <circle cx="350" cy="140" r="7" />
++            <circle cx="652" cy="156" r="7" />
++          </svg>
++          <h2>If you already know the basics, we will help you build consistency.</h2>
++          <a
++            className="btn btn-primary btn-lg"
++            href="#batches"
++            onClick={(event) => {
++              event.preventDefault();
++              handleNavClick('batches');
++            }}
++          >
++            Apply for next cohort
++          </a>
++        </section>
++      </div>
++    </main>
++  );
++}
+diff --git a/src/app/account/access/page.tsx b/src/app/account/access/page.tsx
+new file mode 100644
+index 0000000..85b36a8
+--- /dev/null
++++ b/src/app/account/access/page.tsx
+@@ -0,0 +1,33 @@
++import Link from 'next/link';
++import { notFound } from 'next/navigation';
++import { requirePortalRole } from '@/lib/server/portalAuthorization';
++import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
++import { getMyV2Access } from '@/lib/server/v2Products';
++import { historyPage, loadPurchaseHistory } from '@/lib/server/v2CourseWorkspace';
++import { v2ProductDisplayName } from '@/lib/v2Products';
++import { courseDate } from '@/lib/v2CoursePresentation';
++import { PurchaseHistory } from '@/components/courses/PurchaseHistory';
++import { StudentHeader } from '@/components/student/StudentHeader';
++import { createClient } from '@/utils/supabase/server';
++import styles from '@/components/courses/courses.module.css';
++import '@/app/dashboard/dashboard.css';
++
++export const dynamic = 'force-dynamic';
++export default async function MyAccessPage({ searchParams }: { searchParams: Promise<{ page?: string | string[] }> }) {
++  if (!isV2Phase1PreviewEnabled()) notFound();
++  const identity = await requirePortalRole('student');
++  const page = historyPage((await searchParams).page);
++  const supabase = await createClient();
++  const [access, history, profile] = await Promise.all([
++    getMyV2Access().catch(() => null), loadPurchaseHistory('student', page),
++    supabase.from('profiles').select('full_name').eq('id', identity.id).maybeSingle(),
++  ]);
++  return <div className="student-page"><StudentHeader studentName={profile.data?.full_name?.trim() || 'Student'} /><main className={styles.main}>
++    <div className={styles.intro}><span className={styles.eyebrow}>YOUR COURSES</span><h1>My access</h1><p>See your current course access and the original details of your purchases.</p></div>
++    <section className={styles.panel} aria-labelledby="active-access-heading"><div className={styles.row}><h2 id="active-access-heading">Active course access</h2><Link href="/courses/v2" prefetch={false}>Explore courses</Link></div>
++      {access === null ? <div role="alert"><p>We couldn’t verify your access. Please retry; this is not a confirmation that your access has ended.</p><Link href="/account/access" prefetch={false}>Retry access check</Link></div> : access.length === 0 ? <div className={styles.empty}><h3>No active Phase 1 course access</h3><p>Existing batch enrollments remain available through your learning dashboard. Contact the programme team if you expected a new course purchase here.</p></div> : <ul className={styles.history}>{access.map((item) => <li key={item.product_code}><div className={styles.row}><h3>{v2ProductDisplayName(item.product_code)}</h3><span className={styles.badge}>Active</span></div><p>Subjects: {item.sections.map((section) => section === 'di' ? 'DI' : section[0].toUpperCase() + section.slice(1)).join(', ')}</p><p>Access ends {courseDate(item.expires_at)}</p></li>)}</ul>}
++      <p>Access is checked again when you open protected content. Live-batch enrollment is separate from product access.</p><Link href="/dashboard" prefetch={false}>Return to my learning</Link>
++    </section>
++    <PurchaseHistory history={history} page={page} href="/account/access" />
++  </main></div>;
++}
+diff --git a/src/app/admin/v2/WorkspaceNavigation.tsx b/src/app/admin/v2/WorkspaceNavigation.tsx
+index f581b33..7446f4c 100644
+--- a/src/app/admin/v2/WorkspaceNavigation.tsx
++++ b/src/app/admin/v2/WorkspaceNavigation.tsx
+@@ -6,6 +6,7 @@ import styles from './workspace.module.css';
+ 
+ const destinations = [
+   ['/admin/v2', 'Overview'],
++  ['/admin/v2/access', 'Products & access'],
+   ['/admin/v2/templates', 'Course content'],
+   ['/admin/v2/batches', 'Batches & publishing'],
+ ] as const;
+diff --git a/src/app/admin/v2/access/page.tsx b/src/app/admin/v2/access/page.tsx
+new file mode 100644
+index 0000000..9221dba
+--- /dev/null
++++ b/src/app/admin/v2/access/page.tsx
+@@ -0,0 +1,22 @@
++import { AdminDraftLink as Link } from '@/components/AdminDraftNavigation';
++import { notFound } from 'next/navigation';
++import { requirePortalRole } from '@/lib/server/portalAuthorization';
++import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
++import { historyPage, loadCourseCatalogue, loadPurchaseHistory } from '@/lib/server/v2CourseWorkspace';
++import { courseMoney } from '@/lib/v2CoursePresentation';
++import { PurchaseHistory } from '@/components/courses/PurchaseHistory';
++import styles from '@/components/courses/courses.module.css';
++
++export const dynamic = 'force-dynamic';
++export default async function AdminCourseAccessPage({ searchParams }: { searchParams: Promise<{ page?: string | string[] }> }) {
++  if (!isV2Phase1PreviewEnabled()) notFound();
++  await requirePortalRole('admin');
++  const page = historyPage((await searchParams).page);
++  const [catalogue, history] = await Promise.all([loadCourseCatalogue(), loadPurchaseHistory('admin', page)]);
++  return <div><h1 className="admin-page-title">Products &amp; access</h1><p className="admin-page-subtitle">Review current course prices and confirmed purchase records. Access changes only through the verified payment process.</p>
++    <section className={styles.panel}><div className={styles.row}><h2>Course catalogue</h2><Link href="/courses/v2" prefetch={false}>Open catalogue and package prices</Link></div>
++      {catalogue === null ? <p role="alert">The catalogue could not be loaded. Reload this page to retry.</p> : catalogue.length === 0 ? <p>No offerings are currently open for selection.</p> : <ul className={styles.history}>{catalogue.map((product) => <li key={product.code}><div className={styles.row}><h3>{product.name}</h3><strong>{product.amountPaise === null ? 'Price unavailable' : courseMoney(product.amountPaise)}</strong></div><p>{product.sections.join(' · ').toUpperCase()} · Six calendar months from confirmed payment</p></li>)}</ul>}
++      <p>Catalogue availability does not revoke existing access. Historical purchase prices and expiry dates are preserved.</p>
++    </section><PurchaseHistory history={history} page={page} href="/admin/v2/access" admin />
++  </div>;
++}
+diff --git a/src/app/admin/v2/page.tsx b/src/app/admin/v2/page.tsx
+index 7d48e29..673de51 100644
+--- a/src/app/admin/v2/page.tsx
++++ b/src/app/admin/v2/page.tsx
+@@ -18,6 +18,7 @@ export default async function CoursePublishingPage() {
+       <p>Explore the course editors below. Saving drafts and publishing will become available after staging setup is complete.</p>
+       <p>Existing courses and materials have not been imported into this workspace.</p>
+     </section>}
++    <section className="admin-card"><h2>Products and student access</h2><p>Review Full Course and individual offerings, current prices, and confirmed purchase history.</p><Link href="/admin/v2/access" prefetch={false}>Open products and access</Link></section>
+     <div className="workspace-overview"><section className="admin-card">
+       <span className="workspace-step">01 / BUILD THE CURRICULUM</span>
+       <h2>Prepare course content</h2>
+diff --git a/src/app/courses/v2/page.tsx b/src/app/courses/v2/page.tsx
+new file mode 100644
+index 0000000..a8f00bf
+--- /dev/null
++++ b/src/app/courses/v2/page.tsx
+@@ -0,0 +1,46 @@
++import Link from 'next/link';
++import { notFound } from 'next/navigation';
++import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
++import { loadCourseCatalogue } from '@/lib/server/v2CourseWorkspace';
++import { quoteV2Products } from '@/lib/server/v2Products';
++import { courseIdentity, courseMoney, courseNames, parseCourseSelection } from '@/lib/v2CoursePresentation';
++import { BrandLogo } from '@/components/BrandLogo';
++import styles from '@/components/courses/courses.module.css';
++
++export const dynamic = 'force-dynamic';
++export default async function CourseCataloguePage({ searchParams }: { searchParams: Promise<{ course?: string | string[] }> }) {
++  if (!isV2Phase1PreviewEnabled()) notFound();
++  const params = await searchParams;
++  const products = await loadCourseCatalogue();
++  const selection = parseCourseSelection(params.course);
++  let quote = null;
++  let quoteError = '';
++  if (params.course !== undefined) {
++    if (!selection) quoteError = 'Choose Full Course on its own, or one to three different individual courses.';
++    else if (!products || selection.some((code) => !products.some((product) => product.code === code))) quoteError = 'One or more selected courses are unavailable. Please choose again.';
++    else {
++      try { quote = await quoteV2Products(selection); }
++      catch { quoteError = 'The current price could not be loaded. Please retry your selection.'; }
++    }
++  }
++  return <div className={styles.page}>
++    <header className={styles.header}><Link href="/" aria-label="Ace Club home"><BrandLogo variant="light" className={styles.logo} /></Link><nav aria-label="Course navigation"><Link href="/dashboard" prefetch={false}>My learning</Link><Link href="/account/access" prefetch={false}>My access</Link></nav></header>
++    <main className={styles.main}>
++      <div className={styles.intro}><span className={styles.eyebrow}>FIND YOUR COURSE</span><h1>A complete course. Your way to learn.</h1><p>Build your foundation in Quant, Verbal and DI. Study all three together or choose complete individual courses.</p></div>
++      <div className={styles.notice}><strong>Preview catalogue</strong><p>Explore current course prices and your access. Online purchasing is not available here yet.</p></div>
++      {products === null ? <section className={styles.panel} role="alert"><h2>Courses are temporarily unavailable</h2><p>We couldn’t load the catalogue. No sample prices or courses have been substituted.</p><Link href="/courses/v2" prefetch={false}>Retry catalogue</Link></section> : products.length === 0 ? <section className={styles.panel}><h2>No courses are available for selection</h2><p>Your existing purchases remain listed in My access.</p></section> : <>
++        <section className={styles.offerings} aria-label="Available courses">{[...products].sort((a, b) => Number(b.code === 'full_batch') - Number(a.code === 'full_batch')).map((product) => <article key={product.code} className={styles.offering}>
++          <span className={styles.eyebrow}>{product.sections.length === 3 ? 'ALL THREE SUBJECTS' : 'INDIVIDUAL COURSE'}</span><h2>{product.name}</h2><p>{product.sections.map((section) => section === 'di' ? 'DI' : section[0].toUpperCase() + section.slice(1)).join(' + ')}</p><p>A complete curriculum of sessions, materials, recordings and readings.</p>
++          <strong className={styles.price}>{product.amountPaise === null ? 'Price unavailable' : courseMoney(product.amountPaise)}</strong><small>Six calendar months from confirmed payment</small>
++          <Link className={styles.button} href={`/courses/v2?course=${courseIdentity(product.code)}#quote`} prefetch={false}>Review {product.name}</Link>
++        </article>)}</section>
++        <section className={styles.panel}><h2>Choose individual subjects</h2><p>Combine Quant, Verbal and DI. Your package price comes from the current catalogue.</p>
++          <form key={selection?.join(',') ?? 'empty'} action="/courses/v2#quote" method="get"><fieldset className={styles.choices}><legend>Select one, two or three subjects</legend>{products.filter((product) => product.code !== 'full_batch').map((product) => <label key={product.code}><input type="checkbox" name="course" value={courseIdentity(product.code)} defaultChecked={selection?.includes(product.code)} />{product.name}</label>)}</fieldset><button className={styles.button} type="submit">Review package price</button></form>
++        </section>
++        <section id="quote" className={styles.panel} aria-labelledby="quote-heading"><h2 id="quote-heading">Your selection</h2>
++          {quoteError ? <p role="alert">{quoteError}</p> : quote ? <><h3>{courseNames(quote.product_codes)}</h3><strong className={styles.price}>{courseMoney(quote.amount_paise)}</strong><p>Current total in INR. This price review does not create a purchase or grant access.</p>{!quote.product_codes.includes('full_batch') && <p>Individual courses grant only their selected subjects. Selecting all three does not create a Full Course purchase.</p>}<p>Access starts at verified payment and ends six calendar months later. The stored expiry is shown in My access.</p></> : <p>Select a course or a subject package to review its current price.</p>}
++        </section>
++      </>}
++    </main>
++  </div>;
++}
+diff --git a/src/app/page.tsx b/src/app/page.tsx
+index 3c4beaa..8f122a2 100644
+--- a/src/app/page.tsx
++++ b/src/app/page.tsx
+@@ -1,476 +1,6 @@
+-'use client';
++import Home from './HomePage';
++import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
+ 
+-import { useEffect, useMemo, useState } from 'react';
+-import { useRouter } from 'next/navigation';
+-import { BrandLogo } from '@/components/BrandLogo';
+-import { useAuth } from '@/lib/AuthContext';
+-import { DEFAULT_CURRICULUM } from '@/lib/curriculum';
+-import type { PublicBatch } from '@/lib/registration';
+-import './public.css';
+-
+-const NAV_ITEMS = [
+-  { id: 'program', label: 'Program' },
+-  { id: 'fit', label: 'Fit' },
+-  { id: 'curriculum', label: 'Curriculum' },
+-  { id: 'mentors', label: 'Mentors' },
+-  { id: 'batches', label: 'Cohorts' },
+-];
+-
+-function formatBatchDate(value: string | null) {
+-  if (!value) return 'Dates coming soon';
+-  return new Intl.DateTimeFormat('en-IN', {
+-    weekday: 'short',
+-    day: 'numeric',
+-    month: 'short',
+-    year: 'numeric',
+-    timeZone: 'Asia/Kolkata',
+-  }).format(new Date(value));
+-}
+-
+-function formatMoney(amount: number, currency: string) {
+-  if (!amount) return 'Price TBA';
+-  return new Intl.NumberFormat('en-IN', {
+-    style: 'currency',
+-    currency,
+-    maximumFractionDigits: 0,
+-  }).format(amount / 100);
+-}
+-
+-export default function Home() {
+-  const { user, isLoading } = useAuth();
+-  const router = useRouter();
+-  const [batches, setBatches] = useState<PublicBatch[]>([]);
+-  const [loadingBatches, setLoadingBatches] = useState(true);
+-  const [activeSection, setActiveSection] = useState('overview');
+-  const [hasScrolled, setHasScrolled] = useState(false);
+-
+-  function handleNavClick(sectionId: string) {
+-    const section = document.getElementById(sectionId);
+-    if (section) {
+-      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+-      window.history.pushState(null, '', `#${sectionId}`);
+-    }
+-    setActiveSection(sectionId);
+-  }
+-
+-  useEffect(() => {
+-    fetch('/api/register/batches')
+-      .then((res) => res.json())
+-      .then((payload) => setBatches(payload.batches || []))
+-      .catch((error) => console.error('Failed to fetch public batches:', error))
+-      .finally(() => setLoadingBatches(false));
+-  }, []);
+-
+-  useEffect(() => {
+-    function scrollToHashSection() {
+-      const sectionId = window.location.hash.replace('#', '');
+-      if (!sectionId) return;
+-      const section = document.getElementById(sectionId);
+-      if (section) {
+-        section.scrollIntoView({ block: 'start' });
+-        setActiveSection(sectionId);
+-      }
+-    }
+-
+-    function updateActiveSection() {
+-      const scrollPosition = window.scrollY + window.innerHeight * 0.45;
+-      setHasScrolled(window.scrollY > 24);
+-      const currentSection = NAV_ITEMS
+-        .map((item) => document.getElementById(item.id))
+-        .filter((section): section is HTMLElement => Boolean(section))
+-        .reverse()
+-        .find((section) => section.offsetTop <= scrollPosition);
+-
+-      if (currentSection?.id) {
+-        setActiveSection(currentSection.id);
+-      }
+-    }
+-
+-    updateActiveSection();
+-    window.setTimeout(scrollToHashSection, 80);
+-    window.addEventListener('scroll', updateActiveSection, { passive: true });
+-    window.addEventListener('hashchange', scrollToHashSection);
+-
+-    return () => {
+-      window.removeEventListener('scroll', updateActiveSection);
+-      window.removeEventListener('hashchange', scrollToHashSection);
+-    };
+-  }, []);
+-
+-  const curriculumWeeks = useMemo(() => {
+-    return Array.from({ length: 8 }, (_, index) => {
+-      const week = index + 1;
+-      const sessions = DEFAULT_CURRICULUM.filter((item) => item.week === week);
+-      const categories = Array.from(new Set(sessions.map((item) => item.category).filter((category) => category !== 'Orientation')));
+-      const focus = categories.length ? categories.join(' + ') : 'Orientation';
+-      return {
+-        week,
+-        focus,
+-        saturday: sessions.find((session) => session.day === 'Saturday'),
+-        sunday: sessions.find((session) => session.day === 'Sunday'),
+-      };
+-    });
+-  }, []);
+-
+-  if (isLoading) {
+-    return (
+-      <div className="public-loading">
+-        <div className="spinner spinner-lg" />
+-      </div>
+-    );
+-  }
+-
+-  return (
+-    <main className="public-page">
+-      <nav className={`public-nav ${hasScrolled ? 'is-compact' : ''}`}>
+-        <div className="public-nav-inner">
+-          <a className="public-brand" href="#overview" aria-label="Ace Club home">
+-            <BrandLogo variant="light" className="public-brand-logo" preload />
+-          </a>
+-          <div className="public-nav-actions">
+-            <div className="public-nav-links" aria-label="Landing page sections">
+-              {NAV_ITEMS.map((item) => (
+-                <a
+-                  key={item.id}
+-                  href={`#${item.id}`}
+-                  className={activeSection === item.id ? 'is-active' : ''}
+-                  onClick={(event) => {
+-                    event.preventDefault();
+-                    handleNavClick(item.id);
+-                  }}
+-                >
+-                  {item.label}
+-                </a>
+-              ))}
+-            </div>
+-            <a
+-              className="nav-register"
+-              href="#batches"
+-              onClick={(event) => {
+-                event.preventDefault();
+-                handleNavClick('batches');
+-              }}
+-            >
+-              Apply
+-            </a>
+-            <button
+-              className="btn btn-secondary btn-sm nav-login"
+-              onClick={() => router.push(user ? (user.role === 'admin' ? '/admin' : '/dashboard') : '/login')}
+-            >
+-              {user ? (user.role === 'admin' ? 'Admin' : 'Dashboard') : 'Login'}
+-            </button>
+-          </div>
+-        </div>
+-      </nav>
+-      <div className="public-shell">
+-        <section id="overview" className="public-hero">
+-          <div className="public-hero-copy">
+-            <span className="public-eyebrow">The Admit Co. presents</span>
+-            <h1>
+-              Focused GMAT prep
+-              <span>for students ready to build momentum.</span>
+-            </h1>
+-            <p>
+-              Small cohorts. Weekly accountability. Personal intervention when your prep slips.
+-            </p>
+-            <div className="public-actions">
+-              <a
+-                className="btn btn-primary btn-lg"
+-                href="#batches"
+-                onClick={(event) => {
+-                  event.preventDefault();
+-                  handleNavClick('batches');
+-                }}
+-              >
+-                Apply for a cohort
+-              </a>
+-              <a
+-                className="btn btn-secondary btn-lg"
+-                href="#program"
+-                onClick={(event) => {
+-                  event.preventDefault();
+-                  handleNavClick('program');
+-                }}
+-              >
+-                See how Ace Club works
+-              </a>
+-            </div>
+-          </div>
+-          <div className="hero-right">
+-            <div className="hero-system-map" aria-label="Ace Club prep operating system graphic">
+-              <svg viewBox="0 0 520 420" role="img" aria-labelledby="system-map-title">
+-                <title id="system-map-title">Preparation system map with sessions, practice, review, and intervention checkpoints</title>
+-                <path className="map-path" d="M72 250 C120 100, 242 110, 260 210 S390 330, 452 168" />
+-                <path className="map-path map-path-soft" d="M92 300 C190 360, 310 350, 428 260" />
+-                <g className="map-node map-node-strong" transform="translate(74 250)">
+-                  <circle r="22" />
+-                  <text y="5">01</text>
+-                </g>
+-                <g className="map-node" transform="translate(182 142)">
+-                  <circle r="18" />
+-                  <text y="5">02</text>
+-                </g>
+-                <g className="map-node" transform="translate(272 218)">
+-                  <circle r="22" />
+-                  <text y="5">03</text>
+-                </g>
+-                <g className="map-node" transform="translate(392 302)">
+-                  <circle r="18" />
+-                  <text y="5">04</text>
+-                </g>
+-                <g className="map-node map-node-strong" transform="translate(452 168)">
+-                  <circle r="24" />
+-                  <text y="5">05</text>
+-                </g>
+-                <text className="map-label" x="54" y="346">Live</text>
+-                <text className="map-label" x="188" y="84">practice</text>
+-                <text className="map-label" x="300" y="204">review</text>
+-                <text className="map-label" x="358" y="360">mock</text>
+-                <text className="map-label" x="394" y="108">intervention</text>
+-              </svg>
+-            </div>
+-            <div className="hero-proof-line" aria-label="Ace Club highlights">
+-              <span>8 students max</span>
+-              <span>Weekly accountability</span>
+-              <span>Clear weekly plan</span>
+-            </div>
+-          </div>
+-        </section>
+-
+-        <section id="program" className="public-section program-section">
+-          <div className="public-section-heading">
+-            <div>
+-              <span className="public-eyebrow">Program</span>
+-              <h2>You do not have to decide what to study next.</h2>
+-            </div>
+-            <p>Every week turns into a daily plan inside the portal, with progress visible to you and your mentor.</p>
+-          </div>
+-          <div className="rhythm-graphic" aria-label="Weekly operating rhythm">
+-            <div className="rhythm-line" />
+-            <div className="rhythm-step">
+-              <span>SAT/SUN</span>
+-              <strong>Live session</strong>
+-            </div>
+-            <div className="rhythm-step">
+-              <span>MON-FRI</span>
+-              <strong>Daily portal plan</strong>
+-            </div>
+-            <div className="rhythm-step">
+-              <span>WHEN NEEDED</span>
+-              <strong>4 personal sessions</strong>
+-            </div>
+-          </div>
+-          <div className="program-grid">
+-            <div className="program-item">
+-              <span>01</span>
+-              <strong>Weekend live sessions</strong>
+-              <p>Small-group classes set the direction for the week.</p>
+-            </div>
+-            <div className="program-item">
+-              <span>02</span>
+-              <strong>Daily plan in the portal</strong>
+-              <p>Your worksheet targets, attempts, and gaps stay visible.</p>
+-            </div>
+-            <div className="program-item">
+-              <span>03</span>
+-              <strong>4 flexible 1:1 sessions</strong>
+-              <p>Use them for catch-up, mock analysis, or momentum drops.</p>
+-            </div>
+-          </div>
+-        </section>
+-
+-        <section id="fit" className="public-section fit-section public-snap-section">
+-          <div className="public-section-heading">
+-            <div>
+-              <span className="public-eyebrow">Best fit</span>
+-              <h2>You might need this if one of these feels true.</h2>
+-            </div>
+-            <p>Most students come in with one specific bottleneck, not every problem at once.</p>
+-          </div>
+-          <div className="fit-panel">
+-            <div className="fit-list">
+-              <strong>Good signal</strong>
+-              <span>You have prepared for CAT, GRE, or GMAT before.</span>
+-              <span>You know you are capable, but consistency keeps slipping.</span>
+-              <span>Quant, Verbal, or DI is clearly holding you back.</span>
+-              <span>You need a daily plan instead of deciding what to study.</span>
+-              <span>You want mentor visibility, not just more material.</span>
+-            </div>
+-            <div className="fit-list fit-list-muted">
+-              <strong>Less ideal if</strong>
+-              <span>You only want recorded lessons.</span>
+-              <span>You prefer studying completely independently.</span>
+-              <span>You need first-principles coaching from zero.</span>
+-            </div>
+-          </div>
+-        </section>
+-
+-        <section id="curriculum" className="public-section curriculum-section">
+-          <div className="public-section-heading">
+-            <div>
+-              <span className="public-eyebrow">Curriculum</span>
+-              <h2>A fixed 8-week curriculum, followed by test readiness.</h2>
+-            </div>
+-            <p>Plan for the GMAT around week 12; some students may need longer depending on starting point and consistency.</p>
+-          </div>
+-          <div className="curriculum-model" aria-label="Ace Club learning model">
+-            <div>
+-              <span>01</span>
+-              <strong>Pre-read</strong>
+-            </div>
+-            <div>
+-              <span>02</span>
+-              <strong>Live session</strong>
+-            </div>
+-            <div>
+-              <span>03</span>
+-              <strong>Worksheet</strong>
+-            </div>
+-            <div>
+-              <span>04</span>
+-              <strong>Review</strong>
+-            </div>
+-          </div>
+-          <div className="curriculum-table" aria-label="Ace Club 8-week curriculum">
+-            <div className="curriculum-table-head">
+-              <span>Week</span>
+-              <span>Saturday</span>
+-              <span>Sunday</span>
+-            </div>
+-            <div className="curriculum-table-body">
+-              {curriculumWeeks.map((week) => (
+-                <div
+-                  key={week.week}
+-                  className="curriculum-table-row"
+-                >
+-                  <div>
+-                    <span>Week {week.week}</span>
+-                    <strong>{week.focus}</strong>
+-                  </div>
+-                  <p>{week.saturday?.title || 'TBA'}</p>
+-                  <p>{week.sunday?.title || 'TBA'}</p>
+-                </div>
+-              ))}
+-            </div>
+-          </div>
+-          <a
+-            className="curriculum-sample-link"
+-            href="https://www.notion.so/Samples-to-Share-32ae9744253f80ee96e1e239fcce77c3?source=copy_link"
+-            target="_blank"
+-            rel="noreferrer"
+-          >
+-            View sample prep page
+-          </a>
+-        </section>
+-
+-        <section id="mentors" className="public-section about-section">
+-          <div className="about-copy">
+-            <span className="public-eyebrow">Mentors</span>
+-            <h2>Three operators behind one tiny GMAT club.</h2>
+-            <p>
+-              Ace Club is run by mentors from The Admit Co. Built for students who need sharper feedback,
+-              structure, and accountability.
+-            </p>
+-            <p className="about-scope">Quant, Verbal, DI, mock strategy, and study planning.</p>
+-            <div className="about-actions">
+-              <a className="btn btn-primary" href="https://wa.me/917689992562" target="_blank" rel="noreferrer">
+-                WhatsApp us
+-              </a>
+-              <a className="btn btn-secondary" href="https://calendar.app.google/snra3b7Bzfd6Yutd7" target="_blank" rel="noreferrer">
+-                Book a call
+-              </a>
+-            </div>
+-          </div>
+-          <div className="mentor-system" aria-label="Mentor coverage system">
+-            <div className="mentor-line" />
+-            <article className="mentor-node">
+-              <span>IS</span>
+-              <strong>Ishan</strong>
+-              <p>Quant + planning</p>
+-            </article>
+-            <article className="mentor-node">
+-              <span>UJ</span>
+-              <strong>Unnati</strong>
+-              <p>DI + tracking</p>
+-            </article>
+-            <article className="mentor-node">
+-              <span>TT</span>
+-              <strong>Tanya</strong>
+-              <p>Verbal + reasoning</p>
+-            </article>
+-          </div>
+-        </section>
+-
+-        <section id="batches" className="public-section">
+-          <div className="public-section-heading">
+-            <div>
+-              <span className="public-eyebrow">Upcoming cohorts</span>
+-              <h2 style={{ marginBottom: 0 }}>Apply for a small monthly cohort.</h2>
+-            </div>
+-            <p>Each batch is capped at 8 students. Payment confirms your seat.</p>
+-          </div>
+-
+-          {loadingBatches ? (
+-            <div className="empty-state" style={{ padding: 32 }}>
+-              <div className="spinner" />
+-            </div>
+-          ) : batches.length > 0 ? (
+-            <div className="batch-grid">
+-              {batches.map((batch) => (
+-                <article key={batch.id} className="batch-card">
+-                  <h3>{batch.name}</h3>
+-                  <p className="batch-meta">Starts {formatBatchDate(batch.starts_at)}</p>
+-                  {batch.public_note && <p className="batch-meta">{batch.public_note}</p>}
+-                  <div className="seat-meter" aria-label={`${batch.seats_taken} seats filled out of ${batch.capacity}`}>
+-                    {Array.from({ length: batch.capacity }, (_, index) => (
+-                      <span key={index} className={index < batch.seats_taken ? 'is-filled' : ''} />
+-                    ))}
+-                  </div>
+-                  <div className="seat-line">{batch.seats_available} of {batch.capacity} seats available</div>
+-                  <div className="batch-price">{formatMoney(batch.price_amount, batch.currency)}</div>
+-                  <button
+-                    className="btn btn-primary"
+-                    onClick={() => router.push(`/register?course=${batch.id}`)}
+-                    disabled={batch.seats_available <= 0}
+-                  >
+-                    {batch.seats_available > 0 ? 'Apply' : 'Batch full'}
+-                  </button>
+-                </article>
+-              ))}
+-            </div>
+-          ) : (
+-            <div className="empty-state" style={{ padding: 32 }}>
+-              <h3 className="empty-state-title">New batches opening soon</h3>
+-              <p className="empty-state-text">The next Ace Club cohorts will appear here once registration opens.</p>
+-            </div>
+-          )}
+-          <div className="cohort-flow">
+-            <span>Apply</span>
+-            <span>Short call</span>
+-            <span>Join cohort</span>
+-          </div>
+-        </section>
+-
+-        <section className="final-cta public-snap-section">
+-          <svg className="final-map" viewBox="0 0 700 280" aria-hidden="true">
+-            <path d="M38 204 C158 84, 254 250, 350 140 S530 52, 652 156" />
+-            <circle cx="38" cy="204" r="7" />
+-            <circle cx="350" cy="140" r="7" />
+-            <circle cx="652" cy="156" r="7" />
+-          </svg>
+-          <h2>If you already know the basics, we will help you build consistency.</h2>
+-          <a
+-            className="btn btn-primary btn-lg"
+-            href="#batches"
+-            onClick={(event) => {
+-              event.preventDefault();
+-              handleNavClick('batches');
+-            }}
+-          >
+-            Apply for next cohort
+-          </a>
+-        </section>
+-      </div>
+-    </main>
+-  );
++export default function HomePage() {
++  return <Home showCourseCatalogue={isV2Phase1PreviewEnabled()} />;
+ }
+diff --git a/src/components/courses/PurchaseHistory.tsx b/src/components/courses/PurchaseHistory.tsx
+new file mode 100644
+index 0000000..7567c63
+--- /dev/null
++++ b/src/components/courses/PurchaseHistory.tsx
+@@ -0,0 +1,20 @@
++import Link from 'next/link';
++import type { PurchaseHistory as History } from '@/lib/server/v2CourseWorkspace';
++import { courseDate, courseMoney, courseNames, purchaseState } from '@/lib/v2CoursePresentation';
++import styles from './courses.module.css';
++
++export function PurchaseHistory({ history, page, href, admin = false }: { history: History; page: number; href: string; admin?: boolean }) {
++  return <section className={styles.panel} aria-labelledby="purchase-history-heading">
++    <h2 id="purchase-history-heading">{admin ? 'Purchase and access records' : 'Purchase history'}</h2>
++    <p>Confirmed purchases retain their original price and expiry, including after access ends. All dates are shown in IST.</p>
++    {history.status !== 'ready' ? <div role="alert" className={styles.notice}><p>Purchase history could not be loaded. This does not mean there are no purchases.</p><Link href={`${href}?page=${page}`} prefetch={false}>Retry history</Link></div> : <>
++      {history.items.length === 0 ? <p className={styles.empty}>{page === 1 ? 'No Phase 1 purchases are recorded here yet.' : 'No more purchases on this page.'}</p> : <ul className={styles.history}>
++        {history.items.map((item) => <li key={item.id}>
++          <div className={styles.row}><div>{admin && <p>{item.studentName}</p>}<h3>{courseNames(item.products)}</h3></div><span className={styles.badge}>{purchaseState(item, history.checkedAt)}</span></div>
++          <dl className={styles.facts}><div><dt>Paid</dt><dd>{courseMoney(item.amount_paise)}</dd></div><div><dt>Payment confirmed</dt><dd>{courseDate(item.confirmed_at)}</dd></div><div><dt>Access ends</dt><dd>{courseDate(item.expires_at)}</dd></div></dl>
++        </li>)}
++      </ul>}
++      {(page > 1 || history.hasMore) && <nav className={styles.row} aria-label="Purchase history pages">{page > 1 && <Link href={`${href}?page=${page - 1}`} prefetch={false}>Previous page</Link>}<span>Page {page}</span>{history.hasMore && <Link href={`${href}?page=${page + 1}`} prefetch={false}>Next page</Link>}</nav>}
++    </>}
++  </section>;
++}
+diff --git a/src/components/courses/courses.module.css b/src/components/courses/courses.module.css
+new file mode 100644
+index 0000000..d5e1c56
+--- /dev/null
++++ b/src/components/courses/courses.module.css
+@@ -0,0 +1,39 @@
++.page { min-height: 100vh; background: #f6f7f3; color: #24352f; font: 15px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; }
++.header { padding: 18px max(24px, calc((100% - 1200px)/2)); background: #fff; border-bottom: 1px solid #dce3dc; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
++.header nav { display: flex; gap: 24px; flex-wrap: wrap; }
++.logo { width: 110px; height: 62px; object-fit: contain; }
++.main { max-width: 1256px; margin: auto; padding: 40px 28px 64px; color: #24352f; }
++.intro { max-width: 760px; margin-bottom: 28px; }
++.intro h1 { font-family: inherit; font-size: clamp(28px, 3vw, 38px); line-height: 1.2; letter-spacing: -.035em; margin: 12px 0; color: #24352f; }
++.main p, .panel p { color: #58685f; }
++.eyebrow { font-size: 11px; font-weight: 650; letter-spacing: .08em; color: #58685f; }
++.notice { padding: 16px 20px; border: 1px solid #dce6d7; background: #eef3e8; border-radius: 10px; margin: 24px 0; }
++.notice p { font-size: 14px; }
++.offerings { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 18px; }
++.offering, .panel { background: white; border: 1px solid #dce3dc; border-radius: 12px; padding: 24px; min-width: 0; }
++.offering { display: flex; flex-direction: column; gap: 14px; }
++.offering h2, .panel h2 { font-size: 21px; font-family: inherit; letter-spacing: -.02em; color: #24352f; }
++.offering p { font-size: 14px; }
++.offering small { font-size: 12px; color: #58685f; }
++.price { display: block; font-size: 27px; font-weight: 650; letter-spacing: -.03em; color: #205848; }
++.offering .price { margin-top: auto; padding-top: 16px; }
++.panel { display: grid; gap: 18px; margin-top: 24px; overflow-wrap: anywhere; }
++.panel h3 { font-family: inherit; font-size: 17px; color: #24352f; }
++.button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 16px; background: #205848; color: #fff; border: 1px solid #205848; border-radius: 8px; font: inherit; font-weight: 600; text-decoration: none; cursor: pointer; }
++.button:hover { background: #164837; color: white; }
++.page a:not(.button), .main a:not(.button), .panel a { color: #205848; text-decoration: underline; text-underline-offset: 4px; }
++.choices { border: 0; display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
++.choices legend { margin-bottom: 12px; color: #58685f; font-size: 14px; }
++.choices label { display: flex; align-items: center; gap: 10px; border: 1px solid #cbd6ce; border-radius: 8px; padding: 12px 18px; min-height: 48px; cursor: pointer; }
++.choices input { width: 18px; height: 18px; accent-color: #205848; }
++.row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
++.badge { padding: 4px 10px; border-radius: 16px; background: #eaf2ec; color: #205848; font-size: 12px; font-weight: 600; }
++.history { display: grid; gap: 16px; list-style: none; }
++.history li { border-top: 1px solid #dce3dc; padding-top: 18px; display: grid; gap: 10px; }
++.facts { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
++.facts dt { font-size: 12px; color: #58685f; }
++.facts dd { font-size: 14px; margin: 4px 0 0; }
++.empty { padding: 20px; border: 1px dashed #b9c9bb; background: #fafcf8; border-radius: 10px; }
++.page :where(a,button,input):focus-visible, .main :where(a,button,input):focus-visible, .panel a:focus-visible { outline: 3px solid #366fb1; outline-offset: 3px; }
++@media (max-width: 1000px) { .offerings { grid-template-columns: repeat(2,minmax(0,1fr)); } }
++@media (max-width: 600px) { .main { padding: 28px 18px 48px; } .header { padding: 14px 18px; } .header nav { gap: 12px; font-size: 13px; } .offerings, .facts { grid-template-columns: minmax(0,1fr); } .panel, .offering { padding: 20px; } }
+diff --git a/src/components/student/StudentHeader.tsx b/src/components/student/StudentHeader.tsx
+index 0e91532..4171539 100644
+--- a/src/components/student/StudentHeader.tsx
++++ b/src/components/student/StudentHeader.tsx
+@@ -1,4 +1,5 @@
+ import Link from 'next/link';
++import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
+ import { BrandLogo } from '@/components/BrandLogo';
+ import { SignOutButton } from './SignOutButton';
+ 
+@@ -21,6 +22,7 @@ export function StudentHeader({ studentName }: { studentName: string }) {
+         </Link>
+         <nav className="student-navigation" aria-label="Student navigation">
+           <Link href="/dashboard">Home</Link>
++          {isV2Phase1PreviewEnabled() && <Link href="/account/access" prefetch={false}>My access</Link>}
+           <Link href="/schedule">Schedule</Link>
+           <Link href="/resources">Resources</Link>
+           <Link className="student-navigation-secondary" href="/practice">Practice log</Link>
+diff --git a/src/lib/server/v2CourseWorkspace.ts b/src/lib/server/v2CourseWorkspace.ts
+new file mode 100644
+index 0000000..1ce4bd8
+--- /dev/null
++++ b/src/lib/server/v2CourseWorkspace.ts
+@@ -0,0 +1,60 @@
++import 'server-only';
++
++import { listV2Products, quoteV2Products } from './v2Products';
++import { getPortalIdentity } from './portalAuthorization';
++import { isV2Phase1PreviewEnabled } from './v2Phase1Feature';
++import { createClient } from '@/utils/supabase/server';
++import { isV2ProductSelection, type V2ProductCode, type V2Product } from '@/lib/v2Products';
++
++export type PricedCourse = V2Product & { amountPaise: number | null };
++export async function loadCourseCatalogue(): Promise<PricedCourse[] | null> {
++  if (!isV2Phase1PreviewEnabled()) return null;
++  try {
++    const products = await listV2Products();
++    return await Promise.all(products.map(async (product) => {
++      try { return { ...product, amountPaise: (await quoteV2Products([product.code])).amount_paise }; }
++      catch { return { ...product, amountPaise: null }; }
++    }));
++  } catch { return null; }
++}
++
++export type PurchaseHistoryItem = {
++  id: string; studentName: string; accountActive: boolean; amount_paise: number;
++  confirmed_at: string; expires_at: string; revoked_at: string | null; products: V2ProductCode[];
++};
++export type PurchaseHistory = { status: 'ready'; items: PurchaseHistoryItem[]; hasMore: boolean; checkedAt: number }
++  | { status: 'unavailable' };
++const uuid = (value: unknown): value is string => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
++const record = (value: unknown): value is Record<string, unknown> => !!value && typeof value === 'object' && !Array.isArray(value);
++const date = (value: unknown): value is string => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value) && Number.isFinite(Date.parse(value));
++export function historyPage(value: string | string[] | undefined): number {
++  return typeof value === 'string' && /^[1-9]\d{0,4}$/.test(value) ? Number(value) : 1;
++}
++// All reads use the current caller's session and RLS; never a service-role client.
++// Payment references and provider details are deliberately not selected.
++export async function loadPurchaseHistory(audience: 'student' | 'admin', page: number): Promise<PurchaseHistory> {
++  if (!isV2Phase1PreviewEnabled() || !Number.isInteger(page) || page < 1 || page > 99999) return { status: 'unavailable' };
++  try {
++    const identity = await getPortalIdentity();
++    if (!identity || identity.role !== audience) return { status: 'unavailable' };
++    const supabase = await createClient();
++    let query = supabase.from('v2_purchases').select('id, student_id, amount_paise, currency, confirmed_at, expires_at, revoked_at, v2_product_grants(product_code), profiles!v2_purchases_student_id_fkey(full_name, is_active)');
++    if (audience === 'student') query = query.eq('student_id', identity.id);
++    const { data, error } = await query.order('confirmed_at', { ascending: false }).order('id', { ascending: false }).range((page - 1) * 25, page * 25);
++    if (error || !Array.isArray(data) || data.length > 26) return { status: 'unavailable' };
++    const items: PurchaseHistoryItem[] = [];
++    for (const row of data) {
++      if (!record(row) || !uuid(row.id) || !uuid(row.student_id) || (audience === 'student' && row.student_id !== identity.id)
++        || !Number.isSafeInteger(row.amount_paise) || Number(row.amount_paise) <= 0 || row.currency !== 'INR'
++        || !date(row.confirmed_at) || !date(row.expires_at) || Date.parse(row.expires_at) <= Date.parse(row.confirmed_at)
++        || !(row.revoked_at === null || date(row.revoked_at)) || !Array.isArray(row.v2_product_grants)
++        || !record(row.profiles) || typeof row.profiles.is_active !== 'boolean'
++        || !(row.profiles.full_name === null || typeof row.profiles.full_name === 'string')) return { status: 'unavailable' };
++      const products = row.v2_product_grants.map((grant: unknown) => record(grant) ? grant.product_code : null);
++      if (!isV2ProductSelection(products)) return { status: 'unavailable' };
++      items.push({ id: row.id, studentName: row.profiles.full_name?.trim() || 'Student', accountActive: row.profiles.is_active,
++        amount_paise: Number(row.amount_paise), confirmed_at: row.confirmed_at, expires_at: row.expires_at, revoked_at: row.revoked_at, products });
++    }
++    return { status: 'ready', items: items.slice(0, 25), hasMore: items.length > 25, checkedAt: Date.now() };
++  } catch { return { status: 'unavailable' }; }
++}
+diff --git a/src/lib/server/v2Phase1Feature.ts b/src/lib/server/v2Phase1Feature.ts
+new file mode 100644
+index 0000000..7f9a9f9
+--- /dev/null
++++ b/src/lib/server/v2Phase1Feature.ts
+@@ -0,0 +1,7 @@
++import 'server-only';
++
++// A Preview integration, independent of the Phase 2 authoring flags.
++export function isV2Phase1PreviewEnabled(): boolean {
++  if (process.env.VERCEL_ENV === 'production') return false;
++  return process.env.VERCEL_ENV === 'preview' || process.env.NODE_ENV === 'development';
++}
+diff --git a/src/lib/v2CoursePresentation.ts b/src/lib/v2CoursePresentation.ts
+new file mode 100644
+index 0000000..f7d37b0
+--- /dev/null
++++ b/src/lib/v2CoursePresentation.ts
+@@ -0,0 +1,30 @@
++import { isV2ProductSelection, v2ProductDisplayName, type V2ProductCode } from './v2Products';
++
++export const COURSE_IDENTITIES = {
++  full_course: 'full_batch', quant: 'quant_crash', verbal: 'verbal_crash', di: 'di_crash',
++} as const satisfies Record<string, V2ProductCode>;
++export type CourseIdentity = keyof typeof COURSE_IDENTITIES;
++export function courseIdentity(code: V2ProductCode): CourseIdentity {
++  return (Object.keys(COURSE_IDENTITIES) as CourseIdentity[]).find((key) => COURSE_IDENTITIES[key] === code)!;
++}
++export function parseCourseSelection(value: string | string[] | undefined): V2ProductCode[] | null {
++  const values = value === undefined ? [] : Array.isArray(value) ? value : [value];
++  if (!values.every((key) => Object.hasOwn(COURSE_IDENTITIES, key))) return null;
++  const codes = values.map((key) => COURSE_IDENTITIES[key as CourseIdentity]);
++  return isV2ProductSelection(codes) ? codes : null;
++}
++export function courseMoney(paise: number): string {
++  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(paise / 100);
++}
++export function courseDate(value: string): string {
++  return new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' }).format(new Date(value)) + ' IST';
++}
++export function courseNames(codes: V2ProductCode[]): string { return codes.map(v2ProductDisplayName).join(' + '); }
++export type PurchaseState = 'Active' | 'Expired' | 'Revoked' | 'Not started' | 'Account inactive';
++export function purchaseState(purchase: { confirmed_at: string; expires_at: string; revoked_at: string | null; accountActive: boolean }, now: number): PurchaseState {
++  if (purchase.revoked_at !== null) return 'Revoked';
++  if (!purchase.accountActive) return 'Account inactive';
++  if (now < Date.parse(purchase.confirmed_at)) return 'Not started';
++  if (now >= Date.parse(purchase.expires_at)) return 'Expired';
++  return 'Active';
++}

@@ -1,0 +1,37 @@
+{
+  "recordedAt": "2026-11-01T18:58:57.715Z",
+  "preview": {
+    "id": "dpl_EWB7tYjTYzhrndN7WS1waXKKCMaG",
+    "url": "ace-club-97csnfzm5-theadmitco-techs-projects.vercel.app",
+    "state": "READY",
+    "environment": "preview",
+    "branch": "intern/v2-phase-2-review",
+    "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+    "aliases": [
+      "ace-club-lms-git-intern-v2-pha-9a969c-theadmitco-techs-projects.vercel.app"
+    ]
+  },
+  "production": {
+    "deployment": "dpl_8axtycbJUpFX8cPWhVtkhGf6p9Kj",
+    "environmentMetadataUnchanged": true,
+    "entries": 8
+  },
+  "pr": {
+    "number": 24,
+    "draft": true,
+    "merged": false,
+    "state": "open",
+    "branch": "intern/v2-phase-2-review"
+  },
+  "phase2FlagsPresent": false,
+  "stagingProject": "eyphkkginlgoaxflauog",
+  "serverKeyScope": {
+    "target": [
+      "preview"
+    ],
+    "gitBranch": "intern/v2-phase-2-review",
+    "type": "sensitive",
+    "keyId": "8kckZH6sFLm7N1JZ",
+    "secretRecorded": false
+  }
+}

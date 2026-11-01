@@ -1,0 +1,1562 @@
+diff --git a/docs/v2/phase-1/student-preview-and-verification-2026-11-01.md b/docs/v2/phase-1/student-preview-and-verification-2026-11-01.md
+new file mode 100644
+index 0000000..df76a51
+--- /dev/null
++++ b/docs/v2/phase-1/student-preview-and-verification-2026-11-01.md
+@@ -0,0 +1,71 @@
++# Student Preview and Phase 1 verification — 1 November 2026
++
++This update integrates the revised student wireframe into the existing LMS Preview.
++Production routes retain their original presentation and authorization. The original
++Phase 1 migration is unchanged; no shared database writes or Phase 2 activation occur.
++
++## Student experience
++
++- Three individual-package tiers use current database quote prices. Subject
++  selection and the distinct Full Course option preserve the accepted product model.
++- Student dashboard and session views use the calmer wireframe styling only in
++  Preview. Session resources have four groups: pre-class read, recording, session
++  reading/material, worksheet. Existing material is not relabeled as a post-read
++  without a reviewed source mapping; scheduled class details remain in the header.
++- My access shows actual active/expired/revoked history and an expiry notice only
++  when the fetched records establish it. Errors are distinct from empty states.
++- The last-opened reminder stores only an authorized session ID per user/browser.
++  Dashboard links are filtered against its current server-authorized timeline.
++  This is not completion tracking; stale/foreign IDs and disabled storage fail safely.
++- Feedback locks, live eligibility and payment actions are not simulated in the LMS.
++
++## Upgrade rule
++
++The user explicitly accepted `current-tier-preserve-expiry-v1`: one active,
++non-revoked individual package, current configured old/new tier difference,
++original expiry retained, no Full Course or ambiguous multiple-purchase upgrades.
++Refunded purchases must be revoked to be excluded by the current ledger.
++
++The variable `V2_INDIVIDUAL_UPGRADE_POLICY` is scoped only to Preview branch
++`intern/v2-phase-2-review`. The new `/account/access/upgrade` reader uses caller
++identity/RLS, validates ownership and database-time access, and rejects missing or
++changing prices. See [the quote contract](upgrade-quote-preview.md).
++
++The page provides a non-binding estimate, not checkout or entitlement fulfillment.
++The existing whole-purchase grant RPC must not receive a difference payment.
++Actual charge/grant integration remains separate payment-phase work. Authenticated
++hosted quote acceptance is still required; local tests alone do not close the gate.
++
++## Hosted verification helper
++
++`/qa/phase1` is available only on a staging-configured Preview. An explicit button
++runs the current browser's caller-session checks through `/api/v2/phase1-verification`.
++It accepts no account/fixture/grant parameters and returns only sanitized outcomes.
++
++The grant-permission probe sends seven null arguments. The applied function rejects
++that selection before writes even if execute permissions drift. Only SQL permission
++denial counts as a pass; reaching validation is a failure. This was verified with
++real disposable local PostgreSQL and a deliberate local privilege change.
++
++The report deliberately never declares complete acceptance. Cross-Student isolation
++needs independently confirmed fixtures; negative expiry/revocation states and legacy
++worksheet/content journeys need actual session evidence. No service key, token,
++purchase reference, account ID or private row is included in the report.
++
++## Local verification
++
++- Phase 1: 172 tests across 18 suites passed, including 12 upgrade tests and 9
++  diagnostic tests. Original migration checksum remains
++  `ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7`.
++- Student UI: 20 browser scenarios passed, including responsive layouts, real
++  visit reminders and a Production restart preserving old navigation/five steps.
++- Diagnostic UI/API: 5 browser scenarios passed, including permission drift and
++  Production 404. Browser tests caught and corrected internal-host normalization
++  in same-origin validation; the route compares Origin with Host, not forwarded Host.
++- Existing Phase 2 browser regressions: 39 passed.
++- Lint, TypeScript and webpack build passed. Browser adapters are synthetic and
++  confined to disposable local fixtures; they are never deployed.
++
++The exact published commit, deployment, hosted results and remaining gate status
++are recorded in the local `deliverables/phase1-closeout-2026-11-01` handoff after
++publication. PR #24 remains Draft and unmerged.
+diff --git a/docs/v2/phase-1/upgrade-quote-preview.md b/docs/v2/phase-1/upgrade-quote-preview.md
+new file mode 100644
+index 0000000..717edc4
+--- /dev/null
++++ b/docs/v2/phase-1/upgrade-quote-preview.md
+@@ -0,0 +1,45 @@
++# Individual upgrade quote candidate — 1 November 2026
++
++Status: implemented as a read-only Preview candidate. The user explicitly confirmed
++the rule on 1 November 2026: “Use this upgrade rule.” The policy variable is scoped
++to Vercel Preview branch `intern/v2-phase-2-review` only. This is not payment
++fulfillment or full Phase 1 exit-gate sign-off.
++
++The accepted policy `current-tier-preserve-expiry-v1` accepts exactly one active,
++unrevoked individual-package purchase. The target must strictly contain its current
++subjects. Both package prices come from current configured quote RPCs; their
++difference is the indicative upgrade amount. Original expiry is retained.
++Full Course, already-three-subject packages, multiple active purchases and invalid
++or inactive access are excluded. Refunds are not independently represented in the
++applied Phase 1 ledger; a refunded purchase must be revoked to be excluded reliably.
++
++The `/account/access/upgrade` route uses authenticated Student identity, caller
++Supabase session/RLS and an explicit owner filter. Active purchase reads are bounded
++to two records, enough to detect ambiguity. The access RPC checks the same grant
++scope and expiry using database time. No payment references, student IDs or raw
++private purchase records are returned to the page. Missing/malformed data, denied
++access and quote failures return controlled states without substitute prices.
++
++The policy is enabled only when all of these are true:
++
++- The existing Phase 1 Preview/development guard passes; Production always fails.
++- The Supabase URL is exactly the staging origin `https://eyphkkginlgoaxflauog.supabase.co`.
++- `V2_INDIVIDUAL_UPGRADE_POLICY=current-tier-preserve-expiry-v1` is configured.
++
++The variable was configured on the named review branch after that explicit user
++confirmation; Production and other branches are excluded. No migration is needed
++for this read-only calculation; the original Phase 1 migration remains unchanged.
++
++Quotes are re-read to detect price revisions during the request. These reads do
++not form a database transaction or reserve a price. The UI therefore calls the
++result an **estimate** and provides no payment/grant button. Phase 3 must recheck
++identity, active purchases, prices, payment and expiry atomically before fulfilling
++an upgrade. Existing `grant_v2_purchase` requires a whole-package payment amount;
++do not pass an upgrade difference into that RPC or rewrite existing purchase rows.
++
++Verification: `node --experimental-strip-types scripts/v2-upgrade-quotes.test.mjs`
++passes 12 tests, including all 12 valid subject-superset transitions, invalid
++selections, missing policy/wrong environment, role and owner denial, expired/revoked
++rows, multiple-purchase ambiguity, current price credit, changing revisions and
++provider failures. These are local tests with synthetic transport, not hosted
++purchase or authenticated acceptance evidence.
+diff --git a/scripts/browser/v2-phase1/verify.mjs b/scripts/browser/v2-phase1/verify.mjs
+index bc76c3b..2a2cdac 100644
+--- a/scripts/browser/v2-phase1/verify.mjs
++++ b/scripts/browser/v2-phase1/verify.mjs
+@@ -9,21 +9,20 @@ import { createFixtureApp, repo } from '../v2-phase2/fixture-app.mjs';
+ 
+ const output=path.resolve(process.env.V2_PHASE1_BROWSER_OUTPUT||'/tmp/ace-phase1-browser-results');await mkdir(output,{recursive:true});
+ const root=await createFixtureApp(9);
+-const sources=['src/app/courses/v2/page.tsx','src/app/account/access/page.tsx','src/app/admin/v2/access/page.tsx','src/lib/server/v2Products.ts','src/lib/server/v2CourseWorkspace.ts','src/lib/v2CoursePresentation.ts','src/components/courses/PurchaseHistory.tsx','src/components/courses/courses.module.css'];
++const sources=['src/app/courses/v2/page.tsx','src/app/account/access/page.tsx','src/app/admin/v2/access/page.tsx','src/lib/server/v2Products.ts','src/lib/server/v2CourseWorkspace.ts','src/lib/v2CoursePresentation.ts','src/components/courses/PurchaseHistory.tsx','src/components/courses/CoursePackagePicker.tsx','src/app/dashboard/page.tsx','src/components/student/LearningResume.tsx','src/app/session/[id]/page.tsx','src/app/session/[id]/session.css','src/lib/studentTimeline.ts','src/lib/server/studentTimeline.ts','src/components/student/PortalResourceCard.tsx','src/components/student/ResourceCard.tsx','src/components/student/ResourceActions.tsx','src/components/courses/courses.module.css'];
+ for(const file of sources){await mkdir(path.dirname(path.join(root,file)),{recursive:true});await copyFile(path.join(repo,file),path.join(root,file));}
+ const put=async(file,text)=>{await mkdir(path.dirname(path.join(root,file)),{recursive:true});await writeFile(path.join(root,file),text);};
+ await put('src/lib/server/portalAuthorization.ts', `import { cookies } from 'next/headers';import { redirect } from 'next/navigation';
+-export async function getPortalIdentity(){const role=(await cookies()).get('qa-role')?.value;return role==='student'||role==='admin'?{id:'10000000-0000-4000-8000-000000000001',role}:null;}
++export async function getPortalIdentity(){const jar=await cookies();const role=jar.get('qa-role')?.value;return role==='student'||role==='admin'?{id:jar.get('qa-owner')?.value==='B'?'10000000-0000-4000-8000-000000000099':'10000000-0000-4000-8000-000000000001',role}:null;}
+ export async function requirePortalRole(role:string){const identity=await getPortalIdentity();if(!identity)redirect('/login');if(identity.role!==role)redirect(identity.role==='admin'?'/admin':'/dashboard');return identity;}`);
+-await put('src/app/dashboard/page.tsx',`import {StudentHeader} from '@/components/student/StudentHeader';import './dashboard.css';export default function Page(){return <><StudentHeader studentName="Synthetic Student"/><h1>Synthetic learning dashboard</h1></>}`);
+-await put('src/utils/supabase/server.ts', `import {cookies} from 'next/headers';
+-export async function createClient(){
++await put('src/utils/supabase/server.ts', `import {cookies} from 'next/headers';import type {SupabaseClient} from '@supabase/supabase-js';
++export async function createClient():Promise<SupabaseClient>{
+  const jar=await cookies();const scenario=jar.get('qa-state')?.value;const role=jar.get('qa-role')?.value;
+  const id='10000000-0000-4000-8000-000000000001';
+  const products=[{code:'full_batch',name:'Full Batch',product_kind:'full_batch',sections:['quant','verbal','di']},...['quant','verbal','di'].map(s=>({code:s+'_crash',name:s+' Crash Course',product_kind:'crash_course',sections:[s]}))];
+  const base={student_id:id,amount_paise:1000000,currency:'INR',confirmed_at:'2026-10-01T00:00:00Z',expires_at:'2099-04-01T00:00:00Z',revoked_at:null,profiles:{full_name:'Synthetic Student',is_active:true}};
+  const purchases=[{...base,id,v2_product_grants:[{product_code:'quant_crash'}]}, {...base,id:'10000000-0000-4000-8000-000000000002',confirmed_at:'2020-01-01T00:00:00Z',expires_at:'2020-07-01T00:00:00Z',v2_product_grants:[{product_code:'verbal_crash'}]}, {...base,id:'10000000-0000-4000-8000-000000000003',revoked_at:'2026-10-02T00:00:00Z',v2_product_grants:[{product_code:'di_crash'}]}];
+- return {auth:{getUser:async()=>({data:{user:role?{id}:null},error:null})},from(table:string): any {let lo=0,hi=25;const q={select(){return q},eq(){return q},order(){return q},range(a:number,b:number){lo=a;hi=b;return q},maybeSingle:async()=>({data:{full_name:'Synthetic Student'},error:null}),then(resolve:(v:unknown)=>void){const data=table==='v2_products'?products:scenario==='empty'?[]:purchases.slice(lo,hi+1);resolve({data:scenario==='unavailable'?null:data,error:scenario==='unavailable'?{message:'synthetic failure'}:null})}};return q},rpc:async(name:string,args?:{p_product_codes?:string[];p_product_code?:string;p_section?:string|null}):Promise<{data:any;error:any}>=>{if(scenario==='unavailable'||scenario==='quote-error'&&name==='quote_v2_products')return {data:null,error:{message:'synthetic failure'}};if(name==='get_my_v2_access')return {data:scenario==='empty'?[]:[{product_code:'quant_crash',sections:['quant'],expires_at:'2099-04-01T00:00:00Z'}],error:null};if(name==='can_access_v2_product')return {data:false,error:null};const codes=args!.p_product_codes!;return {data:{product_codes:codes,price_version_id:'a1000000-0000-4000-8000-000000000001',amount_paise:codes.includes('full_batch')?2500000:codes.length===1?1000000:codes.length===2?1800000:2500000,currency:'INR'},error:null}}};
++ return {auth:{getUser:async()=>({data:{user:role?{id}:null},error:null})},from(table:string): any {let lo=0,hi=25;const q={select(){return q},eq(){return q},order(){return q},range(a:number,b:number){lo=a;hi=b;return q},maybeSingle:async()=>({data:{full_name:'Synthetic Student'},error:null}),then(resolve:(v:unknown)=>void){const data=table==='v2_products'?products:scenario==='empty'?[]:(scenario==='expired'?purchases.filter(p=>p.expires_at.startsWith('2020')):purchases).slice(lo,hi+1);resolve({data:scenario==='unavailable'?null:data,error:scenario==='unavailable'?{message:'synthetic failure'}:null})}};return q},rpc:async(name:string,args?:{p_product_codes?:string[];p_product_code?:string;p_section?:string|null}):Promise<{data:any;error:any}>=>{if(scenario==='unavailable'||scenario==='quote-error'&&name==='quote_v2_products')return {data:null,error:{message:'synthetic failure'}};if(name==='get_student_timeline')return {data:{generated_at:'2026-11-01T12:00:00Z',course:scenario==='empty'?null:{id:'qa-course',name:'Synthetic Quant course',cohort_start_date:'2026-10-26',schedule_timezone:'Asia/Kolkata',course_mode:'full'},resources:[],sessions:[{id:'qa-session',title:'Ratios and mixtures',session_number:4,session_date:'2026-11-05T12:30:00Z',session_end_at:'2026-11-05T14:00:00Z',class_type:'QA',instructor:'Synthetic tutor',week_number:2,weekday:'Thursday',materials:['pre_read','video','session_material','worksheet'].map((type,i)=>({id:'material-'+i,type,title:['Preparing for ratios','Guided ratios recording','Ratio notes','Ratio worksheet'][i],available_from:i===3?'2099-01-01T00:00:00Z':'2020-01-01T00:00:00Z',is_available:i!==3,tracker_available:false}))}]},error:null};if(name==='get_my_v2_access')return {data:scenario==='empty'||scenario==='expired'?[]:[{product_code:'quant_crash',sections:['quant'],expires_at:'2099-04-01T00:00:00Z'}],error:null};if(name==='can_access_v2_product')return {data:false,error:null};const codes=args!.p_product_codes!;return {data:{product_codes:codes,price_version_id:'a1000000-0000-4000-8000-000000000001',amount_paise:codes.includes('full_batch')?2500000:codes.length===1?1000000:codes.length===2?1800000:2500000,currency:'INR'},error:null}}} as unknown as SupabaseClient;
+ }`);
+ const reservation=createServer();await new Promise(r=>reservation.listen(0,'127.0.0.1',r));const port=reservation.address().port;await new Promise(r=>reservation.close(r));
+ const origin=`http://127.0.0.1:${port}`, next=path.join(repo,'node_modules/next/dist/bin/next');
+@@ -37,17 +36,27 @@ try{
+  const build=spawn(process.execPath,[next,'build','--webpack'],{cwd:root,env,stdio:['ignore','pipe','pipe']});build.stdout.pipe(log,{end:false});build.stderr.pipe(log,{end:false});assert.equal(await new Promise(r=>build.on('exit',r)),0,'Fixture build failed');
+  server=spawn(process.execPath,[next,'start','--hostname','127.0.0.1','--port',String(port)],{cwd:root,env,stdio:['ignore','pipe','pipe']});server.stdout.pipe(log,{end:false});server.stderr.pipe(log,{end:false});for(let i=0;i<100;i++){try{if((await fetch(origin+'/courses/v2')).ok)break}catch{}await wait(200);}
+  browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE||'/usr/bin/chromium',args:['--no-sandbox']});
+- await test('Public catalogue shows approved course names and live configured quotes',async p=>{await p.goto(origin+'/courses/v2');for(const name of ['Full Course','Quant','Verbal','DI'])await visible(p.getByRole('heading',{name,exact:true}));assert.equal(await p.getByRole('button',{name:/buy|pay|purchase/i}).count(),0);await p.getByRole('link',{name:'Review Full Course',exact:true}).click();await visible(p.locator('#quote').getByText('₹25,000',{exact:true}));await noOverflow(p);await p.screenshot({path:path.join(output,'catalogue-desktop.png'),fullPage:true});});
+- await test('Subject packages quote all combinations with keyboard submission',async p=>{for(const [subjects,price] of [[['Quant'],'₹10,000'],[['Quant','Verbal'],'₹18,000'],[['Quant','Verbal','DI'],'₹25,000']]){await p.goto(origin+'/courses/v2');for(const subject of subjects)await p.getByRole('checkbox',{name:subject,exact:true}).check();await p.getByRole('button',{name:'Review package price'}).focus();await p.keyboard.press('Enter');await visible(p.locator('#quote').getByText(price,{exact:true}));await visible(p.locator('#quote').getByText('Selecting all three does not create a Full Course purchase.',{exact:false}));}});
++ await test('Public catalogue shows approved course names and live configured quotes',async p=>{await p.goto(origin+'/courses/v2');await visible(p.getByRole('heading',{name:'Full Course',exact:true}));for(const name of ['Quant','Verbal','DI'])await visible(p.getByRole('checkbox',{name,exact:true}));for(const name of ['ONE SUBJECT','TWO SUBJECTS','THREE SUBJECTS'])await visible(p.getByRole('button',{name:new RegExp(name)}));assert.equal(await p.getByRole('button',{name:/buy|pay|purchase/i}).count(),0);await p.getByRole('link',{name:'Review Full Course',exact:true}).click();await visible(p.locator('#quote').getByText('₹25,000',{exact:true}));await noOverflow(p);await p.screenshot({path:path.join(output,'catalogue-desktop.png'),fullPage:true});});
++ await test('Subject packages quote all combinations with keyboard submission',async p=>{for(const [subjects,price] of [[['Quant'],'₹10,000'],[['Quant','Verbal'],'₹18,000'],[['Quant','Verbal','DI'],'₹25,000']]){await p.goto(origin+'/courses/v2');await p.getByRole('button',{name:new RegExp(subjects.length===1?'ONE SUBJECT':subjects.length===2?'TWO SUBJECTS':'THREE SUBJECTS')}).click();for(const subject of subjects)await p.getByRole('checkbox',{name:subject,exact:true}).check();await p.getByRole('button',{name:'Review package price'}).focus();await p.keyboard.press('Enter');await visible(p.locator('#quote').getByText(price,{exact:true}));await visible(p.locator('#quote').getByText('Selecting all three does not create a Full Course purchase.',{exact:false}));}});
+  await test('Mixed, duplicate and legacy product identities cannot produce a quote',async p=>{for(const query of ['course=full_course&course=quant','course=quant&course=quant','course=full_batch','course=unknown']){await p.goto(origin+'/courses/v2?'+query);await visible(p.locator('#quote').getByRole('alert'));assert.equal(await p.locator('#quote').getByText(/₹/).count(),0);}});
+  await test('Price lookup failure never displays a stale or fallback amount',async p=>{await p.goto(origin+'/courses/v2?course=quant');await visible(p.locator('#quote').getByRole('alert'));assert.equal(await p.locator('#quote').getByText(/₹/).count(),0);},{scenario:'quote-error'});
+  await test('Signed-out private access redirects to login',async p=>{await p.goto(origin+'/account/access');assert.equal(new URL(p.url()).pathname,'/login');});
+  await test('Student sees scoped active access, expired and revoked history',async p=>{await p.goto(origin+'/account/access');await visible(p.getByRole('heading',{name:'My access',exact:true}));await visible(p.getByText('Expired',{exact:true}));await visible(p.getByText('Revoked',{exact:true}));assert.equal(await p.locator('section').first().getByRole('heading',{name:'Quant',exact:true}).count(),1);assert.equal(await p.locator('section').first().getByRole('heading',{name:'Verbal',exact:true}).count(),0);await noOverflow(p);await p.screenshot({path:path.join(output,'student-access-desktop.png'),fullPage:true});},{role:'student'});
+  await test('Student cannot open Admin access records',async p=>{await p.goto(origin+'/admin/v2/access');assert.equal(new URL(p.url()).pathname,'/dashboard');},{role:'student'});
+- await test('Empty access is distinct from an unavailable database',async p=>{await p.goto(origin+'/account/access');await visible(p.getByRole('heading',{name:'No active Phase 1 course access'}));await visible(p.getByText('No Phase 1 purchases are recorded here yet.',{exact:true}));},{role:'student',scenario:'empty'});
+- await test('Database failure retains explicit retry states',async p=>{await p.goto(origin+'/account/access');await visible(p.getByRole('link',{name:'Retry access check'}));await visible(p.getByRole('link',{name:'Retry history'}));assert.equal(await p.getByText('No Phase 1 purchases are recorded here yet.',{exact:true}).count(),0);},{role:'student',scenario:'unavailable'});
++ await test('Empty access is distinct from an unavailable database',async p=>{await p.goto(origin+'/account/access');await visible(p.getByRole('heading',{name:'No active course purchase'}));await visible(p.getByText('No purchases are recorded here yet.',{exact:true}));},{role:'student',scenario:'empty'});
++ await test('Database failure retains explicit retry states',async p=>{await p.goto(origin+'/account/access');await visible(p.getByRole('link',{name:'Retry access check'}));await visible(p.getByRole('link',{name:'Retry history'}));assert.equal(await p.getByText('No purchases are recorded here yet.',{exact:true}).count(),0);},{role:'student',scenario:'unavailable'});
++ await test('Expired purchase shows a calm notice without invented renewal action',async p=>{await p.goto(origin+'/account/access');await visible(p.getByRole('heading',{name:'An earlier course purchase has expired'}));const notice=p.locator('section').first();assert.equal(await notice.locator('button,a').count(),0);assert.match(await notice.innerText(),/Verbal/);},{role:'student',scenario:'expired'});
++ await test('Package tier prevents accidental extra subjects and resets for the next tier',async p=>{await p.goto(origin+'/courses/v2');await p.getByRole('checkbox',{name:'Quant',exact:true}).check();assert.ok(await p.getByRole('checkbox',{name:'Verbal',exact:true}).isDisabled());await p.getByRole('button',{name:/TWO SUBJECTS/}).click();assert.ok(!await p.getByRole('checkbox',{name:'Verbal',exact:true}).isDisabled());await p.getByRole('checkbox',{name:'Verbal',exact:true}).check();await p.getByRole('button',{name:'Review package price'}).click();await visible(p.locator('#quote').getByText('₹18,000',{exact:true}));assert.equal(await p.getByRole('checkbox',{checked:true}).count(),2);});
++ await test('Real Student dashboard exposes supported learning shortcuts',async p=>{await p.goto(origin+'/dashboard');await visible(p.getByRole('heading',{name:'Welcome back, Synthetic'}));await visible(p.getByRole('navigation',{name:'Learning shortcuts'}));assert.equal(await p.getByText('Pick up where you left off',{exact:false}).count(),0);await noOverflow(p);await p.screenshot({path:path.join(output,'student-dashboard-desktop.png'),fullPage:true});},{role:'student'});
++ await test('Resume remembers a real visit and ignores another user, stale IDs and cleared storage',async p=>{await p.goto(origin+'/session/qa-session');await p.waitForFunction(()=>localStorage.getItem('ace:last-opened-session:v1:10000000-0000-4000-8000-000000000001')==='qa-session');await p.goto(origin+'/dashboard');await visible(p.getByRole('heading',{name:'Pick up where you left off'}));assert.equal(await p.getByRole('link',{name:'Resume session →'}).getAttribute('href'),'/session/qa-session');await p.screenshot({path:path.join(output,'student-resume-desktop.png'),fullPage:true});await p.context().addCookies([{name:'qa-owner',value:'B',url:origin}]);await p.reload();assert.equal(await p.getByRole('heading',{name:'Pick up where you left off'}).count(),0);await p.context().addCookies([{name:'qa-owner',value:'A',url:origin}]);await p.evaluate(()=>localStorage.setItem('ace:last-opened-session:v1:10000000-0000-4000-8000-000000000001','unpublished-or-other-course'));await p.reload();assert.equal(await p.getByRole('link',{name:'Resume session →'}).count(),0);await p.evaluate(()=>localStorage.clear());await p.reload();assert.equal(await p.getByRole('heading',{name:'Pick up where you left off'}).count(),0);},{role:'student'});
++ await test('Disabled browser storage does not break session or dashboard',async p=>{await p.addInitScript(()=>{Storage.prototype.getItem=()=>{throw new Error('blocked storage')};Storage.prototype.setItem=()=>{throw new Error('blocked storage')}});await p.goto(origin+'/session/qa-session');await visible(p.getByRole('heading',{name:'Ratios and mixtures'}));await p.goto(origin+'/dashboard');await visible(p.getByRole('heading',{name:'Welcome back, Synthetic'}));assert.equal(await p.getByRole('link',{name:'Resume session →'}).count(),0);},{role:'student'});
++ await test('Session resources follow four groups while dates and unavailable worksheets remain honest',async p=>{await p.goto(origin+'/session/qa-session');assert.deepEqual(await p.locator('.journey-step-copy strong').allTextContents(),['Pre-class read','Recording','Session reading & material','Worksheet']);await visible(p.getByRole('heading',{name:'Ratios and mixtures'}));assert.match(await p.locator('.session-journey-header').innerText(),/Synthetic tutor/);await visible(p.getByRole('link',{name:'Watch recording: Guided ratios recording'}));assert.equal(await p.getByRole('link',{name:/Open worksheet/}).count(),0);assert.equal(await p.getByRole('button',{name:/feedback|unlock|join/i}).count(),0);await noOverflow(p);await p.screenshot({path:path.join(output,'student-session-desktop.png'),fullPage:true});},{role:'student'});
+  await test('Admin has readable purchase records and no manual grant action',async p=>{await p.goto(origin+'/admin/v2/access');await visible(p.getByRole('heading',{name:'Products & access'}));await visible(p.getByRole('heading',{name:'Purchase and access records'}));assert.equal(await p.getByRole('button',{name:/grant|revoke|purchase|pay/i}).count(),0);await p.screenshot({path:path.join(output,'admin-access-desktop.png'),fullPage:true});},{role:'admin'});
+- for(const width of [390,768])await test('Catalogue and access fit '+width+'px',async p=>{await p.goto(origin+'/courses/v2');await noOverflow(p);await p.screenshot({path:path.join(output,'catalogue-'+width+'.png'),fullPage:true});await p.goto(origin+'/account/access');await noOverflow(p);await p.screenshot({path:path.join(output,'access-'+width+'.png'),fullPage:true});},{role:'student',width});
++ for(const width of [390,768])await test('Catalogue and access fit '+width+'px',async p=>{await p.goto(origin+'/courses/v2');await noOverflow(p);await p.screenshot({path:path.join(output,'catalogue-'+width+'.png'),fullPage:true});await p.goto(origin+'/account/access');await noOverflow(p);await p.screenshot({path:path.join(output,'access-'+width+'.png'),fullPage:true});await p.goto(origin+'/dashboard');await noOverflow(p);await p.goto(origin+'/session/qa-session');await noOverflow(p);await p.screenshot({path:path.join(output,'session-'+width+'.png'),fullPage:true});},{role:'student',width});
++ const previewEnded=new Promise(r=>server.once('exit',r));server.kill();await previewEnded;server=undefined;
++ server=spawn(process.execPath,[next,'start','--hostname','127.0.0.1','--port',String(port)],{cwd:root,env:{...env,VERCEL_ENV:'production'},stdio:['ignore','pipe','pipe']});server.stdout.pipe(log,{end:false});server.stderr.pipe(log,{end:false});for(let i=0;i<100;i++){try{if((await fetch(origin+'/login')).ok)break}catch{}await wait(200);}
++ await test('Production runtime retains the original Student navigation and five-step session',async p=>{await p.goto(origin+'/dashboard');await visible(p.getByRole('link',{name:'Home',exact:true}));assert.equal(await p.getByRole('link',{name:'Explore courses',exact:true}).count(),0);assert.equal(await p.getByRole('navigation',{name:'Learning shortcuts'}).count(),0);assert.equal(await p.locator('[class*=studentPreview_preview]').count(),0);await p.goto(origin+'/session/qa-session');assert.deepEqual(await p.locator('.journey-step-copy strong').allTextContents(),['Pre-read','Class','Recording','Session reading','Worksheet']);assert.equal(await p.locator('[class*=studentPreview_preview]').count(),0);assert.equal(await p.evaluate(()=>localStorage.getItem('ace:last-opened-session:v1:10000000-0000-4000-8000-000000000001')),null);},{role:'student'});
++ await test('Production runtime denies the new catalogue and access routes',async p=>{for(const route of ['/courses/v2','/account/access']){const response=await p.goto(origin+route);assert.equal(response.status(),404);}});
+  assert.deepEqual(errors,[]);
+ }catch(e){results.push({name:'Harness',status:'failed',error:e.message});console.error(e);}finally{await writeFile(path.join(output,'results.json'),JSON.stringify({mode:'Actual UI and readers with local synthetic session/database adapters; not hosted authentication evidence',results,errors},null,2)+'\n');await browser?.close();if(server){const ended=new Promise(r=>server.once('exit',r));server.kill();await ended;}log.end();await rm(root,{recursive:true,force:true});}
+ console.log(results.filter(r=>r.status==='passed').length+' passed; '+results.filter(r=>r.status==='failed').length+' failed. '+output);process.exitCode=results.some(r=>r.status==='failed')?1:0;
+diff --git a/scripts/browser/v2-phase2/fixture-app.mjs b/scripts/browser/v2-phase2/fixture-app.mjs
+index 21f2835..e8eb6cf 100644
+--- a/scripts/browser/v2-phase2/fixture-app.mjs
++++ b/scripts/browser/v2-phase2/fixture-app.mjs
+@@ -17,6 +17,7 @@ export const sources = [
+   'src/app/schedule/v2/page.tsx',
+   'src/app/dashboard/dashboard.css',
+   'src/components/student/StudentHeader.tsx',
++  'src/components/student/studentPreview.module.css',
+   'src/components/student/SignOutButton.tsx',
+   'src/lib/v2Enrollments.ts',
+   'src/app/admin/v2/batches/[batchId]/students/page.tsx',
+diff --git a/scripts/phase1closing-browser.mjs b/scripts/phase1closing-browser.mjs
+new file mode 100644
+index 0000000..ba4c566
+--- /dev/null
++++ b/scripts/phase1closing-browser.mjs
+@@ -0,0 +1,101 @@
++import assert from 'node:assert/strict';
++import { createServer } from 'node:http';
++import { spawn } from 'node:child_process';
++import { mkdtemp, mkdir, copyFile, writeFile, symlink, rm } from 'node:fs/promises';
++import { createWriteStream } from 'node:fs';
++import { tmpdir } from 'node:os';
++import path from 'node:path';
++import { fileURLToPath } from 'node:url';
++import { chromium } from 'playwright-core';
++
++const repo = fileURLToPath(new URL('../', import.meta.url));
++const root = await mkdtemp(path.join(tmpdir(), 'ace-phase1-qa-browser-'));
++const output = process.env.PHASE1_QA_BROWSER_OUTPUT || '/tmp/ace-phase1-qa-browser-results';
++await mkdir(output, { recursive: true });
++const put = async (file, content) => { await mkdir(path.dirname(path.join(root, file)), { recursive: true }); await writeFile(path.join(root, file), content); };
++for (const file of ['src/lib/server/v2Phase1Verification.ts', 'src/lib/v2Products.ts', 'src/app/api/v2/phase1-verification/route.ts', 'src/app/qa/phase1/page.tsx', 'src/app/qa/phase1/VerificationRunner.tsx']) {
++  await mkdir(path.dirname(path.join(root, file)), { recursive: true }); await copyFile(path.join(repo, file), path.join(root, file));
++}
++await symlink(path.join(repo, 'node_modules'), path.join(root, 'node_modules'), 'dir');
++await put('package.json', JSON.stringify({ private: true, dependencies: { next: '16.2.4', react: '19.2.4', 'react-dom': '19.2.4' } }));
++await put('tsconfig.json', JSON.stringify({ compilerOptions: { target: 'ES2022', lib: ['dom', 'esnext'], strict: true, noEmit: true, skipLibCheck: true, esModuleInterop: true, module: 'esnext', moduleResolution: 'bundler', resolveJsonModule: true, jsx: 'react-jsx', plugins: [{ name: 'next' }], paths: { '@/*': ['./src/*'] } }, include: ['next-env.d.ts', '**/*.ts', '**/*.tsx', '.next/types/**/*.ts'] }));
++await put('next.config.ts', "export default {poweredByHeader:false,devIndicators:false};");
++await put('src/app/layout.tsx', "export default function Layout({children}:{children:React.ReactNode}){return <html lang='en'><body>{children}</body></html>}");
++await put('src/app/page.tsx', "export default function Home(){return <h1>Local QA fixture</h1>}");
++await put('src/utils/supabase/server.ts', `
++import {cookies} from 'next/headers';
++import type {SupabaseClient} from '@supabase/supabase-js';
++export async function createClient(){
++  const jar=await cookies();const role=jar.get('qa-role')?.value;
++  const drift=jar.get('qa-drift')?.value==='true';
++  const id='10000000-0000-4000-8000-000000000001';
++  return {
++    auth:{getUser:async()=>({data:{user:role?{id}:null},error:null})},
++    from(table:string){
++      return {select(){
++        if(table==='profiles')return {eq(){return {maybeSingle:async()=>({data:{role,is_active:true},error:null})}}};
++        return {
++          then(resolve:(v:unknown)=>void){resolve({count:null,error:{code:'42501'}})},
++          limit(){return Promise.resolve({data:null,error:{code:'42501'}})},
++          neq:async()=>({count:0,error:null})
++        };
++      }};
++    },
++    rpc:async(name:string,args?:Record<string,unknown>)=>{
++      if(name==='grant_v2_purchase'){
++        if(!args||Object.keys(args).length!==7||Object.values(args).some(x=>x!==null))throw Error('Unsafe probe');
++        return {data:null,error:{code:drift?'22023':'42501'}};
++      }
++      if(name==='get_my_v2_access')return role?{data:[],error:null}:{data:null,error:{code:'42501'}};
++      throw Error('Unexpected RPC');
++    }
++  } as unknown as SupabaseClient;
++}`);
++
++const reserve = createServer(); await new Promise(r => reserve.listen(0, '127.0.0.1', r)); const port = reserve.address().port; await new Promise(r => reserve.close(r));
++const origin = `http://127.0.0.1:${port}`;
++const next = path.join(repo, 'node_modules/next/dist/bin/next');
++const env = { PATH: process.env.PATH, NODE_ENV: 'production', VERCEL_ENV: 'preview', NEXT_TELEMETRY_DISABLED: '1', NEXT_PUBLIC_SUPABASE_URL: 'https://eyphkkginlgoaxflauog.supabase.co', NEXT_PUBLIC_SUPABASE_ANON_KEY: 'header.' + Buffer.from(JSON.stringify({ role: 'anon', ref: 'eyphkkginlgoaxflauog' })).toString('base64url') + '.signature', VERCEL_GIT_COMMIT_SHA: 'a'.repeat(40) };
++const log = createWriteStream(path.join(output, 'server.log'));
++let server, browser; const results = [], errors = [];
++const wait = ms => new Promise(r => setTimeout(r, ms));
++const start = async extra => {
++  server = spawn(process.execPath, [next, 'start', '--hostname', '127.0.0.1', '--port', String(port)], { cwd: root, env: { ...env, ...extra }, stdio: ['ignore', 'pipe', 'pipe'] }); server.stdout.pipe(log, { end: false }); server.stderr.pipe(log, { end: false });
++  for (let i = 0; i < 80; i++) { try { const r = await fetch(origin); if (r.ok) return; } catch {} await wait(250); }
++  throw Error('Local fixture server did not start');
++};
++const stop = async () => { if (server && server.exitCode === null) { const done = new Promise(r => server.once('exit', r)); server.kill(); await done; } };
++async function run(name, role, drift = false) {
++  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: 'block' });
++  await context.route('**/*', route => new URL(route.request().url()).origin === origin ? route.continue() : route.abort());
++  await context.addCookies([...(role ? [{ name: 'qa-role', value: role, url: origin }] : []), ...(drift ? [{ name: 'qa-drift', value: 'true', url: origin }] : [])]);
++  const page = await context.newPage(); page.on('pageerror', e => errors.push(e.message));
++  await page.goto(origin + '/qa/phase1');
++  await page.waitForLoadState('networkidle');
++  const pendingResponse = page.waitForResponse(response => response.url().endsWith('/api/v2/phase1-verification'));
++  await page.getByRole('button', { name: 'Run read-only staging checks' }).click();
++  const apiResponse = await pendingResponse;
++  assert.equal(apiResponse.status(), 200, await apiResponse.text());
++  await page.waitForSelector('pre', {timeout:5000}); const report = JSON.parse(await page.locator('pre').innerText());
++  assert.equal(report.role, role || 'signed_out'); assert.equal(report.overall, drift ? 'fail' : 'inconclusive');
++  assert.equal(report.checks.find(c => c.id === 'browser_role_grant_permission').status, drift ? 'fail' : 'pass');
++  assert.ok(!JSON.stringify(report).includes('10000000-0000-4000-8000-000000000001'));
++  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
++  if (role === 'student' && !drift) await page.screenshot({ path: path.join(output, 'student-qa.png'), fullPage: true });
++  results.push({ name, passed: true }); await context.close();
++}
++try {
++  const build = spawn(process.execPath, [next, 'build', '--webpack'], { cwd: root, env, stdio: ['ignore', 'pipe', 'pipe'] }); build.stdout.pipe(log, { end: false }); build.stderr.pipe(log, { end: false });
++  assert.equal(await new Promise(r => build.once('exit', r)), 0, 'Fixture build failed; inspect server.log');
++  await start({}); browser = await chromium.launch({ executablePath: process.env.CHROMIUM_EXECUTABLE || '/usr/bin/chromium', args: ['--no-sandbox'] });
++  await run('Signed-out browser forwards anonymous permissions', undefined);
++  await run('Student browser preserves inconclusive fixture status', 'student');
++  await run('Admin browser never claims Student isolation', 'admin');
++  await run('Permission drift is a visible failure', 'student', true);
++  await stop(); await start({ VERCEL_ENV: 'production' });
++  assert.equal((await fetch(origin + '/qa/phase1')).status, 404);
++  assert.equal((await fetch(origin + '/api/v2/phase1-verification', { method: 'POST', headers: { origin, 'content-type': 'application/json' }, body: '{}' })).status, 404);
++  results.push({ name: 'Production page and route deny before diagnostic requests', passed: true });
++  assert.equal(errors.length, 0); console.log(JSON.stringify({ results, errors }, null, 2));
++} catch (error) { results.push({ name: 'Harness or assertion', passed: false, error: error.message }); process.exitCode = 1; }
++finally { await browser?.close(); await stop(); log.end(); await writeFile(path.join(output, 'results.json'), JSON.stringify({ mode: 'Actual QA page and route; local synthetic Supabase adapter, not hosted JWT evidence', results, errors }, null, 2) + '\n'); await rm(root, { recursive: true, force: true }); }
+diff --git a/scripts/phase1closing-verification.test.mjs b/scripts/phase1closing-verification.test.mjs
+new file mode 100644
+index 0000000..34e29df
+--- /dev/null
++++ b/scripts/phase1closing-verification.test.mjs
+@@ -0,0 +1,191 @@
++import assert from 'node:assert/strict';
++import test from 'node:test';
++import { readFileSync, mkdtempSync, rmSync } from 'node:fs';
++import { tmpdir } from 'node:os';
++import { join } from 'node:path';
++import { fileURLToPath } from 'node:url';
++import { spawnSync } from 'node:child_process';
++import { createHash } from 'node:crypto';
++import { runInNewContext } from 'node:vm';
++import ts from 'typescript';
++import { createClient as createSupabaseClient } from '@supabase/supabase-js';
++
++const root = new URL('../', import.meta.url);
++const read = file => readFileSync(new URL(file, root), 'utf8');
++function load(file, deps, env = {}) {
++  const exports = {};
++  const code = ts.transpileModule(read(file), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
++  runInNewContext(code, { exports, process: { env }, Buffer, Date, URL, Response, require(name) {
++    assert.ok(Object.hasOwn(deps, name), `Unexpected dependency ${name}`); return deps[name];
++  } });
++  return exports;
++}
++const domain = load('src/lib/v2Products.ts', {});
++const publicKey = 'header.' + Buffer.from(JSON.stringify({ role: 'anon', ref: 'eyphkkginlgoaxflauog' })).toString('base64url') + '.signature';
++const env = { VERCEL_ENV: 'preview', NEXT_PUBLIC_SUPABASE_URL: 'https://eyphkkginlgoaxflauog.supabase.co', NEXT_PUBLIC_SUPABASE_ANON_KEY: publicKey, VERCEL_GIT_COMMIT_SHA: 'a'.repeat(40) };
++function harness(overrides = {}, purchaseClient = null) {
++  const state = {
++    user: { id: '10000000-0000-4000-8000-000000000001' }, authError: null,
++    profile: { role: 'student', is_active: true }, profileError: null,
++    access: { data: [], error: null }, grant: { data: null, error: { code: '42501' } },
++    foreign: { count: 0, error: null }, privateRead: { count: null, error: { code: '42501' } }, calls: [], clients: 0,
++  };
++  const client = {
++    auth: { getUser: async () => ({ data: { user: state.user }, error: state.authError }) },
++    from(table) {
++      assert.ok(['profiles', 'v2_purchases'].includes(table));
++      if (table === 'v2_purchases' && purchaseClient) return purchaseClient.from(table);
++      return { select(columns, options) {
++        state.calls.push({ table, columns, options });
++        if (table === 'profiles') return { eq(column, id) {
++          assert.equal(column, 'id'); assert.equal(id, state.user.id);
++          return { maybeSingle: async () => ({ data: state.profile, error: state.profileError }) };
++        } };
++        assert.equal(columns, 'id');
++        if (!options) return { limit: async count => { assert.equal(count, 0); return state.privateRead; } };
++        assert.equal(options.head, true); assert.equal(options.count, 'exact');
++        return { then(resolve) { return Promise.resolve(state.privateRead).then(resolve); },
++          neq: async (column, id) => { assert.equal(column, 'student_id'); assert.equal(id, state.user.id); return state.foreign; } };
++      } };
++    },
++    rpc: async (name, args) => {
++      state.calls.push({ rpc: name, args });
++      if (name === 'get_my_v2_access') return state.access;
++      assert.equal(name, 'grant_v2_purchase'); return state.grant;
++    },
++  };
++  const app = load('src/lib/server/v2Phase1Verification.ts', {
++    'server-only': {}, '@/utils/supabase/server': { createClient: async () => { state.clients++; return client; } }, '@/lib/v2Products': domain,
++  }, { ...env, ...overrides });
++  return { state, ...app };
++}
++
++test('verification refuses Production, other projects, unknown environment and service-role keys before client creation', async () => {
++  const privileged = 'header.' + Buffer.from(JSON.stringify({ role: 'service_role', ref: 'eyphkkginlgoaxflauog' })).toString('base64url') + '.signature';
++  for (const patch of [{ VERCEL_ENV: 'production' }, { VERCEL_ENV: undefined }, { VERCEL_ENV: 'development' }, { NEXT_PUBLIC_SUPABASE_URL: 'https://other.supabase.co' }, { NEXT_PUBLIC_SUPABASE_ANON_KEY: privileged }, { NEXT_PUBLIC_SUPABASE_ANON_KEY: 'invalid' }]) {
++    const h = harness(patch); assert.equal(h.isPhase1VerificationEnabled(), false);
++    assert.equal((await h.verifyPhase1CallerSession()).overall, 'fail'); assert.equal(h.state.clients, 0);
++  }
++  assert.equal(harness().isPhase1VerificationEnabled(), true);
++});
++test('Student session is derived from auth and no foreign rows is inconclusive without independent fixtures', async () => {
++  const h = harness(); const result = await h.verifyPhase1CallerSession();
++  assert.equal(result.role, 'student'); assert.equal(result.overall, 'inconclusive');
++  assert.equal(result.checks.find(c => c.id === 'foreign_purchase_visibility').status, 'inconclusive');
++  assert.equal(result.checks.find(c => c.id === 'browser_role_grant_permission').status, 'pass');
++  const args = h.state.calls.find(c => c.rpc === 'grant_v2_purchase').args;
++  assert.equal(Object.keys(args).length, 7); assert.ok(Object.values(args).every(v => v === null));
++  assert.ok(!JSON.stringify(result).includes(h.state.user.id)); assert.ok(!JSON.stringify(result).includes(publicKey));
++});
++test('foreign row visibility is failure and never returns row identifiers or foreign counts', async () => {
++  const h = harness(); h.state.foreign.count = 3; const result = await h.verifyPhase1CallerSession();
++  const check = result.checks.find(c => c.id === 'foreign_purchase_visibility');
++  assert.equal(result.overall, 'fail'); assert.equal(check.status, 'fail'); assert.equal(check.count, undefined);
++});
++test('grant permission drift, missing function and unexpected success never pass', async () => {
++  for (const error of [{ code: '22023', message: 'private' }, { code: 'PGRST202', message: 'private' }, null]) {
++    const h = harness(); h.state.grant = { data: null, error }; const result = await h.verifyPhase1CallerSession();
++    assert.equal(result.overall, 'fail'); assert.equal(result.checks.find(c => c.id === 'browser_role_grant_permission').status, 'fail');
++    assert.ok(!JSON.stringify(result).includes('"message":"private"'));
++  }
++});
++test('signed-out session checks real anonymous RPC/table permissions without assuming authenticated identity', async () => {
++  const h = harness(); h.state.user = null; h.state.authError = { name: 'AuthSessionMissingError' };
++  h.state.access = { data: null, error: { code: '42501' } };
++  const result = await h.verifyPhase1CallerSession(); assert.equal(result.role, 'signed_out');
++  for (const id of ['access_rpc', 'private_purchase_read', 'browser_role_grant_permission']) assert.equal(result.checks.find(c => c.id === id).status, 'pass');
++  assert.ok(!h.state.calls.some(c => c.table === 'profiles'));
++});
++test('anonymous table probe uses a zero-row GET so real SDK preserves permission errors; unexpected success fails', async () => {
++  for (const permitted of [false, true]) {
++    const requests = [];
++    const client = createSupabaseClient('https://staging.example.test', 'public-test-key', {
++      auth: { persistSession: false, autoRefreshToken: false },
++      global: { fetch: async (input, init) => {
++        const url = new URL(input); requests.push({ method: init.method, limit: url.searchParams.get('limit') });
++        // Real HEAD responses have no error body, including on permission denial.
++        return new Response(init.method === 'HEAD' ? null : permitted ? '[]' : JSON.stringify({ code: '42501', message: 'permission denied' }),
++          { status: permitted ? 200 : 401, headers: { 'Content-Type': 'application/json' } });
++      } },
++    });
++    const h = harness({}, client); h.state.user = null;
++    h.state.access = { data: null, error: { code: '42501' } };
++    const result = await h.verifyPhase1CallerSession();
++    assert.deepEqual(requests, [{ method: 'GET', limit: '0' }]);
++    assert.equal(result.checks.find(c => c.id === 'private_purchase_read').status, permitted ? 'fail' : 'pass');
++  }
++});
++test('inactive and Admin identities cannot be interpreted as active Student access', async () => {
++  for (const profile of [{ role: 'student', is_active: false }, { role: 'admin', is_active: true }]) {
++    const h = harness(); h.state.profile = profile;
++    h.state.access.data = [{ product_code: 'quant_crash', sections: ['quant'], expires_at: '2027-04-01T00:00:00Z' }];
++    const result = await h.verifyPhase1CallerSession(); assert.equal(result.checks.find(c => c.id === 'access_rpc').status, 'fail');
++  }
++});
++test('unverified auth/profile fails closed and returns no provider diagnostics', async () => {
++  for (const mutate of [s => { s.authError = { name: 'AuthApiError', message: 'secret' }; }, s => { s.profileError = { message: 'secret' }; }]) {
++    const h = harness(); mutate(h.state); const result = await h.verifyPhase1CallerSession();
++    assert.equal(result.role, 'unavailable'); assert.equal(result.overall, 'inconclusive');
++    assert.ok(!h.state.calls.some(c => c.rpc)); assert.ok(!JSON.stringify(result).includes('secret'));
++  }
++});
++test('manual endpoint blocks disabled, cross-origin, non-JSON and caller-supplied targets; replies are private no-store', async () => {
++  let calls = 0; let enabled = true;
++  const route = load('src/app/api/v2/phase1-verification/route.ts', { '@/lib/server/v2Phase1Verification': {
++    isPhase1VerificationEnabled: () => enabled, verifyPhase1CallerSession: async () => { calls++; return { check: 'sanitized' }; },
++  } });
++  const req = (origin = 'https://preview.example.test', body = '{}', type = 'application/json') => new Request('https://preview.example.test/api/v2/phase1-verification', { method: 'POST', headers: { host: 'preview.example.test', origin, 'content-type': type }, body });
++  enabled = false; assert.equal((await route.POST(req())).status, 404); enabled = true;
++  assert.equal((await route.POST(req('https://external.example.test'))).status, 403);
++  assert.equal((await route.POST(req(undefined, '{}', 'text/plain'))).status, 403);
++  assert.equal((await route.POST(req(undefined, '{"student_id":"injected"}'))).status, 400);
++  assert.equal(calls, 0);
++  const response = await route.POST(req()); assert.equal(response.status, 200); assert.equal(calls, 1);
++  assert.match(response.headers.get('cache-control'), /private, no-store/); assert.equal(response.headers.get('vary'), 'Cookie');
++  const internal = new Request('http://localhost:3000/api/v2/phase1-verification', { method: 'POST', headers: { host: '127.0.0.1:3000', origin: 'http://127.0.0.1:3000', 'content-type': 'application/json' }, body: '{}' });
++  assert.equal((await route.POST(internal)).status, 200);
++  const deployed = (host, origin, forwarded = '') => new Request('https://localhost/api/v2/phase1-verification', { method: 'POST', headers: { ...(host ? {host} : {}), origin, 'x-forwarded-host': forwarded, 'content-type': 'application/json' }, body: '{}' });
++  assert.equal((await route.POST(deployed('immutable.vercel.app', 'https://immutable.vercel.app'))).status, 200);
++  assert.equal((await route.POST(deployed('review-branch.vercel.app', 'https://review-branch.vercel.app'))).status, 200);
++  assert.equal((await route.POST(deployed('preview.example.test:8443', 'https://preview.example.test:8443'))).status, 200);
++  for (const [host, origin] of [
++    ['immutable.vercel.app', 'https://evil.example'], ['immutable.vercel.app', 'null'],
++    ['immutable.vercel.app', 'not an origin'], ['immutable.vercel.app', 'https://user:pass@immutable.vercel.app'],
++    ['immutable.vercel.app', 'https://immutable.vercel.app/path'], ['immutable.vercel.app', 'http://immutable.vercel.app'],
++    ['preview.example.test:8443', 'https://preview.example.test'], [null, 'https://localhost'],
++    ['immutable.vercel.app,evil.example', 'https://immutable.vercel.app,evil.example'],
++    ['user:pass@immutable.vercel.app', 'https://user:pass@immutable.vercel.app'], ['immutable.vercel.app/path', 'https://immutable.vercel.app/path'],
++  ]) assert.equal((await route.POST(deployed(host, origin, 'immutable.vercel.app'))).status, 403);
++});
++test('null grant diagnostic is non-mutating even with simulated execution-permission drift in a disposable database', { timeout: 60000 }, () => {
++  const migration = new URL('supabase/migrations/20261018090000_add_v2_product_entitlements.sql', root);
++  assert.equal(createHash('sha256').update(readFileSync(migration)).digest('hex'), 'ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7');
++  const source = readFileSync(migration, 'utf8');
++  const grant = source.split('create or replace function public.grant_v2_purchase(')[1].split('$$;')[0];
++  assert.ok(grant.indexOf('public.v2_purchase_shape(p_product_codes)') < grant.indexOf('insert into public.v2_purchases'));
++  const dir = mkdtempSync(join(tmpdir(), 'ace-phase1-closing-'));
++  const dbEnv = { ...Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('PG'))), PGHOST: dir, PGPORT: '55443', PGUSER: 'phase1_check', PGDATABASE: 'postgres' };
++  const run = (bin, args) => spawnSync(bin, args, { env: dbEnv, encoding: 'utf8', timeout: 20000 });
++  const checked = (bin, args) => { const r = run(bin, args); assert.equal(r.status, 0, r.stderr || r.error?.message); return r.stdout.trim(); };
++  const query = sql => checked('psql', ['-X', '-qAt', '-v', 'ON_ERROR_STOP=1', '-c', sql]);
++  let started = false;
++  try {
++    checked('initdb', ['-D', join(dir, 'data'), '-U', dbEnv.PGUSER, '-A', 'trust', '--no-locale', '--encoding=UTF8', '--no-sync']);
++    checked('pg_ctl', ['-D', join(dir, 'data'), '-l', join(dir, 'postgres.log'), '-o', `-h '' -k '${dir}' -p 55443 -F -c unix_socket_permissions=0700`, '-w', 'start']); started = true;
++    query("create role anon nologin; create role authenticated nologin; create role service_role nologin bypassrls; create schema auth; create function auth.uid() returns uuid language sql stable as $$ select null::uuid $$; grant usage on schema auth,public to anon,authenticated,service_role; create table public.profiles(id uuid primary key,role text,is_active boolean); create function public.is_portal_admin() returns boolean language sql stable as $$ select false $$;");
++    checked('psql', ['-X', '-q', '-v', 'ON_ERROR_STOP=1', '-f', fileURLToPath(migration)]);
++    const counts = () => query('select (select count(*) from public.v2_purchases)||\':\'||(select count(*) from public.v2_product_grants)');
++    assert.equal(counts(), '0:0');
++    const call = 'select public.grant_v2_purchase(null::uuid,null::text[],null::text,null::timestamptz,null::uuid,null::integer,null::text)';
++    for (const role of ['anon', 'authenticated']) {
++      const result = run('psql', ['-X', '-qAt', '-v', 'ON_ERROR_STOP=1', '-v', 'VERBOSITY=verbose', '-c', `set role ${role}; ${call}`]);
++      assert.notEqual(result.status, 0); assert.match(result.stderr, /42501/); assert.equal(counts(), '0:0');
++    }
++    query('grant execute on function public.grant_v2_purchase(uuid,text[],text,timestamptz,uuid,integer,text) to authenticated');
++    const drift = run('psql', ['-X', '-qAt', '-v', 'ON_ERROR_STOP=1', '-v', 'VERBOSITY=verbose', '-c', `set role authenticated; ${call}`]);
++    assert.notEqual(drift.status, 0); assert.match(drift.stderr, /22023/); assert.equal(counts(), '0:0');
++  } finally {
++    if (started) run('pg_ctl', ['-D', join(dir, 'data'), '-m', 'immediate', '-w', 'stop']);
++    rmSync(dir, { recursive: true, force: true });
++  }
++});
+diff --git a/scripts/v2-upgrade-quotes.test.mjs b/scripts/v2-upgrade-quotes.test.mjs
+new file mode 100644
+index 0000000..06fd7a6
+--- /dev/null
++++ b/scripts/v2-upgrade-quotes.test.mjs
+@@ -0,0 +1,153 @@
++import assert from 'node:assert/strict';
++import test from 'node:test';
++import { readFileSync } from 'node:fs';
++import { runInNewContext } from 'node:vm';
++import ts from 'typescript';
++
++function load(file, deps = {}, globals = {}) {
++  const exports = {};
++  const source = ts.transpileModule(readFileSync(new URL('../' + file, import.meta.url), 'utf8'), {
++    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX },
++  }).outputText;
++  runInNewContext(source, { exports, Date, URL, ...globals, require(name) {
++    assert.ok(Object.hasOwn(deps, name), name); return deps[name];
++  } });
++  return exports;
++}
++const products = load('src/lib/v2Products.ts');
++const domain = load('src/lib/v2UpgradeQuotes.ts', { './v2Products': products });
++const own = '10000000-0000-4000-8000-000000000001';
++const other = '10000000-0000-4000-8000-000000000002';
++const now = Date.parse('2026-11-01T12:00:00Z');
++class Clock extends Date { constructor(...args) { super(...(args.length ? args : [now])); } static now() { return now; } }
++const subjects = ['quant_crash', 'verbal_crash', 'di_crash'];
++const quote = codes => ({ product_codes: [...codes].sort(), price_version_id: `20000000-0000-4000-8000-00000000000${codes.length}`,
++  amount_paise: { 1: 1000000, 2: 1800000, 3: 2500000 }[codes.length], currency: 'INR' });
++const row = codes => ({ id: other, student_id: own, amount_paise: 1000000, currency: 'INR',
++  confirmed_at: '2026-10-01T00:00:00Z', expires_at: '2027-04-01T00:00:00Z', revoked_at: null,
++  v2_product_grants: codes.map(product_code => ({ product_code })) });
++function harness(codes = ['quant_crash']) {
++  const state = { enabled: true, env: { V2_INDIVIDUAL_UPGRADE_POLICY: domain.INDIVIDUAL_UPGRADE_POLICY,
++    NEXT_PUBLIC_SUPABASE_URL: 'https://eyphkkginlgoaxflauog.supabase.co' },
++  identity: { id: own, role: 'student' }, rows: [row(codes)], error: null, calls: [], quoteCalls: [],
++  access: codes.map(product_code => ({ product_code, expires_at: '2027-04-01T00:00:00Z' })),
++  quoteFn: async codes => quote(codes), accessError: false };
++  const query = {};
++  for (const key of ['select', 'eq', 'is', 'lte', 'gt', 'order']) query[key] = (...args) => { state.calls.push([key, ...args]); return query; };
++  query.limit = async (...args) => { state.calls.push(['limit', ...args]); return { data: state.rows, error: state.error }; };
++  const app = load('src/lib/server/v2UpgradeQuotes.ts', {
++    'server-only': {}, '@/lib/v2UpgradeQuotes': domain,
++    './portalAuthorization': { getPortalIdentity: async () => state.identity },
++    './v2Phase1Feature': { isV2Phase1PreviewEnabled: () => state.enabled },
++    '@/utils/supabase/server': { createClient: async () => ({ from(table) { state.calls.push(['from', table]); return query; } }) },
++    './v2Products': { getMyV2Access: async () => { if (state.accessError) throw Error('private provider error'); return state.access; },
++      quoteV2Products: async codes => { state.quoteCalls.push([...codes]); return state.quoteFn(codes); } },
++  }, { Date: Clock, process: { env: state.env } });
++  return { state, ...app };
++}
++
++test('all individual strict-superset upgrades use configured package differences', async () => {
++  const packages = subjects.flatMap((code, i) => [[code], ...subjects.slice(i + 1).map(second => [code, second])]);
++  const targets = [...packages, subjects];
++  let count = 0;
++  for (const current of packages) for (const target of targets) {
++    if (target.length <= current.length || !current.every(code => target.includes(code))) continue;
++    const app = harness(current);
++    const result = await app.loadIndividualUpgrade([...target].reverse());
++    assert.equal(result.status, 'ready'); assert.equal(result.invalidSelection, false);
++    assert.equal(result.quote.differencePaise, quote(target).amount_paise - quote(current).amount_paise);
++    assert.equal(result.quote.expiresAt, app.state.rows[0].expires_at);
++    assert.equal(result.quote.currency, 'INR'); count++;
++  }
++  assert.equal(count, 12);
++});
++test('the policy is off by default and strictly confined to staging Preview', async () => {
++  for (const patch of [{ V2_INDIVIDUAL_UPGRADE_POLICY: undefined }, { V2_INDIVIDUAL_UPGRADE_POLICY: 'other' },
++    { NEXT_PUBLIC_SUPABASE_URL: 'https://production.supabase.co' }, { NEXT_PUBLIC_SUPABASE_URL: 'http://eyphkkginlgoaxflauog.supabase.co' },
++    { NEXT_PUBLIC_SUPABASE_URL: 'https://eyphkkginlgoaxflauog.supabase.co.evil.test' },
++    { NEXT_PUBLIC_SUPABASE_URL: 'https://person@eyphkkginlgoaxflauog.supabase.co' },
++    { NEXT_PUBLIC_SUPABASE_URL: 'https://eyphkkginlgoaxflauog.supabase.co/rest/v1' },
++    { NEXT_PUBLIC_SUPABASE_URL: 'https://eyphkkginlgoaxflauog.supabase.co?override=true' }]) {
++    const app = harness(); Object.assign(app.state.env, patch);
++    assert.equal((await app.loadIndividualUpgrade(subjects)).status, 'policy_pending'); assert.equal(app.state.calls.length, 0);
++  }
++  const app = harness(); app.state.enabled = false;
++  assert.equal((await app.loadIndividualUpgrade(subjects)).status, 'policy_pending'); assert.equal(app.state.calls.length, 0);
++});
++test('signed-out, inactive-resolved-null and Admin identities never query purchase data', async () => {
++  for (const identity of [null, { id: own, role: 'admin' }, { id: own, role: 'unknown' }]) {
++    const app = harness(); app.state.identity = identity;
++    assert.equal((await app.loadIndividualUpgrade(subjects)).status, 'unauthorized'); assert.equal(app.state.calls.length, 0);
++  }
++});
++test('purchase reads are caller-filtered, active-only, bounded and exclude payment references', async () => {
++  const app = harness(); const result = await app.loadIndividualUpgrade(); assert.equal(result.status, 'ready'); assert.equal(result.quote, null);
++  for (const [method, column, value] of [['eq', 'student_id', own], ['is', 'revoked_at', null]]) {
++    assert.ok(app.state.calls.some(call => call[0] === method && call[1] === column && call[2] === value));
++  }
++  assert.ok(app.state.calls.some(call => call[0] === 'lte' && call[1] === 'confirmed_at'));
++  assert.ok(app.state.calls.some(call => call[0] === 'gt' && call[1] === 'expires_at'));
++  assert.ok(app.state.calls.some(call => call[0] === 'limit' && call[1] === 2));
++  assert.doesNotMatch(app.state.calls.find(call => call[0] === 'select')[1], /payment_reference|full_name|email/);
++  assert.doesNotMatch(JSON.stringify(result), /student_id|price_version_id|10000000/);
++});
++test('no purchases, multiple purchases, Full Course and already-three-subject packages are not eligible', async () => {
++  const empty = harness(); empty.state.rows = [];
++  assert.equal((await empty.loadIndividualUpgrade()).reason, 'no_active_package');
++  const multiple = harness(); multiple.state.rows.push({ ...row(['verbal_crash']), id: '10000000-0000-4000-8000-000000000003' });
++  assert.equal((await multiple.loadIndividualUpgrade()).reason, 'multiple_packages');
++  assert.equal((await harness(['full_batch']).loadIndividualUpgrade()).reason, 'full_course');
++  assert.equal((await harness(subjects).loadIndividualUpgrade()).reason, 'all_subjects');
++});
++test('replacements, duplicates, empty selections and Full Course upgrades are rejected', async () => {
++  for (const selection of [null, [], ['quant_crash'], ['verbal_crash'], ['verbal_crash', 'di_crash'],
++    ['quant_crash', 'quant_crash'], ['full_batch'], ['quant_crash', 'full_batch'], ['CR'], ['quant'], 'quant_crash']) {
++    const app = harness(); const result = await app.loadIndividualUpgrade(selection);
++    assert.equal(result.status, 'ready'); assert.equal(result.invalidSelection, true); assert.equal(result.quote, null);
++    assert.equal(app.state.quoteCalls.length, 0);
++  }
++});
++test('wrong owner, malformed, revoked, expired and not-yet-started data fail closed', async () => {
++  for (const patch of [{ student_id: other }, { id: 'bad' }, { amount_paise: -1 }, { amount_paise: 1.1 }, { currency: 'USD' },
++    { confirmed_at: '2026-11-01T12:00:01Z' }, { expires_at: '2026-11-01T12:00:00Z' }, { expires_at: 'bad' },
++    { revoked_at: '2026-10-31T12:00:00Z' }, { v2_product_grants: [] }, { v2_product_grants: [{ product_code: 'unknown' }] },
++    { v2_product_grants: [{ product_code: 'quant_crash' }, { product_code: 'quant_crash' }] },
++    { v2_product_grants: [{ product_code: 'full_batch' }, { product_code: 'quant_crash' }] }]) {
++    const app = harness(); Object.assign(app.state.rows[0], patch);
++    assert.equal((await app.loadIndividualUpgrade(subjects)).status, 'unavailable'); assert.equal(app.state.quoteCalls.length, 0);
++  }
++});
++test('database-time access must agree with the active purchase scope and expiry', async () => {
++  for (const access of [[], [{ product_code: 'verbal_crash', expires_at: '2027-04-01T00:00:00Z' }],
++    [{ product_code: 'quant_crash', expires_at: '2027-05-01T00:00:00Z' }],
++    [{ product_code: 'quant_crash', expires_at: '2027-04-01T00:00:00Z' }, { product_code: 'di_crash', expires_at: '2027-04-01T00:00:00Z' }]]) {
++    const app = harness(); app.state.access = access; assert.equal((await app.loadIndividualUpgrade(subjects)).status, 'unavailable');
++  }
++});
++test('prices come from configuration, not historical paid amounts or hardcoded launch values', async () => {
++  const app = harness(); app.state.rows[0].amount_paise = 900000;
++  app.state.quoteFn = async codes => ({ ...quote(codes), amount_paise: codes.length === 1 ? 1200000 : 2700000 });
++  const result = await app.loadIndividualUpgrade(subjects);
++  assert.equal(result.quote.differencePaise, 1500000); assert.equal(result.quote.currentPricePaise, 1200000);
++});
++test('changed price revisions during a request reject the estimate', async () => {
++  const app = harness(); let count = 0;
++  app.state.quoteFn = async codes => ({ ...quote(codes), price_version_id: ++count > 2 ? '30000000-0000-4000-8000-000000000001' : quote(codes).price_version_id });
++  assert.equal((await app.loadIndividualUpgrade(subjects)).status, 'unavailable');
++});
++test('invalid price data and non-positive differences never produce an upgrade estimate', async () => {
++  for (const patch of [{ amount_paise: 0 }, { amount_paise: 999999 }, { amount_paise: 1000000 },
++    { amount_paise: NaN }, { amount_paise: 2147483648 }, { currency: 'USD' }, { product_codes: ['full_batch'] },
++    { price_version_id: 'bad' }, { price_version_id: quote(['quant_crash']).price_version_id }]) {
++    const app = harness(); app.state.quoteFn = async codes => codes.length === 1 ? quote(codes) : { ...quote(codes), ...patch };
++    assert.equal((await app.loadIndividualUpgrade(subjects)).status, 'unavailable');
++  }
++});
++test('provider failures and unexpected row counts remain unavailable without private errors', async () => {
++  for (const configure of [state => { state.error = { message: 'secret diagnostic' }; }, state => { state.rows = null; },
++    state => { state.rows = [row(subjects), row(subjects), row(subjects)]; }, state => { state.accessError = true; },
++    state => { state.quoteFn = async () => { throw Error('secret diagnostic'); }; }]) {
++    const app = harness(); configure(app.state);
++    assert.equal(JSON.stringify(await app.loadIndividualUpgrade(subjects)), '{"status":"unavailable"}');
++  }
++});
+diff --git a/scripts/verify-v2-phase1.mjs b/scripts/verify-v2-phase1.mjs
+index 4f548d7..f33886b 100644
+--- a/scripts/verify-v2-phase1.mjs
++++ b/scripts/verify-v2-phase1.mjs
+@@ -7,6 +7,8 @@ const suites = [
+   'v2-product-entitlements.test.mjs',
+   'v2-product-readers.test.mjs',
+   'v2-course-workspace.test.mjs',
++  'v2-upgrade-quotes.test.mjs',
++  'phase1closing-verification.test.mjs',
+   'v2-canonical-product-contracts.test.mjs',
+   'v2-staging-catalogue-probe.test.mjs',
+   'v2-phase1-role-probe.test.mjs',
+diff --git a/src/app/account/access/page.tsx b/src/app/account/access/page.tsx
+index 85b36a8..bb1e060 100644
+--- a/src/app/account/access/page.tsx
++++ b/src/app/account/access/page.tsx
+@@ -5,10 +5,11 @@ import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
+ import { getMyV2Access } from '@/lib/server/v2Products';
+ import { historyPage, loadPurchaseHistory } from '@/lib/server/v2CourseWorkspace';
+ import { v2ProductDisplayName } from '@/lib/v2Products';
+-import { courseDate } from '@/lib/v2CoursePresentation';
++import { courseDate, courseNames, purchaseState } from '@/lib/v2CoursePresentation';
+ import { PurchaseHistory } from '@/components/courses/PurchaseHistory';
+ import { StudentHeader } from '@/components/student/StudentHeader';
+ import { createClient } from '@/utils/supabase/server';
++import previewStyles from '@/components/student/studentPreview.module.css';
+ import styles from '@/components/courses/courses.module.css';
+ import '@/app/dashboard/dashboard.css';
+ 
+@@ -22,10 +23,12 @@ export default async function MyAccessPage({ searchParams }: { searchParams: Pro
+     getMyV2Access().catch(() => null), loadPurchaseHistory('student', page),
+     supabase.from('profiles').select('full_name').eq('id', identity.id).maybeSingle(),
+   ]);
+-  return <div className="student-page"><StudentHeader studentName={profile.data?.full_name?.trim() || 'Student'} /><main className={styles.main}>
+-    <div className={styles.intro}><span className={styles.eyebrow}>YOUR COURSES</span><h1>My access</h1><p>See your current course access and the original details of your purchases.</p></div>
+-    <section className={styles.panel} aria-labelledby="active-access-heading"><div className={styles.row}><h2 id="active-access-heading">Active course access</h2><Link href="/courses/v2" prefetch={false}>Explore courses</Link></div>
+-      {access === null ? <div role="alert"><p>We couldn’t verify your access. Please retry; this is not a confirmation that your access has ended.</p><Link href="/account/access" prefetch={false}>Retry access check</Link></div> : access.length === 0 ? <div className={styles.empty}><h3>No active Phase 1 course access</h3><p>Existing batch enrollments remain available through your learning dashboard. Contact the programme team if you expected a new course purchase here.</p></div> : <ul className={styles.history}>{access.map((item) => <li key={item.product_code}><div className={styles.row}><h3>{v2ProductDisplayName(item.product_code)}</h3><span className={styles.badge}>Active</span></div><p>Subjects: {item.sections.map((section) => section === 'di' ? 'DI' : section[0].toUpperCase() + section.slice(1)).join(', ')}</p><p>Access ends {courseDate(item.expires_at)}</p></li>)}</ul>}
++  const expiredPurchases = history.status === 'ready' ? history.items.filter((item) => purchaseState(item, history.checkedAt) === 'Expired') : [];
++  return <div className={`student-page ${previewStyles.preview}`}><StudentHeader studentName={profile.data?.full_name?.trim() || 'Student'} /><main className={styles.main}>
++    <div className={styles.intro}><span className={styles.eyebrow}>YOUR COURSES</span><h1>My access</h1><p>Your subjects, access dates and purchase history, together in one place.</p></div>
++    {access !== null && access.length === 0 && expiredPurchases.length > 0 && <section className={styles.expiryNotice} aria-labelledby="expiry-heading"><span className={styles.eyebrow}>MEMBERSHIP ACCESS</span><h2 id="expiry-heading">An earlier course purchase has expired</h2><p>{courseNames(expiredPurchases[0].products)} access ended {courseDate(expiredPurchases[0].expires_at)}.</p><p>Expired purchases no longer provide product access. Your purchase history is preserved below. Existing batch enrollments keep their own access rules.</p></section>}
++    <section className={styles.panel} aria-labelledby="active-access-heading"><div className={styles.row}><h2 id="active-access-heading">Active course access</h2><div className={styles.row}><Link href="/courses/v2" prefetch={false}>Explore courses</Link><Link href="/account/access/upgrade" prefetch={false}>Upgrade options</Link></div></div>
++      {access === null ? <div role="alert"><p>We couldn’t verify your access. Please retry; this is not a confirmation that your access has ended.</p><Link href="/account/access" prefetch={false}>Retry access check</Link></div> : access.length === 0 ? <div className={styles.empty}><h3>No active course purchase</h3><p>Existing batch enrollments remain available through your learning dashboard. Contact the programme team if you expected a new course purchase here.</p></div> : <ul className={styles.accessGrid}>{access.map((item) => <li className={styles.accessCard} key={item.product_code}><div className={styles.row}><h3>{v2ProductDisplayName(item.product_code)}</h3><span className={styles.badge}>Active</span></div><p className={styles.accessSubject}>Subjects: {item.sections.map((section) => section === 'di' ? 'DI' : section[0].toUpperCase() + section.slice(1)).join(', ')}</p><p>Access ends {courseDate(item.expires_at)}</p></li>)}</ul>}
+       <p>Access is checked again when you open protected content. Live-batch enrollment is separate from product access.</p><Link href="/dashboard" prefetch={false}>Return to my learning</Link>
+     </section>
+     <PurchaseHistory history={history} page={page} href="/account/access" />
+diff --git a/src/app/account/access/upgrade/page.tsx b/src/app/account/access/upgrade/page.tsx
+new file mode 100644
+index 0000000..f6ca7e8
+--- /dev/null
++++ b/src/app/account/access/upgrade/page.tsx
+@@ -0,0 +1,42 @@
++import Link from 'next/link';
++import { notFound } from 'next/navigation';
++import { requirePortalRole } from '@/lib/server/portalAuthorization';
++import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
++import { loadIndividualUpgrade } from '@/lib/server/v2UpgradeQuotes';
++import { courseDate, courseIdentity, courseMoney, courseNames, parseCourseSelection } from '@/lib/v2CoursePresentation';
++import { v2ProductDisplayName } from '@/lib/v2Products';
++import styles from './upgrade.module.css';
++
++export const dynamic = 'force-dynamic';
++export default async function UpgradePage({ searchParams }: { searchParams: Promise<{ course?: string | string[] }> }) {
++  if (!isV2Phase1PreviewEnabled()) notFound();
++  await requirePortalRole('student');
++  const { course } = await searchParams;
++  const target = course === undefined ? undefined : parseCourseSelection(course);
++  const review = await loadIndividualUpgrade(target);
++  const selection = review.status === 'ready' ? review.quote?.targetProducts ?? review.currentProducts : [];
++  const reasons = {
++    no_active_package: 'There is no active individual package to upgrade.',
++    multiple_packages: 'Your account has multiple active purchases. The programme team needs to review upgrade eligibility.',
++    full_course: 'Full Course is a separate offering and is not part of individual-package upgrades.',
++    all_subjects: 'Your individual package already includes Quant, Verbal and DI.',
++  };
++  return <main className={styles.main}>
++    <Link href="/account/access">← My access</Link>
++    <p className={styles.eyebrow}>INDIVIDUAL COURSES</p><h1>Review an upgrade</h1>
++    <p>Add subjects to an eligible individual package. Full Course remains a separate offering.</p>
++    {review.status === 'policy_pending' ? <section className={styles.panel}><h2>Upgrade pricing is not available yet</h2><p>The upgrade rules are awaiting confirmation. Your current access is unchanged.</p></section>
++      : review.status === 'unauthorized' ? <section className={styles.panel}><h2>Sign in with an active Student account</h2><Link href="/login">Sign in</Link></section>
++        : review.status === 'unavailable' ? <section className={styles.panel} role="alert"><h2>We couldn’t verify this upgrade</h2><p>No price or eligibility has been confirmed. Please retry.</p><Link href="/account/access/upgrade">Retry</Link></section>
++          : review.status === 'ineligible' ? <section className={styles.panel}><h2>Upgrade unavailable</h2><p>{reasons[review.reason]}</p></section>
++            : <>
++              <section className={styles.panel}><h2>Your current package</h2><p>{courseNames(review.currentProducts)}</p><p>Access ends {courseDate(review.expiresAt)}. An upgrade under this policy keeps that date.</p>
++                <form method="get" key={selection.join(',')}><fieldset><legend>Choose your full upgraded package, including subjects you already own</legend><div className={styles.subjects}>
++                  {(['quant_crash', 'verbal_crash', 'di_crash'] as const).map((code) => <label key={code}><input type="checkbox" name="course" value={courseIdentity(code)} defaultChecked={selection.includes(code)} />{v2ProductDisplayName(code)}{review.currentProducts.includes(code) ? ' · Included' : ''}</label>)}
++                </div></fieldset><button type="submit">Review price difference</button></form>
++                {review.invalidSelection && <p role="alert">Keep your existing subjects and add at least one new individual subject. Full Course cannot be selected here.</p>}
++              </section>
++              {review.quote && <section className={styles.panel} aria-labelledby="quote-heading"><h2 id="quote-heading">Your upgrade estimate</h2><p>{courseNames(review.quote.targetProducts)}</p><dl><div><dt>Current package at today’s configured price</dt><dd>{courseMoney(review.quote.currentPricePaise)}</dd></div><div><dt>New package at today’s configured price</dt><dd>{courseMoney(review.quote.targetPricePaise)}</dd></div><div className={styles.total}><dt>Difference</dt><dd>{courseMoney(review.quote.differencePaise)}</dd></div></dl><p>Expiry stays {courseDate(review.quote.expiresAt)}.</p><p>This is a non-binding price review. It does not take payment or grant subjects. Checkout is not available; eligibility and prices must be checked again before payment.</p></section>}
++            </>}
++  </main>;
++}
+diff --git a/src/app/account/access/upgrade/upgrade.module.css b/src/app/account/access/upgrade/upgrade.module.css
+new file mode 100644
+index 0000000..573a68f
+--- /dev/null
++++ b/src/app/account/access/upgrade/upgrade.module.css
+@@ -0,0 +1 @@
++.main{max-width:980px;margin:0 auto;padding:40px 24px 72px;color:#253d34}.main h1{font-size:clamp(2rem,5vw,2.8rem);margin:12px 0}.main p{line-height:1.6}.main a{color:#215c49}.eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.12em;margin-top:30px}.panel{background:#fff;border:1px solid #d6dfd3;border-radius:14px;padding:26px;margin-top:24px}.panel h2{margin-top:0}.panel fieldset{border:0;padding:0;margin:24px 0}.panel legend{font-weight:600;line-height:1.5}.subjects{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}.subjects label{display:flex;gap:10px;align-items:center;padding:14px;border:1px solid #d6dfd3;border-radius:8px}.subjects input{width:18px;height:18px;accent-color:#215c49}.panel button{border:0;border-radius:8px;background:#215c49;color:white;padding:14px 20px;font-weight:600;cursor:pointer}.panel button:focus-visible,.main a:focus-visible,.subjects input:focus-visible{outline:3px solid #bd831b;outline-offset:4px}.panel dl>div{display:flex;justify-content:space-between;gap:20px;padding:12px 0}.panel dd{margin:0;white-space:nowrap;font-weight:600}.total{border-top:1px solid #d6dfd3;font-size:1.3rem}.panel [role=alert]{color:#8b4026}@media(max-width:560px){.main{padding:24px 16px 48px}.panel{padding:20px}.panel dl>div{flex-direction:column;gap:5px}.subjects{flex-direction:column}}
+diff --git a/src/app/api/v2/phase1-verification/route.ts b/src/app/api/v2/phase1-verification/route.ts
+new file mode 100644
+index 0000000..808c9ff
+--- /dev/null
++++ b/src/app/api/v2/phase1-verification/route.ts
+@@ -0,0 +1,28 @@
++import { isPhase1VerificationEnabled, verifyPhase1CallerSession } from '@/lib/server/v2Phase1Verification';
++
++export const dynamic = 'force-dynamic';
++const headers = { 'Cache-Control': 'private, no-store, max-age=0', Vary: 'Cookie', 'X-Content-Type-Options': 'nosniff' };
++
++export async function POST(request: Request) {
++  if (!isPhase1VerificationEnabled()) return Response.json({ error: 'Not found' }, { status: 404, headers });
++  // Next can normalize request.url to its internal listener hostname. Compare
++  // the browser's Origin to Host, never an operator-supplied forwarded host.
++  const url = new URL(request.url);
++  const host = request.headers.get('host');
++  let expectedOrigin = '';
++  try {
++    if (host && ['https:', 'http:'].includes(url.protocol)) {
++      const external = new URL(`${url.protocol}//${host}`);
++      if (external.host === host && !external.username && !external.password
++        && external.pathname === '/' && !external.search && !external.hash && !host.includes(',')) expectedOrigin = external.origin;
++    }
++  } catch { /* Malformed Host must fail before any database call. */ }
++  if (!expectedOrigin || request.headers.get('origin') !== expectedOrigin
++    || !request.headers.get('content-type')?.startsWith('application/json')) {
++    return Response.json({ error: 'Same-origin JSON request required' }, { status: 403, headers });
++  }
++  if ((await request.text()).trim() !== '{}') {
++    return Response.json({ error: 'No account, fixture or grant parameters are accepted' }, { status: 400, headers });
++  }
++  return Response.json(await verifyPhase1CallerSession(), { headers });
++}
+diff --git a/src/app/courses/v2/page.tsx b/src/app/courses/v2/page.tsx
+index a8f00bf..a30301f 100644
+--- a/src/app/courses/v2/page.tsx
++++ b/src/app/courses/v2/page.tsx
+@@ -4,6 +4,7 @@ import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
+ import { loadCourseCatalogue } from '@/lib/server/v2CourseWorkspace';
+ import { quoteV2Products } from '@/lib/server/v2Products';
+ import { courseIdentity, courseMoney, courseNames, parseCourseSelection } from '@/lib/v2CoursePresentation';
++import { CoursePackagePicker } from '@/components/courses/CoursePackagePicker';
+ import { BrandLogo } from '@/components/BrandLogo';
+ import styles from '@/components/courses/courses.module.css';
+ 
+@@ -13,6 +14,12 @@ export default async function CourseCataloguePage({ searchParams }: { searchPara
+   const params = await searchParams;
+   const products = await loadCourseCatalogue();
+   const selection = parseCourseSelection(params.course);
++  const individualProducts = (products ?? []).filter((product) => product.code !== 'full_batch');
++  const fullCourse = products?.find((product) => product.code === 'full_batch');
++  const tiers = await Promise.all([1, 2, 3].filter((count) => count <= individualProducts.length).map(async (count) => {
++    try { return { count, amountPaise: (await quoteV2Products(individualProducts.slice(0, count).map((product) => product.code))).amount_paise }; }
++    catch { return { count, amountPaise: null }; }
++  }));
+   let quote = null;
+   let quoteError = '';
+   if (params.course !== undefined) {
+@@ -24,19 +31,13 @@ export default async function CourseCataloguePage({ searchParams }: { searchPara
+     }
+   }
+   return <div className={styles.page}>
+-    <header className={styles.header}><Link href="/" aria-label="Ace Club home"><BrandLogo variant="light" className={styles.logo} /></Link><nav aria-label="Course navigation"><Link href="/dashboard" prefetch={false}>My learning</Link><Link href="/account/access" prefetch={false}>My access</Link></nav></header>
++    <header className={styles.header}><Link href="/" className={styles.brand} aria-label="Ace Club home"><BrandLogo variant="light" className={styles.logo} /></Link><nav aria-label="Course navigation"><Link href="/dashboard" prefetch={false}>My learning</Link><Link href="/account/access" prefetch={false}>My access</Link></nav></header>
+     <main className={styles.main}>
+-      <div className={styles.intro}><span className={styles.eyebrow}>FIND YOUR COURSE</span><h1>A complete course. Your way to learn.</h1><p>Build your foundation in Quant, Verbal and DI. Study all three together or choose complete individual courses.</p></div>
++      <div className={styles.intro}><span className={styles.eyebrow}>FIND YOUR COURSE</span><h1>A complete curriculum. A package that fits you.</h1><p>Build your foundation in Quant, Verbal and DI. Choose individual subjects or study all three together with Full Course.</p></div>
+       <div className={styles.notice}><strong>Preview catalogue</strong><p>Explore current course prices and your access. Online purchasing is not available here yet.</p></div>
+       {products === null ? <section className={styles.panel} role="alert"><h2>Courses are temporarily unavailable</h2><p>We couldn’t load the catalogue. No sample prices or courses have been substituted.</p><Link href="/courses/v2" prefetch={false}>Retry catalogue</Link></section> : products.length === 0 ? <section className={styles.panel}><h2>No courses are available for selection</h2><p>Your existing purchases remain listed in My access.</p></section> : <>
+-        <section className={styles.offerings} aria-label="Available courses">{[...products].sort((a, b) => Number(b.code === 'full_batch') - Number(a.code === 'full_batch')).map((product) => <article key={product.code} className={styles.offering}>
+-          <span className={styles.eyebrow}>{product.sections.length === 3 ? 'ALL THREE SUBJECTS' : 'INDIVIDUAL COURSE'}</span><h2>{product.name}</h2><p>{product.sections.map((section) => section === 'di' ? 'DI' : section[0].toUpperCase() + section.slice(1)).join(' + ')}</p><p>A complete curriculum of sessions, materials, recordings and readings.</p>
+-          <strong className={styles.price}>{product.amountPaise === null ? 'Price unavailable' : courseMoney(product.amountPaise)}</strong><small>Six calendar months from confirmed payment</small>
+-          <Link className={styles.button} href={`/courses/v2?course=${courseIdentity(product.code)}#quote`} prefetch={false}>Review {product.name}</Link>
+-        </article>)}</section>
+-        <section className={styles.panel}><h2>Choose individual subjects</h2><p>Combine Quant, Verbal and DI. Your package price comes from the current catalogue.</p>
+-          <form key={selection?.join(',') ?? 'empty'} action="/courses/v2#quote" method="get"><fieldset className={styles.choices}><legend>Select one, two or three subjects</legend>{products.filter((product) => product.code !== 'full_batch').map((product) => <label key={product.code}><input type="checkbox" name="course" value={courseIdentity(product.code)} defaultChecked={selection?.includes(product.code)} />{product.name}</label>)}</fieldset><button className={styles.button} type="submit">Review package price</button></form>
+-        </section>
++        {individualProducts.length > 0 && <CoursePackagePicker key={selection?.join(',') ?? 'empty'} subjects={individualProducts.map((product) => ({ identity: courseIdentity(product.code), name: product.name }))} tiers={tiers} initialSelection={(selection ?? []).filter((code) => individualProducts.some((product) => product.code === code)).map(courseIdentity)} />}
++        {fullCourse && <section className={styles.fullCourse} aria-labelledby="full-course-heading"><div><span className={styles.eyebrow}>ONE DISTINCT OFFERING</span><h2 id="full-course-heading">Full Course</h2><p>Quant + Verbal + DI together in one complete course.</p><small>Three individual subjects remain an individual package; they do not become Full Course.</small></div><div><strong className={styles.price}>{fullCourse.amountPaise === null ? 'Price unavailable' : courseMoney(fullCourse.amountPaise)}</strong><small>Six months from confirmed payment</small></div><Link className={styles.button} href="/courses/v2?course=full_course#quote" prefetch={false}>Review Full Course</Link></section>}
+         <section id="quote" className={styles.panel} aria-labelledby="quote-heading"><h2 id="quote-heading">Your selection</h2>
+           {quoteError ? <p role="alert">{quoteError}</p> : quote ? <><h3>{courseNames(quote.product_codes)}</h3><strong className={styles.price}>{courseMoney(quote.amount_paise)}</strong><p>Current total in INR. This price review does not create a purchase or grant access.</p>{!quote.product_codes.includes('full_batch') && <p>Individual courses grant only their selected subjects. Selecting all three does not create a Full Course purchase.</p>}<p>Access starts at verified payment and ends six calendar months later. The stored expiry is shown in My access.</p></> : <p>Select a course or a subject package to review its current price.</p>}
+         </section>
+diff --git a/src/app/dashboard/page.tsx b/src/app/dashboard/page.tsx
+index 6544bda..83e9af4 100644
+--- a/src/app/dashboard/page.tsx
++++ b/src/app/dashboard/page.tsx
+@@ -1,6 +1,9 @@
+ import Link from 'next/link';
++import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
++import previewStyles from '@/components/student/studentPreview.module.css';
+ import { PortalResourceCard } from '@/components/student/PortalResourceCard';
+ import { ResourceCard } from '@/components/student/ResourceCard';
++import { LearningResume } from '@/components/student/LearningResume';
+ import { StudentHeader } from '@/components/student/StudentHeader';
+ import { requirePortalRole } from '@/lib/server/portalAuthorization';
+ import { loadStudentTimeline } from '@/lib/server/studentTimeline';
+@@ -18,12 +21,13 @@ import {
+ import './dashboard.css';
+ 
+ export default async function DashboardPage() {
++  const preview = isV2Phase1PreviewEnabled();
+   const identity = await requirePortalRole('student');
+   const result = await loadStudentTimeline(identity.id);
+ 
+   if (result.status === 'failed') {
+     return (
+-      <div className="student-page">
++      <div className={preview ? `student-page ${previewStyles.preview}` : 'student-page'}>
+         <StudentHeader studentName={result.studentName} />
+         <main className="student-main">
+           <section className="student-state student-state-error" role="alert">
+@@ -41,13 +45,13 @@ export default async function DashboardPage() {
+ 
+   if (!timeline.course) {
+     return (
+-      <div className="student-page">
++      <div className={preview ? `student-page ${previewStyles.preview}` : 'student-page'}>
+         <StudentHeader studentName={studentName} />
+         <main className="student-main">
+           <section className="student-state">
+             <span className="state-kicker">No course assigned</span>
+             <h1>Your course will appear here</h1>
+-            <p>You are signed in, but no cohort is assigned to your account. Contact the programme team if you expected access.</p>
++            <p>You are signed in, but no cohort is assigned to your account. Contact the programme team if you expected access.</p>{preview && <nav className={previewStyles.workspaceLinks} aria-label="Course shortcuts"><Link href="/courses/v2" prefetch={false}>Explore courses</Link><Link href="/account/access" prefetch={false}>Check my access</Link></nav>}
+           </section>
+         </main>
+       </div>
+@@ -72,7 +76,7 @@ export default async function DashboardPage() {
+   const firstName = studentName.split(/\s+/)[0];
+ 
+   return (
+-    <div className="student-page">
++    <div className={preview ? `student-page ${previewStyles.preview}` : 'student-page'}>
+       <StudentHeader studentName={studentName} />
+       <main className="student-main">
+         <div className="student-container">
+@@ -88,6 +92,8 @@ export default async function DashboardPage() {
+             </div>
+           </header>
+ 
++          {preview && <LearningResume ownerId={identity.id} sessions={sessions.map(({ id, title }) => ({ id, title }))} />}
++          {preview && <nav className={previewStyles.workspaceLinks} aria-label="Learning shortcuts"><Link href="/resources">Recordings &amp; materials</Link><Link href="/schedule">Your schedule</Link><Link href="/account/access" prefetch={false}>Course access</Link></nav>}
+           <section className="home-summary-grid" aria-label="Course summary">
+             <article className="home-summary-card">
+               <span className="student-eyebrow">Next event</span>
+diff --git a/src/app/qa/phase1/VerificationRunner.tsx b/src/app/qa/phase1/VerificationRunner.tsx
+new file mode 100644
+index 0000000..5d85c7b
+--- /dev/null
++++ b/src/app/qa/phase1/VerificationRunner.tsx
+@@ -0,0 +1,39 @@
++'use client';
++
++import { useState } from 'react';
++import type { Phase1VerificationReport } from '@/lib/server/v2Phase1Verification';
++
++export function VerificationRunner() {
++  const [pending, setPending] = useState(false);
++  const [report, setReport] = useState<Phase1VerificationReport | null>(null);
++  const [error, setError] = useState('');
++  const [copied, setCopied] = useState(false);
++  async function run() {
++    setPending(true); setReport(null); setError(''); setCopied(false);
++    try {
++      const response = await fetch('/api/v2/phase1-verification', {
++        method: 'POST', credentials: 'same-origin', cache: 'no-store', redirect: 'error',
++        headers: { 'Content-Type': 'application/json' }, body: '{}', signal: AbortSignal.timeout(30000),
++      });
++      const data = await response.json();
++      if (!response.ok || data.check !== 'phase1_caller_session_verification' || !Array.isArray(data.checks)) throw new Error('Unavailable');
++      setReport(data);
++    } catch { setError('Verification could not finish. Check that this is the current staging Preview, then retry.'); }
++    finally { setPending(false); }
++  }
++  async function copy() {
++    if (!report) return;
++    try { await navigator.clipboard.writeText(JSON.stringify(report, null, 2)); setCopied(true); }
++    catch { setError('Clipboard unavailable. You can select and copy the report below.'); }
++  }
++  return <section aria-label="Staging checks">
++    <button type="button" className="btn btn-primary" disabled={pending} onClick={run}>{pending ? 'Checking current session…' : 'Run read-only staging checks'}</button>
++    {error && <p role="alert">{error}</p>}
++    {report && <>
++      <p role="status">Result: {report.overall}. Role: {report.role}. Full phase acceptance remains separate.</p>
++      <ul>{report.checks.map(check => <li key={check.id}><strong>{check.status.toUpperCase()}</strong> — {check.observation}</li>)}</ul>
++      <button type="button" className="btn btn-secondary" onClick={copy}>{copied ? 'Copied sanitized report' : 'Copy sanitized report'}</button>
++      <pre style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', padding: '1rem', background: '#f3f5f2' }}>{JSON.stringify(report, null, 2)}</pre>
++    </>}
++  </section>;
++}
+diff --git a/src/app/qa/phase1/page.tsx b/src/app/qa/phase1/page.tsx
+new file mode 100644
+index 0000000..da9f5e5
+--- /dev/null
++++ b/src/app/qa/phase1/page.tsx
+@@ -0,0 +1,18 @@
++import { notFound } from 'next/navigation';
++import { isPhase1VerificationEnabled } from '@/lib/server/v2Phase1Verification';
++import { VerificationRunner } from './VerificationRunner';
++
++export const dynamic = 'force-dynamic';
++export const metadata = { title: 'Phase 1 staging verification', robots: { index: false, follow: false } };
++
++export default function Phase1VerificationPage() {
++  if (!isPhase1VerificationEnabled()) notFound();
++  return <main style={{ maxWidth: 900, margin: '3rem auto', padding: '1.5rem' }}>
++    <h1>Phase 1 staging verification</h1>
++    <p>Use only the designated staging accounts. Run once signed out, once as Student and once as Admin. Your current LMS session is used automatically.</p>
++    <p>This diagnostic reads access and permission boundaries. Its grant-permission probe uses only null inputs, which the reviewed function rejects before writes. No account, purchase, enrollment or content is created or changed.</p>
++    <p>The report contains roles, safe counts and outcomes, never account identifiers, tokens or purchase details. An inconclusive result must not be recorded as a pass.</p>
++    <VerificationRunner />
++    <p>These checks do not complete the legacy worksheet/material tests, real-payment verification or full Phase 1 acceptance.</p>
++  </main>;
++}
+diff --git a/src/app/session/[id]/page.tsx b/src/app/session/[id]/page.tsx
+index 942c797..0804d7e 100644
+--- a/src/app/session/[id]/page.tsx
++++ b/src/app/session/[id]/page.tsx
+@@ -1,7 +1,10 @@
+ import Link from 'next/link';
++import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
++import previewStyles from '@/components/student/studentPreview.module.css';
+ import { notFound } from 'next/navigation';
+ import { ResourceActions } from '@/components/student/ResourceActions';
+ import { getResourcePrimaryActionLabel, ResourceCard } from '@/components/student/ResourceCard';
++import { SessionVisitMarker } from '@/components/student/LearningResume';
+ import { StudentHeader } from '@/components/student/StudentHeader';
+ import { requirePortalRole } from '@/lib/server/portalAuthorization';
+ import { loadStudentTimeline } from '@/lib/server/studentTimeline';
+@@ -27,12 +30,13 @@ const JOURNEY_STEPS: Array<{
+ ];
+ 
+ export default async function SessionPage({ params }: { params: Promise<{ id: string }> }) {
++  const preview = isV2Phase1PreviewEnabled();
+   const [{ id: sessionId }, identity] = await Promise.all([params, requirePortalRole('student')]);
+   const result = await loadStudentTimeline(identity.id);
+ 
+   if (result.status === 'failed') {
+     return (
+-      <div className="student-page">
++      <div className={preview ? `student-page ${previewStyles.preview}` : 'student-page'}>
+         <StudentHeader studentName={result.studentName} />
+         <main className="student-main">
+           <section className="student-state student-state-error" role="alert">
+@@ -50,17 +54,21 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
+ 
+   const timeZone = result.timeline.course.schedule_timezone;
+   const isAcademic = isAcademicSection(session.class_type);
++  const journeySteps = preview ? JOURNEY_STEPS.filter((step) => step.type !== 'class').map((step) => ({
++    ...step, label: step.type === 'pre_read' ? 'Pre-class read' : step.type === 'session_material' ? 'Session reading & material' : step.label,
++  })) : JOURNEY_STEPS;
+ 
+   return (
+-    <div className="student-page">
++    <div className={preview ? `student-page ${previewStyles.preview}` : 'student-page'}>
+       <StudentHeader studentName={result.studentName} />
++      {preview && <SessionVisitMarker ownerId={identity.id} sessionId={session.id} />}
+       <main className="student-main session-journey-main">
+         <div className="session-journey-container">
+           <Link
+             className="session-back-link"
+             href={`/dashboard?openWeek=${session.week_number ?? 0}#session-${session.id}`}
+           >
+-            ← Back to Timeline
++            {preview ? '← Back to my learning' : '← Back to Timeline'}
+           </Link>
+           <header className="session-journey-header">
+             <div className="timeline-meta">
+@@ -86,10 +94,10 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
+             <section className="journey-panel" aria-labelledby="journey-title">
+               <div className="journey-panel-heading">
+                 <span className="student-eyebrow">Learning sequence</span>
+-                <h2 id="journey-title">Prepare → Attend class → Practise → Track progress</h2>
++                <h2 id="journey-title">{preview ? 'Your session resources' : 'Prepare → Attend class → Practise → Track progress'}</h2>{preview && <p>Pre-class reading, recording, session reading and worksheet. Open any available resource when you need it.</p>}
+               </div>
+               <ol className="journey-step-list">
+-                {JOURNEY_STEPS.map((step, index) => {
++                {journeySteps.map((step, index) => {
+                   const materials = step.type === 'class'
+                     ? []
+                     : session.materials.filter((material) => material.type === step.type);
+diff --git a/src/components/courses/CoursePackagePicker.tsx b/src/components/courses/CoursePackagePicker.tsx
+new file mode 100644
+index 0000000..5e39117
+--- /dev/null
++++ b/src/components/courses/CoursePackagePicker.tsx
+@@ -0,0 +1,39 @@
++'use client';
++
++import { useState } from 'react';
++import { courseMoney, type CourseIdentity } from '@/lib/v2CoursePresentation';
++import styles from './courses.module.css';
++
++type Subject = { identity: CourseIdentity; name: string };
++type Tier = { count: number; amountPaise: number | null };
++
++export function CoursePackagePicker({ subjects, tiers, initialSelection }: {
++  subjects: Subject[]; tiers: Tier[]; initialSelection: CourseIdentity[];
++}) {
++  const [selected, setSelected] = useState(initialSelection);
++  const [count, setCount] = useState(initialSelection.length || 1);
++  const chosenTier = tiers.find((tier) => tier.count === count);
++  const complete = selected.length === count;
++  function chooseTier(nextCount: number) {
++    setCount(nextCount);
++    setSelected((previous) => nextCount === subjects.length
++      ? subjects.map((subject) => subject.identity)
++      : previous.slice(0, nextCount));
++  }
++  return <section aria-labelledby="package-heading" className={styles.packageSection}>
++    <div className={styles.sectionHeading}><span className={styles.eyebrow}>INDIVIDUAL SUBJECT PACKAGES</span><h2 id="package-heading">Choose your subjects</h2><p>One, two or all three complete individual courses. The package remains separate from Full Course.</p></div>
++    <div className={styles.tiers}>{tiers.map((tier) => <button key={tier.count} type="button" className={`${styles.tier} ${count === tier.count ? styles.selectedTier : ''}`} aria-pressed={count === tier.count} onClick={() => chooseTier(tier.count)}>
++      <span className={styles.eyebrow}>{tier.count === 1 ? 'ONE SUBJECT' : tier.count === 2 ? 'TWO SUBJECTS' : 'THREE SUBJECTS'}</span>
++      <span className={styles.tierTitle}>{tier.count === 1 ? 'Build one strength' : tier.count === 2 ? 'Connect two subjects' : 'Cover all three subjects'}</span>
++      <strong className={styles.price}>{tier.amountPaise === null ? 'Price unavailable' : courseMoney(tier.amountPaise)}</strong>
++      <span className={styles.tierHint}>Total package price · six months of access</span>
++    </button>)}</div>
++    <div className={styles.panel}>
++      <form action="/courses/v2#quote" method="get">
++        <fieldset className={styles.choices}><legend>Select {count === 1 ? 'one subject' : `${count} subjects`}</legend>{subjects.map((subject) => <label key={subject.identity} className={selected.includes(subject.identity) ? styles.chosenSubject : undefined}><input type="checkbox" name="course" value={subject.identity} checked={selected.includes(subject.identity)} disabled={!selected.includes(subject.identity) && selected.length >= count} onChange={(event) => setSelected((previous) => event.target.checked ? [...previous, subject.identity] : previous.filter((identity) => identity !== subject.identity))} />{subject.name}</label>)}</fieldset>
++        <div className={styles.selectionFooter}><div aria-live="polite"><strong>{selected.length} of {count} subjects selected</strong><p>{complete ? subjects.filter((subject) => selected.includes(subject.identity)).map((subject) => subject.name).join(' + ') : 'Choose your subjects to review the current price.'}</p></div><button className={styles.button} type="submit" disabled={!complete || chosenTier?.amountPaise == null}>Review package price</button></div>
++      </form>
++      <small>Six calendar months from successful payment. Reviewing a price does not create a purchase or grant access.</small>
++    </div>
++  </section>;
++}
+diff --git a/src/components/courses/PurchaseHistory.tsx b/src/components/courses/PurchaseHistory.tsx
+index 7567c63..2ae3691 100644
+--- a/src/components/courses/PurchaseHistory.tsx
++++ b/src/components/courses/PurchaseHistory.tsx
+@@ -8,9 +8,9 @@ export function PurchaseHistory({ history, page, href, admin = false }: { histor
+     <h2 id="purchase-history-heading">{admin ? 'Purchase and access records' : 'Purchase history'}</h2>
+     <p>Confirmed purchases retain their original price and expiry, including after access ends. All dates are shown in IST.</p>
+     {history.status !== 'ready' ? <div role="alert" className={styles.notice}><p>Purchase history could not be loaded. This does not mean there are no purchases.</p><Link href={`${href}?page=${page}`} prefetch={false}>Retry history</Link></div> : <>
+-      {history.items.length === 0 ? <p className={styles.empty}>{page === 1 ? 'No Phase 1 purchases are recorded here yet.' : 'No more purchases on this page.'}</p> : <ul className={styles.history}>
++      {history.items.length === 0 ? <p className={styles.empty}>{page === 1 ? 'No purchases are recorded here yet.' : 'No more purchases on this page.'}</p> : <ul className={styles.history}>
+         {history.items.map((item) => <li key={item.id}>
+-          <div className={styles.row}><div>{admin && <p>{item.studentName}</p>}<h3>{courseNames(item.products)}</h3></div><span className={styles.badge}>{purchaseState(item, history.checkedAt)}</span></div>
++          <div className={styles.row}><div>{admin && <p>{item.studentName}</p>}<h3>{courseNames(item.products)}</h3></div><span className={`${styles.badge} ${purchaseState(item, history.checkedAt) !== 'Active' ? styles.badgeInactive : ''}`}>{purchaseState(item, history.checkedAt)}</span></div>
+           <dl className={styles.facts}><div><dt>Paid</dt><dd>{courseMoney(item.amount_paise)}</dd></div><div><dt>Payment confirmed</dt><dd>{courseDate(item.confirmed_at)}</dd></div><div><dt>Access ends</dt><dd>{courseDate(item.expires_at)}</dd></div></dl>
+         </li>)}
+       </ul>}
+diff --git a/src/components/courses/courses.module.css b/src/components/courses/courses.module.css
+index d5e1c56..3c85267 100644
+--- a/src/components/courses/courses.module.css
++++ b/src/components/courses/courses.module.css
+@@ -1,7 +1,8 @@
+ .page { min-height: 100vh; background: #f6f7f3; color: #24352f; font: 15px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; }
+ .header { padding: 18px max(24px, calc((100% - 1200px)/2)); background: #fff; border-bottom: 1px solid #dce3dc; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+ .header nav { display: flex; gap: 24px; flex-wrap: wrap; }
+-.logo { width: 110px; height: 62px; object-fit: contain; }
++.brand { display: flex; align-items: center; width: 112px; height: 64px; overflow: hidden; flex-shrink: 0; }
++.logo { width: 100px; height: 100px; margin-block: -9px; transform: scale(1.35); }
+ .main { max-width: 1256px; margin: auto; padding: 40px 28px 64px; color: #24352f; }
+ .intro { max-width: 760px; margin-bottom: 28px; }
+ .intro h1 { font-family: inherit; font-size: clamp(28px, 3vw, 38px); line-height: 1.2; letter-spacing: -.035em; margin: 12px 0; color: #24352f; }
+@@ -37,3 +38,30 @@
+ .page :where(a,button,input):focus-visible, .main :where(a,button,input):focus-visible, .panel a:focus-visible { outline: 3px solid #366fb1; outline-offset: 3px; }
+ @media (max-width: 1000px) { .offerings { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+ @media (max-width: 600px) { .main { padding: 28px 18px 48px; } .header { padding: 14px 18px; } .header nav { gap: 12px; font-size: 13px; } .offerings, .facts { grid-template-columns: minmax(0,1fr); } .panel, .offering { padding: 20px; } }
++.packageSection { margin-top: 36px; }
++.sectionHeading { max-width: 760px; margin-bottom: 20px; }
++.sectionHeading h2 { margin: 6px 0 10px; font-size: 25px; letter-spacing: -.025em; }
++.tiers { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
++.tier { display: grid; gap: 16px; text-align: left; align-content: start; border: 1px solid #d2ddd4; border-radius: 12px; padding: 25px; min-height: 220px; background: #fff; color: #24352f; font: inherit; cursor: pointer; }
++.tier:hover { border-color: #205848; }
++.selectedTier { border: 2px solid #205848; padding: 24px; background: #edf3eb; }
++.tierTitle { font-size: 21px; line-height: 1.35; font-weight: 650; letter-spacing: -.02em; }
++.tierHint { color: #58685f; font-size: 12px; }
++.selectionFooter { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
++.selectionFooter p { margin-top: 6px; }
++.choices .chosenSubject { border-color: #205848; background: #edf3eb; }
++.choices label:has(input:disabled) { opacity: .65; cursor: default; }
++.button:disabled { background: #e4eae3; color: #5c6c61; border-color: #cbd6ce; cursor: not-allowed; }
++.fullCourse { display: flex; align-items: center; justify-content: space-between; gap: 28px; background: #f1f4eb; padding: 26px; margin-top: 24px; border: 1px solid #b9c8ad; border-radius: 12px; }
++.fullCourse h2 { font-size: 22px; margin: 6px 0; }
++.fullCourse small { color: #58685f; font-size: 12px; }
++.fullCourse .button { flex-shrink: 0; }
++.accessGrid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; list-style: none; padding: 0; }
++.accessCard { border: 1px solid #dce3dc; border-radius: 10px; padding: 22px; background: #f6f9f3; display: grid; gap: 12px; align-content: start; }
++.accessCard h3 { font-size: 22px; }
++.accessSubject { color: #205848; font-weight: 600; }
++.expiryNotice { margin-top: 24px; background: #fffaf0; border: 1px solid #d8bc7d; border-radius: 12px; padding: 26px; display: grid; gap: 12px; }
++.expiryNotice h2 { color: #5d4824; font-size: 23px; }
++.badgeInactive { background: #f0ece4; color: #655844; }
++@media (max-width: 900px) { .fullCourse { flex-wrap: wrap; }.accessGrid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
++@media (max-width: 650px) { .tiers,.accessGrid { grid-template-columns: minmax(0,1fr); }.tier { min-height: 0; gap: 12px; }.selectionFooter { align-items: stretch; flex-direction: column; }.fullCourse { align-items: flex-start; flex-direction: column; gap: 18px; } }
+diff --git a/src/components/student/LearningResume.tsx b/src/components/student/LearningResume.tsx
+new file mode 100644
+index 0000000..9c17af3
+--- /dev/null
++++ b/src/components/student/LearningResume.tsx
+@@ -0,0 +1,43 @@
++'use client';
++
++import Link from 'next/link';
++import { useEffect, useSyncExternalStore } from 'react';
++import styles from './studentPreview.module.css';
++
++const EVENT = 'ace:last-opened-session';
++const keyFor = (ownerId: string) => `ace:last-opened-session:v1:${ownerId}`;
++function subscribe(notify: () => void) {
++  window.addEventListener('storage', notify);
++  window.addEventListener(EVENT, notify);
++  return () => {
++    window.removeEventListener('storage', notify);
++    window.removeEventListener(EVENT, notify);
++  };
++}
++function readLastOpened(ownerId: string) {
++  try { return window.localStorage.getItem(keyFor(ownerId)); }
++  catch { return null; }
++}
++const serverSnapshot = () => null;
++
++/** Records only an already-authorized page visit, never completion or feedback. */
++export function SessionVisitMarker({ ownerId, sessionId }: { ownerId: string; sessionId: string }) {
++  useEffect(() => {
++    try {
++      window.localStorage.setItem(keyFor(ownerId), sessionId);
++      window.dispatchEvent(new Event(EVENT));
++    } catch { /* Browsers may disable storage. Learning still works. */ }
++  }, [ownerId, sessionId]);
++  return null;
++}
++
++/** The server supplies the current authorized timeline, so stale IDs cannot create links. */
++export function LearningResume({ ownerId, sessions }: { ownerId: string; sessions: { id: string; title: string }[] }) {
++  const lastOpened = useSyncExternalStore(subscribe, () => readLastOpened(ownerId), serverSnapshot);
++  const session = sessions.find((item) => item.id === lastOpened);
++  if (!session) return null;
++  return <section className={styles.resume} aria-labelledby="resume-title">
++    <div><span className={styles.resumeLabel}>● LAST OPENED ON THIS BROWSER</span><h2 id="resume-title">Pick up where you left off</h2><p>{session.title}</p><small>A page-visit reminder, not a completion record.</small></div>
++    <Link href={`/session/${encodeURIComponent(session.id)}`}>Resume session →</Link>
++  </section>;
++}
+diff --git a/src/components/student/StudentHeader.tsx b/src/components/student/StudentHeader.tsx
+index 4171539..1375003 100644
+--- a/src/components/student/StudentHeader.tsx
++++ b/src/components/student/StudentHeader.tsx
+@@ -1,4 +1,5 @@
+ import Link from 'next/link';
++import previewStyles from './studentPreview.module.css';
+ import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
+ import { BrandLogo } from '@/components/BrandLogo';
+ import { SignOutButton } from './SignOutButton';
+@@ -14,15 +15,16 @@ function getInitials(name: string) {
+ }
+ 
+ export function StudentHeader({ studentName }: { studentName: string }) {
++  const preview = isV2Phase1PreviewEnabled();
+   return (
+-    <header className="student-header">
++    <header className={preview ? `student-header ${previewStyles.previewHeader}` : 'student-header'}>
+       <div className="student-header-inner">
+         <Link className="student-brand" href="/dashboard" aria-label="Ace Club student home">
+           <BrandLogo variant="light" className="student-brand-logo" preload />
+         </Link>
+         <nav className="student-navigation" aria-label="Student navigation">
+-          <Link href="/dashboard">Home</Link>
+-          {isV2Phase1PreviewEnabled() && <Link href="/account/access" prefetch={false}>My access</Link>}
++          <Link href="/dashboard">{preview ? 'My learning' : 'Home'}</Link>
++          {preview && <><Link href="/account/access" prefetch={false}>My access</Link><Link href="/courses/v2" prefetch={false}>Explore courses</Link></>}
+           <Link href="/schedule">Schedule</Link>
+           <Link href="/resources">Resources</Link>
+           <Link className="student-navigation-secondary" href="/practice">Practice log</Link>
+diff --git a/src/components/student/studentPreview.module.css b/src/components/student/studentPreview.module.css
+new file mode 100644
+index 0000000..30d31e8
+--- /dev/null
++++ b/src/components/student/studentPreview.module.css
+@@ -0,0 +1,40 @@
++.preview:global(.student-page) {
++  --text-primary: #24352f;
++  --text-secondary: #58685f;
++  --text-tertiary: #66746b;
++  --accent-primary: #205848;
++  --bg-tertiary: #edf3eb;
++  --border-primary: #dce3dc;
++  --border-secondary: #cbd6ce;
++  --font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
++  background: #f6f7f3;
++  color: #24352f;
++  font-family: var(--font-heading);
++}
++.previewHeader:global(.student-header) { background: #fff; backdrop-filter: none; border-bottom: 1px solid #dce3dc; }
++.previewHeader :global(.student-navigation a) { font-weight: 600; }
++.previewHeader :global(.student-navigation a:hover) { background: #edf3eb; color: #205848; }
++.preview :global(.student-intro h1), .preview :global(.session-journey-header h1) { font-size: clamp(28px,3vw,38px); line-height: 1.2; }
++.preview :global(.home-summary-card), .preview :global(.practice-callout), .preview :global(.student-state), .preview :global(.session-journey-header), .preview :global(.journey-panel) { border-radius: 12px; box-shadow: none; background: #fff; border-color: #dce3dc; }
++.preview :global(.programme-position) { background: #edf3eb; border-color: #dce3dc; box-shadow: none; }
++.preview :global(.resource-card) { box-shadow: none; border-color: #dce3dc; }
++.preview :global(.resource-card-locked-title) { color: #66746b; }
++.preview :global(.journey-panel) { background: transparent; padding: 24px 0; border: 0; }
++.preview :global(.journey-step-list) { gap: 20px; }
++.preview :global(.journey-step) { padding: 24px; grid-template-columns: 38px minmax(0,1fr); gap: 18px; align-items: start; }
++.preview :global(.journey-step-number) { background: #edf3eb; border-radius: 8px; font-weight: 600; }
++.preview :global(.journey-step-copy strong) { font-size: 19px; }
++.preview :global(.journey-materials), .preview :global(.not-configured-copy) { grid-column: 2; }
++.preview :global(.journey-materials .resource-card) { background: #fafcf8; }
++.workspaceLinks { display: flex; gap: 14px; flex-wrap: wrap; margin: 20px 0 28px; }
++.workspaceLinks a { color: #205848; border: 1px solid #cbd6ce; border-radius: 8px; padding: 10px 16px; background: #fff; text-decoration: none; font-weight: 600; }
++.workspaceLinks a:hover { border-color: #205848; background: #edf3eb; }
++.preview :where(a,button,input):focus-visible, .previewHeader :where(a,button):focus-visible { outline: 3px solid #366fb1; outline-offset: 3px; }
++@media(max-width: 650px) { .preview :global(.journey-step) { padding: 18px; gap: 12px; grid-template-columns: 30px minmax(0,1fr); }.previewHeader :global(.student-navigation) { flex-wrap: wrap; }.workspaceLinks { gap: 10px; }.workspaceLinks a { font-size: 13px; } }
++.resume { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 26px; margin: 20px 0 28px; background: #eaf2e8; border: 1px solid #b9cdbb; border-left: 4px solid #205848; border-radius: 12px; }
++.resumeLabel { color: #205848; font-size: 11px; font-weight: 650; letter-spacing: .07em; }
++.resume h2 { margin: 8px 0; font-size: 24px; color: #24352f; letter-spacing: -.025em; }
++.resume p { color: #344e40; margin: 0 0 8px; }
++.resume small { color: #58685f; }
++.resume a { flex-shrink: 0; background: #205848; color: #fff; padding: 12px 18px; border-radius: 8px; text-decoration: none; font-weight: 600; }
++@media(max-width: 650px) { .resume { align-items: flex-start; flex-direction: column; padding: 20px; } }
+diff --git a/src/lib/server/v2Phase1Verification.ts b/src/lib/server/v2Phase1Verification.ts
+new file mode 100644
+index 0000000..bb071a7
+--- /dev/null
++++ b/src/lib/server/v2Phase1Verification.ts
+@@ -0,0 +1,139 @@
++import 'server-only';
++import { createClient } from '@/utils/supabase/server';
++import { isV2AccessList } from '@/lib/v2Products';
++
++const STAGING_PROJECT = 'eyphkkginlgoaxflauog';
++const STAGING_ORIGIN = `https://${STAGING_PROJECT}.supabase.co`;
++
++/** This diagnostic is deliberately stricter than general development visibility. */
++export function isPhase1VerificationEnabled(): boolean {
++  if (process.env.VERCEL_ENV !== 'preview' || process.env.NEXT_PUBLIC_SUPABASE_URL !== STAGING_ORIGIN) return false;
++  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
++  if (!key) return false;
++  if (/^sb_publishable_[A-Za-z0-9_-]{16,512}$/.test(key)) return true;
++  try {
++    const parts = key.split('.');
++    if (parts.length !== 3) return false;
++    const claims = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8'));
++    return claims.role === 'anon' && claims.ref === STAGING_PROJECT;
++  } catch { return false; }
++}
++
++export type Phase1VerificationCheck = {
++  id: string;
++  status: 'pass' | 'fail' | 'inconclusive';
++  observation: string;
++  count?: number;
++};
++export type Phase1VerificationReport = {
++  check: 'phase1_caller_session_verification';
++  recordedAt: string;
++  commit: string;
++  stagingProject: string;
++  role: 'signed_out' | 'student' | 'admin' | 'inactive' | 'unavailable';
++  overall: 'inconclusive' | 'fail';
++  checks: Phase1VerificationCheck[];
++  limitations: string[];
++};
++
++// Even if execution permissions drift, the applied function immediately invokes
++// v2_purchase_shape(NULL), which raises 22023 before any INSERT. Never substitute
++// real IDs, products, price versions, references, amounts or confirmation times.
++export const INVALID_GRANT_PROBE = Object.freeze({
++  p_student_id: null,
++  p_product_codes: null,
++  p_payment_reference: null,
++  p_confirmed_at: null,
++  p_price_version_id: null,
++  p_amount_paise: null,
++  p_currency: null,
++});
++
++export async function verifyPhase1CallerSession(): Promise<Phase1VerificationReport> {
++  const sha = process.env.VERCEL_GIT_COMMIT_SHA;
++  const report: Phase1VerificationReport = {
++    check: 'phase1_caller_session_verification', recordedAt: new Date().toISOString(),
++    commit: sha && /^[a-f0-9]{40}$/i.test(sha) ? sha : 'unavailable',
++    stagingProject: STAGING_PROJECT, role: 'unavailable', overall: 'inconclusive', checks: [],
++    limitations: [
++      'Uses this browser session forwarded by the server to Supabase; no identity is supplied by the operator.',
++      'Zero foreign rows is not cross-Student acceptance without independently confirmed designated fixtures.',
++      'Expired, revoked, inactive and wrong-section cases require designated fixture-state evidence.',
++      'No direct table-write attempt, checkout, legacy content mutation or full Phase 1 sign-off is performed.',
++    ],
++  };
++  const add = (id: string, status: Phase1VerificationCheck['status'], observation: string, count?: number) => {
++    report.checks.push({ id, status, observation, ...(count === undefined ? {} : { count }) });
++    if (status === 'fail') report.overall = 'fail';
++  };
++  if (!isPhase1VerificationEnabled()) {
++    add('environment', 'fail', 'Diagnostic is unavailable outside the verified staging Preview configuration.');
++    return report;
++  }
++  add('environment', 'pass', 'Preview environment and staging public-client configuration match.');
++  try {
++    const client = await createClient();
++    const { data: { user }, error: authError } = await client.auth.getUser();
++    if (authError && authError.name !== 'AuthSessionMissingError') {
++      add('identity', 'inconclusive', 'The current session could not be verified. Sign in again and retry.');
++      return report;
++    }
++    let profileActive = false;
++    if (!user) {
++      report.role = 'signed_out';
++      add('identity', 'pass', 'No authenticated LMS session is present.');
++    } else {
++      const profile = await client.from('profiles').select('role,is_active').eq('id', user.id).maybeSingle();
++      if (profile.error || !profile.data || !['student', 'admin'].includes(profile.data.role) || typeof profile.data.is_active !== 'boolean') {
++        add('identity', 'inconclusive', 'The caller profile could not be verified. No role was assumed.');
++        return report;
++      }
++      profileActive = profile.data.is_active;
++      report.role = profileActive ? profile.data.role : 'inactive';
++      add('identity', 'pass', 'The current authenticated profile and active state were verified.');
++    }
++
++    const access = await client.rpc('get_my_v2_access');
++    if (!user) {
++      add('access_rpc', access.error?.code === '42501' ? 'pass' : 'fail',
++        access.error?.code === '42501' ? 'Anonymous access RPC execution is denied.' : 'Anonymous access RPC did not return the required permission denial.');
++    } else if (access.error || !isV2AccessList(access.data)) {
++      add('access_rpc', 'inconclusive', 'Access RPC did not return a valid access list.');
++    } else if (!profileActive || report.role === 'admin') {
++      add('access_rpc', access.data.length === 0 ? 'pass' : 'fail',
++        access.data.length === 0 ? 'This non-Student or inactive identity has no active Student entitlements.' : 'Unexpected active Student entitlements were returned.', access.data.length);
++    } else {
++      add('access_rpc', 'pass', 'The active Student access RPC returned a validated list; fixture-state correctness is separate.', access.data.length);
++    }
++
++    // Never fetch purchase rows. Anonymous GET limit=0 preserves the SQL error
++    // body: HEAD strips it, so the SDK cannot recover permission code 42501.
++    if (!user) {
++      const privateRead = await client.from('v2_purchases').select('id').limit(0);
++      add('private_purchase_read', privateRead.error?.code === '42501' ? 'pass' : 'fail',
++        privateRead.error?.code === '42501' ? 'Anonymous private purchase reads are denied.' : 'Anonymous private purchase read did not return the required permission denial.');
++    } else if (report.role === 'student' || report.role === 'inactive') {
++      const foreign = await client.from('v2_purchases').select('id', { count: 'exact', head: true }).neq('student_id', user.id);
++      if (foreign.error || !Number.isSafeInteger(foreign.count) || (foreign.count ?? -1) < 0) {
++        add('foreign_purchase_visibility', 'inconclusive', 'The foreign-row visibility query could not be verified.');
++      } else if (foreign.count !== 0) {
++        add('foreign_purchase_visibility', 'fail', 'Foreign purchase rows were visible to this non-Admin caller.');
++      } else {
++        add('foreign_purchase_visibility', 'inconclusive', 'No foreign rows were visible; another designated Student purchase fixture has not been independently confirmed.', 0);
++      }
++    } else {
++      add('foreign_purchase_visibility', 'inconclusive', 'Admin can inspect history; repeat this check in a designated Student session.');
++    }
++
++    const deniedGrant = await client.rpc('grant_v2_purchase', INVALID_GRANT_PROBE);
++    add('browser_role_grant_permission', deniedGrant.error?.code === '42501' ? 'pass' : 'fail',
++      deniedGrant.error?.code === '42501'
++        ? 'The caller database role cannot execute the grant RPC. The deliberately invalid payload created no purchase.'
++        : deniedGrant.error?.code === '22023'
++          ? 'Grant validation was reached: execution permission has drifted. The null selection is rejected before writes.'
++          : 'Grant RPC permission could not be established. Stop and inspect its deployed definition and grants.');
++  } catch {
++    add('transport', 'inconclusive', 'A verification request failed. No provider message or private response is included.');
++  }
++  return report;
++}
+diff --git a/src/lib/server/v2UpgradeQuotes.ts b/src/lib/server/v2UpgradeQuotes.ts
+new file mode 100644
+index 0000000..1dbbf6e
+--- /dev/null
++++ b/src/lib/server/v2UpgradeQuotes.ts
+@@ -0,0 +1,78 @@
++import 'server-only';
++
++import { createClient } from '@/utils/supabase/server';
++import { getPortalIdentity } from './portalAuthorization';
++import { isV2Phase1PreviewEnabled } from './v2Phase1Feature';
++import { getMyV2Access, quoteV2Products } from './v2Products';
++import { INDIVIDUAL_UPGRADE_POLICY, buildUpgradeQuote, individualSelection, isIndividualUpgrade,
++  sameConfiguredQuote, type IndividualProduct, type UpgradeQuote } from '@/lib/v2UpgradeQuotes';
++
++export type UpgradeReview =
++  | { status: 'policy_pending' }
++  | { status: 'unauthorized' }
++  | { status: 'unavailable' }
++  | { status: 'ineligible'; reason: 'no_active_package' | 'multiple_packages' | 'full_course' | 'all_subjects' }
++  | { status: 'ready'; currentProducts: IndividualProduct[]; expiresAt: string;
++      quote: UpgradeQuote | null; invalidSelection: boolean };
++
++const uuid = (value: unknown): value is string => typeof value === 'string'
++  && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
++const record = (value: unknown): value is Record<string, unknown> => !!value && typeof value === 'object' && !Array.isArray(value);
++const instant = (value: unknown): value is string => typeof value === 'string'
++  && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/.test(value)
++  && Number.isFinite(Date.parse(value));
++
++export function isIndividualUpgradePolicyEnabled(): boolean {
++  if (!isV2Phase1PreviewEnabled() || process.env.V2_INDIVIDUAL_UPGRADE_POLICY !== INDIVIDUAL_UPGRADE_POLICY) return false;
++  try {
++    const url = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || '');
++    return url.origin === 'https://eyphkkginlgoaxflauog.supabase.co'
++      && url.pathname === '/' && !url.username && !url.password && !url.search && !url.hash;
++  } catch { return false; }
++}
++
++/** Caller-session reads only. No service key, payment call or grant mutation. */
++export async function loadIndividualUpgrade(target?: unknown): Promise<UpgradeReview> {
++  if (!isIndividualUpgradePolicyEnabled()) return { status: 'policy_pending' };
++  try {
++    const identity = await getPortalIdentity();
++    if (!identity || identity.role !== 'student') return { status: 'unauthorized' };
++    const client = await createClient();
++    const now = new Date().toISOString();
++    // At most two active purchases: two already makes credit attribution ambiguous.
++    const { data, error } = await client.from('v2_purchases')
++      .select('id, student_id, amount_paise, currency, confirmed_at, expires_at, revoked_at, v2_product_grants(product_code)')
++      .eq('student_id', identity.id).is('revoked_at', null).lte('confirmed_at', now).gt('expires_at', now)
++      .order('confirmed_at', { ascending: false }).limit(2);
++    if (error || !Array.isArray(data) || data.length > 2) return { status: 'unavailable' };
++    if (data.length === 0) return { status: 'ineligible', reason: 'no_active_package' };
++    for (const row of data) {
++      if (!record(row) || !uuid(row.id) || row.student_id !== identity.id
++        || !Number.isSafeInteger(row.amount_paise) || Number(row.amount_paise) <= 0 || row.currency !== 'INR'
++        || !instant(row.confirmed_at) || !instant(row.expires_at) || row.revoked_at !== null
++        || Date.parse(row.confirmed_at) > Date.parse(now) || Date.parse(row.expires_at) <= Date.parse(now)
++        || !Array.isArray(row.v2_product_grants)) return { status: 'unavailable' };
++    }
++    if (data.length > 1) return { status: 'ineligible', reason: 'multiple_packages' };
++    const purchase = data[0];
++    const products = purchase.v2_product_grants.map((grant: unknown) => record(grant) ? grant.product_code : null);
++    if (products.length === 1 && products[0] === 'full_batch') return { status: 'ineligible', reason: 'full_course' };
++    if (!individualSelection(products)) return { status: 'unavailable' };
++    if (products.length === 3) return { status: 'ineligible', reason: 'all_subjects' };
++    // Recheck access using database time; a history row alone is not authorization.
++    const access = await getMyV2Access();
++    if (access.length !== products.length || products.some((code) => !access.some((item) =>
++      item.product_code === code && Date.parse(item.expires_at) === Date.parse(purchase.expires_at)))) return { status: 'unavailable' };
++    const ready = { status: 'ready' as const, currentProducts: products, expiresAt: purchase.expires_at, quote: null };
++    if (target === undefined) return { ...ready, invalidSelection: false };
++    if (!individualSelection(target) || !isIndividualUpgrade(products, target)) return { ...ready, invalidSelection: true };
++    const currentQuote = await quoteV2Products(products);
++    const targetQuote = await quoteV2Products(target);
++    // Fail on price revisions observed during the request; this still is not a payment reservation.
++    const [currentAgain, targetAgain] = await Promise.all([quoteV2Products(products), quoteV2Products(target)]);
++    if (!sameConfiguredQuote(currentQuote, currentAgain) || !sameConfiguredQuote(targetQuote, targetAgain)) return { status: 'unavailable' };
++    const quote = buildUpgradeQuote(products, target, currentQuote, targetQuote, purchase.expires_at);
++    if (!quote || Date.parse(purchase.expires_at) <= Date.now()) return { status: 'unavailable' };
++    return { ...ready, quote, invalidSelection: false };
++  } catch { return { status: 'unavailable' }; }
++}
+diff --git a/src/lib/v2UpgradeQuotes.ts b/src/lib/v2UpgradeQuotes.ts
+new file mode 100644
+index 0000000..baddb22
+--- /dev/null
++++ b/src/lib/v2UpgradeQuotes.ts
+@@ -0,0 +1,45 @@
++import { isV2ProductSelection, isV2QuoteFor, type V2ProductCode, type V2Quote } from './v2Products';
++
++export const INDIVIDUAL_UPGRADE_POLICY = 'current-tier-preserve-expiry-v1';
++export type IndividualProduct = Exclude<V2ProductCode, 'full_batch'>;
++export type UpgradeQuote = {
++  currentProducts: IndividualProduct[];
++  targetProducts: IndividualProduct[];
++  currentPricePaise: number;
++  targetPricePaise: number;
++  differencePaise: number;
++  currency: 'INR';
++  expiresAt: string;
++  currentPriceVersion: string;
++  targetPriceVersion: string;
++};
++
++export function individualSelection(value: unknown): value is IndividualProduct[] {
++  return isV2ProductSelection(value) && !value.includes('full_batch');
++}
++
++export function isIndividualUpgrade(current: unknown, target: unknown): boolean {
++  return individualSelection(current) && individualSelection(target)
++    && current.length < target.length && current.every((product) => target.includes(product));
++}
++
++/** Read-only estimate. Payment must revalidate ownership, policy and prices. */
++export function buildUpgradeQuote(current: IndividualProduct[], target: IndividualProduct[],
++  currentQuote: unknown, targetQuote: unknown, expiresAt: string): UpgradeQuote | null {
++  if (!isIndividualUpgrade(current, target) || !isV2QuoteFor(currentQuote, current)
++    || !isV2QuoteFor(targetQuote, target) || !Number.isFinite(Date.parse(expiresAt))) return null;
++  const difference = targetQuote.amount_paise - currentQuote.amount_paise;
++  if (!Number.isSafeInteger(difference) || difference <= 0
++    || currentQuote.price_version_id === targetQuote.price_version_id) return null;
++  return {
++    currentProducts: [...current].sort(), targetProducts: [...target].sort(),
++    currentPricePaise: currentQuote.amount_paise, targetPricePaise: targetQuote.amount_paise,
++    differencePaise: difference, currency: 'INR', expiresAt,
++    currentPriceVersion: currentQuote.price_version_id, targetPriceVersion: targetQuote.price_version_id,
++  };
++}
++
++export function sameConfiguredQuote(a: V2Quote, b: V2Quote): boolean {
++  return a.price_version_id === b.price_version_id && a.amount_paise === b.amount_paise
++    && a.currency === b.currency && [...a.product_codes].sort().join(',') === [...b.product_codes].sort().join(',');
++}

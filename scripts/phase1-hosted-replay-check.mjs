@@ -1,0 +1,23 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+import {createClient} from '@supabase/supabase-js';
+import {PROJECT,ORIGIN,COMMIT,readConfig,check} from './phase1-hosted-closeout-config.mjs';
+const config=readConfig('/tmp/ace-phase1-staging.env',{database:false});
+const state=JSON.parse(readFileSync('/tmp/ace-phase1-passwordless-qa-state.json','utf8'));
+check(state.project===PROJECT&&state.commit===COMMIT,'Wrong QA run');
+const service=createClient(ORIGIN,config.SUPABASE_SERVICE_ROLE_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+const safe=r=>{check(!r.error,'Staging query failed');return r.data;};
+const q=state.users.find(u=>u.label==='q'),v=state.users.find(u=>u.label==='v');
+for(const u of [q,v]){const d=safe(await service.auth.admin.getUserById(u.id));check(d.user.email===u.email&&d.user.user_metadata.phase1_qa_run===state.runId,'Ownership mismatch');}
+const before=safe(await service.from('v2_purchases').select('*').eq('student_id',q.id).single());
+check(before.payment_reference===`phase1-qa:${state.runId}:q:0`,'Unexpected fixture reference');
+const args={p_student_id:q.id,p_product_codes:['quant_crash'],p_payment_reference:before.payment_reference,p_confirmed_at:before.confirmed_at,p_price_version_id:before.price_version_id,p_amount_paise:before.amount_paise,p_currency:before.currency};
+const checks=[];const ok=(id,result)=>{checks.push({id,status:result?'pass':'fail'});check(result,id);};
+const duplicates=await Promise.all(Array.from({length:6},()=>service.rpc('grant_v2_purchase',args)));
+ok('six-concurrent-identical-replays-return-original-purchase',duplicates.every(r=>!r.error&&r.data===before.id));
+const conflicts=await Promise.all(Array.from({length:4},(_,i)=>service.rpc('grant_v2_purchase',i%2?{...args,p_student_id:v.id}:{...args,p_product_codes:['verbal_crash']})));
+ok('concurrent-conflicting-buyer-or-subject-replays-rejected',conflicts.every(r=>r.error?.code==='22023'));
+const after=safe(await service.from('v2_purchases').select('*').eq('student_id',q.id).single());
+ok('original-purchase-price-and-expiry-unchanged',JSON.stringify(before)===JSON.stringify(after));
+const grants=safe(await service.from('v2_product_grants').select('product_code').eq('purchase_id',before.id));ok('exactly-original-subject-grant-remains',grants.length===1&&grants[0].product_code==='quant_crash');
+const report={runId:state.runId,project:PROJECT,commit:COMMIT,recordedAt:new Date().toISOString(),checks,status:'passed',scope:'Concurrent replay against an existing synthetic purchase. Concurrent first-insert race is covered separately by the local database suite. No new purchases or payments.'};
+writeFileSync('/home/prem/Downloads/the-ace-club/deliverables/phase1-closeout-2026-11-01/passwordless-qa/replay-results.json',JSON.stringify(report,null,2));console.log(JSON.stringify({status:report.status,checks:checks.length}));

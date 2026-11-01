@@ -1,0 +1,28 @@
+{
+  "check": "phase1_cleanup_and_legacy_editor_repair",
+  "run_id": "7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719",
+  "added_columns": [
+    "admin_notes",
+    "answer_mode",
+    "content_format",
+    "di_question_type",
+    "question_type",
+    "stimulus_data",
+    "stimulus_group_key",
+    "stimulus_text",
+    "stimulus_title"
+  ],
+  "phase2_activated": false,
+  "baseline_restored": true,
+  "after_purchase_cleanup": {
+    "md5": "37f717bc66b73f46bb8b85822e02bd01",
+    "table_count": 60
+  },
+  "remaining_fixture_purchases": 0,
+  "after_additive_schema_repair": {
+    "md5": "37f717bc66b73f46bb8b85822e02bd01",
+    "table_count": 60
+  },
+  "existing_column_values_preserved": true,
+  "original_phase1_migration_reapplied": false
+}

@@ -1,0 +1,15 @@
+{
+  "verified_at": "2026-10-28T16:19:56.045Z",
+  "scope": "Disposable local PostgreSQL with synthetic ledger; not staging backup/restore or acceptance",
+  "passed": [
+    "read-only preflight and ledger/definition inventory execute before Phase 2",
+    "unacknowledged target and recovery gates fail without changes",
+    "missing Phase 1 ledger stops without replaying Phase 1",
+    "partial ledger, orphan relation and orphan routine each stop safely",
+    "failure after all six migrations rolls back schema, ledger and data",
+    "Phase 1 data and prior ledger tampering both abort and roll back the transaction",
+    "successful atomic application records exactly six versions and preserves all existing application rows",
+    "postflight validates eight private tables, RLS, role grants, RPCs and canonical mapping",
+    "repeat application stops without changing installed state"
+  ]
+}

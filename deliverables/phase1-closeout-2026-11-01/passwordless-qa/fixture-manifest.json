@@ -1,0 +1,103 @@
+{
+  "runId": "7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719",
+  "project": "eyphkkginlgoaxflauog",
+  "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+  "createdAt": "2026-11-01T18:35:24.147Z",
+  "status": "cleaned",
+  "users": [
+    {
+      "id": "c36b3151-97df-4550-89c7-246e0ea03591",
+      "email": "ace-p1-q-7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719@example.invalid",
+      "label": "q"
+    },
+    {
+      "id": "d9f64530-b5a4-4846-99d7-1af268cfd998",
+      "email": "ace-p1-v-7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719@example.invalid",
+      "label": "v"
+    },
+    {
+      "id": "f6045463-bb95-49f2-aacf-12e127d27bf9",
+      "email": "ace-p1-d-7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719@example.invalid",
+      "label": "d"
+    },
+    {
+      "id": "1d78a71d-6c25-4a57-9b12-0412b3f0f139",
+      "email": "ace-p1-qv-7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719@example.invalid",
+      "label": "qv"
+    },
+    {
+      "id": "95c14e5b-45e6-42d9-82b1-2295464b6f5e",
+      "email": "ace-p1-qd-7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719@example.invalid",
+      "label": "qd"
+    },
+    {
+      "id": "e920c10d-ba5c-4fa7-90cc-6fcd929f2d50",
+      "email": "ace-p1-vd-7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719@example.invalid",
+      "label": "vd"
+    },
+    {
+      "id": "e45ab928-1ca3-47ff-b574-936f158cb90a",
+      "email": "ace-p1-qvd-7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719@example.invalid",
+      "label": "qvd"
+    },
+    {
+      "id": "38f8b41c-024b-473d-8b88-f001f2822d3f",
+      "email": "ace-p1-full-7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719@example.invalid",
+      "label": "full"
+    },
+    {
+      "id": "2ef8b710-1826-4757-ae30-79689404a14f",
+      "email": "ace-p1-expired-7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719@example.invalid",
+      "label": "expired"
+    },
+    {
+      "id": "a3f6791f-1425-43c6-89be-4766ef9e9d65",
+      "email": "ace-p1-revoked-7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719@example.invalid",
+      "label": "revoked"
+    },
+    {
+      "id": "a21adcf2-0e80-4782-87a5-b7453734a03e",
+      "email": "ace-p1-inactive-7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719@example.invalid",
+      "label": "inactive"
+    },
+    {
+      "id": "4308e326-83f8-47db-b261-15a9ea972c53",
+      "email": "ace-p1-multiple-7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719@example.invalid",
+      "label": "multiple"
+    },
+    {
+      "id": "44a7b2dc-d184-4329-9437-01ed1c99b4fa",
+      "email": "ace-p1-mixed-7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719@example.invalid",
+      "label": "mixed"
+    },
+    {
+      "id": "09ab51ba-ca6e-494f-ab6d-e519fe420e5e",
+      "email": "ace-p1-empty-7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719@example.invalid",
+      "label": "empty"
+    },
+    {
+      "id": "6fbd6b9f-2731-4c03-91f6-9fb0c3c0c1a1",
+      "email": "ace-p1-admin-7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719@example.invalid",
+      "label": "admin"
+    }
+  ],
+  "databasePasswordUsed": false,
+  "deletedAccountIds": [
+    "6fbd6b9f-2731-4c03-91f6-9fb0c3c0c1a1",
+    "09ab51ba-ca6e-494f-ab6d-e519fe420e5e",
+    "44a7b2dc-d184-4329-9437-01ed1c99b4fa",
+    "4308e326-83f8-47db-b261-15a9ea972c53",
+    "a21adcf2-0e80-4782-87a5-b7453734a03e",
+    "a3f6791f-1425-43c6-89be-4766ef9e9d65",
+    "2ef8b710-1826-4757-ae30-79689404a14f",
+    "38f8b41c-024b-473d-8b88-f001f2822d3f",
+    "e45ab928-1ca3-47ff-b574-936f158cb90a",
+    "e920c10d-ba5c-4fa7-90cc-6fcd929f2d50",
+    "95c14e5b-45e6-42d9-82b1-2295464b6f5e",
+    "1d78a71d-6c25-4a57-9b12-0412b3f0f139",
+    "f6045463-bb95-49f2-aacf-12e127d27bf9",
+    "d9f64530-b5a4-4846-99d7-1af268cfd998",
+    "c36b3151-97df-4550-89c7-246e0ea03591"
+  ],
+  "cleanedAt": "2026-11-01T18:57:43.952Z"
+}

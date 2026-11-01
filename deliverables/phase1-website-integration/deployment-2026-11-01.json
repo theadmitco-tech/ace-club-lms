@@ -1,0 +1,120 @@
+{
+  "date": "2026-11-01",
+  "project": "ace-club-lms",
+  "branch": "intern/v2-phase-2-review",
+  "commit": "07154f02c466cd17a940257f4c2b0f56096c453f",
+  "deployment_id": "dpl_Eh3mkarH2b5WkHfzybBNCF2fdpQA",
+  "deployment_state": "READY",
+  "url": "https://ace-club-79m530i0p-theadmitco-techs-projects.vercel.app",
+  "alias": "https://ace-club-lms-git-intern-v2-pha-9a969c-theadmitco-techs-projects.vercel.app",
+  "staging_browser_asset": {
+    "status": 200,
+    "hosts": [
+      "eyphkkginlgoaxflauog.supabase.co"
+    ]
+  },
+  "hosted_public_quotes": [
+    {
+      "selection": [
+        "full_course"
+      ],
+      "inr": 25000
+    },
+    {
+      "selection": [
+        "quant"
+      ],
+      "inr": 10000
+    },
+    {
+      "selection": [
+        "verbal"
+      ],
+      "inr": 10000
+    },
+    {
+      "selection": [
+        "di"
+      ],
+      "inr": 10000
+    },
+    {
+      "selection": [
+        "quant",
+        "verbal"
+      ],
+      "inr": 18000
+    },
+    {
+      "selection": [
+        "quant",
+        "di"
+      ],
+      "inr": 18000
+    },
+    {
+      "selection": [
+        "verbal",
+        "di"
+      ],
+      "inr": 18000
+    },
+    {
+      "selection": [
+        "quant",
+        "verbal",
+        "di"
+      ],
+      "inr": 25000
+    }
+  ],
+  "all_hosted_quotes_passed": true,
+  "full_course_mixed_selection_rejected": true,
+  "signed_out_private_routes": [
+    {
+      "path": "/account/access",
+      "status": 200,
+      "matched_path": "/login"
+    },
+    {
+      "path": "/admin/v2/access",
+      "status": 200,
+      "matched_path": "/login"
+    }
+  ],
+  "hosted_authenticated_acceptance": "User confirmed both staging Student My access and Admin Products & access load correctly on 2026-11-01.",
+  "hosted_authenticated_acceptance_evidence": {
+    "source": "user response to designated staging account acceptance question",
+    "response": "Both load correctly",
+    "scope": "Expected records or appropriate empty states on both authenticated pages",
+    "independently_observed_by_agent": false,
+    "hosted_cross_student_isolation": "not separately confirmed; covered by local automated tests"
+  },
+  "ci": {
+    "run_id": 41323784343,
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "pr": {
+    "number": 24,
+    "draft": true,
+    "merged": false
+  },
+  "production": {
+    "before": "dpl_8axtycbJUpFX8cPWhVtkhGf6p9Kj",
+    "after": "dpl_8axtycbJUpFX8cPWhVtkhGf6p9Kj",
+    "changed": false
+  },
+  "phase1_migration": {
+    "changed": false,
+    "rerun": false,
+    "sha256": "ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7"
+  },
+  "database_writes_performed": false,
+  "environment_changes_performed": false,
+  "phase2_activated": false,
+  "limits": [
+    "Service-role key project association not independently verified; new readers use caller session/RLS.",
+    "No checkout, Phase 2 publishing, legacy enrollment conversion, content migration or protected-content cutover."
+  ]
+}

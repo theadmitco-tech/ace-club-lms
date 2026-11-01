@@ -1,0 +1,26 @@
+{
+  "mode": "Actual QA page and route; local synthetic Supabase adapter, not hosted JWT evidence",
+  "results": [
+    {
+      "name": "Signed-out browser forwards anonymous permissions",
+      "passed": true
+    },
+    {
+      "name": "Student browser preserves inconclusive fixture status",
+      "passed": true
+    },
+    {
+      "name": "Admin browser never claims Student isolation",
+      "passed": true
+    },
+    {
+      "name": "Permission drift is a visible failure",
+      "passed": true
+    },
+    {
+      "name": "Production page and route deny before diagnostic requests",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

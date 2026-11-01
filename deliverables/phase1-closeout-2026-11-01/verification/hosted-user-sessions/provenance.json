@@ -1,0 +1,39 @@
+{
+  "source": "Sanitized diagnostic reports pasted by the user in response to the requested Student/Admin hosted checks; not independently executed by the assistant.",
+  "received_date": "2026-11-01",
+  "expected_commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+  "expected_staging_project": "eyphkkginlgoaxflauog",
+  "reports": [
+    "student.json",
+    "admin.json"
+  ],
+  "matches_candidate": true,
+  "overall_phase_acceptance": false,
+  "upgrade_page_result_received": true,
+  "verified_subchecks": [
+    "Student identity and active state",
+    "Student access RPC returns a valid empty list",
+    "Admin identity and active state",
+    "Admin has no Student entitlements",
+    "Student grant RPC execution denied",
+    "Admin grant RPC execution denied",
+    "User-reported My access empty active-access and purchase-history states",
+    "User screenshot confirms no-active-individual-package upgrade rejection"
+  ],
+  "remaining": [
+    "Independent foreign-purchase fixtures and cross-Student isolation",
+    "Expired/revoked/inactive/wrong-section fixture acceptance",
+    "Direct table write denial",
+    "Hosted eligible upgrade estimate/expiry and other rejected-state acceptance",
+    "Legacy flows and enrollment failure triage"
+  ],
+  "student_my_access_page": {
+    "source": "User-pasted page text",
+    "evidence": "student-my-access.txt",
+    "result": "No active course purchase; no purchases recorded in this account history.",
+    "page_identification": "My access, identified from heading/content; the Upgrade options link is present but its destination result is not supplied.",
+    "commit": "not embedded in pasted page text",
+    "upgrade_page_acceptance": false
+  },
+  "upgrade_page_evidence": "student-upgrade-no-active-package.json"
+}

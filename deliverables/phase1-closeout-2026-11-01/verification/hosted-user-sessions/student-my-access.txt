@@ -1,0 +1,11 @@
+My access
+Your subjects, access dates and purchase history, together in one place.
+Active course access
+[Explore courses](https://ace-club-lms-git-intern-v2-pha-9a969c-theadmitco-techs-projects.vercel.app/courses/v2)[Upgrade options](https://ace-club-lms-git-intern-v2-pha-9a969c-theadmitco-techs-projects.vercel.app/account/access/upgrade)
+No active course purchase
+Existing batch enrollments remain available through your learning dashboard. Contact the programme team if you expected a new course purchase here.
+Access is checked again when you open protected content. Live-batch enrollment is separate from product access.
+[Return to my learning](https://ace-club-lms-git-intern-v2-pha-9a969c-theadmitco-techs-projects.vercel.app/dashboard)
+Purchase history
+Confirmed purchases retain their original price and expiry, including after access ends. All dates are shown in IST.
+No purchases are recorded here yet.

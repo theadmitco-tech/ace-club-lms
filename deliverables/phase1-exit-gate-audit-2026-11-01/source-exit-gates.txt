@@ -1,0 +1,215 @@
+# Ace Club LMS V2 — Phase Exit Gates
+
+**Status:** Review draft  
+**Owner:** Ishan  
+**Implementation owner:** Intern  
+**Source documents:** `V2-decisions-for-approval.md`, `V2-student-and-admin-journeys.md`
+
+## How to use this file
+
+A phase is complete only when its exit gate is satisfied and evidence is attached. A phase marked **Pending**, **Blocked**, or **Not applicable** must not be described as complete. Passing tests alone does not satisfy a product, staging, security, or migration gate.
+
+No phase authorizes Production deployment, Production migration, student/course-data changes, or merging into `main` unless separately approved.
+
+---
+
+## Phase 0 — Product and technical baseline
+
+### Exit gate
+
+- [ ] The approved product model is documented consistently:
+  - Full Course: Quant + Verbal + DI
+  - Individual Quant offering
+  - Individual Verbal offering
+  - Individual DI offering
+- [ ] “Crash Course” is not used as a product name or business concept.
+- [ ] CR and RC are represented as Verbal topics, not separate courses.
+- [ ] Student recordings and live-course journeys are documented separately.
+- [ ] Full Course and individual offerings are distinct, with correct access boundaries.
+- [ ] Only actual live classes require dates and event scheduling.
+- [ ] Non-live course content may remain undated.
+- [ ] Existing MVP students, content, and access behaviour have a compatibility plan.
+- [ ] Proposed migrations, staging process, and recovery approach are reviewed.
+
+**Evidence:** approved decisions, journeys, data model, compatibility note, migration plan.
+
+---
+
+## Phase 1 — Product catalogue and entitlement foundation
+
+### Exit gate
+
+- [ ] The four offerings are represented correctly: Full Course, Individual Quant, Individual Verbal, and Individual DI.
+- [ ] Product labels, codes, database descriptions, and documentation use the approved model, or a reviewed compatibility mapping explains any internal legacy identifier.
+- [ ] Full Course grants Quant, Verbal, and DI together.
+- [ ] Each individual offering grants only its own section.
+- [ ] Buying individual offerings does not silently create Full Course entitlement.
+- [ ] Pricing is correct:
+  - One individual offering: ₹10,000
+  - Two individual offerings: ₹18,000
+  - Three individual offerings: ₹25,000
+  - Full Course: ₹25,000
+- [ ] Upgrade pricing uses the difference between the existing and new individual package.
+- [ ] Access begins after successful payment and lasts six months.
+- [ ] Expired, revoked, inactive, signed-out, and wrong-section access is denied.
+- [ ] Existing MVP access and data remain unchanged.
+- [ ] Direct browser roles cannot perform restricted purchase/grant writes.
+- [ ] Staging migration was applied once, verified, and recorded with checksum.
+- [ ] No Production migration or data change occurred.
+
+**Evidence:** migration checksum, staging ledger, schema/security comparison, entitlement tests, expiry tests, legacy compatibility results.
+
+---
+
+## Phase 2 — Offering, course, session, and live-class publishing
+
+### Exit gate
+
+- [ ] Admin can create and edit Full Course and each individual offering.
+- [ ] Admin can manage Quant, Verbal, and DI course sessions using migrated existing material.
+- [ ] Every session supports independently customizable:
+  - Session heading/title
+  - Session material
+  - Session recording
+  - Pre-session reading
+  - Post-session reading
+- [ ] One shared recording can be referenced across applicable offerings/batches; Admin does not re-upload it for every class or batch.
+- [ ] Only actual live classes require dates, times, and optional Google Meet details.
+- [ ] Non-live sessions, course outlines, regular classes, mock reviews, and break days can remain undated where appropriate.
+- [ ] Admin can publish the broad course outline automatically with the offering; no unnecessary second outline-publication step is required.
+- [ ] Admin can preview, publish, edit, unpublish, and republish drafts safely.
+- [ ] Universal publishing is supported with a visible scope preview before confirmation.
+- [ ] Reading titles are individually editable and student-facing; generic “Pre-read” and “Post-read” labels are placement/type labels only.
+- [ ] Student preview shows the exact title, content rendering, placement, order, links, images, and formatting.
+- [ ] Existing material is migrated without loss, duplication, or unintended publication.
+- [ ] Private Meet details are visible only to eligible live registrants.
+- [ ] Admin can mark a live class completed without claiming individual attendance.
+- [ ] Content publication, class completion, recording availability, feedback completion, and attendance are separate states.
+- [ ] Existing mocks remain unchanged.
+- [ ] Student cannot access drafts, unpublished content, or private Admin data.
+
+**Evidence:** migrated-material comparison, Admin Preview screenshots, synthetic fixtures, permission tests, exact Preview commit, staging test report.
+
+---
+
+## Phase 3 — Self-registration and payment
+
+### Exit gate
+
+- [ ] Students can browse published eligible offerings and batches before payment.
+- [ ] Catalogue clearly distinguishes Full Course, Individual Quant, Individual Verbal, and Individual DI.
+- [ ] Student can see outline highlights, available sessions, live availability, price, and six-month access terms.
+- [ ] Normal registration does not require manual Admin enrollment.
+- [ ] Full Course payment grants all three sections.
+- [ ] Individual payment grants only the purchased section/package.
+- [ ] Live-course registration stops at eight registered students.
+- [ ] There is no session-reservation or waitlist workflow unless separately approved.
+- [ ] Payment verification is server-controlled and idempotent.
+- [ ] Failed, delayed, duplicate, and replayed payments do not create incorrect access.
+- [ ] Upgrade payment charges only the approved package difference.
+
+**Evidence:** staging purchase tests, payment-provider verification, access assertions, duplicate/retry results.
+
+---
+
+## Phase 4 — Website learning delivery
+
+### Exit gate
+
+- [ ] Recordings and live classes are clearly separated in the student experience.
+- [ ] Students may watch recordings, attend live, or mix both.
+- [ ] Only eligible live registrants see live-session/Meet details.
+- [ ] One shared recording is reused for the applicable session.
+- [ ] Pre-reads, materials, recordings, and post-reads are protected by entitlement and expiry.
+- [ ] Students may choose sessions in any order; an outline-highlights view is available.
+- [ ] Feedback locks are section-wise: a pending Quant feedback gate does not lock Verbal or DI.
+- [ ] Current session material and feedback remain accessible while that section is locked.
+- [ ] Feedback completion unlocks the section until the next applicable feedback gate.
+- [ ] A missed live class can be reported without falsely claiming attendance; the recording remains available.
+- [ ] Unpublished, unpaid, expired, and unauthorized content remains inaccessible.
+- [ ] Existing mocks remain unchanged.
+
+**Evidence:** separate recording/live journey tests, Quant 4 scenario, cross-section isolation, expiry and direct-URL checks.
+
+---
+
+## Phase 5 — Admin content publishing workflow
+
+### Exit gate
+
+- [ ] Admin can create, edit, replace, preview, publish, unpublish, and reorder content independently.
+- [ ] All five approved publishing locations work:
+  1. Before the course area
+  2. At the top of a course area
+  3. Before a video
+  4. After a video
+  5. After the course area
+- [ ] Notion remains supported for now, with clear rendering errors when content cannot be displayed.
+- [ ] Student-facing preview uses the real student components and does not alter progress or feedback state.
+- [ ] Universal publishing shows affected courses/sessions before confirmation.
+- [ ] Pre-read progress is visual only and does not create hard completion analytics.
+- [ ] Recording replacement does not expose stale or unauthorized content.
+- [ ] Admin can use a student-view preview.
+- [ ] The existing course material remains preserved after migration.
+
+**Evidence:** placement matrix, rendering screenshots, universal-scope preview, replacement/unpublish tests.
+
+---
+
+## Phase 6 — Integrated QA and staging acceptance
+
+### Exit gate
+
+- [ ] All approved acceptance criteria map to dated evidence.
+- [ ] Exact branch, commit, Preview URL, and staging project are recorded.
+- [ ] Local tests, lint, TypeScript, and build pass.
+- [ ] Admin and Student journeys pass with synthetic records.
+- [ ] Authorization, privacy, entitlement, payment, and expiry checks pass.
+- [ ] No unresolved critical defect remains.
+- [ ] Known non-critical follow-ups are documented with owners and next actions.
+- [ ] Staging migrations are applied only in the approved order and recorded.
+- [ ] No Production migration, deployment, or data change occurred.
+- [ ] Product Owner explicitly accepts or rejects the staging result.
+
+**Evidence:** acceptance matrix, sanitized screenshots, test results, migration ledger, recovery record, owner sign-off.
+
+---
+
+## Phase 7 — Production launch preparation and release
+
+### Exit gate
+
+- [ ] Exact release commit and migrations are named.
+- [ ] Product Owner explicitly authorizes merge, migration, deployment, and any data operation.
+- [ ] Production/staging environment separation is verified without exposing secrets.
+- [ ] Read-only Production preflight passes.
+- [ ] Recovery/rollback procedure is documented and usable.
+- [ ] Post-release smoke checks are prepared.
+- [ ] Production release is separately approved and executed.
+- [ ] Post-release evidence and unresolved limitations are documented.
+
+**Evidence:** signed release plan, authorization record, preflight results, deployment record, smoke-test results, updated handoff.
+
+---
+
+## Phase sign-off record
+
+| Phase | Status | Owner | Date | Evidence link | Notes |
+|---|---|---|---|---|---|
+| 0 | Pending | | | | |
+| 1 | Pending | | | | |
+| 2 | Pending | | | | |
+| 3 | Pending | | | | |
+| 4 | Pending | | | | |
+| 5 | Pending | | | | |
+| 6 | Pending | | | | |
+| 7 | Pending | | | | |
+
+## Rules for sign-off
+
+- A phase cannot be marked complete because its code exists or CI passes.
+- A phase cannot be marked complete when a required migration or material migration is pending.
+- A later phase cannot silently compensate for an earlier phase that failed its gate.
+- “Not implemented,” “not tested,” and “deferred” must remain visible.
+- Product terminology in code, UI, database mappings, and documentation must match the latest approved decisions or have an explicit compatibility note.
+- Any change to an approved requirement reopens the affected gate.

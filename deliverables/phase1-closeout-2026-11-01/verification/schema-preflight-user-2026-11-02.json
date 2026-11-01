@@ -1,0 +1,92 @@
+{
+  "check": "v2_phase1_schema_metadata_only",
+  "scope": "Object presence and privileges only; not staging identity, schema-cache health, migration equivalence or acceptance.",
+  "tables": [
+    {
+      "name": "v2_price_versions",
+      "present": true,
+      "read_roles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ],
+      "rls_enabled": true,
+      "ordinary_table": true,
+      "direct_write_roles": []
+    },
+    {
+      "name": "v2_product_grants",
+      "present": true,
+      "read_roles": [
+        "authenticated",
+        "service_role"
+      ],
+      "rls_enabled": true,
+      "ordinary_table": true,
+      "direct_write_roles": []
+    },
+    {
+      "name": "v2_products",
+      "present": true,
+      "read_roles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ],
+      "rls_enabled": true,
+      "ordinary_table": true,
+      "direct_write_roles": []
+    },
+    {
+      "name": "v2_purchases",
+      "present": true,
+      "read_roles": [
+        "authenticated",
+        "service_role"
+      ],
+      "rls_enabled": true,
+      "ordinary_table": true,
+      "direct_write_roles": []
+    }
+  ],
+  "routines": [
+    {
+      "present": true,
+      "signature": "public.can_access_v2_product(text,text)",
+      "execute_roles": [
+        "authenticated",
+        "service_role"
+      ],
+      "security_definer": true
+    },
+    {
+      "present": true,
+      "signature": "public.get_my_v2_access()",
+      "execute_roles": [
+        "authenticated",
+        "service_role"
+      ],
+      "security_definer": true
+    },
+    {
+      "present": true,
+      "signature": "public.grant_v2_purchase(uuid,text[],text,timestamptz,uuid,integer,text)",
+      "execute_roles": [
+        "service_role"
+      ],
+      "security_definer": true
+    },
+    {
+      "present": true,
+      "signature": "public.quote_v2_products(text[])",
+      "execute_roles": [
+        "anon",
+        "authenticated",
+        "service_role"
+      ],
+      "security_definer": true
+    }
+  ],
+  "transaction_read_only": "on",
+  "migration_ledger_present": true
+}

@@ -1,0 +1,154 @@
+{
+  "date": "2026-11-02",
+  "phase": 1,
+  "phase_status": "complete",
+  "source_review_draft_sha256": "969b3271da46f3ee9ed92df65a63ec7ae9ed14774f75c80003f42da233f8ee45",
+  "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+  "staging_project": "eyphkkginlgoaxflauog",
+  "preview_deployment": "dpl_EWB7tYjTYzhrndN7WS1waXKKCMaG",
+  "production_deployment": "dpl_8axtycbJUpFX8cPWhVtkhGf6p9Kj",
+  "pr": {
+    "number": 24,
+    "draft": true,
+    "merged": false
+  },
+  "counts": {
+    "supported_pass": 13,
+    "partial": 0,
+    "pending_review": 0,
+    "not_implemented": 0,
+    "total": 13
+  },
+  "gates": [
+    {
+      "id": "P1-01",
+      "status": "supported_pass",
+      "requirement": "Four distinct offerings"
+    },
+    {
+      "id": "P1-02",
+      "status": "supported_pass",
+      "requirement": "Legacy terminology compatibility mapping",
+      "acceptance": {
+        "date": "2026-11-01",
+        "source": "explicit user response",
+        "response": "Accept the documented internal mapping",
+        "scope": "Internal legacy-code mapping; no SQL rollout or full phase sign-off"
+      }
+    },
+    {
+      "id": "P1-03",
+      "status": "supported_pass",
+      "requirement": "Full Course all three sections"
+    },
+    {
+      "id": "P1-04",
+      "status": "supported_pass",
+      "requirement": "Individual own section only"
+    },
+    {
+      "id": "P1-05",
+      "status": "supported_pass",
+      "requirement": "Individuals never silently become Full Course"
+    },
+    {
+      "id": "P1-06",
+      "status": "supported_pass",
+      "requirement": "All four pricing tiers and eight selections"
+    },
+    {
+      "id": "P1-07",
+      "status": "supported_pass",
+      "requirement": "Upgrade package difference",
+      "implementation": "Authenticated read-only current-tier delta estimate; all 12 subject-superset prices and retained expiries verified on hosted Preview. Rejected states pass. Charge/grant fulfillment remains Phase 3.",
+      "acceptance": {
+        "date": "2026-11-01",
+        "source": "explicit user response",
+        "response": "Use this upgrade rule",
+        "policy": "current-tier-preserve-expiry-v1"
+      },
+      "hosted_no_active_package_ui": {
+        "status": "pass",
+        "source": "User screenshot",
+        "evidence": "../phase1-closeout-2026-11-01/verification/hosted-user-sessions/student-upgrade-no-active-package.json"
+      },
+      "hosted_acceptance": {
+        "status": "pass",
+        "evidence": "../phase1-closeout-2026-11-01/passwordless-qa/hosted-results.json",
+        "scope": "184 checks with 15 dedicated actual staging Auth sessions"
+      }
+    },
+    {
+      "id": "P1-08",
+      "status": "supported_pass",
+      "requirement": "Trusted-payment foundation and six-calendar-month expiry"
+    },
+    {
+      "id": "P1-09",
+      "status": "supported_pass",
+      "requirement": "Expired, revoked, inactive, signed-out, wrong-section and cross-Student denials",
+      "hosted_user_session_evidence": {
+        "student_active_access_count": 0,
+        "admin_active_access_count": 0,
+        "foreign_purchase_visibility": "inconclusive: zero visible rows without independently confirmed foreign fixture",
+        "source": "../phase1-closeout-2026-11-01/verification/hosted-user-sessions/provenance.json"
+      },
+      "hosted_acceptance": {
+        "status": "pass",
+        "evidence": "../phase1-closeout-2026-11-01/passwordless-qa/hosted-results.json",
+        "scope": "184 checks with 15 dedicated actual staging Auth sessions"
+      }
+    },
+    {
+      "id": "P1-10",
+      "status": "supported_pass",
+      "requirement": "Existing MVP access and data preserved",
+      "evidence": [
+        "../phase1-closeout-2026-11-01/passwordless-qa/student-legacy-results.json",
+        "../phase1-closeout-2026-11-01/passwordless-qa/admin-legacy-results.json",
+        "../phase1-closeout-2026-11-01/passwordless-qa/cleanup-repair-user-report.json",
+        "../phase1-closeout-2026-11-01/passwordless-qa/cleanup-verification.json"
+      ],
+      "scope": "18 hosted Student legacy checks, 8 Admin editor/public-list checks, enrollment credential repair, additive legacy editor metadata repair, original 60-table data fingerprint restored, all 15 generated QA accounts removed. Unchanged payment-provider flow was not exercised with shared Production credentials; prior local coverage remains distinct."
+    },
+    {
+      "id": "P1-11",
+      "status": "supported_pass",
+      "requirement": "Anonymous, Student and Admin browser grant RPC and restricted purchase/grant insert/update/delete denied",
+      "hosted_grant_rpc_denial": {
+        "anonymous": "assistant-observed",
+        "student": "user-supplied diagnostic report",
+        "admin": "user-supplied diagnostic report",
+        "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+      },
+      "hosted_acceptance": {
+        "status": "pass",
+        "evidence": "../phase1-closeout-2026-11-01/passwordless-qa/hosted-results.json",
+        "scope": "184 checks with 15 dedicated actual staging Auth sessions"
+      }
+    },
+    {
+      "id": "P1-12",
+      "status": "supported_pass",
+      "requirement": "Original staging migration recorded once and checksum unchanged"
+    },
+    {
+      "id": "P1-13",
+      "status": "supported_pass",
+      "requirement": "No Production operation; deployment unchanged"
+    }
+  ],
+  "migration_sha256": "ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7",
+  "fresh_shared_database_inspection": true,
+  "shared_database_writes": true,
+  "production_changes": false,
+  "phase2_activation": false,
+  "user_reported_acceptance": "Prior Student/Admin page, no-active-package UI, compatibility mapping and upgrade policy confirmations retained. Current fixture-backed checks are independently executed.",
+  "evidence_scope": "Historical applied-migration evidence plus current 184 access/upgrade checks, 4 hosted concurrent replay checks, 18 hosted Student legacy checks, 8 Admin/editor checks, user-executed guarded SQL cleanup/repair and independent API cleanup verification.",
+  "closeout_evidence": "../phase1-closeout-2026-11-01/README.md",
+  "authenticated_reports": "../phase1-closeout-2026-11-01/verification/hosted-user-sessions/provenance.json",
+  "remaining": [],
+  "completion_scope": "Phase 1 product catalogue and entitlement foundation on staging Preview; no payment-provider checkout, Phase 2 activation or Production release",
+  "product_owner_final_review": "Not separately recorded; this is the completed technical Phase 1 evidence against the user-approved scope. No review, merge or Production approval is inferred.",
+  "legacy_editor_repair": "../phase1-closeout-2026-11-01/passwordless-qa/cleanup-repair-provenance.json"
+}

@@ -1,0 +1,263 @@
+{
+  "date": "2026-11-01",
+  "kind": "offline design prototype only",
+  "scenarios": 18,
+  "checks": [
+    {
+      "name": "scenario catalogue",
+      "passed": true
+    },
+    {
+      "name": "scenario package",
+      "passed": true
+    },
+    {
+      "name": "scenario live-catalogue",
+      "passed": true
+    },
+    {
+      "name": "scenario detail",
+      "passed": true
+    },
+    {
+      "name": "scenario learning",
+      "passed": true
+    },
+    {
+      "name": "scenario locked",
+      "passed": true
+    },
+    {
+      "name": "scenario upsell",
+      "passed": true
+    },
+    {
+      "name": "scenario live-student",
+      "passed": true
+    },
+    {
+      "name": "scenario session",
+      "passed": true
+    },
+    {
+      "name": "scenario reading",
+      "passed": true
+    },
+    {
+      "name": "scenario feedback",
+      "passed": true
+    },
+    {
+      "name": "scenario pending",
+      "passed": true
+    },
+    {
+      "name": "scenario expired",
+      "passed": true
+    },
+    {
+      "name": "scenario editor",
+      "passed": true
+    },
+    {
+      "name": "scenario batch",
+      "passed": true
+    },
+    {
+      "name": "scenario calendar",
+      "passed": true
+    },
+    {
+      "name": "scenario scope",
+      "passed": true
+    },
+    {
+      "name": "scenario decisions",
+      "passed": true
+    },
+    {
+      "name": "two-subject selection quote",
+      "passed": true
+    },
+    {
+      "name": "two-subject outline excludes DI",
+      "passed": true
+    },
+    {
+      "name": "three individual package distinct",
+      "passed": true
+    },
+    {
+      "name": "public schedule without Meet link",
+      "passed": true
+    },
+    {
+      "name": "section lock with current session available",
+      "passed": true
+    },
+    {
+      "name": "other purchased subject available",
+      "passed": true
+    },
+    {
+      "name": "upgrade difference 8000",
+      "passed": true
+    },
+    {
+      "name": "modal Escape closes",
+      "passed": true
+    },
+    {
+      "name": "locked subject opens new upsell",
+      "passed": true
+    },
+    {
+      "name": "session resource ordering",
+      "passed": true
+    },
+    {
+      "name": "expired no purchase CTA",
+      "passed": true
+    },
+    {
+      "name": "expired navigation remains denied",
+      "passed": true
+    },
+    {
+      "name": "admin two publishing destinations",
+      "passed": true
+    },
+    {
+      "name": "draft preview exact title",
+      "passed": true
+    },
+    {
+      "name": "calendar applied only to live event",
+      "passed": true
+    },
+    {
+      "name": "publication needs confirmation",
+      "passed": true
+    },
+    {
+      "name": "universal scope visible",
+      "passed": true
+    },
+    {
+      "name": "publish then unpublish supported",
+      "passed": true
+    },
+    {
+      "name": "feedback waits confirmation",
+      "passed": true
+    },
+    {
+      "name": "verified feedback releases section",
+      "passed": true
+    },
+    {
+      "name": "upgrade review preserves difference quote",
+      "passed": true
+    },
+    {
+      "name": "cancel calendar preserves original date",
+      "passed": true
+    },
+    {
+      "name": "enrolled live list contains only eligible batch",
+      "passed": true
+    },
+    {
+      "name": "Verbal resource titles match subject",
+      "passed": true
+    },
+    {
+      "name": "layout 390 catalogue",
+      "passed": true
+    },
+    {
+      "name": "layout 390 session",
+      "passed": true
+    },
+    {
+      "name": "layout 390 locked",
+      "passed": true
+    },
+    {
+      "name": "layout 390 editor",
+      "passed": true
+    },
+    {
+      "name": "layout 390 calendar",
+      "passed": true
+    },
+    {
+      "name": "layout 390 upsell",
+      "passed": true
+    },
+    {
+      "name": "layout 768 catalogue",
+      "passed": true
+    },
+    {
+      "name": "layout 768 session",
+      "passed": true
+    },
+    {
+      "name": "layout 768 locked",
+      "passed": true
+    },
+    {
+      "name": "layout 768 editor",
+      "passed": true
+    },
+    {
+      "name": "layout 768 calendar",
+      "passed": true
+    },
+    {
+      "name": "layout 768 upsell",
+      "passed": true
+    },
+    {
+      "name": "layout 1024 catalogue",
+      "passed": true
+    },
+    {
+      "name": "layout 1024 session",
+      "passed": true
+    },
+    {
+      "name": "layout 1024 locked",
+      "passed": true
+    },
+    {
+      "name": "layout 1024 editor",
+      "passed": true
+    },
+    {
+      "name": "layout 1024 calendar",
+      "passed": true
+    },
+    {
+      "name": "layout 1024 upsell",
+      "passed": true
+    },
+    {
+      "name": "18 print screens",
+      "passed": true
+    },
+    {
+      "name": "calendar and upsell print states present",
+      "passed": true
+    },
+    {
+      "name": "print pages fit",
+      "passed": true,
+      "overflows": []
+    }
+  ],
+  "passed": 63,
+  "failed": [],
+  "pageErrors": []
+}

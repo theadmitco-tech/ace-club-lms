@@ -1,0 +1,72 @@
+{
+  "check": "phase1_qa_fixture_setup",
+  "run_id": "7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719",
+  "states": [
+    {
+      "label": "d",
+      "state": "active"
+    },
+    {
+      "label": "expired",
+      "state": "expired"
+    },
+    {
+      "label": "full",
+      "state": "active"
+    },
+    {
+      "label": "inactive",
+      "state": "inactive"
+    },
+    {
+      "label": "mixed",
+      "state": "active"
+    },
+    {
+      "label": "mixed",
+      "state": "expired"
+    },
+    {
+      "label": "multiple",
+      "state": "active"
+    },
+    {
+      "label": "multiple",
+      "state": "active"
+    },
+    {
+      "label": "q",
+      "state": "active"
+    },
+    {
+      "label": "qd",
+      "state": "active"
+    },
+    {
+      "label": "qv",
+      "state": "active"
+    },
+    {
+      "label": "qvd",
+      "state": "active"
+    },
+    {
+      "label": "revoked",
+      "state": "revoked"
+    },
+    {
+      "label": "v",
+      "state": "active"
+    },
+    {
+      "label": "vd",
+      "state": "active"
+    }
+  ],
+  "purchase_count": 15,
+  "qa_account_count": 15,
+  "baseline_before_purchases": {
+    "md5": "37f717bc66b73f46bb8b85822e02bd01",
+    "table_count": 60
+  }
+}

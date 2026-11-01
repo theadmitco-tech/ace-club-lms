@@ -1,0 +1,42 @@
+{
+  "check": "phase1_caller_session_verification",
+  "recordedAt": "2026-11-01T17:59:41.218Z",
+  "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+  "stagingProject": "eyphkkginlgoaxflauog",
+  "role": "admin",
+  "overall": "inconclusive",
+  "checks": [
+    {
+      "id": "environment",
+      "status": "pass",
+      "observation": "Preview environment and staging public-client configuration match."
+    },
+    {
+      "id": "identity",
+      "status": "pass",
+      "observation": "The current authenticated profile and active state were verified."
+    },
+    {
+      "id": "access_rpc",
+      "status": "pass",
+      "observation": "This non-Student or inactive identity has no active Student entitlements.",
+      "count": 0
+    },
+    {
+      "id": "foreign_purchase_visibility",
+      "status": "inconclusive",
+      "observation": "Admin can inspect history; repeat this check in a designated Student session."
+    },
+    {
+      "id": "browser_role_grant_permission",
+      "status": "pass",
+      "observation": "The caller database role cannot execute the grant RPC. The deliberately invalid payload created no purchase."
+    }
+  ],
+  "limitations": [
+    "Uses this browser session forwarded by the server to Supabase; no identity is supplied by the operator.",
+    "Zero foreign rows is not cross-Student acceptance without independently confirmed designated fixtures.",
+    "Expired, revoked, inactive and wrong-section cases require designated fixture-state evidence.",
+    "No direct table-write attempt, checkout, legacy content mutation or full Phase 1 sign-off is performed."
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "project": "eyphkkginlgoaxflauog",
+  "runId": "7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719",
+  "recordedAt": "2026-11-01T18:58:12.628Z",
+  "status": "pass",
+  "authAccountsRemoved": 15,
+  "remainingQaProfiles": 0,
+  "remainingQaPurchases": 0,
+  "legacyFixtureManifestsVerifiedAbsent": true,
+  "generatedPasswordRemovedFromJournal": true,
+  "productionAccessed": false
+}

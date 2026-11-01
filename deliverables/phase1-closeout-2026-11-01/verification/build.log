@@ -1,0 +1,86 @@
+npm notice run ace-club-lms@0.1.0 prebuild
+npm notice run node scripts/validate-deployment-env.mjs
+Deployment environment validation skipped outside Vercel.
+npm notice run ace-club-lms@0.1.0 build
+npm notice run next build --webpack
+▲ Next.js 16.2.4 (webpack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 8.6s
+  Running TypeScript ...
+  Finished TypeScript in 6.5s ...
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/44) ...
+  Generating static pages using 15 workers (11/44) 
+  Generating static pages using 15 workers (22/44) 
+  Generating static pages using 15 workers (33/44) 
+✓ Generating static pages using 15 workers (44/44) in 684ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /account/access
+├ ƒ /account/access/upgrade
+├ ƒ /admin
+├ ƒ /admin/courses
+├ ƒ /admin/curriculum
+├ ƒ /admin/curriculum/worksheets/[id]
+├ ƒ /admin/progress
+├ ƒ /admin/progress/[courseId]
+├ ƒ /admin/progress/[courseId]/student/[userId]/worksheet/[materialId]
+├ ƒ /admin/recordings
+├ ƒ /admin/resources
+├ ƒ /admin/sessions
+├ ƒ /admin/sessions/[id]
+├ ƒ /admin/sessions/new
+├ ƒ /admin/templates
+├ ƒ /admin/users
+├ ƒ /admin/v2
+├ ƒ /admin/v2/access
+├ ƒ /admin/v2/batches
+├ ƒ /admin/v2/batches/[batchId]/meeting
+├ ƒ /admin/v2/batches/[batchId]/students
+├ ƒ /admin/v2/templates
+├ ƒ /admin/worksheets
+├ ƒ /api/admin/bulk-enroll
+├ ƒ /api/admin/master-material-upload
+├ ƒ /api/admin/resource-upload
+├ ƒ /api/admin/session-material-upload
+├ ƒ /api/admin/session-materials
+├ ƒ /api/admin/set-user-active
+├ ƒ /api/admin/template-resource-upload
+├ ƒ /api/admin/v2/reading-preview
+├ ƒ /api/create-order
+├ ƒ /api/materials/file
+├ ƒ /api/notion
+├ ƒ /api/register/batches
+├ ƒ /api/register/create-order
+├ ƒ /api/register/verify-payment
+├ ƒ /api/register/webhook
+├ ƒ /api/v2/phase1-verification
+├ ƒ /api/verify-payment
+├ ƒ /auth/callback
+├ ƒ /courses/v2
+├ ƒ /dashboard
+├ ○ /icon.svg
+├ ○ /login
+├ ○ /login/access-denied
+├ ○ /payment/failed
+├ ○ /payment/success
+├ ƒ /practice
+├ ƒ /qa/phase1
+├ ○ /register
+├ ƒ /resources
+├ ƒ /schedule
+├ ƒ /schedule/v2
+├ ƒ /session/[id]
+└ ƒ /session/[id]/material/[materialId]
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

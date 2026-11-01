@@ -1,0 +1,90 @@
+{
+  "date": "2026-11-02",
+  "phase_status": "complete",
+  "branch": "intern/v2-phase-2-review",
+  "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+  "deployment": "dpl_EWB7tYjTYzhrndN7WS1waXKKCMaG",
+  "state": "READY",
+  "immutable_url": "https://ace-club-97csnfzm5-theadmitco-techs-projects.vercel.app",
+  "alias": "https://ace-club-lms-git-intern-v2-pha-9a969c-theadmitco-techs-projects.vercel.app",
+  "staging_project": "eyphkkginlgoaxflauog",
+  "pr": {
+    "number": 24,
+    "draft": true,
+    "merged": false
+  },
+  "production": {
+    "deployment": "dpl_8axtycbJUpFX8cPWhVtkhGf6p9Kj",
+    "environment_entries_unchanged": true,
+    "changed": false
+  },
+  "environment_change": {
+    "key": "V2_INDIVIDUAL_UPGRADE_POLICY",
+    "value": "current-tier-preserve-expiry-v1",
+    "target": [
+      "preview"
+    ],
+    "gitBranch": "intern/v2-phase-2-review",
+    "id": "GY8d6E4lPkXqjc87",
+    "user_authorized": true
+  },
+  "phase2_flags_applied": false,
+  "shared_database_writes": true,
+  "migration_applied": false,
+  "original_phase1_migration_sha256": "ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7",
+  "tests": {
+    "baseline_full_phase1_tests": 172,
+    "baseline_full_phase1_suites": 18,
+    "final_diagnostic_tests": 10,
+    "new_diagnostic_regression_tests": 1,
+    "student_browser_scenarios": 20,
+    "diagnostic_browser_scenarios": 5,
+    "phase2_browser_scenarios": 39,
+    "lint": "pass",
+    "typescript": "pass",
+    "webpack_build": "pass at UI candidate; final hosted build READY"
+  },
+  "ci": {
+    "initial_ui_run": 41332546276,
+    "initial_conclusion": "success",
+    "final_run": 41332944013,
+    "final_conclusion": "success"
+  },
+  "hosted_public_checks": "verification/hosted-initial/results.json",
+  "hosted_final_diagnostic": "verification/hosted-final/results.json",
+  "remaining_gates": [],
+  "hosted_anonymous_check_status": "all individual checks pass; overall inconclusive by design pending authenticated/fixture acceptance",
+  "final_pr_verified": true,
+  "phase2_flags_absent_verified": true,
+  "hosted_authenticated_reports": {
+    "provenance": "verification/hosted-user-sessions/provenance.json",
+    "student": "verification/hosted-user-sessions/student.json",
+    "admin": "verification/hosted-user-sessions/admin.json",
+    "status": "received; individual checks pass except fixture-dependent visibility remains inconclusive"
+  },
+  "hosted_upgrade_no_active_package": {
+    "status": "pass",
+    "source": "user screenshot; visible UI acceptance",
+    "evidence": "verification/hosted-user-sessions/student-upgrade-no-active-package.json"
+  },
+  "hosted_core_checks": {
+    "passed": 184,
+    "failed": 0,
+    "evidence": "passwordless-qa/hosted-results.json"
+  },
+  "hosted_replay_checks": {
+    "passed": 4,
+    "failed": 0,
+    "evidence": "passwordless-qa/replay-results.json"
+  },
+  "server_key_correction": "passwordless-qa/preview-server-key-correction.json",
+  "phase1_foundation_complete": true,
+  "hosted_legacy_checks": {
+    "student": 18,
+    "admin_editor_and_public_list": 8,
+    "status": "pass"
+  },
+  "cleanup": "passwordless-qa/cleanup-verification.json",
+  "legacy_editor_repair": "passwordless-qa/cleanup-repair-provenance.json",
+  "staging_schema_change": "Nine additive legacy question metadata columns and two indexes; original Phase 1 migration and migration ledger not rerun/rewritten."
+}

@@ -1,0 +1,46 @@
+{
+  "checked_at": "2026-10-28T16:41:55.780Z",
+  "repository": "theadmitco-tech/ace-club-lms",
+  "branch": "intern/v2-phase-2-review",
+  "head": "ee79f1174db4e3fd91ae3ea49dcfbb8e2a614845",
+  "pr": {
+    "draft": true,
+    "head": "ee79f1174db4e3fd91ae3ea49dcfbb8e2a614845",
+    "merged": false
+  },
+  "publication": "Fast-forward push via existing Git SSH identity",
+  "preview": {
+    "project": "ace-club-lms",
+    "deployment": "dpl_5tkLaxWWa4khR94KEunrA1uJE5ot",
+    "state": "READY",
+    "immutable_url": "https://ace-club-bi4z0nu0l-theadmitco-techs-projects.vercel.app",
+    "url": "https://ace-club-lms-git-intern-v2-pha-9a969c-theadmitco-techs-projects.vercel.app/admin/v2"
+  },
+  "behavior": "Actual LMS login and Admin authorization retained. Course publishing, template editor and batch settings visible in Preview. Setup-pending saves and schedule confirmation disabled; existing server flags still fail closed.",
+  "production": {
+    "deployment_before": "dpl_8axtycbJUpFX8cPWhVtkhGf6p9Kj",
+    "deployment_after": "dpl_8axtycbJUpFX8cPWhVtkhGf6p9Kj",
+    "changed": false
+  },
+  "phase1_migration_preserved": true,
+  "all_migration_files_unchanged": true,
+  "shared_sql_executed": false,
+  "feature_flag_changes": false,
+  "tests": {
+    "navigation_and_access": 14,
+    "template_authoring": 19,
+    "batch_authoring": 17,
+    "targeted_lint": "passed",
+    "typescript": "passed",
+    "webpack_build": "passed"
+  },
+  "hosted_signed_out_check": "Branch /admin/v2 fetch returns normal LMS login, not authoring content.",
+  "hosted_authenticated_acceptance": "Pending user sign-in; no authenticated browser session available to agent.",
+  "separate_sample_workspace_deployed": false,
+  "github_verify": {
+    "run": 40728090294,
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/theadmitco-tech/ace-club-lms/actions/runs/40728090294"
+  }
+}

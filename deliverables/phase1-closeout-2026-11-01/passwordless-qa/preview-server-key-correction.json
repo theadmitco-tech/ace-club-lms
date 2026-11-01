@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-02",
+  "project": "ace-club-lms",
+  "branch": "intern/v2-phase-2-review",
+  "key": "SUPABASE_SERVICE_ROLE_KEY",
+  "target": [
+    "preview"
+  ],
+  "type": "sensitive",
+  "id": "8kckZH6sFLm7N1JZ",
+  "user_approval": "Approve branch-only key change and Preview redeploy",
+  "reason": "Existing QA profile is visible through verified staging service key; deployed bulk-enrollment attempt failed at account_creation. Branch-scoped verified key replaces the effective server credential for this Preview.",
+  "secret_value_recorded": false,
+  "production_environment_metadata_unchanged": true,
+  "redeployment": "dpl_EWB7tYjTYzhrndN7WS1waXKKCMaG",
+  "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+  "hosted_retest": "PASS: actual Admin bulk-enrollment HTTP 200, success 1, failed 0; generated Student enrollment independently persisted. Released protected PDF API and signed file fetch HTTP 200."
+}

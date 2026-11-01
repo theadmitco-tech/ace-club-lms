@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-01T17:45:03.025Z",
+  "base": "https://ace-club-m72s5ztc9-theadmitco-techs-projects.vercel.app",
+  "httpStatus": 200,
+  "errors": [],
+  "report": {
+    "check": "phase1_caller_session_verification",
+    "recordedAt": "2026-11-01T17:45:01.329Z",
+    "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+    "stagingProject": "eyphkkginlgoaxflauog",
+    "role": "signed_out",
+    "overall": "inconclusive",
+    "checks": [
+      {
+        "id": "environment",
+        "status": "pass",
+        "observation": "Preview environment and staging public-client configuration match."
+      },
+      {
+        "id": "identity",
+        "status": "pass",
+        "observation": "No authenticated LMS session is present."
+      },
+      {
+        "id": "access_rpc",
+        "status": "pass",
+        "observation": "Anonymous access RPC execution is denied."
+      },
+      {
+        "id": "private_purchase_read",
+        "status": "pass",
+        "observation": "Anonymous private purchase reads are denied."
+      },
+      {
+        "id": "browser_role_grant_permission",
+        "status": "pass",
+        "observation": "The caller database role cannot execute the grant RPC. The deliberately invalid payload created no purchase."
+      }
+    ],
+    "limitations": [
+      "Uses this browser session forwarded by the server to Supabase; no identity is supplied by the operator.",
+      "Zero foreign rows is not cross-Student acceptance without independently confirmed designated fixtures.",
+      "Expired, revoked, inactive and wrong-section cases require designated fixture-state evidence.",
+      "No direct table-write attempt, checkout, legacy content mutation or full Phase 1 sign-off is performed."
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-02",
+  "project": "eyphkkginlgoaxflauog",
+  "source": "User-pasted SQL Editor JSON report; paired with agent-observed zero-row schema preflight and subsequent hosted retest",
+  "script": "03-CLEANUP-AND-REPAIR-EDITOR.sql",
+  "script_sha256": "a816d7a68ad05b99dd73bacd98c8216696174c2702339606d95565ea026392a8",
+  "run_id": "7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719",
+  "baseline_comparison": "Exact match: 37f717bc66b73f46bb8b85822e02bd01 / 60 public tables",
+  "purchase_cleanup_report": "cleanup-repair-user-report.json",
+  "scope": "Adds nine legacy editor metadata columns and two indexes. Does not classify/rewrite existing questions, change original Phase 1 migration or activate Phase 2.",
+  "original_migration_sha256": "ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7"
+}

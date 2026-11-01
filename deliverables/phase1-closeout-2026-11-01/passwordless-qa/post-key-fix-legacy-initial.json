@@ -1,0 +1,34 @@
+{
+  "runId": "7e0a3e0a-f1a7-4a61-bd87-a12c6aaaf719",
+  "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+  "project": "eyphkkginlgoaxflauog",
+  "startedAt": "2026-11-01T18:43:19.314Z",
+  "checks": [
+    {
+      "id": "candidate-and-admin-session",
+      "status": "pass"
+    },
+    {
+      "id": "existing-student-bulk-enrollment",
+      "status": "pass"
+    },
+    {
+      "id": "enrollment-persisted",
+      "status": "pass"
+    },
+    {
+      "id": "enrolled-dashboard",
+      "status": "fail"
+    }
+  ],
+  "status": "failed",
+  "cleanup": "complete",
+  "enrollment": {
+    "status": 200,
+    "success": 1,
+    "failed": 0,
+    "stages": []
+  },
+  "failure": "Check failed: enrolled-dashboard",
+  "finishedAt": "2026-11-01T18:43:46.295Z"
+}

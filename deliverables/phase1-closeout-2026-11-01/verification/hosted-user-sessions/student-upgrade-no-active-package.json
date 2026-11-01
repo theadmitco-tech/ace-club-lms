@@ -1,0 +1,16 @@
+{
+  "source": "User-attached screenshot in this conversation, visually inspected by the assistant",
+  "received_date": "2026-11-01",
+  "page_heading": "Review an upgrade",
+  "visible_section": "Upgrade unavailable",
+  "visible_message": "There is no active individual package to upgrade.",
+  "subcheck": "Student with no active individual package receives the expected upgrade-ineligibility message",
+  "status": "pass",
+  "scope": "Visible UI acceptance only; screenshot does not show URL, commit, account identity or timestamp. Associated with the requested Preview check through conversation context.",
+  "not_established": [
+    "Eligible-purchase price difference or expiry preservation",
+    "Other rejected purchase states",
+    "Full Phase 1 acceptance"
+  ],
+  "image_location": "User attachment in conversation; no local image file copied"
+}
