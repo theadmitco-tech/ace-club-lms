@@ -1,11 +1,9 @@
 # Phase 1 website integration — 1 November 2026
 
-> Subsequent exit-gate audit: the new authenticated pages were accepted by the
-> user, but the complete Phase 1 gate remains **Pending**. The
-> [13-item audit](../phase1-exit-gate-audit-2026-11-01/README.md) identifies the
-> missing upgrade contract and remaining hosted evidence. The user has accepted
-> the internal compatibility mapping.
-> Website integration is not full phase sign-off.
+The [completed Phase 1 audit](../phase1-exit-gate-audit-2026-11-01/README.md)
+supersedes the earlier pending acceptance status. The dated deployment evidence below
+is retained as history. The archived implementation patch uses role-based attribution
+and is no longer byte-exact source evidence; Git commits remain authoritative.
 
 ## Live Preview
 

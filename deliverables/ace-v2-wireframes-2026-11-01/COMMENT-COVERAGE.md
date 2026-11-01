@@ -1,4 +1,4 @@
-# Ishan review coverage and decision log
+# Review coverage and decision log
 
 Date: 1 November 2026. Status: revised design for review; not application activation.
 

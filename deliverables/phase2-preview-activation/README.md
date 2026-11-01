@@ -1,7 +1,7 @@
 # Phase 2 Preview activation
 
 The [full Phase 2 completion checklist](EXIT-GATES.md) maps all 17 gates from
-Ishan's supplied draft, including requirements missing from the older authoring-only
+the product reviewer's supplied draft, including requirements missing from the older authoring-only
 scope. Activating the six migrations and three flags alone is not phase completion.
 
 ## Phase 1 completed — 2 November 2026

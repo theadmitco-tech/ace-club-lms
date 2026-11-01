@@ -385,18 +385,18 @@ export default function Home({ showCourseCatalogue = false }: { showCourseCatalo
           <div className="mentor-system" aria-label="Mentor coverage system">
             <div className="mentor-line" />
             <article className="mentor-node">
-              <span>IS</span>
-              <strong>Ishan</strong>
+              <span>QA</span>
+              <strong>Quant mentor</strong>
               <p>Quant + planning</p>
             </article>
             <article className="mentor-node">
-              <span>UJ</span>
-              <strong>Unnati</strong>
+              <span>DI</span>
+              <strong>DI mentor</strong>
               <p>DI + tracking</p>
             </article>
             <article className="mentor-node">
-              <span>TT</span>
-              <strong>Tanya</strong>
+              <span>VA</span>
+              <strong>Verbal mentor</strong>
               <p>Verbal + reasoning</p>
             </article>
           </div>

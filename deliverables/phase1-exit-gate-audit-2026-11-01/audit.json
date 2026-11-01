@@ -150,5 +150,7 @@
   "remaining": [],
   "completion_scope": "Phase 1 product catalogue and entitlement foundation on staging Preview; no payment-provider checkout, Phase 2 activation or Production release",
   "product_owner_final_review": "Not separately recorded; this is the completed technical Phase 1 evidence against the user-approved scope. No review, merge or Production approval is inferred.",
-  "legacy_editor_repair": "../phase1-closeout-2026-11-01/passwordless-qa/cleanup-repair-provenance.json"
+  "legacy_editor_repair": "../phase1-closeout-2026-11-01/passwordless-qa/cleanup-repair-provenance.json",
+  "published_source_copy_sha256": "d34d138d0e72b1425cd5902c6d8ec0dbf35000ada1f25d0d6a0d851d45c9eeb9",
+  "source_copy_note": "Published review draft uses role-based attribution; source_review_draft_sha256 identifies the original privately supplied document."
 }

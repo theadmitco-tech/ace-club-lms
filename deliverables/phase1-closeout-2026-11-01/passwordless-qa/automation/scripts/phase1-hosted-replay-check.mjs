@@ -1,3 +1,4 @@
+import {resolve} from 'node:path';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {createClient} from '@supabase/supabase-js';
 import {PROJECT,ORIGIN,COMMIT,readConfig,check} from './phase1-hosted-closeout-config.mjs';
@@ -20,4 +21,4 @@ const after=safe(await service.from('v2_purchases').select('*').eq('student_id',
 ok('original-purchase-price-and-expiry-unchanged',JSON.stringify(before)===JSON.stringify(after));
 const grants=safe(await service.from('v2_product_grants').select('product_code').eq('purchase_id',before.id));ok('exactly-original-subject-grant-remains',grants.length===1&&grants[0].product_code==='quant_crash');
 const report={runId:state.runId,project:PROJECT,commit:COMMIT,recordedAt:new Date().toISOString(),checks,status:'passed',scope:'Concurrent replay against an existing synthetic purchase. Concurrent first-insert race is covered separately by the local database suite. No new purchases or payments.'};
-writeFileSync('/home/prem/Downloads/the-ace-club/deliverables/phase1-closeout-2026-11-01/passwordless-qa/replay-results.json',JSON.stringify(report,null,2));console.log(JSON.stringify({status:report.status,checks:checks.length}));
+writeFileSync(resolve('deliverables/phase1-closeout-2026-11-01/passwordless-qa/replay-results.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({status:report.status,checks:checks.length}));

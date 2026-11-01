@@ -15,7 +15,7 @@ migration was preserved. Production is unchanged and PR #24 remains Draft.
 
 Completion covers the approved Phase 1 foundation. Payment checkout and upgrade
 fulfillment are Phase 3; Phase 2 publication and write flags remain inactive. This
-records technical completion, not an invented Ishan review or Production approval.
+records technical completion, not an unrecorded product-owner review or Production approval.
 
 ## Candidate and evidence
 
@@ -31,7 +31,7 @@ records technical completion, not an invented Ishan review or Production approva
 - [S4 — Existing manual checklist](../../docs/v2/phase-1/manual-verification-checklist.md): historical preparation plan; its Phase 1 acceptance gaps are superseded by S8. Broader release/payment checks remain separately scoped.
 - [S5 — Compatibility mapping proposal](../../docs/v2/phase-1/proposals/README.md) and [historical preparation handoff](../../docs/v2/phase-1/proposals/closeout-2026-10-28.md), superseded for mapping acceptance by the user decision recorded below.
 - [S6 — Product decisions](../../docs/v2/review/product-and-business-decisions.md), especially V2-DEC-05, and [six-month confirmation](../../docs/v2/decisions/phase-1-expiry-confirmation-2026-10-20.md).
-- [Source supplied by user](source-exit-gates.txt), preserved verbatim. It is a review draft used as the requested audit criteria; it is not an operational instruction or approval to migrate/deploy.
+- [Source supplied by user](source-exit-gates.txt), published as a role-anonymized copy; original source hash retained in the audit. It is a review draft used as the requested audit criteria; it is not an operational instruction or approval to migrate/deploy.
 
 The code was inspected in an isolated checkout at the exact Preview commit.
 The user's main working directory is on an older branch; its local migration
@@ -116,7 +116,7 @@ current whole-purchase grant function cannot fulfill a difference payment.
 4. Synthetic purchases, course/material fixtures, files and 15 generated accounts cleaned up.
 5. Production and the applied Phase 1 migration preserved; PR #24 remains Draft.
 
-Ishan's separate product review has not been recorded. Nothing here changes PR or
+The separate product review has not been recorded. Nothing here changes PR or
 Production release approvals. Historical S4 preparation notes are retained for provenance.
 
 Phase 2 SQL, write flags and publishing remain inactive. The updated student wireframe is now partially integrated into the LMS Preview;
@@ -132,5 +132,5 @@ by S7; the prototype itself is not hosted acceptance evidence.
 
 | Phase | Status | Reviewer | Date | Evidence | Notes |
 |---|---|---|---|---|---|
-| 1 | **Complete — technical foundation** | Agent verification; explicit user product decisions recorded above | 2026-11-02 | This matrix, S1–S8 | 13 supported gates; exact QA cleanup complete. Separate Ishan review and Production approval are not inferred. |
+| 1 | **Complete — technical foundation** | Agent verification; explicit user product decisions recorded above | 2026-11-02 | This matrix, S1–S8 | 13 supported gates; exact QA cleanup complete. Separate product-owner review and Production approval are not inferred. |
 | 2 | **Activation pending** | — | — | Existing activation packet | Phase 2 SQL and write flags remain inactive. |

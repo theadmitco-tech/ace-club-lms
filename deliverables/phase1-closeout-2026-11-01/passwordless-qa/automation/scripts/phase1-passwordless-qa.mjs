@@ -1,3 +1,4 @@
+import {resolve} from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
@@ -12,7 +13,7 @@ if(!['prepare','verify','cleanup-accounts'].includes(mode)) {
 }
 const config=readConfig('/tmp/ace-phase1-staging.env',{database:false});
 const privatePath='/tmp/ace-phase1-passwordless-qa-state.json';
-const output='/home/prem/Downloads/the-ace-club/deliverables/phase1-closeout-2026-11-01/passwordless-qa';
+const output=resolve('deliverables/phase1-closeout-2026-11-01/passwordless-qa');
 mkdirSync(output,{recursive:true});
 const options={auth:{autoRefreshToken:false,persistSession:false},global:{fetch:(url,options)=>fetch(url,{...options,signal:AbortSignal.timeout(20000)})}};
 const service=createClient(ORIGIN,config.SUPABASE_SERVICE_ROLE_KEY,options);

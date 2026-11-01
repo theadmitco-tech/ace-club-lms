@@ -25,12 +25,16 @@
   "database_changed": false,
   "migrations_changed": false,
   "decision_D01": "Confirmed by user on 2026-11-01: three individual package tiers plus distinct Full Course",
-  "decision_D01_response": "Yes—three tiers, Full Course separate",
+  "decision_D01_response": "Yes\u2014three tiers, Full Course separate",
   "pdf_export": "19 pages: cover plus18 review screens including calendar and upsell dialogs",
-  "generated_pdf_sha256": "a501805e0ea3d74727919e071b97b60820f4b91821e8e2b098422c2418721e57",
+  "generated_pdf_sha256": "2a2f92d307adbb8213e7934cab6a06face4216bc097e7d01068fc124fb864af7",
   "verification": {
     "passed": 63,
     "failed": 0,
     "page_errors": 0
+  },
+  "attribution_revision": {
+    "date": "2026-11-02",
+    "scope": "Personal references replaced by role-based attribution; PDF regenerated; 63 offline checks passed."
   }
 }

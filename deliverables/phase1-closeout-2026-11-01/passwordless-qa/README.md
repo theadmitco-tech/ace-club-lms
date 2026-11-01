@@ -70,7 +70,7 @@ Phase 2 migrations and authoring/publication/schedule flags remain inactive.
   draft denial. Phase 2's stronger unpublished-content boundary remains a separate gate.
 - Hosted Google OAuth was not retested. Generated QA accounts used normal password
   sign-in; the user's own Student/Admin session acceptance is retained separately.
-- Separate Ishan review, PR readiness/merge and Production release are not inferred.
+- Separate product-owner review, PR readiness/merge and Production release are not inferred.
 
 Earlier runs identified test-assumption errors (uppercase text, the wrong Admin path,
 streaming-page timing, and an add assertion matching input text) and the two real

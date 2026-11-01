@@ -664,18 +664,18 @@ index 0000000..a31bd74
 +          <div className="mentor-system" aria-label="Mentor coverage system">
 +            <div className="mentor-line" />
 +            <article className="mentor-node">
-+              <span>IS</span>
-+              <strong>Ishan</strong>
++              <span>QA</span>
++              <strong>Quant mentor</strong>
 +              <p>Quant + planning</p>
 +            </article>
 +            <article className="mentor-node">
-+              <span>UJ</span>
-+              <strong>Unnati</strong>
++              <span>DI</span>
++              <strong>DI mentor</strong>
 +              <p>DI + tracking</p>
 +            </article>
 +            <article className="mentor-node">
-+              <span>TT</span>
-+              <strong>Tanya</strong>
++              <span>VA</span>
++              <strong>Verbal mentor</strong>
 +              <p>Verbal + reasoning</p>
 +            </article>
 +          </div>
@@ -1290,18 +1290,18 @@ index 3c4beaa..8f122a2 100644
 -          <div className="mentor-system" aria-label="Mentor coverage system">
 -            <div className="mentor-line" />
 -            <article className="mentor-node">
--              <span>IS</span>
--              <strong>Ishan</strong>
+-              <span>QA</span>
+-              <strong>Quant mentor</strong>
 -              <p>Quant + planning</p>
 -            </article>
 -            <article className="mentor-node">
--              <span>UJ</span>
--              <strong>Unnati</strong>
+-              <span>DI</span>
+-              <strong>DI mentor</strong>
 -              <p>DI + tracking</p>
 -            </article>
 -            <article className="mentor-node">
--              <span>TT</span>
--              <strong>Tanya</strong>
+-              <span>VA</span>
+-              <strong>Verbal mentor</strong>
 -              <p>Verbal + reasoning</p>
 -            </article>
 -          </div>

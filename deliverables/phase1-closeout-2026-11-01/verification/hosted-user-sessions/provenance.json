@@ -33,7 +33,8 @@
     "result": "No active course purchase; no purchases recorded in this account history.",
     "page_identification": "My access, identified from heading/content; the Upgrade options link is present but its destination result is not supplied.",
     "commit": "not embedded in pasted page text",
-    "upgrade_page_acceptance": false
+    "upgrade_page_acceptance": false,
+    "published_format": "Third-person paraphrase of supplied page text; not a verbatim transcript."
   },
   "upgrade_page_evidence": "student-upgrade-no-active-package.json"
 }

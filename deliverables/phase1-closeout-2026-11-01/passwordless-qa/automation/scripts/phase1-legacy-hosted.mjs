@@ -1,3 +1,4 @@
+import {resolve} from 'node:path';
 // Runs only after the named Phase 1 SQL fixtures exist. Owns every created row.
 import {readFileSync,writeFileSync} from 'node:fs';
 import {createClient} from '@supabase/supabase-js';
@@ -9,7 +10,7 @@ if(!process.argv.includes('--execute')){console.log('Prepared legacy QA runner. 
 const state=JSON.parse(readFileSync('/tmp/ace-phase1-passwordless-qa-state.json','utf8'));
 check(state.project===PROJECT&&state.commit===COMMIT,'Wrong QA candidate');
 const config=readConfig('/tmp/ace-phase1-staging.env',{database:false});
-const output='/home/prem/Downloads/the-ace-club/deliverables/phase1-closeout-2026-11-01/passwordless-qa';
+const output=resolve('deliverables/phase1-closeout-2026-11-01/passwordless-qa');
 const report={runId:state.runId,commit:COMMIT,project:PROJECT,startedAt:new Date().toISOString(),checks:[],status:'running',cleanup:'pending'};
 const manifest={runId:state.runId,course:null,masterSession:null,files:[],student:state.users.find(u=>u.label==='q').id,cleanup:'pending'};
 const save=()=>{writeFileSync(`${output}/legacy-hosted-results.json`,JSON.stringify(report,null,2));writeFileSync(`${output}/legacy-fixture-manifest.json`,JSON.stringify(manifest,null,2));};

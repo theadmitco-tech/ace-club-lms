@@ -99,7 +99,7 @@ Neither report contains a failing check. Both overall results remain inconclusiv
 as designed. An empty active-access list does not prove that no purchases, expired
 records, users or website activity exist, and does not exercise an eligible upgrade.
 
-The subsequent [user-pasted My access page](verification/hosted-user-sessions/student-my-access.txt)
+The subsequent [third-person summary of the supplied Student access page](verification/hosted-user-sessions/student-my-access.txt)
 shows “No active course purchase” and “No purchases are recorded here yet.” This
 records the visible empty states for that account. It contains an Upgrade options
 link; the destination result was subsequently supplied in the screenshot below. The page

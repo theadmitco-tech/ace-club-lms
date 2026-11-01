@@ -5,7 +5,7 @@ complete Phase 2 **if Phase 1 is complete**. The [Phase 1 audit](../phase1-exit-
 still has four open rows, so that condition has not yet been met. This checklist
 records the full Phase 2 target and current gaps; it is not a completion claim.
 
-Source: the Phase 2 section of [Ishan's supplied exit gates](../phase1-exit-gate-audit-2026-11-01/source-exit-gates.txt).
+Source: the Phase 2 section of [the product reviewer's supplied exit gates](../phase1-exit-gate-audit-2026-11-01/source-exit-gates.txt).
 All 17 parent requirements, including the five session fields, are retained.
 Requirements explicitly assigned to Phase 2 in this checklist cannot be counted
 as complete by referring to an older plan that deferred them to Phase 4 or 5.

@@ -1,7 +1,7 @@
 # Ace Club LMS V2 — Phase Exit Gates
 
 **Status:** Review draft  
-**Owner:** Ishan  
+**Owner:** Product reviewer  
 **Implementation owner:** Intern  
 **Source documents:** `V2-decisions-for-approval.md`, `V2-student-and-admin-journeys.md`
 
