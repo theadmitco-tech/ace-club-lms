@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 export const repo = fileURLToPath(new URL('../../../', import.meta.url));
 export const sources = [
+  'src/lib/server/v2Phase1Feature.ts',
   'src/app/admin/v2/layout.tsx',
   'src/app/admin/v2/WorkspaceNavigation.tsx',
   'src/app/admin/v2/workspace.module.css',

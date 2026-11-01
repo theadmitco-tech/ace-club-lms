@@ -6,6 +6,7 @@ import styles from './workspace.module.css';
 
 const destinations = [
   ['/admin/v2', 'Overview'],
+  ['/admin/v2/access', 'Products & access'],
   ['/admin/v2/templates', 'Course content'],
   ['/admin/v2/batches', 'Batches & publishing'],
 ] as const;

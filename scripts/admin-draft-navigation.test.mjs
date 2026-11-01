@@ -389,10 +389,10 @@ test('course publishing entry enforces Admin authorization, Production exclusion
   }, { process: { env } }).default;
   let tree = await page();
   assert.equal(calls, 1);
-  assert.equal(elements(tree, n => n.props?.href?.startsWith('/admin/v2/')).length, 2);
+  assert.equal(elements(tree, n => n.props?.href?.startsWith('/admin/v2/')).length, 3);
   assert.equal(elements(tree, n => n.props?.role === 'status').length, 1);
   enabled = true; tree = await page();
-  assert.deepEqual(elements(tree, n => n.type === 'link').map(n => n.props.href), ['/admin/v2/templates', '/admin/v2/batches', '/admin/courses']);
+  assert.deepEqual(elements(tree, n => n.type === 'link').map(n => n.props.href), ['/admin/v2/access', '/admin/v2/templates', '/admin/v2/batches', '/admin/courses']);
   authorized = false; await assert.rejects(page, /Unauthorized/);
   env.VERCEL_ENV = 'production'; authorized = true;
   await assert.rejects(page, /Not found/);

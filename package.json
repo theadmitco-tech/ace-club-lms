@@ -25,7 +25,8 @@
     "question-bank:dry-run": "node scratch/import_question_bank_csv.js --dry-run",
     "worksheets:convert": "node scratch/convert_worksheet_pdfs.js",
     "worksheets:dry-run": "node scratch/convert_worksheet_pdfs.js --dry-run",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:v2:phase1:browser": "node scripts/browser/v2-phase1/verify.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

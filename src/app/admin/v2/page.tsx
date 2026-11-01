@@ -18,6 +18,7 @@ export default async function CoursePublishingPage() {
       <p>Explore the course editors below. Saving drafts and publishing will become available after staging setup is complete.</p>
       <p>Existing courses and materials have not been imported into this workspace.</p>
     </section>}
+    <section className="admin-card"><h2>Products and student access</h2><p>Review Full Course and individual offerings, current prices, and confirmed purchase history.</p><Link href="/admin/v2/access" prefetch={false}>Open products and access</Link></section>
     <div className="workspace-overview"><section className="admin-card">
       <span className="workspace-step">01 / BUILD THE CURRICULUM</span>
       <h2>Prepare course content</h2>

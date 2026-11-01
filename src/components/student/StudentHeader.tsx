@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
 import { BrandLogo } from '@/components/BrandLogo';
 import { SignOutButton } from './SignOutButton';
 
@@ -21,6 +22,7 @@ export function StudentHeader({ studentName }: { studentName: string }) {
         </Link>
         <nav className="student-navigation" aria-label="Student navigation">
           <Link href="/dashboard">Home</Link>
+          {isV2Phase1PreviewEnabled() && <Link href="/account/access" prefetch={false}>My access</Link>}
           <Link href="/schedule">Schedule</Link>
           <Link href="/resources">Resources</Link>
           <Link className="student-navigation-secondary" href="/practice">Practice log</Link>
