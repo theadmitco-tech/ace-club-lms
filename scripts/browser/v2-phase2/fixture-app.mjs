@@ -17,6 +17,7 @@ export const sources = [
   'src/app/schedule/v2/page.tsx',
   'src/app/dashboard/dashboard.css',
   'src/components/student/StudentHeader.tsx',
+  'src/components/student/studentPreview.module.css',
   'src/components/student/SignOutButton.tsx',
   'src/lib/v2Enrollments.ts',
   'src/app/admin/v2/batches/[batchId]/students/page.tsx',

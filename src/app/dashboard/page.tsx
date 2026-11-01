@@ -1,6 +1,9 @@
 import Link from 'next/link';
+import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
+import previewStyles from '@/components/student/studentPreview.module.css';
 import { PortalResourceCard } from '@/components/student/PortalResourceCard';
 import { ResourceCard } from '@/components/student/ResourceCard';
+import { LearningResume } from '@/components/student/LearningResume';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { loadStudentTimeline } from '@/lib/server/studentTimeline';
@@ -18,12 +21,13 @@ import {
 import './dashboard.css';
 
 export default async function DashboardPage() {
+  const preview = isV2Phase1PreviewEnabled();
   const identity = await requirePortalRole('student');
   const result = await loadStudentTimeline(identity.id);
 
   if (result.status === 'failed') {
     return (
-      <div className="student-page">
+      <div className={preview ? `student-page ${previewStyles.preview}` : 'student-page'}>
         <StudentHeader studentName={result.studentName} />
         <main className="student-main">
           <section className="student-state student-state-error" role="alert">
@@ -41,13 +45,13 @@ export default async function DashboardPage() {
 
   if (!timeline.course) {
     return (
-      <div className="student-page">
+      <div className={preview ? `student-page ${previewStyles.preview}` : 'student-page'}>
         <StudentHeader studentName={studentName} />
         <main className="student-main">
           <section className="student-state">
             <span className="state-kicker">No course assigned</span>
             <h1>Your course will appear here</h1>
-            <p>You are signed in, but no cohort is assigned to your account. Contact the programme team if you expected access.</p>
+            <p>You are signed in, but no cohort is assigned to your account. Contact the programme team if you expected access.</p>{preview && <nav className={previewStyles.workspaceLinks} aria-label="Course shortcuts"><Link href="/courses/v2" prefetch={false}>Explore courses</Link><Link href="/account/access" prefetch={false}>Check my access</Link></nav>}
           </section>
         </main>
       </div>
@@ -72,7 +76,7 @@ export default async function DashboardPage() {
   const firstName = studentName.split(/\s+/)[0];
 
   return (
-    <div className="student-page">
+    <div className={preview ? `student-page ${previewStyles.preview}` : 'student-page'}>
       <StudentHeader studentName={studentName} />
       <main className="student-main">
         <div className="student-container">
@@ -88,6 +92,8 @@ export default async function DashboardPage() {
             </div>
           </header>
 
+          {preview && <LearningResume ownerId={identity.id} sessions={sessions.map(({ id, title }) => ({ id, title }))} />}
+          {preview && <nav className={previewStyles.workspaceLinks} aria-label="Learning shortcuts"><Link href="/resources">Recordings &amp; materials</Link><Link href="/schedule">Your schedule</Link><Link href="/account/access" prefetch={false}>Course access</Link></nav>}
           <section className="home-summary-grid" aria-label="Course summary">
             <article className="home-summary-card">
               <span className="student-eyebrow">Next event</span>

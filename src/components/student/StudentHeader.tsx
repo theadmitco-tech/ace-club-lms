@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import previewStyles from './studentPreview.module.css';
 import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
 import { BrandLogo } from '@/components/BrandLogo';
 import { SignOutButton } from './SignOutButton';
@@ -14,15 +15,16 @@ function getInitials(name: string) {
 }
 
 export function StudentHeader({ studentName }: { studentName: string }) {
+  const preview = isV2Phase1PreviewEnabled();
   return (
-    <header className="student-header">
+    <header className={preview ? `student-header ${previewStyles.previewHeader}` : 'student-header'}>
       <div className="student-header-inner">
         <Link className="student-brand" href="/dashboard" aria-label="Ace Club student home">
           <BrandLogo variant="light" className="student-brand-logo" preload />
         </Link>
         <nav className="student-navigation" aria-label="Student navigation">
-          <Link href="/dashboard">Home</Link>
-          {isV2Phase1PreviewEnabled() && <Link href="/account/access" prefetch={false}>My access</Link>}
+          <Link href="/dashboard">{preview ? 'My learning' : 'Home'}</Link>
+          {preview && <><Link href="/account/access" prefetch={false}>My access</Link><Link href="/courses/v2" prefetch={false}>Explore courses</Link></>}
           <Link href="/schedule">Schedule</Link>
           <Link href="/resources">Resources</Link>
           <Link className="student-navigation-secondary" href="/practice">Practice log</Link>

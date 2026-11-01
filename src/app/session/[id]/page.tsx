@@ -1,7 +1,10 @@
 import Link from 'next/link';
+import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
+import previewStyles from '@/components/student/studentPreview.module.css';
 import { notFound } from 'next/navigation';
 import { ResourceActions } from '@/components/student/ResourceActions';
 import { getResourcePrimaryActionLabel, ResourceCard } from '@/components/student/ResourceCard';
+import { SessionVisitMarker } from '@/components/student/LearningResume';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { loadStudentTimeline } from '@/lib/server/studentTimeline';
@@ -27,12 +30,13 @@ const JOURNEY_STEPS: Array<{
 ];
 
 export default async function SessionPage({ params }: { params: Promise<{ id: string }> }) {
+  const preview = isV2Phase1PreviewEnabled();
   const [{ id: sessionId }, identity] = await Promise.all([params, requirePortalRole('student')]);
   const result = await loadStudentTimeline(identity.id);
 
   if (result.status === 'failed') {
     return (
-      <div className="student-page">
+      <div className={preview ? `student-page ${previewStyles.preview}` : 'student-page'}>
         <StudentHeader studentName={result.studentName} />
         <main className="student-main">
           <section className="student-state student-state-error" role="alert">
@@ -50,17 +54,21 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
 
   const timeZone = result.timeline.course.schedule_timezone;
   const isAcademic = isAcademicSection(session.class_type);
+  const journeySteps = preview ? JOURNEY_STEPS.filter((step) => step.type !== 'class').map((step) => ({
+    ...step, label: step.type === 'pre_read' ? 'Pre-class read' : step.type === 'session_material' ? 'Session reading & material' : step.label,
+  })) : JOURNEY_STEPS;
 
   return (
-    <div className="student-page">
+    <div className={preview ? `student-page ${previewStyles.preview}` : 'student-page'}>
       <StudentHeader studentName={result.studentName} />
+      {preview && <SessionVisitMarker ownerId={identity.id} sessionId={session.id} />}
       <main className="student-main session-journey-main">
         <div className="session-journey-container">
           <Link
             className="session-back-link"
             href={`/dashboard?openWeek=${session.week_number ?? 0}#session-${session.id}`}
           >
-            ← Back to Timeline
+            {preview ? '← Back to my learning' : '← Back to Timeline'}
           </Link>
           <header className="session-journey-header">
             <div className="timeline-meta">
@@ -86,10 +94,10 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
             <section className="journey-panel" aria-labelledby="journey-title">
               <div className="journey-panel-heading">
                 <span className="student-eyebrow">Learning sequence</span>
-                <h2 id="journey-title">Prepare → Attend class → Practise → Track progress</h2>
+                <h2 id="journey-title">{preview ? 'Your session resources' : 'Prepare → Attend class → Practise → Track progress'}</h2>{preview && <p>Pre-class reading, recording, session reading and worksheet. Open any available resource when you need it.</p>}
               </div>
               <ol className="journey-step-list">
-                {JOURNEY_STEPS.map((step, index) => {
+                {journeySteps.map((step, index) => {
                   const materials = step.type === 'class'
                     ? []
                     : session.materials.filter((material) => material.type === step.type);
