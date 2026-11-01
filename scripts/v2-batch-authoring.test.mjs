@@ -240,7 +240,7 @@ test('the batch page authorizes before loading either templates or batches and h
   const calls=[];
   const page=load('src/app/admin/v2/batches/page.tsx',{
     '../templates/templates.module.css': { default: {} },
-    'react/jsx-runtime': { jsx: () => ({}),jsxs: () => ({}) },'@/components/AdminDraftNavigation': {},'./BatchDraftEditor': {}, './PublicationPanel': {},
+    'react/jsx-runtime': { jsx: () => ({}),jsxs: () => ({}) },'@/components/AdminDraftNavigation': {},'./BatchDraftEditor': {}, './PublicationPanel': {}, './PublicationScopePanel': {},
     'next/navigation': { notFound: () => { throw new Error('Not found'); } },
     '@/lib/server/v2BatchFeature': { isV2BatchAuthoringEnabled: () => enabled },
     '@/lib/server/v2StudentScheduleFeature': { isV2StudentScheduleEnabled: () => true },

@@ -30,16 +30,17 @@ function getNotionUrl(sourceUrl?: string | null) {
 type NotionReaderProps = {
   pageId: string; sourceUrl?: string | null; title?: string;
   mode?: 'student' | 'admin-preview'; readingType?: 'pre-read' | 'post-read';
+  endpoint?: string;
 };
 
 export function NotionReader(props: NotionReaderProps) {
-  return <NotionReaderContent key={`${props.mode}:${props.pageId}:${props.sourceUrl}`} {...props} />;
+  return <NotionReaderContent key={`${props.mode}:${props.pageId}:${props.sourceUrl}:${props.endpoint}`} {...props} />;
 }
 
 function NotionReaderContent({
   pageId,
   sourceUrl,
-  title = 'Notion pre-read', mode = 'student', readingType = 'pre-read',
+  title = 'Notion pre-read', mode = 'student', readingType = 'pre-read', endpoint,
 }: NotionReaderProps) {
   const [recordMap, setRecordMap] = useState<ExtendedRecordMap | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'failed'>('loading');
@@ -54,12 +55,12 @@ function NotionReaderContent({
 
     let ignore = false;
     const controller = new AbortController();
-    const endpoint = mode === 'admin-preview' ? '/api/admin/v2/reading-preview' : '/api/notion';
-    fetch(`${endpoint}?pageId=${encodeURIComponent(pageId)}`, { signal: controller.signal, cache: 'no-store', credentials: 'same-origin' })
+    const path = endpoint ?? (mode === 'admin-preview' ? '/api/admin/v2/reading-preview' : '/api/notion');
+    fetch(`${path}${path.includes('?') ? '&' : '?'}pageId=${encodeURIComponent(pageId)}`, { signal: controller.signal, cache: 'no-store', credentials: 'same-origin' })
       .then(async (response) => {
         if (!response.ok) throw new Error(`Notion request failed with ${response.status}`);
         const data = await response.json() as ExtendedRecordMap;
-        if (mode === 'admin-preview' && !hasV2ReadingContent(data, pageId)) throw new Error('Reading content is unavailable');
+        if ((mode === 'admin-preview' || endpoint) && !hasV2ReadingContent(data, pageId)) throw new Error('Reading content is unavailable');
         if (!ignore) {
           setRecordMap(data);
           setStatus('ready');
@@ -73,7 +74,7 @@ function NotionReaderContent({
       ignore = true;
       controller.abort();
     };
-  }, [embedUrl, pageId, requestKey, mode]);
+  }, [embedUrl, pageId, requestKey, mode, endpoint]);
 
   if (embedUrl) {
     return (

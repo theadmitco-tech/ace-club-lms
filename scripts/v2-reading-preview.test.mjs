@@ -16,6 +16,7 @@ function load(file, dependencies = {}) {
   return exports;
 }
 const helpers = load('src/lib/v2ReadingPreview.ts');
+const presentation = load('src/lib/v2SessionPresentation.ts', { './v2Templates': load('src/lib/v2Templates.ts') });
 const pageId = '123456781234123412341234567890ab';
 const uuid = '12345678-1234-1234-1234-1234567890ab';
 const paragraph = '22345678-1234-1234-1234-1234567890ab';
@@ -23,6 +24,17 @@ const content = () => ({ block: {
   [uuid]: { value: { id: uuid, type: 'page', alive: true, content: [paragraph] } },
   [paragraph]: { value: { id: paragraph, type: 'text', alive: true, properties: { title: [['Reading']] } } },
 } });
+test('stored PDF links use checked course identity and never forward a student-controlled storage path', () => {
+  const source = '/api/materials/file?path=worksheets%2F00000000-0000-4000-8000-000000000001%2F00000000-0000-4000-8000-000000000002.pdf';
+  const context = { mode: 'student', batchId: 'batch', sessionKey: 'session', itemKey: 'item' };
+  assert.equal(presentation.v2CourseResourceHref(source, context), '/api/v2/materials/file?batchId=batch&sessionKey=session&itemKey=item');
+  assert.equal(presentation.v2CourseResourceHref(source, { ...context, batchId: undefined }), null);
+  assert.equal(presentation.v2CourseResourceHref(source, { ...context, mode: 'admin-preview' }), source.replace('/api/materials/file?', '/api/admin/v2/materials/file?'));
+  for (const invalid of ['/api/materials/file?path=../private', `${source}&other=value`, 'javascript:alert(1)', '//example.test/private', 'https://user:password@example.test/private']) {
+    assert.equal(presentation.v2CourseResourceHref(invalid, context), null);
+  }
+  assert.equal(presentation.v2CourseResourceHref('https://example.test/resource', context), 'https://example.test/resource');
+});
 function harness() {
   const state = { template: true, batch: false, role: 'admin', calls: [], authCalls: 0, result: content(), fault: null };
   const api = load('src/app/api/admin/v2/reading-preview/route.ts', {

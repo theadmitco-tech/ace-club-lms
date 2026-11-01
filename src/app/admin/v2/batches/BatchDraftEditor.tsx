@@ -1,5 +1,6 @@
 'use client';
 import { CourseSessionsEditor, CourseSessionsPreview } from '../templates/CourseSessions';
+import { BatchDatePicker } from './BatchDatePicker';
 
 import { useRef, useState, type FormEvent } from 'react';
 import { DraftRecoveryNotice, useDraftRecovery } from '@/components/DraftRecovery';
@@ -130,6 +131,10 @@ export default function BatchDraftEditor({ drafts, templates, ownerId, setupPend
   }
 
   const productCode = original?.productCode ?? templates.find((template) => template.id === input?.templateId)?.productCode;
+  const calendarEvents = input?.events?.filter((event) => event.kind !== 'outline' && event.localDate).map((event) => ({
+    date: event.localDate!, time: event.localStartTime,
+    title: original?.events.find((item) => item.key === event.key)?.title ?? 'Live class',
+  })) ?? [];
   return <div className={styles.workspace}>
     <>{setupPending && <section className={styles.notice} role="status"><h2>Explore batch settings</h2><p>Review the batch workspace while staging setup is completed. Saved templates, schedule review, saving and publication are not available yet.</p></section>}</>
     <DraftRecoveryNotice available={!!recovery.recovered} unavailable={recovery.unavailable} onRestore={restore} onDiscard={recovery.forget} />
@@ -170,18 +175,18 @@ export default function BatchDraftEditor({ drafts, templates, ownerId, setupPend
         <label htmlFor="v2-batch-title">Batch title
           <input id="v2-batch-title" className="form-input" required maxLength={120} value={input.title} onChange={(event) => change({ ...input, title: event.target.value })} />
         </label>
-        {!original ? <label htmlFor="v2-batch-start">Template start date (only needed for live sessions)
-          <input id="v2-batch-start" className="form-input" type="date" required={templates.find((template) => template.id === input.templateId)?.document.events.some((event) => event.kind !== 'outline')} min="2000-01-01" max="2099-12-31" value={input.startDate} onChange={(event) => change({ ...input, startDate: event.target.value })} />
-        </label> : input.startDate ? <p>Original template start date: {input.startDate}. Edit individual live-event dates below to reschedule this batch.</p> : <p>This course has no live schedule.</p>}
+        {!original ? <BatchDatePicker id="v2-batch-start" label="Template start date (only needed for live sessions)"
+          required={templates.find((template) => template.id === input.templateId)?.document.events.some((event) => event.kind !== 'outline')}
+          value={input.startDate} onChange={(startDate) => change({ ...input, startDate })} events={calendarEvents} />
+          : input.startDate ? <p>Original template start date: {input.startDate}. Edit individual live-event dates below to reschedule this batch.</p> : <p>This course has no live schedule.</p>}
         <p>Review course content before saving. Any live-event dates and times use Asia/Kolkata (IST).</p>
         {input.events?.map((event, index) => <fieldset key={event.key} className={styles.event}>
           <legend>{index + 1}. {original?.events.find((item) => item.key === event.key)?.title}</legend>
           {event.kind === 'outline' && <p>Undated outline item. No attendance or session booking.</p>}
           <div className={styles.grid}>
             {event.kind !== 'outline' && <>
-            <label htmlFor={`${event.key}-date`}>Date
-              <input id={`${event.key}-date`} className="form-input" type="date" required min="2000-01-01" max="2099-12-31" value={event.localDate ?? ''} onChange={(e) => changeEvent(event.key, { localDate: e.target.value })} />
-            </label>
+            <BatchDatePicker id={`${event.key}-date`} label="Date" required value={event.localDate ?? ''}
+              onChange={(localDate) => changeEvent(event.key, { localDate })} events={calendarEvents} />
             <label htmlFor={`${event.key}-time`}>Start time (IST)
               <input id={`${event.key}-time`} className="form-input" type="time" required value={event.localStartTime ?? ''} onChange={(e) => changeEvent(event.key, { localStartTime: e.target.value })} />
             </label>

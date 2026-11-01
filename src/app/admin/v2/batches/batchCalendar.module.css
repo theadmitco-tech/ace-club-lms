@@ -1,0 +1,25 @@
+.field { display: grid; gap: 8px; min-width: 0; }
+.inputRow { display: flex; gap: 8px; align-items: center; }
+.inputRow input { flex: 1; width: 100%; }
+.dialog { width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; overflow: auto; border: 1px solid #d6dfd5; border-radius: 16px; padding: 24px; color: #293e35; background: #fff; box-shadow: 0 24px 80px #152d2740; }
+.dialog::backdrop { background: #172b2766; }
+.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.top h3 { font-size: 1.15rem; }
+.top p { font-size: .8rem; margin-top: .4rem; color: #607466; }
+.month { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; }
+.month button { min-height: 40px; min-width: 40px; border: 1px solid #d6dfd5; border-radius: 8px; background: white; cursor: pointer; }
+.calendar { width: 100%; table-layout: fixed; border-spacing: 4px; }
+.calendar th { font-size: .7rem; font-weight: 600; color: #607466; text-align: center; padding-bottom: 10px; }
+.calendar td { text-align: center; }
+.calendar td button { display: grid; place-items: center; position: relative; width: 100%; min-height: 42px; border: 1px solid transparent; border-radius: 8px; background: #f6f8f3; color: #293e35; cursor: pointer; }
+.calendar td button:hover { border-color: #7b9980; }
+.calendar td button[aria-pressed=true] { background: #2c654b; color: white; }
+.dot { position: absolute; width: 4px; height: 4px; background: currentColor; border-radius: 50%; bottom: 4px; }
+.agenda { border-top: 1px solid #d6dfd5; margin-top: 20px; padding-top: 16px; }
+.agenda h4 { font-size: .9rem; }
+.agenda p, .agenda ul { margin-top: .6rem; font-size: .85rem; }
+.agenda ul { padding: 0; list-style: none; display: grid; gap: .75rem; }
+.agenda li { display: grid; gap: .25rem; }
+.agenda time { color: #607466; }
+.dialog :where(button, input):focus-visible { outline: 3px solid #376cac; outline-offset: 2px; }
+@media (max-width: 480px) { .dialog { padding: 16px; } .calendar { border-spacing: 2px; } .calendar td button { min-height: 38px; } }

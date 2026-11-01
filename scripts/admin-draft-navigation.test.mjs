@@ -59,6 +59,7 @@ function harness() {
   const router = { push: (url) => state.pushes.push(url), replace: (url) => state.replacements.push(url),
     refresh: () => { state.refreshes++; } };
   const dependencies = { './CourseSessions': {CourseSessionsEditor:'course-editor'}, '../templates/CourseSessions': {CourseSessionsEditor:'course-editor',CourseSessionsPreview:'course-preview'}, react, 'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'next-link' },
+    './BatchDatePicker': { BatchDatePicker: 'batch-date-picker' },
     '@/components/DraftRecovery': { DraftRecoveryNotice: 'recovery-notice', useDraftRecovery: () => ({ recovered: null, remember() {}, forget() {}, acknowledge() {}, unavailable: false }) },
     '@/lib/v2WorkspaceRecovery': {},
     'next/navigation': { useRouter: () => router, usePathname: () => '/admin/v2/templates' } };
@@ -392,7 +393,7 @@ test('course publishing entry enforces Admin authorization, Production exclusion
   assert.equal(elements(tree, n => n.props?.href?.startsWith('/admin/v2/')).length, 3);
   assert.equal(elements(tree, n => n.props?.role === 'status').length, 1);
   enabled = true; tree = await page();
-  assert.deepEqual(elements(tree, n => n.type === 'link').map(n => n.props.href), ['/admin/v2/access', '/admin/v2/templates', '/admin/v2/batches', '/admin/courses']);
+  assert.deepEqual(elements(tree, n => n.type === 'link').map(n => n.props.href), ['/admin/v2/access', '/admin/v2/templates', '/admin/v2/imports', '/admin/v2/batches', '/admin/courses']);
   authorized = false; await assert.rejects(page, /Unauthorized/);
   env.VERCEL_ENV = 'production'; authorized = true;
   await assert.rejects(page, /Not found/);

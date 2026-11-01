@@ -1,5 +1,7 @@
 import type { V2Section } from './v2Products';
 
+export type V2CourseSessionSection = V2Section | 'programme';
+
 export type V2CourseCode = 'full_course' | 'quant' | 'verbal' | 'di';
 
 export const V2_SESSION_CONTENT_LABELS = {
@@ -38,7 +40,7 @@ export type V2TemplateEvent = {
   content?: V2SessionContent;
 };
 
-export type V2CourseSession = { key: string; title: string; section: V2Section; content: V2SessionContent };
+export type V2CourseSession = { key: string; title: string; section: V2CourseSessionSection; content: V2SessionContent };
 
 export type V2TemplateDocument = {
   sessions?: V2CourseSession[];
@@ -73,6 +75,11 @@ const keysAre = (value: Record<string, unknown>, keys: string[]) => Object.keys(
 const textFits = (value: unknown, min: number, max: number): value is string => typeof value === 'string' && [...value].length >= min && [...value].length <= max && !/^[ \t\n\r\f\v]|[ \t\n\r\f\v]$/.test(value);
 const integerFits = (value: unknown, min: number, max: number): value is number => typeof value === 'number' && Number.isInteger(value) && value >= min && value <= max;
 
+export function isV2ContentUrl(value: string): boolean {
+  return /^https:\/\/[a-zA-Z0-9](?:[a-zA-Z0-9.-]*[a-zA-Z0-9])?(?::[0-9]{1,5})?(?:[/?#][^\s\\]*)?$/.test(value)
+    || /^\/api\/materials\/file\?path=(?:worksheets|session-materials)%2F[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}%2F[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.pdf$/i.test(value);
+}
+
 export function isV2SessionContent(value: unknown, allowIncomplete = false): value is V2SessionContent {
   if (!object(value) || !keysAre(value, Object.keys(V2_SESSION_CONTENT_LABELS))) return false;
   const ids = new Set<string>();
@@ -82,7 +89,7 @@ export function isV2SessionContent(value: unknown, allowIncomplete = false): val
       if (!object(item) || !keysAre(item, ['key', 'title', 'url']) || typeof item.key !== 'string'
         || !uuid.test(item.key) || ids.has(item.key) || !(allowIncomplete ? typeof item.title === 'string' && item.title.length <= 120 : textFits(item.title, 1, 120))
         || typeof item.url !== 'string' || item.url.length > 2048
-        || (!allowIncomplete && !/^https:\/\/[a-zA-Z0-9](?:[a-zA-Z0-9.-]*[a-zA-Z0-9])?(?::[0-9]{1,5})?(?:[/?#][^\s\\]*)?$/.test(item.url))) return false;
+        || (!allowIncomplete && !isV2ContentUrl(item.url))) return false;
       ids.add(item.key);
     }
   }
@@ -155,6 +162,10 @@ export function isV2CourseSection(code: V2CourseCode, section: unknown): section
   return isV2TemplateProduct(code) && V2_TEMPLATE_PRODUCTS[code].sections.includes(section as V2Section);
 }
 
+export function isV2CourseSessionSection(code: V2CourseCode, section: unknown): section is V2CourseSessionSection {
+  return isV2CourseSection(code, section) || (code === 'full_course' && section === 'programme');
+}
+
 export function sameV2SessionContent(left?: V2SessionContent, right?: V2SessionContent): boolean {
   const a = left ?? emptyV2SessionContent(), b = right ?? emptyV2SessionContent();
   return (Object.keys(V2_SESSION_CONTENT_LABELS) as V2SessionContentKind[]).every((kind) =>
@@ -172,7 +183,8 @@ export function isV2CourseSessions(value: unknown, sections: readonly string[], 
     if (!object(session) || !keysAre(session, ['key', 'title', 'section', 'content'])
       || typeof session.key !== 'string' || !uuid.test(session.key) || ids.has(session.key)
       || !(incomplete ? typeof session.title === 'string' && session.title.length <= 120 : textFits(session.title, 1, 120))
-      || typeof session.section !== 'string' || !sections.includes(session.section)
+      || typeof session.section !== 'string' || !(sections.includes(session.section)
+        || (session.section === 'programme' && sections.length === 3 && ['quant', 'verbal', 'di'].every(section => sections.includes(section))))
       || !isV2SessionContent(session.content, incomplete)) return false;
     ids.add(session.key); return true;
   });

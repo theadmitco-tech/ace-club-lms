@@ -6,6 +6,7 @@ import { listV2BatchDrafts } from '@/lib/server/v2Batches';
 import { listV2TemplateDrafts } from '@/lib/server/v2Templates';
 import BatchDraftEditor from './BatchDraftEditor';
 import PublicationPanel from './PublicationPanel';
+import PublicationScopePanel from './PublicationScopePanel';
 import { listV2BatchPublications } from '@/lib/server/v2Publications';
 import { isV2StudentScheduleEnabled } from '@/lib/server/v2StudentScheduleFeature';
 import styles from '../templates/templates.module.css';
@@ -23,8 +24,9 @@ export default async function V2BatchesPage() {
       ? <>
         <BatchDraftEditor key={identity.id} ownerId={identity.id} drafts={batches.drafts} templates={templates.templates} setupPending={batches.status !== 'ready' || templates.status !== 'ready'} />
         {isV2StudentScheduleEnabled() && <section className={styles.card}><h2>Batch students</h2>
-          <ul className={styles.list}>{batches.drafts.map((batch) => <li key={batch.id}><Link href={`/admin/v2/batches/${batch.id}/students`} prefetch={false}>{batch.title} — Manage students</Link></li>)}</ul>
+          <ul className={styles.list}>{batches.drafts.map((batch) => <li key={batch.id}><Link href={`/admin/v2/batches/${batch.id}/students`} prefetch={false}>{batch.title} — Manage students</Link> · <Link href={`/admin/v2/batches/${batch.id}/live`} prefetch={false}>Live registrations and class completion</Link></li>)}</ul>
         </section>}
+        {publications.status === 'ready' && <PublicationScopePanel ownerId={identity.id} />}
         {publications.status === 'ready' ? <PublicationPanel key={identity.id} ownerId={identity.id} drafts={batches.drafts} publications={publications.publications} />
           : <div className="admin-card" role="alert">Publishing and publication history will become available after staging setup is complete.</div>}
       </>

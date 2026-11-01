@@ -24,6 +24,7 @@ export default async function CoursePublishingPage() {
       <h2>Prepare course content</h2>
       <p>Arrange sessions with materials, recordings and pre-session and post-session readings. Content without a live class does not need a date.</p>
       {(templatesEnabled || previewWorkspace) ? <Link href="/admin/v2/templates" prefetch={false}>Open course templates</Link> : <p>Course templates are awaiting Preview setup.</p>}
+      {templatesEnabled && <p><Link href="/admin/v2/imports" prefetch={false}>Transfer existing material and review shared recordings</Link></p>}
     </section>
     <section className="admin-card">
       <span className="workspace-step">02 / REVIEW &amp; PUBLISH</span>

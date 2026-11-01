@@ -43,7 +43,7 @@ export function prepareContentTransfer(inventory,templates,mapping,sourceExport,
   for (const item of selection.items) {
     if (!keys(item,['source','target','titleField','urlField','position'])
       || !keys(item.source,['table','id']) || !keys(item.target,['templateId','revision','sessionKey','contentKind'])
-      || item.titleField!=='title' || !['file_url','video_url','recording_url','url'].includes(item.urlField)
+      || item.titleField!=='title' || !['file_url','notion_url','video_url','recording_url','url'].includes(item.urlField)
       || !Number.isInteger(item.position) || item.position<0 || item.position>=50) invalid();
     const key=bindingKey(item.source,item.target),binding=bindings.get(key);
     const assetBindingKey=`${key}:${item.urlField}`;

@@ -7,6 +7,8 @@ const suites = [
   'v2-reading-preview.test.mjs',
   'v2-content-mapping.test.mjs',
   'v2-content-transfer.test.mjs',
+  'v2-content-import-database.test.mjs',
+  'v2-approved-material-import.test.mjs',
   'v2-content-preservation.test.mjs',
   'v2-enrolled-schedules.test.mjs',
   'v2-enrolled-schedules-database.test.mjs',
@@ -21,6 +23,12 @@ const suites = [
   'v2-meeting-authoring.test.mjs',
   'v2-meeting-database.test.mjs',
   'v2-schema-preflight.test.mjs',
+  'v2-student-delivery.test.mjs',
+  'v2-material-delivery.test.mjs',
+  'v2-student-delivery-database.test.mjs',
+  'v2-publication-scopes-database.test.mjs',
+  'v2-publication-scopes.test.mjs',
+  'phase2-hosted-qa-fixtures.test.mjs',
 ];
 const cwd = fileURLToPath(new URL('../', import.meta.url));
 const env = { ...process.env };

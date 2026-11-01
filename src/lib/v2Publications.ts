@@ -1,6 +1,6 @@
 import { isV2TemplateProduct as isV2ProductCode, isV2CourseSection as isV2ProductSection, type V2CourseCode } from './v2Templates';
 import type { V2Section } from './v2Products';
-import { V2_TEMPLATE_PRODUCTS } from './v2Templates';
+import { isV2CourseSessionSection, type V2CourseSessionSection, V2_TEMPLATE_PRODUCTS } from './v2Templates';
 import { isV2MeetingBatchId } from './v2Meetings';
 
 export type V2PublicationInput = {
@@ -12,7 +12,7 @@ export type V2PublicationEvent = {
   startsAt: string | null; endsAt: string | null; instructor: string;
 };
 export type V2Publication = {
-  sessions?: { key: string; title: string; section: V2Section }[];
+  sessions?: { key: string; title: string; section: V2CourseSessionSection }[];
   batchId: string; batchRevision: number; revision: number; state: 'published' | 'unpublished';
   productCode: V2CourseCode; title: string; sections: V2Section[];
   timeZone: 'Asia/Kolkata'; liveRegistrationLimit: 8 | null; events: V2PublicationEvent[];
@@ -46,7 +46,7 @@ export function isV2Publication(value: unknown): value is V2Publication {
     || !Array.isArray(value.events) || value.events.length > 100) return false;
   if (value.sessions !== undefined && (!Array.isArray(value.sessions) || value.sessions.length > 100
     || value.sessions.some((session) => !object(session) || !keys(session, ['key','title','section'])
-      || !isV2MeetingBatchId(session.key) || !label(session.title,1) || !isV2ProductSection(value.productCode as V2CourseCode, session.section))
+      || !isV2MeetingBatchId(session.key) || !label(session.title,1) || !isV2CourseSessionSection(value.productCode as V2CourseCode, session.section))
     || new Set(value.sessions.map((session) => session.key)).size !== value.sessions.length)) return false;
   let live = false;
   const ids = new Set<string>((value.sessions as V2Publication['sessions'])?.map((session) => session.key));

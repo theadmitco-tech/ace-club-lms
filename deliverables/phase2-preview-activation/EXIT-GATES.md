@@ -1,16 +1,17 @@
 # Phase 2 completion checklist — 1 November 2026
 
-**Status: Pending; activation has not started.** The user's instruction is to
-complete Phase 2 **if Phase 1 is complete**. The [Phase 1 audit](../phase1-exit-gate-audit-2026-11-01/README.md)
-still has four open rows, so that condition has not yet been met. This checklist
-records the full Phase 2 target and current gaps; it is not a completion claim.
+**Current status, 2 November: Phase 1 complete; Phase 2 implementation and local
+verification prepared. Hosted activation remains pending.** The current
+[implementation and evidence](../phase2-completion-2026-11-02/README.md) supersede
+the implementation-gap observations below. The original 17 requirements remain
+unchanged; none is marked complete solely from local or synthetic checks.
 
 Source: the Phase 2 section of [the product reviewer's supplied exit gates](../phase1-exit-gate-audit-2026-11-01/source-exit-gates.txt).
 All 17 parent requirements, including the five session fields, are retained.
 Requirements explicitly assigned to Phase 2 in this checklist cannot be counted
 as complete by referring to an older plan that deferred them to Phase 4 or 5.
 
-## Current candidate and boundaries
+## Historical candidate and boundaries (1 November)
 
 - Review branch `intern/v2-phase-2-review`, commit `07154f02c466cd17a940257f4c2b0f56096c453f`.
 - Existing LMS Preview has setup-state editors. Saved authoring/publication

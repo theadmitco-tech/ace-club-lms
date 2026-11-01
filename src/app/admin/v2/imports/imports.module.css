@@ -1,0 +1,12 @@
+.workspace { display: grid; gap: 1.5rem; max-width: 72rem; }
+.workspace section { display: grid; gap: 1rem; }
+.workspace h2, .workspace h3, .workspace p { margin: 0; }
+.field { display: grid; gap: .5rem; font-weight: 600; }
+.field input, .field select { width: 100%; min-width: 0; padding: .75rem; border: 1px solid #c8d5ca; border-radius: .5rem; font: inherit; background: #fff; color: #243e32; }
+.workspace button { width: fit-content; padding: .7rem 1rem; border: 1px solid #456c54; border-radius: .5rem; background: #1d5c42; color: #fff; font: inherit; cursor: pointer; }
+.workspace button:disabled { opacity: .5; cursor: not-allowed; }
+.workspace input[type="checkbox"] { margin-right: .6rem; accent-color: #1d5c42; }
+.review { display: grid; gap: 1rem; padding: 1rem; border: 1px solid #b8ceba; border-radius: .75rem; background: #f3f8f1; overflow-wrap: anywhere; }
+.choice { display: flex; align-items: center; margin-block: .6rem; }
+.history { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; }
+.history li { display: grid; gap: .75rem; padding-block: .75rem; border-bottom: 1px solid #dce4dd; }

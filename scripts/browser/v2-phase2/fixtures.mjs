@@ -69,6 +69,17 @@ export function publicationProposal(input, state) {
     })) };
   return { document, fingerprint: fingerprint(document) };
 }
+function scopeReview(input, state) {
+  const items = state.drafts.filter((draft) => input.productCodes.includes(draft.productCode)
+    && (input.action === 'publish' || state.publications.some((publication) => publication.batchId === draft.id && publication.state === 'published')))
+    .sort((left, right) => left.id.localeCompare(right.id)).map((draft) => {
+      const request = { batchId: draft.id, batchRevision: draft.revision, requestId: input.requestId,
+        action: input.action, expectedRevision: state.publications.find((publication) => publication.batchId === draft.id)?.revision ?? 0 };
+      return { input: request, ...publicationProposal(request, state) };
+    });
+  const proposal = { action: input.action, items };
+  return { proposal, fingerprint: fingerprint(proposal) };
+}
 export function initialState() {
   const templates = Object.keys(products).map((code, index) => template(code, index + 1));
   return { templates, drafts: [batch(templates[0])], publications: [], meetings: {}, receipts: {},
@@ -102,6 +113,17 @@ export function worksheet(state, materialId) {
     questions: [1, 2].map(index => ({ id: id(300 + index), question_number: index, status: null, time_taken_seconds: null, comment: null, updated_at: null })) };
 }
 const handlers = {
+  previewPublicationScope: (state, input) => ({ status: 'success', review: scopeReview(input, state) }),
+  savePublicationScope: (state, input, reviewedFingerprint) => {
+    if (state.receipts[input.requestId]) return { ...state.receipts[input.requestId], replayed: true };
+    const review = scopeReview(input, state);
+    if (review.fingerprint !== reviewedFingerprint) return { status: 'error', message: 'The publication scope changed. Cancel this review and review the current scope.' };
+    const documents = review.proposal.items.map((item) => item.document);
+    state.publications = [...state.publications.filter((publication) => !documents.some((document) => document.batchId === publication.batchId)), ...documents];
+    const result = { status: 'success', documents, replayed: false };
+    state.receipts[input.requestId] = structuredClone(result);
+    return result;
+  },
   getMyV2BatchSchedules: (state) => state.readError ? { status: 'unavailable', schedules: [] } : { status: 'ready', schedules: state.studentSchedules },
   listV2EnrollmentOptions: (state) => ({ status: 'ready', options: state.enrollmentOptions }),
   setV2Enrollment: (state, input) => {

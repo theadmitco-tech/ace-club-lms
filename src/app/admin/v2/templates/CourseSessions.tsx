@@ -1,6 +1,8 @@
 import { ReadingPreview } from './ReadingPreview';
+import { V2CourseSessionView } from '@/components/student/V2CourseSessionView';
+import { V2_SESSION_STAGES } from '@/lib/v2SessionPresentation';
 import type { V2Section } from '@/lib/v2Products';
-import { V2_SESSION_CONTENT_LABELS, emptyV2SessionContent, type V2CourseSession, type V2SessionContentKind } from '@/lib/v2Templates';
+import { emptyV2SessionContent, type V2CourseSession, type V2CourseSessionSection } from '@/lib/v2Templates';
 import styles from './templates.module.css';
 
 export function CourseSessionsEditor({ sessions, sections, onChange }: {
@@ -17,18 +19,19 @@ export function CourseSessionsEditor({ sessions, sections, onChange }: {
         <input id={`${session.key}-title`} className="form-input" required maxLength={120} value={session.title} onChange={(e) => update(session.key,{title:e.target.value})} />
       </label>
       <label htmlFor={`${session.key}-section`}>Section
-        <select id={`${session.key}-section`} className="form-input" value={session.section} onChange={(e) => update(session.key,{section:e.target.value as V2Section})}>
+        <select id={`${session.key}-section`} className="form-input" value={session.section} onChange={(e) => update(session.key,{section:e.target.value as V2CourseSessionSection})}>
           {sections.map((section) => <option key={section} value={section}>{section}</option>)}
+          {sections.length === 3 && <option value="programme">Programme · Full Course only</option>}
         </select>
       </label>
-      </div><div className={styles.resources}>{(Object.entries(V2_SESSION_CONTENT_LABELS) as [V2SessionContentKind,string][]).map(([kind,label]) => <fieldset key={kind} className={styles.event}>
+      </div><div className={styles.resources}>{V2_SESSION_STAGES.map(({kind,title:label}) => <fieldset key={kind} className={styles.event}>
         <legend>{label} ({session.content[kind].length})</legend>
         {session.content[kind].map((item,itemIndex) => <div className={styles.fields} key={item.key}>
           <label htmlFor={`${item.key}-title`}>Title
             <input id={`${item.key}-title`} className="form-input" required maxLength={120} value={item.title} onChange={(e) => update(session.key,{content:{...session.content,[kind]:session.content[kind].map((v) => v.key===item.key ? {...v,title:e.target.value} : v)}})} />
           </label>
-          <label htmlFor={`${item.key}-url`}>HTTPS link
-            <input id={`${item.key}-url`} className="form-input" type="url" required maxLength={2048} value={item.url} onChange={(e) => update(session.key,{content:{...session.content,[kind]:session.content[kind].map((v) => v.key===item.key ? {...v,url:e.target.value} : v)}})} />
+          <label htmlFor={`${item.key}-url`}>HTTPS link or stored PDF
+            <input id={`${item.key}-url`} className="form-input" type="text" inputMode="url" required maxLength={2048} value={item.url} onChange={(e) => update(session.key,{content:{...session.content,[kind]:session.content[kind].map((v) => v.key===item.key ? {...v,url:e.target.value} : v)}})} />
           </label>
           {(kind === 'preSessionReads' || kind === 'postSessionReads') && <ReadingPreview item={item} sessionTitle={session.title} kind={kind} position={itemIndex} />}
           <div className={styles.buttons}>
@@ -55,13 +58,7 @@ export function CourseSessionsEditor({ sessions, sections, onChange }: {
 export function CourseSessionsPreview({ sessions }: { sessions: V2CourseSession[] }) {
   return <section aria-label="Course content preview"><h4>Course content preview</h4>
     {sessions.length===0 ? <p>No course sessions in this revision.</p> : <ol className={styles.list}>{sessions.map((session) => <li key={session.key}>
-      <strong>{session.title} · {session.section}</strong><p>Undated course content</p>
-      {(Object.entries(V2_SESSION_CONTENT_LABELS) as [V2SessionContentKind,string][]).map(([kind,label]) => <div key={kind}>
-        <p>{label}: {session.content[kind].length}</p>
-        <ul>{session.content[kind].map((item, position) => <li key={item.key}>{item.title} — <span style={{overflowWrap:'anywhere'}}>{item.url}</span>
-          {(kind === 'preSessionReads' || kind === 'postSessionReads') && <ReadingPreview item={item} sessionTitle={session.title} kind={kind} position={position} />}
-        </li>)}</ul>
-      </div>)}
+      <V2CourseSessionView session={session} mode="admin-preview" />
     </li>)}</ol>}
   </section>;
 }

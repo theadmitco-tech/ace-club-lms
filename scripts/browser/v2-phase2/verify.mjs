@@ -113,6 +113,80 @@ async function openBatch(page) {
   await button(page, 'Synthetic batch · Full Course · revision 1').click();
 }
 async function runTests() {
+  await test('Offering publication review lists exact batches and preserves stale and interrupted confirmations', async (page) => {
+    state.drafts.push({ ...structuredClone(state.drafts[0]), id: id(11), templateId: id(2), productCode: 'quant', title: 'Synthetic Quant batch' });
+    await page.goto(`${origin}/admin/v2/batches`);
+    const scope = page.getByRole('region', { name: 'Publish across offerings', exact: true });
+    await scope.getByRole('checkbox', { name: 'Full Course', exact: true }).check();
+    await scope.getByRole('checkbox', { name: 'Quant', exact: true }).check();
+    await button(scope, 'Review affected batches').click();
+    await text(scope, 'Publish 2 batches'); await text(scope, 'Synthetic Quant batch');
+    assert.equal(state.publications.length, 0);
+    state.drafts[1].revision++;
+    await button(scope, 'Confirm publish for all listed batches').click();
+    await text(scope, 'The publication scope changed.');
+    assert.equal(state.publications.length, 0);
+    await button(scope, 'Cancel scope review').click();
+    await button(scope, 'Review affected batches').click();
+    state.faults.savePublicationScope = { interruptAfterSave: true };
+    await button(scope, 'Confirm publish for all listed batches').click();
+    await text(scope, 'Confirmation was interrupted.');
+    await button(scope, 'Confirm publish for all listed batches').click();
+    await text(scope, '2 batches published · previous confirmation recovered.');
+    assert.equal(state.publications.length, 2);
+    const calls = state.calls.filter((call) => call.method === 'savePublicationScope');
+    assert.deepEqual(calls[1].args, calls[2].args);
+    await noOverflow(page);
+  }, { width: 390, height: 844 });
+  await test('Batch calendar selects an IST date without saving and restores keyboard focus', async (page) => {
+    await openBatch(page);
+    const calendar = button(page, 'Calendar');
+    await calendar.focus(); await page.keyboard.press('Enter');
+    const modal = page.getByRole('dialog');
+    await visible(modal);
+    await text(modal, 'November 2026');
+    await text(modal, 'Synthetic live lesson');
+    await button(modal, 'Next month').click(); await text(modal, 'December 2026');
+    await button(modal, 'Previous month').click();
+    await modal.getByRole('button', { name: '2026-11-03', exact: true }).click();
+    assert.equal(await page.getByLabel('Date', { exact: true }).inputValue(), '2026-11-03');
+    assert.equal(await modal.isVisible(), false);
+    assert.equal(await calendar.evaluate((element) => element === document.activeElement), true);
+    assert.equal(state.calls.some((call) => /^(save|set|log)/.test(call.method)), false);
+    await calendar.click(); await page.keyboard.press('Escape');
+    assert.equal(await modal.isVisible(), false);
+    await button(page, 'Review course and schedule').click();
+    await text(page, '3 Nov 2026');
+    assert.equal(state.drafts[0].events[0].localDate, '2026-11-02');
+    await noOverflow(page);
+  }, { width: 390, height: 844 });
+
+  await test('Full session preview matches four-stage order and never writes progress or publication', async (page) => {
+    const requests = [];
+    await mockReading(page, (route) => { requests.push(route.request().url()); return route.fulfill({ json: readingRecord() }); });
+    await page.route('https://www.youtube-nocookie.com/embed/abcdefghijk', (route) => route.fulfill({ contentType: 'text/html', body: '<p>Synthetic video player</p>' }));
+    state.drafts[0].sessions = [{ key: id(910), title: 'Complete session preview', section: 'quant', content: {
+      preSessionReads: [{ key: id(911), title: 'Before class title', url: `https://notion.so/${readingId}` }],
+      recordings: [{ key: id(912), title: 'Shared recording title', url: 'https://www.youtube.com/watch?v=abcdefghijk' }],
+      postSessionReads: [{ key: id(913), title: 'After class title', url: `https://notion.so/${readingId}` }],
+      materials: [{ key: id(914), title: 'Practice worksheet title', url: 'https://example.test/worksheet.pdf' }],
+    } }];
+    await page.goto(`${origin}/admin/v2/batches`); await button(page, 'Preview publication').click();
+    const session = page.getByRole('article', { name: 'Session content: Complete session preview' });
+    await visible(session);
+    assert.deepEqual(await session.locator('summary strong').allTextContents(), ['Pre-class read', 'Recording', 'Post-class read', 'Worksheet']);
+    assert.equal(requests.length, 0);
+    assert.equal(await session.locator('iframe').count(), 0);
+    await button(session, 'Read here').first().click(); await text(session, 'Synthetic reading body');
+    await visible(session.locator('.notion b').filter({ hasText: 'Bold content' }));
+    assert.equal(await session.getByRole('link', { name: 'Reference link' }).getAttribute('href'), 'https://example.test/reading-reference');
+    await button(session, 'Watch here').click();
+    assert.equal(await session.locator('iframe').getAttribute('src'), 'https://www.youtube-nocookie.com/embed/abcdefghijk');
+    assert.equal(await session.getByRole('link', { name: 'Open Practice worksheet title in a new tab' }).getAttribute('href'), 'https://example.test/worksheet.pdf');
+    assert.equal(state.calls.some((call) => /^(save|set|log)/.test(call.method)), false);
+    assert.equal(state.publications.length, 0);
+    await noOverflow(page); await screenshot(page, 'full-session-preview-mobile');
+  }, { width: 390, height: 844 });
   async function openReadingEditor(page) {
     state.templates = [];
     await page.goto(`${origin}/admin/v2/templates`);
@@ -120,7 +194,7 @@ async function runTests() {
     await page.locator('#template-title').fill('Reading preview course');
     await button(page, 'Add course session').click();
     await page.getByLabel('Session title', { exact: true }).fill('Quant fundamentals');
-    for (const label of ['Pre-session reads', 'Post-session reads']) {
+    for (const label of ['Pre-class read', 'Post-class read']) {
       await button(page, `Add ${label.toLowerCase()} item`).click();
       const group = page.getByRole('group', { name: `${label} (1)`, exact: true });
       await group.getByLabel('Title', { exact: true }).fill(`${label} draft title`);
@@ -138,14 +212,14 @@ async function runTests() {
     await openReadingEditor(page);
     assert.equal(requests.length, 0);
     await button(page, 'Preview pre-read 1').focus(); await page.keyboard.press('Enter');
-    const before = page.getByRole('group', { name: 'Pre-session reads (1)', exact: true }).getByRole('region', { name: 'Draft reading preview' });
-    await text(before, 'Pre-session reads draft title');
+    const before = page.getByRole('group', { name: 'Pre-class read (1)', exact: true }).getByRole('region', { name: 'Draft reading preview' });
+    await text(before, 'Pre-class read draft title');
     await text(before, 'Before session: Quant fundamentals · Item 1');
     await visible(before.locator('.notion b').filter({ hasText: 'Bold content' }));
     assert.equal(await before.getByRole('link', { name: 'Reference link' }).getAttribute('href'), 'https://example.test/reading-reference');
     await until(async () => assert.equal(await before.locator('.notion img').first().evaluate((img) => img.complete && img.naturalWidth > 0), true));
     await button(page, 'Preview post-read 1').click();
-    const after = page.getByRole('group', { name: 'Post-session reads (1)', exact: true }).getByRole('region', { name: 'Draft reading preview' });
+    const after = page.getByRole('group', { name: 'Post-class read (1)', exact: true }).getByRole('region', { name: 'Draft reading preview' });
     await text(after, 'After session: Quant fundamentals · Item 1'); await text(after, 'Synthetic reading body');
     assert.equal(requests.length, 2); assert.equal(state.templates.length, 0); assert.equal(state.publications.length, 0);
     assert.equal(state.calls.some((call) => /^(save|set|log)/.test(call.method)), false);
@@ -160,7 +234,7 @@ async function runTests() {
     });
     await openReadingEditor(page); await button(page, 'Preview pre-read 1').click();
     await text(page, 'Synthetic reading body');
-    const group = page.getByRole('group', { name: 'Pre-session reads (1)', exact: true });
+    const group = page.getByRole('group', { name: 'Pre-class read (1)', exact: true });
     await group.getByLabel('Title', { exact: true }).fill('Edited title');
     await visible(group.getByRole('heading', { name: 'Edited title', exact: true }));
     await group.getByLabel('HTTPS link').fill(`https://notion.so/${secondReadingId}`);
@@ -186,7 +260,7 @@ async function runTests() {
     await openReadingEditor(page); await button(page, 'Preview pre-read 1').click();
     await text(page, "We couldn't load this pre-read");
     await button(page, 'Retry pre-read').click(); await text(page, 'Synthetic reading body');
-    const group = page.getByRole('group', { name: 'Pre-session reads (1)', exact: true });
+    const group = page.getByRole('group', { name: 'Pre-class read (1)', exact: true });
     await group.getByLabel('HTTPS link').fill('https://example.test/unsupported');
     await text(group, 'This source has not been previewed.');
     assert.equal(await group.locator('.custom-notion').count(), 0); assert.equal(calls, 2);
@@ -217,7 +291,7 @@ async function runTests() {
     await page.getByLabel('Batch title', { exact: true }).fill('Reading batch');
     await button(page, 'Review course and schedule').click(); await button(page, 'Confirm and save draft').click();
     await text(page, 'Draft revision 1 saved.');
-    await button(page, 'Move pre-session reads item 2 up').click();
+    await button(page, 'Move pre-class read item 2 up').click();
     await button(page, 'Preview pre-read 1').click();
     let preview = page.getByRole('region', { name: 'Draft reading preview' });
     await visible(preview.getByRole('heading', { name: 'Second reading', exact: true }));
@@ -227,10 +301,10 @@ async function runTests() {
     const saved = structuredClone(state.drafts[0]);
     await button(page, 'Preview publication').click();
     const review = page.getByRole('region', { name: 'Review batch publication', exact: true });
-    await button(review, 'Preview pre-read 1').click();
-    preview = review.getByRole('region', { name: 'Draft reading preview' });
+    await button(review, 'Read here').first().click();
+    preview = review.getByRole('article', { name: 'Session content: Ordered reading session' });
     await visible(preview.getByRole('heading', { name: 'Second reading', exact: true }));
-    await text(preview, 'Before session: Ordered reading session · Item 1');
+    assert.deepEqual(await preview.locator('h5').allTextContents(), ['Second reading', 'First reading']);
     await text(preview, 'Synthetic reading body');
     assert.deepEqual(state.drafts[0], saved); assert.equal(state.publications.length, 0);
     await screenshot(page, 'reading-publication-preview');
@@ -241,7 +315,7 @@ async function runTests() {
     await page.goto(`${origin}/schedule/v2`);
     await text(page, 'Enrolled batch schedules');
     await text(page, published.title);
-    await text(page, 'Date to be announced');
+    await text(page, 'Self-paced · no scheduled date');
     await text(page, 'IST');
     assert.equal(await page.getByRole('link', { name: /Join/ }).count(), 0);
     await noOverflow(page);
@@ -336,7 +410,7 @@ async function runTests() {
     const session = page.getByRole('group', { name: 'Course session 1', exact: true });
     await session.getByLabel('Session title', { exact: true }).fill('Quant fundamentals');
     assert.equal(await session.getByLabel('Local start time').count(), 0);
-    for (const label of ['Materials', 'Recordings', 'Pre-session reads', 'Post-session reads']) {
+    for (const label of ['Pre-class read', 'Recording', 'Post-class read', 'Worksheet']) {
       await button(session, `Add ${label.toLowerCase()} item`).click();
       const group = session.getByRole('group', { name: `${label} (1)`, exact: true });
       await group.getByLabel('Title', { exact: true }).fill(`${label} example`);

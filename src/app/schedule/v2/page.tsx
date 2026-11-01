@@ -28,7 +28,7 @@ export default async function EnrolledSchedulePage() {
         <h2>No published batch schedules yet</h2><p>A schedule appears once you are enrolled, have active course access and the programme team publishes it.</p>
       </section> : result.schedules.map((batch) => <section className="course-browser" key={batch.batchId} aria-labelledby={`batch-${batch.batchId}`}>
         <div className="browser-heading"><div><span className="student-eyebrow">{V2_TEMPLATE_PRODUCTS[batch.productCode].label}</span>
-          <h2 id={`batch-${batch.batchId}`}>{batch.title}</h2></div></div>
+          <h2 id={`batch-${batch.batchId}`}>{batch.title}</h2></div><Link className="student-button" href={`/schedule/v2/${batch.batchId}`} prefetch={false}>Open course sessions</Link></div>
         {!!batch.sessions?.length && <section aria-label="Course sessions"><h3>Course sessions</h3>
           <ol>{batch.sessions.map((session) => <li key={session.key}>{session.title} · {session.section}</li>)}</ol>
         </section>}
@@ -37,8 +37,9 @@ export default async function EnrolledSchedulePage() {
             <span className="student-eyebrow">{event.section} · {event.kind === 'live' ? 'Live session' : 'Course outline'}</span>
             <h3>{event.title || 'Topic to be announced'}</h3>
             {event.startsAt && event.endsAt ? <p><time dateTime={event.startsAt}>{time(event.startsAt)}</time> – <time dateTime={event.endsAt}>{time(event.endsAt)}</time> IST</p>
-              : <p>Date to be announced</p>}
+              : <p>Self-paced · no scheduled date</p>}
             {event.instructor && <p>Instructor: {event.instructor}</p>}
+            {event.kind === 'live' && <Link className="student-button" href={`/schedule/v2/${batch.batchId}/live/${event.key}`} prefetch={false}>Open live class</Link>}
           </li>)}</ol>}
       </section>)}
     </div></main>

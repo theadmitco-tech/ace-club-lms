@@ -14,7 +14,8 @@ export default async function V2MeetingPage({ params }: { params: Promise<{ batc
   const result = await readV2MeetingDraft(batchId);
   return <div>
     <h1 className="admin-page-title">Private meeting drafts</h1>
-    <p className="admin-page-subtitle">Save Google Meet links for a batch. These drafts are visible only to Admins.</p>
+    <Link href={`/admin/v2/batches/${batchId}/live`} prefetch={false}>Live registrations and class completion</Link>
+    <p className="admin-page-subtitle">Save Google Meet links for a batch. Drafts remain Admin-only until the matching batch revision is published. Published links are available only to eligible live registrants.</p>
     {result.status === 'ready'
       ? <MeetingDraftEditor key={`${identity.id}:${batchId}`} ownerId={identity.id} draft={result.draft} />
       : <div className="admin-card" role="alert">
