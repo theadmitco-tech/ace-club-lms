@@ -1,0 +1,15 @@
+{
+  "check": "phase2_preview_deployment",
+  "commit": "65b8d3fa5c00d9cdb6fdd9af94a8af926cfd9046",
+  "deploymentId": "dpl_4s6HiAhvfFzNCDAg9WmUeZ9JYy2N",
+  "url": "https://ace-club-plzznqqzs-theadmitco-techs-projects.vercel.app",
+  "state": "READY",
+  "environment": "preview",
+  "branch": "intern/v2-phase-2-review",
+  "ciRun": 41365082084,
+  "ciConclusion": "success",
+  "productionDeploymentUnchanged": "dpl_8axtycbJUpFX8cPWhVtkhGf6p9Kj",
+  "prNumber": 24,
+  "prDraft": true,
+  "hostedAcceptance": "pending"
+}

@@ -1,8 +1,9 @@
 # Phase 2 implementation and activation
 
 Status: staging schema activation and the approved material import are confirmed
-by operator-provided SQL Editor results. Publication, authenticated hosted
-acceptance and exact QA cleanup remain pending. Phase 1 is complete.
+by operator-provided SQL Editor results. The four approved libraries are published
+in staging and the updated Preview is READY. Authenticated hosted acceptance and
+exact QA cleanup remain pending. Phase 1 is complete.
 PR #24 remains Draft and Production remains excluded from this work.
 
 ## Website changes
@@ -64,10 +65,10 @@ these entries do not alone close a hosted product gate.
 ## Verification
 
 - All 18 Phase 1 regression suites passed: 173 checks.
-- All 25 Phase 2 suites passed: 268 checks, including hosted-fixture setup/cleanup.
+- All 28 Phase 2 suites passed: 278 checks, including hosted-fixture setup/cleanup.
 - ESLint with zero warnings, TypeScript and the local webpack build passed.
-- [UI evidence](ui-verification/README.md): 42 integrated browser cases and a
-  focused visual-polish check. Browser authentication and data are synthetic.
+- [UI evidence](ui-verification/README.md): 43 integrated browser cases; the earlier
+  focused visual-polish check remains separate historical evidence. Browser authentication and data are synthetic.
 - [SQL packet verification](sql-editor/local-verification.json) records isolated
   transaction, preservation, privilege and reconciliation checks. The report
   identifies the execution time and synthetic local scope.
@@ -88,18 +89,38 @@ original ledger matched. Auth credentials, Storage object bytes, Vault secrets
 and platform configuration were excluded; no fresh full-platform recovery claim
 is made. That preserved report is not a newly repeated rehearsal.
 
-The approved source content is imported into four unpublished templates. The
-next steps are exact four-offering publication review, an updated branch-only
-Preview deployment, authenticated Student/Admin acceptance, protected PDF and
-Notion rendering checks, and exact fixture cleanup. The ten Notion references
+The approved source content is imported into four templates. The exact reviewed
+four-batch scope is published in staging: Full Course (31 sessions), Quant (6),
+Verbal (6) and DI (5), all without live events. Import verification passed 70
+checks; publication confirmation passed 76 checks. The updated branch-only
+Preview is READY at commit `65b8d3f`. Authenticated Student/Admin acceptance,
+protected PDF and Notion rendering checks, and exact fixture cleanup remain pending. The ten Notion references
 point to two distinct original pages; live source accessibility and content
 completeness remain explicit acceptance checks.
 
 The temporary checkout and private QA files were unavailable when work resumed.
 The pushed source and saved handoff files were restored into an isolated
-persistent worktree. Existing staging QA identities and publication state require
-reconciliation before any fixture or account creation is repeated. Credentials
+persistent worktree. The nine existing QA identities and the retained content operator were verified
+against their exact identities and ownership metadata. Their private test-session
+state was recovered without recreating accounts. The approved import was rechecked
+against the original mapping before publication. Credentials
 and private source references remain outside version control.
 
 No payment is taken, no Production variable is changed, and no PR merge/readiness
 change is included. All completion claims require recorded hosted evidence.
+
+Current verification: [recovered-source checks](resume-verification.json),
+[published material scope](../phase2-preview-activation/evidence/material-acceptance-2026-11-02-publish-reviewed.json).
+
+[Hosted Admin checks](hosted-admin-scope-review.json) confirm the exact staging
+Preview, three Phase 2 workspaces, the legacy worksheet page and five protected
+PDF downloads. The raw report retains an unsupported mock-route probe; that
+probe is excluded from the reviewed scope and does not establish mock acceptance.
+
+The [QA setup](../phase2-hosted-acceptance/01-SETUP-FIXTURES.sql) remains awaiting
+SQL Editor execution. Its paired cleanup file intentionally refuses execution
+until the exact setup baseline has been recorded.
+
+The GitHub connection rejected a PR-description update with HTTP 403. The
+[prepared description](pr24-description.md) remains unpublished; the code push
+succeeded and PR #24 remains Draft.

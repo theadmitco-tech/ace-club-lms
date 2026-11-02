@@ -1,0 +1,59 @@
+{
+  "check": "phase2_hosted_admin_read_only_smoke",
+  "commit": "65b8d3fa5c00d9cdb6fdd9af94a8af926cfd9046",
+  "preview": "https://ace-club-plzznqqzs-theadmitco-techs-projects.vercel.app",
+  "staging": "eyphkkginlgoaxflauog",
+  "checks": [
+    {
+      "id": "exact-staging-preview",
+      "status": "pass"
+    },
+    {
+      "id": "admin-route:/admin/v2/templates",
+      "status": "pass"
+    },
+    {
+      "id": "admin-route:/admin/v2/batches",
+      "status": "pass"
+    },
+    {
+      "id": "admin-route:/admin/v2/imports",
+      "status": "pass"
+    },
+    {
+      "id": "admin-route:/admin/mocks",
+      "status": "fail"
+    },
+    {
+      "id": "admin-route:/admin/worksheets",
+      "status": "pass"
+    },
+    {
+      "id": "admin-protected-pdf:0",
+      "status": "pass",
+      "statusCode": 200
+    },
+    {
+      "id": "admin-protected-pdf:1",
+      "status": "pass",
+      "statusCode": 200
+    },
+    {
+      "id": "admin-protected-pdf:2",
+      "status": "pass",
+      "statusCode": 200
+    },
+    {
+      "id": "admin-protected-pdf:3",
+      "status": "pass",
+      "statusCode": 200
+    },
+    {
+      "id": "admin-protected-pdf:4",
+      "status": "pass",
+      "statusCode": 200
+    }
+  ],
+  "mutations": false,
+  "status": "failed"
+}

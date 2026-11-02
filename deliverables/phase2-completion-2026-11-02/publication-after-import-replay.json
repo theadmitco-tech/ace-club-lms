@@ -1,0 +1,27 @@
+{
+  "check": "phase2_publication_after_import_replay",
+  "staging": "eyphkkginlgoaxflauog",
+  "checks": [
+    {
+      "batchId": "0716928d-26e2-5777-a716-b73b879d3e87",
+      "productCode": "verbal",
+      "published": true
+    },
+    {
+      "batchId": "2b19ea33-150c-5ddd-aae7-134831603408",
+      "productCode": "full_course",
+      "published": true
+    },
+    {
+      "batchId": "624c91a7-7b6a-5d54-ac1f-1d69c1972fb7",
+      "productCode": "di",
+      "published": true
+    },
+    {
+      "batchId": "75723cd2-d0f5-5719-a30f-521733f88286",
+      "productCode": "quant",
+      "published": true
+    }
+  ],
+  "readOnly": true
+}

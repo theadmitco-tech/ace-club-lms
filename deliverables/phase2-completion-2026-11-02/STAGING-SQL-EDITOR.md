@@ -35,8 +35,10 @@ import produced four unpublished templates. The existing-version activation
 error was resolved by read-only reconciliation, not migration replay.
 
 The next SQL Editor work is dedicated acceptance-fixture setup and exact cleanup,
-only after their regenerated identity manifests and current publication state
-have been reviewed. The approved import must not be repeated to reconstruct
+using the reviewed [setup file](../phase2-hosted-acceptance/01-SETUP-FIXTURES.sql).
+The existing nine QA identities were verified, and the four approved library
+batches are now published. Setup adds one dedicated QA enrollment to the
+Full Course library; it does not alter its content or publication. The approved import must not be repeated to reconstruct
 missing local files. Original source references remain private.
 
 ## Historical activation sequence

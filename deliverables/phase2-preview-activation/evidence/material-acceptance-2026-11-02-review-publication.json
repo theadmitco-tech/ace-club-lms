@@ -1,0 +1,346 @@
+{
+  "check": "phase2_approved_material_acceptance",
+  "mode": "review-publication",
+  "project": "eyphkkginlgoaxflauog",
+  "importId": "2566de69-062e-57f2-a6ca-62e37905f9df",
+  "startedAt": "2026-11-02T00:03:04.078Z",
+  "checks": [
+    {
+      "id": "durable-operator-import-identity",
+      "status": "pass"
+    },
+    {
+      "id": "approved-import-counts",
+      "status": "pass"
+    },
+    {
+      "id": "approved-source-review-identity",
+      "status": "pass"
+    },
+    {
+      "id": "all-destination-documents-exact",
+      "status": "pass"
+    },
+    {
+      "id": "all-source-identities-and-content-exact",
+      "status": "pass"
+    },
+    {
+      "id": "all-shared-assets-preserved",
+      "status": "pass"
+    },
+    {
+      "id": "all-placements-preserved",
+      "status": "pass"
+    },
+    {
+      "id": "exact-imported-template:full_course",
+      "status": "pass"
+    },
+    {
+      "id": "exact-imported-template:quant",
+      "status": "pass"
+    },
+    {
+      "id": "exact-imported-template:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "exact-imported-template:di",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_templates:10000000-0000-4000-8000-000000000001",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_revisions:f81e1d5b-ef6c-4d9c-bcab-b65d569f5ebe",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_sections:961f2e0c-49ae-489c-9843-3bca213fda2b",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_sections:246524a8-05c0-47be-bc36-eaa310fe9ee3",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_sections:d99ab99e-6111-4fef-84fc-4fc38a260f5c",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_sections:b6ae6cb6-a53c-45c9-9c8f-91fc1c87dc68",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:481772f1-d36a-455b-8b60-cda8a7ced416",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:e722ae7a-c66e-41a8-898a-537f88c54e2d",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:91a40103-d666-4d8e-ba93-66fb51e38077",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:5e50b6f1-46ec-49f8-b0ac-8b1ab31a5181",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:ca97617d-cdd5-420c-9291-3de09509464c",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:090f8945-32c6-4b49-885f-1c6f05284808",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:1539706a-14db-4b02-a786-fff82d5ca649",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:e3fc398f-38d8-486f-8252-3c20cb489499",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:e2c61b84-a8fc-407f-a779-5d8a6dec9d84",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:d4bce02a-cbc3-4c1d-9e97-901ce4439383",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:50ee691e-576a-444d-b3b1-fb55e264c0e1",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:420397f6-2d1b-44ea-854c-4d6bd4fafce8",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:7cd38c08-3ffb-4cad-aff7-20f9e73a96da",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:4cdc7825-e06e-414f-97d5-256cb3d32616",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:ef52aa3f-8200-47e1-89c4-0db89fcd08e9",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:3f4d5ac9-0d24-479e-b882-092bfd36ba8e",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:0d879587-17fc-40f6-9df1-12f3f492a9f3",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:320a085a-41be-48c1-a9d3-231628c66bcd",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:a5493f62-82f5-4f85-a060-abc1fac02339",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:1fbc8f56-96ef-4219-b508-e19ff35375ea",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:08641df0-9645-4e6c-8e9a-611185c2e053",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:a33cba46-1051-412b-9fe3-147709191622",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:9d7f0d30-b6a5-4847-aa78-bda150979b36",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:801d0d65-d686-4dca-887a-d59350eef7c5",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:de6da406-68b7-49c8-af15-3c108dd39464",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:881d1b6d-5204-4c07-966a-f8ca10448944",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:8f1ea7a5-e4e1-48d4-b9c6-e323d2c46565",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:70f5ecf3-ab8e-454e-b6b1-8fd58ab5670d",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:dd537233-149d-41a8-9cc1-f6ed6486b2ae",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_events:52b45df2-23a8-4fdc-8876-f0bd2c5a5bff",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_resources:1c36006d-c0ef-4ba8-b5cf-ab94f514bdb6",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_resources:1eb96e3b-82d0-4a9f-bc5f-4ca0d0701eb8",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_resources:24e1a26d-9d03-4562-a4c1-6faa0567a40b",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_resources:30fdf86a-02ba-4d50-b1c7-02dcd4ceaaaa",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_resources:55cafd9e-b3b3-4699-866a-ab82a301135b",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_resources:58652e90-f6ac-41d6-a47b-19b9b534c500",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_resources:70daa754-5cb4-4c8b-9cf5-df77ed3eec68",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_resources:8b0e902a-b649-4239-9a9f-83053c24083c",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_resources:978bb8b3-ac0c-4f20-823a-df6217d9d8fd",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_resources:674015a2-0d22-428f-b0be-c8fc6b9f9cc6",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_resources:c88a14e4-99bb-475d-b67d-9a58f85dcebe",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_resources:f3a3500d-2ac1-44ad-a7c2-e9ae05b48542",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_resources:fd88ea98-d57f-4c20-a455-c91c69820dce",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_resources:4125842c-c11e-4179-ac4d-a5741c8e2867",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:course_template_resources:990f92ef-c31c-421f-9e91-a8dee56990b2",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:sessions:9c4f75e0-f31d-4ef3-b904-3f40e92bac8e",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:materials:88678915-bb4a-4839-87ad-eb9cb77e2b29",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:sessions:ae403854-576c-4cf2-8ce5-cc7b60cb3b8e",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:materials:0624af56-b3a7-4b45-a8c9-4660952967b0",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:sessions:6f0e24d8-5659-40b7-9330-02d405dddf44",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:materials:b9fae72c-89df-4802-85c7-14b63cd5b905",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:sessions:fadc6540-f71e-4073-a9fc-db2918a98cbf",
+      "status": "pass"
+    },
+    {
+      "id": "source-preserved:materials:e2ab8406-25be-4692-82e7-2d7284e8b95b",
+      "status": "pass"
+    },
+    {
+      "id": "exact-four-library-batches",
+      "status": "pass"
+    },
+    {
+      "id": "publication-scope-exactly-four-approved-batches",
+      "status": "pass"
+    }
+  ],
+  "status": "passed",
+  "limitations": [
+    "API checks verify approved source records and draft content; rendered Notion/PDF/recording acceptance is separate.",
+    "Original legacy and Phase 1 full-table preservation is recorded by the guarded import SQL transaction.",
+    "Publication requires the explicit publish-reviewed mode and exact previously inspected four-batch scope hash."
+  ],
+  "publicationScope": {
+    "scopeHash": "acb572c72303a28ef8970d2aa6e4729a2ec38557ac308e4d801434c1467ff13b",
+    "batches": [
+      {
+        "batchId": "0716928d-26e2-5777-a716-b73b879d3e87",
+        "title": "Verbal · Learning library",
+        "productCode": "verbal",
+        "batchRevision": 1,
+        "publicationRevision": 1,
+        "sessions": 6,
+        "liveClasses": 0
+      },
+      {
+        "batchId": "2b19ea33-150c-5ddd-aae7-134831603408",
+        "title": "Full Course · Learning library",
+        "productCode": "full_course",
+        "batchRevision": 1,
+        "publicationRevision": 1,
+        "sessions": 31,
+        "liveClasses": 0
+      },
+      {
+        "batchId": "624c91a7-7b6a-5d54-ac1f-1d69c1972fb7",
+        "title": "DI · Learning library",
+        "productCode": "di",
+        "batchRevision": 1,
+        "publicationRevision": 1,
+        "sessions": 5,
+        "liveClasses": 0
+      },
+      {
+        "batchId": "75723cd2-d0f5-5719-a30f-521733f88286",
+        "title": "Quant · Learning library",
+        "productCode": "quant",
+        "batchRevision": 1,
+        "publicationRevision": 1,
+        "sessions": 6,
+        "liveClasses": 0
+      }
+    ],
+    "published": false
+  },
+  "finishedAt": "2026-11-02T00:03:19.196Z"
+}

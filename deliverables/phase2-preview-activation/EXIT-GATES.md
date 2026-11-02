@@ -1,7 +1,9 @@
 # Phase 2 completion checklist — 1 November 2026
 
 **Current status, 2 November: Phase 1 complete; Phase 2 implementation and local
-verification prepared. Hosted activation remains pending.** The current
+verification passed. Staging schema activation, approved material import and
+four-library publication are complete. Hosted role/resource acceptance and exact
+QA cleanup remain pending.** The current
 [implementation and evidence](../phase2-completion-2026-11-02/README.md) supersede
 the implementation-gap observations below. The original 17 requirements remain
 unchanged; none is marked complete solely from local or synthetic checks.

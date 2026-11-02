@@ -1,0 +1,64 @@
+{
+  "check": "phase2_hosted_admin_scope_review",
+  "evidenceKind": "Interpretation of the retained raw smoke report; not a verbatim execution result.",
+  "rawReport": "hosted-admin-smoke.json",
+  "commit": "65b8d3fa5c00d9cdb6fdd9af94a8af926cfd9046",
+  "staging": "eyphkkginlgoaxflauog",
+  "supportedChecks": [
+    {
+      "id": "exact-staging-preview",
+      "status": "pass"
+    },
+    {
+      "id": "admin-route:/admin/v2/templates",
+      "status": "pass"
+    },
+    {
+      "id": "admin-route:/admin/v2/batches",
+      "status": "pass"
+    },
+    {
+      "id": "admin-route:/admin/v2/imports",
+      "status": "pass"
+    },
+    {
+      "id": "admin-route:/admin/worksheets",
+      "status": "pass"
+    },
+    {
+      "id": "admin-protected-pdf:0",
+      "status": "pass",
+      "statusCode": 200
+    },
+    {
+      "id": "admin-protected-pdf:1",
+      "status": "pass",
+      "statusCode": 200
+    },
+    {
+      "id": "admin-protected-pdf:2",
+      "status": "pass",
+      "statusCode": 200
+    },
+    {
+      "id": "admin-protected-pdf:3",
+      "status": "pass",
+      "statusCode": 200
+    },
+    {
+      "id": "admin-protected-pdf:4",
+      "status": "pass",
+      "statusCode": 200
+    }
+  ],
+  "status": "passed",
+  "excludedProbe": {
+    "id": "admin-route:/admin/mocks",
+    "rawStatus": "fail",
+    "reason": "The probe used an unsupported route absent from the application source. It does not establish a legacy mock regression or mock acceptance."
+  },
+  "limitations": [
+    "Admin checks do not replace Student entitlement, download-denial, live-registration or cleanup acceptance.",
+    "Legacy mock preservation is supported separately by the original-table fingerprints; no mock-browser claim is made."
+  ]
+}
