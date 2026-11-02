@@ -1,0 +1,175 @@
+{
+  "migration": "20261102170000_add_v2_learning_feedback.sql",
+  "sha256": "edaa5148af61d151ea4d59436929db652fbb5fc6c3bdeba0d7c2711b0af4f958",
+  "snapshotSha256": "76797990e51637732d2a938cc7aeded2785ed975fc79b6e791e9dfe5259a936c",
+  "snapshotCapturedAt": "2026-11-02T01:12:22.721665+00:00",
+  "tableCount": 78,
+  "tablesAdded": [
+    "v2_learning_progress",
+    "v2_session_feedback",
+    "v2_feedback_obligations",
+    "v2_live_session_mappings",
+    "v2_live_session_mapping_audit",
+    "v2_recording_watch_sessions",
+    "v2_recording_watch_samples"
+  ],
+  "functions": [
+    {
+      "signature": "v2_learning_course_base(uuid)",
+      "sourceMd5": "62cd37689b87f98de97db95b3e88137d",
+      "securityDefiner": true,
+      "volatility": "s",
+      "roles": []
+    },
+    {
+      "signature": "v2_learning_session_open(uuid,uuid,uuid,text)",
+      "sourceMd5": "00a6b946d419b715b4253d374f48c514",
+      "securityDefiner": true,
+      "volatility": "s",
+      "roles": []
+    },
+    {
+      "signature": "get_my_v2_published_course(uuid)",
+      "sourceMd5": "744f47cb6a5032bdc20e043ad20c0f9c",
+      "securityDefiner": true,
+      "volatility": "s",
+      "roles": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "get_my_v2_learning_state(uuid)",
+      "sourceMd5": "a98db6d8efe34f662f84c8875f23f8cf",
+      "securityDefiner": true,
+      "volatility": "s",
+      "roles": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "mark_v2_learning_progress(uuid,uuid,uuid,text,integer)",
+      "sourceMd5": "48a448ea8488e2f00d507934876ceae9",
+      "securityDefiner": true,
+      "volatility": "v",
+      "roles": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "v2_add_feedback_obligation(uuid,uuid,uuid,text,text,text,uuid,integer)",
+      "sourceMd5": "a352877fbc52bae8040fae94c95b147a",
+      "securityDefiner": true,
+      "volatility": "v",
+      "roles": []
+    },
+    {
+      "signature": "v2_store_session_feedback(uuid,uuid,uuid,jsonb,text)",
+      "sourceMd5": "17396fefc3f9e71f1759fd82ad205e88",
+      "securityDefiner": true,
+      "volatility": "v",
+      "roles": []
+    },
+    {
+      "signature": "submit_v2_session_feedback(uuid,uuid,jsonb)",
+      "sourceMd5": "c7b1811f8924df6441fee4e5df871f1d",
+      "securityDefiner": true,
+      "volatility": "v",
+      "roles": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "set_v2_live_session_mapping(uuid,uuid,uuid,integer)",
+      "sourceMd5": "6b841c0cb819a2bdaedc797bc06f9dbc",
+      "securityDefiner": true,
+      "volatility": "v",
+      "roles": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "list_v2_live_session_mappings(uuid)",
+      "sourceMd5": "0b76b4b4bd84ae893cf0f84b3a4e9a2a",
+      "securityDefiner": true,
+      "volatility": "s",
+      "roles": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "v2_completed_class_feedback()",
+      "sourceMd5": "d25a3631d71f377211f4efb32f568ee8",
+      "securityDefiner": true,
+      "volatility": "v",
+      "roles": []
+    },
+    {
+      "signature": "complete_v2_learning_live_class(uuid,uuid,integer)",
+      "sourceMd5": "2049fd16022942635981da2b9ba7dfe0",
+      "securityDefiner": true,
+      "volatility": "v",
+      "roles": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "get_my_v2_meeting(uuid,uuid)",
+      "sourceMd5": "421d6f432047dcce09e4c8119dd2fe30",
+      "securityDefiner": true,
+      "volatility": "s",
+      "roles": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "get_my_v2_batch_schedules()",
+      "sourceMd5": "a9f185ccbf72bf650de4d1cfd63265f4",
+      "securityDefiner": true,
+      "volatility": "s",
+      "roles": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "v2_recording_player_supported(text)",
+      "sourceMd5": "e2e5702937c882d868486301706f529f",
+      "securityDefiner": false,
+      "volatility": "i",
+      "roles": []
+    },
+    {
+      "signature": "v2_learning_recording(uuid,uuid,uuid,integer)",
+      "sourceMd5": "899a2683ad58987f97a8110755477cc0",
+      "securityDefiner": true,
+      "volatility": "s",
+      "roles": []
+    },
+    {
+      "signature": "begin_v2_recording_watch(uuid,uuid,uuid,integer)",
+      "sourceMd5": "2c5bdc2ca7e07b21842d134631653259",
+      "securityDefiner": true,
+      "volatility": "v",
+      "roles": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "record_v2_recording_sample(uuid,uuid,numeric,numeric,boolean)",
+      "sourceMd5": "4f9130871c8e964e30cf3ad72e5918df",
+      "securityDefiner": true,
+      "volatility": "v",
+      "roles": [
+        "authenticated"
+      ]
+    },
+    {
+      "signature": "report_v2_recording_watched(uuid,uuid,uuid,integer)",
+      "sourceMd5": "c87f54807c6f8e3e759d10eb00415b61",
+      "securityDefiner": true,
+      "volatility": "v",
+      "roles": [
+        "authenticated"
+      ]
+    }
+  ]
+}

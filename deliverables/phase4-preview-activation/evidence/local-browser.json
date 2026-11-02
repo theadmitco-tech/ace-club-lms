@@ -1,0 +1,75 @@
+{
+  "baseCommit": "56cabd9722c8aa5dd1f09e0e8d4c644c34058649",
+  "mode": "isolated UI fixture; synthetic learning state and mutation responses; not hosted or database authorization evidence",
+  "browser": "156.0.8078.47",
+  "sourceHashes": {
+    "src/app/session/[id]/material/[materialId]/material.css": "5a84d928a3b5ba8776f44cda141cbf190b5407c3abd358cc32907c3be7f3b30b",
+    "src/components/student/NotionReader.tsx": "de6aa3c60952d661577547ece27871e60769868328527fc283f1889a96890475",
+    "src/components/student/V2CourseSessionView.tsx": "5803f1eb8b9294b0a40b9db830f3366c2521b635ebbbde8f8803683f8baefacf",
+    "src/components/student/V2LearningWorkspace.tsx": "76ee48034a5a0ff4ad333a4ee8c31d2ff8c02c65eb732844f1f8a286ec89f1bc",
+    "src/components/student/V2RecordingPlayer.tsx": "d17431c97caa2f781795d329be184aa173f0ef8f441af1290694c7c2e3094604",
+    "src/components/student/v2CourseSession.module.css": "25c53fc0a273f8210dd0829588768e7f2c7062ddb4169fc28fdba17e4bcd02aa",
+    "src/components/student/v2Learning.module.css": "141a55d254c50166b21d83bfbc9fb9f1453bd6eb3f5cba6bb48ecd150bdffb2e",
+    "src/lib/v2Batches.ts": "cdd283bdff994a4c963cfccc58410dbdf9a31fbae5cd9d6e20cf028ddb4bead6",
+    "src/lib/v2Learning.ts": "bdfccbf8c32059c55a250aeae7a1ca4ae89aa4b7674b2129c079f467e535a5ea",
+    "src/lib/v2Meetings.ts": "714ee6ea4ce540d73b18876d5822ba7df27e26de377f5e79d5f7399d4a345a85",
+    "src/lib/v2Products.ts": "cf0833e5cc92920a48215c06760a69cfc42e7cf37c096bba459ca439268cbd1e",
+    "src/lib/v2ReadingPreview.ts": "c3c914c1437e9971dc94bfb6b4da3c1b5d97d14cdff1739eb0ad253945c33f9f",
+    "src/lib/v2SessionPresentation.ts": "c6bc80383aec84d018c2a393c55c9486aaa34cc27a4a6fd788b4f46e6ba1f6a3",
+    "src/lib/v2StudentDelivery.ts": "4607ae93554d432746b7dc27a490a8e95a12581872b14397420fe3ff7ad748c2",
+    "src/lib/v2Templates.ts": "7824905327aa90eaf5cddd94ce2454a3d13a54bc543b582e9b01b22aa22ab114",
+    "src/lib/youtube.ts": "c4154560e720a7cc63d2aaa30ff41944240eab04bd85d7d62980186360f3d62d"
+  },
+  "results": [
+    {
+      "name": "Quant 4 first and pre-read opening create only visual progress",
+      "status": "passed"
+    },
+    {
+      "name": "Quant feedback greys other Quant while current resources and other subjects remain available",
+      "status": "passed"
+    },
+    {
+      "name": "Confirmed feedback releases the applicable subject gate",
+      "status": "passed"
+    },
+    {
+      "name": "Interrupted feedback preserves its request identifier and avoids duplicate submissions",
+      "status": "passed"
+    },
+    {
+      "name": "Multiple current obligations remain independently visible after one response",
+      "status": "passed"
+    },
+    {
+      "name": "Unregistered live route shows no meeting action and retains recording navigation",
+      "status": "passed"
+    },
+    {
+      "name": "Missed live feedback requires no ratings or recording and makes no attendance claim",
+      "status": "passed"
+    },
+    {
+      "name": "Unsupported recording uses an explicit self-report and only confirmed feedback state",
+      "status": "passed"
+    },
+    {
+      "name": "Supported player sends observed positions and waits for confirmed feedback due",
+      "status": "passed"
+    },
+    {
+      "name": "Repeated watched self-report with completed feedback never creates a false gate",
+      "status": "passed"
+    },
+    {
+      "name": "Focus mode and larger text preserve keyboard navigation on a narrow screen",
+      "status": "passed"
+    },
+    {
+      "name": "Visual-progress interruption never claims completion or blocks course content",
+      "status": "passed"
+    }
+  ],
+  "blockedOrigins": [],
+  "browserErrors": []
+}

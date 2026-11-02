@@ -25,3 +25,8 @@
 .video iframe { display: block; border: 0; width: 100%; height: 100%; }
 .session :where(summary, button, a):focus-visible { outline: 3px solid #376cac; outline-offset: 3px; }
 @media (max-width: 480px) { .resources { padding: 1rem; } .stage summary { padding: 1rem; gap: .65rem; } }
+
+.player { width:100%; display:grid; gap:10px; }
+.player p { color:#58685f; font-size:13px; }
+.video > div,.video video { width:100%; height:100%; display:block; }
+.progress { display:block; color:#2e6448; font-weight:650; margin-bottom:10px; }

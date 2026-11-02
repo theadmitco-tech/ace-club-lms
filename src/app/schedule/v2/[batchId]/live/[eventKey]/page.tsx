@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { isV2LearningEnabled } from '@/lib/server/v2LearningFeature';
 import { notFound } from 'next/navigation';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { isV2StudentScheduleEnabled } from '@/lib/server/v2StudentScheduleFeature';
@@ -13,7 +14,7 @@ export default async function LiveClassPage({params}:{params:Promise<{batchId:st
   const meeting=await getMyV2Meeting(batchId,eventKey);
   return <div className="student-page"><StudentHeader studentName="Student" /><main className="student-main"><div className="student-container">
     <Link className="student-button" href="/schedule/v2">Back to enrolled batches</Link>
-    <section className="student-state"><span className="student-eyebrow">Live class</span><h1>{meeting ? 'The class is ready to join' : 'Meeting unavailable'}</h1>
+    <section className="student-state">{isV2LearningEnabled() && <Link className="student-button" href={`/schedule/v2/${batchId}?view=live`}>Course materials and session feedback</Link>}<span className="student-eyebrow">Live class</span><h1>{meeting ? 'The class is ready to join' : 'Meeting unavailable'}</h1>
       {meeting ? <><p>The meeting opens in Google Meet. Course access and registration are checked again when the join button is selected.</p>
         <a className="student-button" href={`/api/v2/meeting?batchId=${batchId}&eventKey=${eventKey}`} target="_blank" rel="noopener noreferrer">Join Google Meet</a></>
         : <><p>The class may be completed or its meeting link may not be published. Active course access, batch enrollment and live registration are required.</p>

@@ -1,4 +1,7 @@
 import Link from 'next/link';
+import { isV2LearningEnabled } from '@/lib/server/v2LearningFeature';
+import { getMyV2LearningState } from '@/lib/server/v2Learning';
+import { V2LearningLibrary } from '@/components/student/V2LearningLibrary';
 import { notFound } from 'next/navigation';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
@@ -15,6 +18,10 @@ export default async function EnrolledSchedulePage() {
   if (!isV2StudentScheduleEnabled()) notFound();
   await requirePortalRole('student');
   const result = await getMyV2BatchSchedules();
+  if (isV2LearningEnabled()) {
+    const batches = result.status === 'ready' ? await Promise.all(result.schedules.map(async publication => ({ publication, learning: await getMyV2LearningState(publication.batchId) }))) : null;
+    return <div className="student-page"><StudentHeader studentName="Student" /><main className="student-main"><div className="student-container">{batches ? <V2LearningLibrary batches={batches} /> : <section className="student-state student-state-error" role="alert"><h1>The learning library could not be loaded</h1><p>Please retry shortly.</p><Link className="student-button" href="/schedule/v2">Retry</Link></section>}</div></main></div>;
+  }
   return <div className="student-page">
     <StudentHeader studentName="Student" />
     <main className="student-main"><div className="student-container">

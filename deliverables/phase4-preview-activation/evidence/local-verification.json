@@ -1,0 +1,51 @@
+{
+  "check": "phase4_local_verification",
+  "scope": "Disposable local SQL and isolated module/route tests; hosted activation and acceptance remain separate.",
+  "command": "npm run test:v2:phase4",
+  "suiteCount": 5,
+  "testCount": 19,
+  "suites": [
+    {
+      "file": "scripts/v2-learning-feedback-database.test.mjs",
+      "tests": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    {
+      "file": "scripts/v2-learning-security.test.mjs",
+      "tests": 14,
+      "passed": 14,
+      "failed": 0
+    },
+    {
+      "file": "scripts/phase4/recovery.test.mjs",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "file": "scripts/phase4/fixtures.test.mjs",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "file": "scripts/phase4/activation.test.mjs",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0
+    }
+  ],
+  "sourceSha256": {
+    "scripts/v2-learning-feedback-database.test.mjs": "ef3a7821791634f5575db86a0093e288672b65f57baeb08fcdc7d2dc30c1ee04",
+    "scripts/v2-learning-security.test.mjs": "0f5c8c7c1de5817feab50c5cd840c2ca1d4269d6e0478c41756ec5ea8a65235e",
+    "scripts/phase4/recovery.test.mjs": "1c0446da8960c9d686af2b3d6479ba8f15f7afd0a9089482f5d50327f38f7689",
+    "scripts/phase4/fixtures.test.mjs": "e41a86c394f9367a296e570f75421df60348cf7f745f24448eca94dca0e44e60",
+    "scripts/phase4/activation.test.mjs": "e0f147e7899ae5716f671815223e6320776e12ad7737081ff5c4eba91d019afb",
+    "scripts/verify-v2-phase4.mjs": "34a5cf48b0755ace7c6922aeeebb5c349308801d9387ba7a046029a99cbbd452",
+    "src/app/api/v2/learning/route.ts": "6c0676b01cd5a8cbd03d9715611269f4a522b9f5da3e7f565ca1f8269e6c1b36",
+    "src/lib/server/v2Learning.ts": "736d658be55179cde80df6b4b27d525dc258f8ac6520a143166674e02064f4a6",
+    "src/lib/v2Learning.ts": "bdfccbf8c32059c55a250aeae7a1ca4ae89aa4b7674b2129c079f467e535a5ea",
+    "supabase/migrations/20261102170000_add_v2_learning_feedback.sql": "edaa5148af61d151ea4d59436929db652fbb5fc6c3bdeba0d7c2711b0af4f958"
+  }
+}

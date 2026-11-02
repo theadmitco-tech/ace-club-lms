@@ -8,7 +8,7 @@ import { setLiveRegistrationAction, completeLiveClassAction } from './actions';
 import styles from '../../../templates/templates.module.css';
 
 type Review = {kind:'registration';student:V2EnrollmentOption} | {kind:'completion';event:V2LiveClassStatus};
-export default function LiveOperations({batchId,registrations,classes}:{batchId:string;registrations:V2EnrollmentOption[];classes:V2LiveClassStatus[]}) {
+export default function LiveOperations({batchId,registrations,classes,learningEnabled=false,mappings=[]}:{batchId:string;registrations:V2EnrollmentOption[];classes:V2LiveClassStatus[];learningEnabled?:boolean;mappings?:{eventKey:string;sessionKey:string;publicationRevision:number}[]}) {
   const router = useRouter();
   const [review,setReview] = useState<Review|null>(null);
   const [pending,setPending] = useState(false);
@@ -32,7 +32,7 @@ export default function LiveOperations({batchId,registrations,classes}:{batchId:
     {message && <p role="status">{message}</p>}{error && <div role="alert"><p>{error}</p><button type="button" className="btn btn-secondary" onClick={() => window.location.reload()}>Reload live operations</button></div>}
     {review && <section className={styles.card} aria-label="Confirm live operation"><h2>{review.kind === 'completion' ? 'Mark this live class complete?' : review.student.active ? 'Remove live registration?' : 'Confirm live registration?'}</h2>
       <p>{review.kind === 'completion' ? review.event.title : review.student.name}</p>
-      <p>{review.kind === 'completion' ? 'Completion closes the join link and records an audit entry. It does not mark any student present, submit feedback, or publish a recording. Completion cannot be reversed here.'
+      <p>{review.kind === 'completion' ? (learningEnabled ? 'Completion closes the join link and creates feedback obligations for eligible live registrants in the mapped session. It does not mark attendance or publish a recording. Completion cannot be reversed here.' : 'Completion closes the join link and records an audit entry. It does not mark any student present, submit feedback, or publish a recording. Completion cannot be reversed here.')
         : 'Manual registration controls access to published private meeting links. Active product access and batch enrollment remain required. This action does not take or confirm a payment.'}</p>
       <div className={styles.buttons}><button className="btn btn-primary" type="button" disabled={pending || !!error} onClick={confirm}>Confirm</button><button className="btn btn-secondary" type="button" disabled={pending} onClick={() => setReview(null)}>Cancel</button></div>
     </section>}
@@ -45,7 +45,7 @@ export default function LiveOperations({batchId,registrations,classes}:{batchId:
       {!classes.length && <p>No published live classes are available.</p>}
       <ul className={styles.list}>{classes.map((event) => <li key={event.eventKey} className={styles.event}><strong>{event.title}</strong>
         {event.completedAt ? <span>Completed {new Intl.DateTimeFormat('en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Kolkata'}).format(new Date(event.completedAt))} IST</span>
-          : <button className="btn btn-secondary" type="button" disabled={pending || !!review || !!error} onClick={() => setReview({kind:'completion',event})}>Mark class complete</button>}</li>)}</ul>
+          : <button className="btn btn-secondary" type="button" disabled={pending || !!review || !!error || learningEnabled && !mappings.some(m => m.eventKey === event.eventKey && m.publicationRevision === event.publicationRevision)} onClick={() => setReview({kind:'completion',event})}>Mark class complete</button>}</li>)}</ul>
     </section>
   </div>;
 }

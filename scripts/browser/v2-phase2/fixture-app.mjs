@@ -13,6 +13,12 @@ export const sources = [
   'src/app/admin/v2/templates/ReadingPreview.tsx',
   'src/components/student/NotionReader.tsx',
   'src/components/student/V2CourseSessionView.tsx',
+  'src/components/student/V2LearningWorkspace.tsx',
+  'src/components/student/V2LearningLibrary.tsx',
+  'src/components/student/V2RecordingPlayer.tsx',
+  'src/components/student/v2Learning.module.css',
+  'src/lib/v2Learning.ts',
+  'src/lib/v2StudentDelivery.ts',
   'src/components/student/v2CourseSession.module.css',
   'src/lib/v2SessionPresentation.ts',
   'src/lib/youtube.ts',
@@ -128,6 +134,8 @@ export function isV2TemplateAuthoringEnabled() { return true; }
   await put('src/lib/server/v2BatchFeature.ts', `
 export function isV2BatchAuthoringEnabled() { return true; }
 `);
+  await put('src/lib/server/v2LearningFeature.ts', 'export function isV2LearningEnabled() { return false; }');
+  await put('src/lib/server/v2Learning.ts', 'export async function getMyV2LearningState(_batchId: string) { return null; }');
   await put('src/lib/server/v2StudentScheduleFeature.ts', 'export function isV2StudentScheduleEnabled() { return true; }');
   await put('src/lib/server/fixture.ts', `
 import 'server-only';
