@@ -1,8 +1,8 @@
 # Phase 4 hosted acceptance
 
-Status: authenticated workflow, real supported-player playback and responsive
-visual checks have passed. Exact fixture cleanup and generated-account removal
-remain open. Phase 4 is not yet complete.
+Status: Phase 4 implementation and staging acceptance are complete. Authenticated
+workflow, real playback, responsive layout, exact fixture cleanup and generated-account
+removal have passed. Draft review handoff and Production release remain separate.
 
 ## Evidence and scope
 
@@ -14,6 +14,9 @@ remain open. Phase 4 is not yet complete.
 | [Local verification](../phase4-preview-activation/evidence/local-verification.json) | Five Phase 4 suites / 20 tests passed; database behavior and security boundaries remain distinct from hosted provider acceptance |
 | [Local browser verification](../phase4-preview-activation/evidence/local-browser.json) | Thirteen isolated browser journeys passed, including observed-player behavior, interruption handling, multiple obligations and keyboard access through a long mobile outline |
 | [Setup receipt](setup-result.json) | Operator-supplied staging SQL Editor result: two synthetic batches, seven test purchases, nine QA accounts and one temporary real-course enrollment |
+| [Cleanup receipt](cleanup-result.json) | Operator-supplied SQL Editor result confirms the exact 85-table baseline was restored |
+| [Account cleanup](account-cleanup.json) | All nine generated Auth identities independently confirmed absent; no generated profiles or purchases remain |
+| [Final Preview smoke](final-preview-smoke.json) | Six checks passed for staging configuration, public catalog and anonymous access denial |
 | [Fixture manifest](fixture-manifest.json) | Exact designated identities, generated course identifiers, candidate commit and preservation baseline; no credentials |
 
 The main workflow ran against commit `9f865dfe83bda1b121493ed186899ae6c9532684`.
@@ -58,8 +61,10 @@ The [cleanup packet](02-CLEANUP-FIXTURES.sql) removes only generated purchases,
 batches and associated QA state, plus the designated Full Course QA enrollment and
 its progress/watch state. Existing content, published revisions and unrelated
 records remain protected by exact scope checks and transaction rollback on baseline
-mismatch. A successful SQL receipt must precede removal of the nine generated Auth
-accounts. Neither cleanup nor account removal has been verified yet.
+mismatch. The operator-supplied SQL receipt confirms the exact baseline was restored.
+The nine generated Auth accounts were subsequently removed; independent API checks
+confirmed their absence and zero remaining generated profiles or purchases. The
+temporary QA password was removed from the private run state.
 
 The resumed workspace lost its temporary private credential and session files.
 Staging access and only the two designated QA sessions required for provider
@@ -67,5 +72,5 @@ verification were recovered. Saved manifests contain no passwords or service key
 unrelated identities and real Student accounts were not part of that recovery.
 
 The [twelve-gate checklist](EXIT-GATES.md) identifies demonstrated behavior and the
-remaining acceptance boundary. Payment fulfillment, provider-level DRM and verified
+completed acceptance boundary and separate review handoff. Payment fulfillment, provider-level DRM and verified
 attendance are outside these test claims.

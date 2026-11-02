@@ -2,7 +2,7 @@
 
 Status: Phase 4 schema activation, authenticated workflow checks, real recording
 playback and responsive visual checks have passed in staging. The [latest reviewed LMS Preview](https://ace-club-dd78or5n2-theadmitco-techs-projects.vercel.app)
-is READY at `c0c4e3e65129bd24e7c46de57a82f29916f2a74f`. Exact QA cleanup and generated-account removal remain open. Phase 4 is not yet complete;
+is READY at `c0c4e3e65129bd24e7c46de57a82f29916f2a74f`. The exact 85-table QA baseline was restored and all nine generated accounts were removed. Phase 4 staging acceptance is complete;
 Production remains unchanged.
 
 ## Target and preservation
@@ -57,7 +57,7 @@ Applied Phase 2 migrations and legacy application records must also remain intac
 | Additive hosted migration/reconciliation | Operator-reported staging SQL Editor result passed with exact migration hash, seven private tables, 19 function guards, original 78-table rows and Phase 1 ledger preserved; [reported evidence](evidence/hosted-activation.json). Website acceptance remains separate |
 | Hosted Student/Admin access matrix | Passed: 81 distinct assertions in the [hosted report](../phase4-hosted-acceptance/hosted-results.json), including role/access denials, subject-only gating, confirmed browser feedback, Admin class completion and missed-class reporting. The report also retains two inconclusive provider API observations and one repeated environment assertion |
 | Real resource rendering and shared-reference checks | Five protected PDFs passed authorized and denied-access checks; both original Notion embeds rendered. The Notion API paths remain inconclusive. Actual published Quant/DI recording references match Full Course; the real YouTube player passed 11 provider checks, including advancing playback and server-confirmed samples without creating feedback. [Resource and provider evidence](../phase4-hosted-acceptance/README.md) |
-| Exact fixture cleanup and preservation | Pending: nine designated QA accounts, two synthetic batches, seven test purchases and one temporary real-course enrollment remain under cleanup scope. The recorded 85-table baseline is `27145d216badf73e85ee4a42930499a2`; no cleanup success is claimed |
+| Exact fixture cleanup and preservation | Passed: the [operator-supplied receipt](../phase4-hosted-acceptance/cleanup-result.json) confirms baseline `27145d216badf73e85ee4a42930499a2` across 85 tables; [independent account checks](../phase4-hosted-acceptance/account-cleanup.json) confirm all nine QA identities absent and zero generated profiles/purchases |
 | Commit, Preview smoke check and handoff | Implementation `9f865df` and mobile outline fix `c0c4e3e` are pushed. The [final visual/environment report](../phase4-hosted-acceptance/visual-results.json) verifies the exact latter commit, staging project, 31-session outline and desktop/mobile layout. Draft PR creation returned integration 403; no PR exists yet |
 
 A synthetic payment fixture does not establish Razorpay acceptance. Phase 3 remains
@@ -68,18 +68,15 @@ The [prepared PR description](pr-description.md) and [title](pr-title.txt) remai
 available for a Draft PR. GitHub integration access denied the creation request;
 the prepared text does not establish that a PR has been created or merged.
 
-## Remaining closeout work
+## Completed closeout and separate handoff
 
-1. Staging credentials and the two designated QA sessions needed for provider
-   verification were recovered after temporary private files were lost. Saved
-   manifests and test evidence remain intact, with no credential values in Git.
-2. Real YouTube playback advanced approximately ten seconds and produced three
-   successful observation responses, with no feedback or recording-source change.
-   Earlier provider-control attempts remain archived separately from the passing
-   [provider report](../phase4-hosted-acceptance/provider-results.json).
-3. The exact cleanup transaction must restore the recorded 85-table baseline before
-   the nine generated Auth accounts are removed. Existing libraries and unrelated
-   application records remain outside deletion scope.
-4. The final evidence record, publication review and commit must precede review
-   handoff. The prepared PR remains Draft-only; merge and Production release remain
-   separately controlled.
+The exact SQL cleanup preserved the real libraries and restored the 85-table baseline.
+All nine generated Auth identities were removed after that receipt; independent API
+checks confirmed no generated profiles or purchases remain. The temporary QA password
+was removed. Historical attempts remain available without being relabeled as passing runs.
+
+Real playback, mobile layout and six final Preview smoke checks passed. The temporary
+LMS feedback form is the approved replacement for the unavailable Tally form. Phase 3
+payment fulfillment remains separate. Draft PR creation still requires repository
+access beyond the connected integration's current permissions; merge and Production
+release remain separately controlled.

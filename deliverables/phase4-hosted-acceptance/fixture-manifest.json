@@ -1,10 +1,10 @@
 {
   "project": "eyphkkginlgoaxflauog",
   "runId": "a56891e7-5197-41ca-afa6-e5a45e0003c7",
-  "preview": "https://ace-club-837sypnle-theadmitco-techs-projects.vercel.app",
-  "commit": "9f865dfe83bda1b121493ed186899ae6c9532684",
+  "preview": "https://ace-club-dd78or5n2-theadmitco-techs-projects.vercel.app",
+  "commit": "c0c4e3e65129bd24e7c46de57a82f29916f2a74f",
   "createdAt": "2026-11-02T01:32:41.725Z",
-  "status": "verification-completed",
+  "status": "cleaned",
   "users": [
     {
       "id": "408e4cb0-3fd6-4587-a07b-db40b1196215",
@@ -418,5 +418,31 @@
     "md5": "27145d216badf73e85ee4a42930499a2",
     "table_count": 85,
     "excluded_generated_profiles": 9
-  }
+  },
+  "passwordRestoredFor": [
+    "full",
+    "admin"
+  ],
+  "cleanup": {
+    "check": "phase4_qa_fixture_cleanup",
+    "run_id": "a56891e7-5197-41ca-afa6-e5a45e0003c7",
+    "fingerprint": {
+      "md5": "27145d216badf73e85ee4a42930499a2",
+      "table_count": 85,
+      "excluded_generated_profiles": 9
+    },
+    "baseline_restored": true
+  },
+  "deletedAccountIds": [
+    "4e15949c-040d-4e71-b1ca-d96f3af130b0",
+    "0ac8f807-91cc-419f-901f-168aeef4305a",
+    "f54e3783-bc93-4e06-bdd2-4e0c026232dc",
+    "21c33585-b164-46a3-8e44-db6e385de863",
+    "c74df4dd-6a5f-4e8a-ba91-2219873edfda",
+    "fbd0e57c-0ae1-4159-b841-c72992d48349",
+    "bed201b9-3110-465b-9101-e5cc954d9a36",
+    "a3c95186-db55-42a5-a8bc-d5942f5d44ad",
+    "408e4cb0-3fd6-4587-a07b-db40b1196215"
+  ],
+  "cleanedAt": "2026-11-02T14:34:24.201Z"
 }

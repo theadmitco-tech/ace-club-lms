@@ -1,10 +1,10 @@
 # Phase 4 — Website learning delivery
 
-Status: the Phase 4 implementation is live in staging Preview. Authenticated
-Student/Admin workflow checks, responsive visual checks and real recording playback
-verification have passed. Exact QA cleanup and generated-account removal remain
-open; Phase 4 is not yet complete. The [evidence checklist](../../../deliverables/phase4-hosted-acceptance/EXIT-GATES.md)
-distinguishes demonstrated behavior from remaining closeout work.
+Status: Phase 4 implementation and staging acceptance are complete. Student/Admin
+workflows, real playback, responsive layout and exact cleanup have passed. The nine
+generated QA accounts were removed and independently verified absent. The
+[evidence checklist](../../../deliverables/phase4-hosted-acceptance/EXIT-GATES.md)
+records all twelve gates. Draft review handoff, merge and Production release remain separate.
 
 The review branch is `intern/v2-phase-4-review`, based on merged Phase 2 commit
 `56cabd9722c8aa5dd1f09e0e8d4c644c34058649`. Phase 3 checkout work remains on its
@@ -18,18 +18,18 @@ The supplied Phase Exit Gates checklist defines twelve Phase 4 requirements.
 
 | Gate | Required result | Required evidence | Status |
 | --- | --- | --- | --- |
-| P4-01 | Recording and live-class experiences are clearly separated | Browser journeys show distinct destinations and states | Behavior checks passed; closeout pending |
-| P4-02 | Recording, live and mixed learning remain available | Recording-only and registered-live fixtures, including missed live classes | Workflow and real playback checks passed; cleanup pending |
-| P4-03 | Only eligible live registrants receive private meeting details | Registered/unregistered/expired/revoked/inactive/wrong-subject matrix and direct requests | Behavior checks passed; closeout pending |
-| P4-04 | Applicable sessions reuse the shared recording | Source/asset comparison and rendered resource comparison | Behavior checks passed; closeout pending |
-| P4-05 | Every resource checks entitlement and expiry | Direct reading/PDF/course/meeting requests after entitlement changes | Behavior checks passed; closeout pending |
-| P4-06 | Sessions support arbitrary order and an outline view | Quant 4 opened first without prior-session completion | Behavior checks passed; closeout pending |
-| P4-07 | Feedback locks remain section-specific | Pending Quant feedback denies other Quant resources while eligible Verbal/DI remain accessible | Behavior checks passed; closeout pending |
-| P4-08 | Current obligated session resources and feedback remain available | Current pre-read, recording, post-read and worksheet checks while the section is gated | Behavior checks passed; closeout pending |
-| P4-09 | Confirmed feedback releases only applicable same-session obligations | Successful, duplicate, delayed and interrupted submissions; multiple outstanding obligations | Behavior checks passed; closeout pending |
-| P4-10 | Non-attendance is reportable without inventing attendance | Completed live-class feedback accepts non-attendance without requiring recording availability | Behavior checks passed; closeout pending |
-| P4-11 | Unpublished, unpaid, expired and unauthorized content remains inaccessible | Database, server route and hosted caller-session tests | Behavior checks passed; closeout pending |
-| P4-12 | Existing mocks remain unchanged | Source diff, regression checks and staging preservation evidence | Regressions passed; cleanup preservation pending |
+| P4-01 | Recording and live-class experiences are clearly separated | Browser journeys show distinct destinations and states | Passed |
+| P4-02 | Recording, live and mixed learning remain available | Recording-only and registered-live fixtures, including missed live classes | Passed |
+| P4-03 | Only eligible live registrants receive private meeting details | Registered/unregistered/expired/revoked/inactive/wrong-subject matrix and direct requests | Passed |
+| P4-04 | Applicable sessions reuse the shared recording | Source/asset comparison and rendered resource comparison | Passed |
+| P4-05 | Every resource checks entitlement and expiry | Direct reading/PDF/course/meeting requests after entitlement changes | Passed |
+| P4-06 | Sessions support arbitrary order and an outline view | Quant 4 opened first without prior-session completion | Passed |
+| P4-07 | Feedback locks remain section-specific | Pending Quant feedback denies other Quant resources while eligible Verbal/DI remain accessible | Passed |
+| P4-08 | Current obligated session resources and feedback remain available | Current pre-read, recording, post-read and worksheet checks while the section is gated | Passed |
+| P4-09 | Confirmed feedback releases only applicable same-session obligations | Successful, duplicate, delayed and interrupted submissions; multiple outstanding obligations | Passed |
+| P4-10 | Non-attendance is reportable without inventing attendance | Completed live-class feedback accepts non-attendance without requiring recording availability | Passed |
+| P4-11 | Unpublished, unpaid, expired and unauthorized content remains inaccessible | Database, server route and hosted caller-session tests | Passed |
+| P4-12 | Existing mocks remain unchanged | Source diff, regression checks and staging preservation evidence | Passed |
 
 ## Source precedence and decisions
 
