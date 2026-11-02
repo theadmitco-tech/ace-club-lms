@@ -7,7 +7,7 @@
 .preferences { display:flex; gap:8px; }
 .preferences button { border:1px solid #c4d1c5; background:white; font-size:14px; }
 .layout { display:grid; grid-template-columns:minmax(235px,290px) minmax(0,1fr); gap:26px; align-items:start; }
-.outline { background:white; border:1px solid #d5dfd5; padding:20px; border-radius:14px; }
+.outline { background:white; border:1px solid #d5dfd5; padding:20px; border-radius:14px; position:sticky; top:88px; max-height:calc(100svh - 112px); overflow-y:auto; scrollbar-gutter:stable; scroll-padding-block:12px; }
 .outline h2 { font-size:20px; margin:0 0 8px; }
 .outline p { font-size:13px; color:#56685c; }
 .outline ol { list-style:none; display:grid; gap:10px; padding:0; margin:20px 0 0; }
@@ -51,11 +51,12 @@
 .liveList h3 { font-size:22px; margin:0; }
 .notice { background:#edf3e9; border-left:3px solid #69876a; padding:13px 16px; margin:16px 0; }
 .workspace :where(button,a,select,input,textarea,summary):focus-visible { outline:3px solid #376cac; outline-offset:3px; }
+.outline button:focus-visible { outline-offset:-4px; }
 .workspace button:disabled { cursor:not-allowed; opacity:.75; }
 .focus .outline,.focus .resume { display:none; }
 .focus .layout { grid-template-columns:minmax(0,1fr); max-width:960px; margin:auto; }
 .large { font-size:19px; }
-@media(max-width:800px) { .layout { grid-template-columns:minmax(0,1fr); }.outline ol { grid-template-columns:repeat(2,minmax(0,1fr)); }.toolbar { align-items:stretch; flex-direction:column; }.tabs { width:max-content; max-width:100%; }.gate { padding:20px; }.gateIcon { display:none; } }
+@media(max-width:800px) { .layout { grid-template-columns:minmax(0,1fr); }.outline { position:static; max-height:45svh; }.outline ol { grid-template-columns:repeat(2,minmax(0,1fr)); }.toolbar { align-items:stretch; flex-direction:column; }.tabs { width:max-content; max-width:100%; }.gate { padding:20px; }.gateIcon { display:none; } }
 @media(max-width:480px) { .outline ol { grid-template-columns:minmax(0,1fr); }.tabs button { padding:10px; font-size:14px; }.resume,.feedbackPanel,.livePanel,.empty { padding:20px; }.primary { width:100%; } }
 .library { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; }
 .libraryCard { display:flex; flex-direction:column; align-items:stretch; gap:16px; border:1px solid #ccd9c8; border-radius:16px; padding:28px; background:white; }

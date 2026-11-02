@@ -28,14 +28,15 @@ const sourceSessions = [
   { key: di, title: 'DI 1', section: 'di', content: content(7) },
 ];
 function initial() {
-  return { obligations: [], progress: [], lastSessionKey: null, liveRegistered: false, liveEvents: [], calls: [], submissions: [], interruptOnce: false, rejectProgress: false, noRecording: false, externalRecording: false, feedbackAlreadyComplete: false };
+  return { obligations: [], progress: [], lastSessionKey: null, liveRegistered: false, liveEvents: [], calls: [], submissions: [], interruptOnce: false, rejectProgress: false, noRecording: false, externalRecording: false, feedbackAlreadyComplete: false, extraSessions: [] };
 }
 let state = initial();
 function view() {
-  const sessions = sourceSessions.map(({ key, title, section }) => ({ key, title, section,
+  const allSessions = [...sourceSessions, ...state.extraSessions];
+  const sessions = allSessions.map(({ key, title, section }) => ({ key, title, section,
     locked: state.obligations.some(o => o.section === section) && !state.obligations.some(o => o.batchId === batchId && o.sessionKey === key),
   }));
-  return { course: { batchId, publicationRevision: 1, batchRevision: 1, title: 'Synthetic Full Course', productCode: 'full_course', sessions: sourceSessions.filter(s => !sessions.find(item => item.key === s.key).locked).map(s => ({...s, content: {...s.content, recordings: state.noRecording ? [] : state.externalRecording ? s.content.recordings.map(item => ({...item,url:'https://recordings.example.test/player/session'})) : s.content.recordings}})) },
+  return { course: { batchId, publicationRevision: 1, batchRevision: 1, title: 'Synthetic Full Course', productCode: 'full_course', sessions: allSessions.filter(s => !sessions.find(item => item.key === s.key).locked).map(s => ({...s, content: {...s.content, recordings: state.noRecording ? [] : state.externalRecording ? s.content.recordings.map(item => ({...item,url:'https://recordings.example.test/player/session'})) : s.content.recordings}})) },
     learning: { batchId, publicationRevision: 1, sessions, obligations: state.obligations, progress: state.progress, lastSessionKey: state.lastSessionKey, liveRegistered: state.liveRegistered, liveEvents: state.liveEvents },
   };
 }
@@ -248,6 +249,21 @@ async function runTests() {
     assert.equal(await page.getByRole('button', { name: 'Larger text', exact: true }).getAttribute('aria-pressed'), 'true');
     await noOverflow(page);
   }, true);
+  await test('Long mobile outline stays bounded and supports keyboard selection of the last session', async page => {
+    state.extraSessions=Array.from({length:27},(_,index)=>({key:id(1000+index),title:`Additional session ${index+1}`,section:'quant',content:content(2000+index)}));
+    await page.goto(origin);
+    const outline=page.getByRole('complementary',{name:'Course outline'});
+    assert.equal(await outline.getByRole('button').count(),31);
+    const dimensions=await outline.evaluate(element=>({height:element.getBoundingClientRect().height,scrollHeight:element.scrollHeight,clientHeight:element.clientHeight,viewport:innerHeight}));
+    assert.ok(dimensions.height<=dimensions.viewport*0.46);assert.ok(dimensions.scrollHeight>dimensions.clientHeight);
+    const last=outline.getByRole('button',{name:'Open Additional session 27',exact:true});await last.focus();await page.keyboard.press('Enter');
+    const article=page.getByRole('article',{name:'Session content: Additional session 27'});await article.waitFor();
+    assert.equal(await last.evaluate(element=>element===document.activeElement),true);
+    const geometry=await outline.evaluate(element=>{const focus=document.activeElement.getBoundingClientRect(),box=element.getBoundingClientRect();return {visible:focus.top>=box.top&&focus.bottom<=box.bottom,outlineBottom:box.bottom,viewport:innerHeight};});
+    assert.equal(geometry.visible,true);
+    const box=await article.boundingBox();assert.ok(box.y<geometry.viewport*1.5);assert.ok(box.y-geometry.outlineBottom<200);
+    await noOverflow(page);
+  },true);
   await test('Visual-progress interruption never claims completion or blocks course content', async page => {
     state.rejectProgress = true; await page.goto(origin);
     await page.getByRole('button', { name: 'Open Verbal 1', exact: true }).click();

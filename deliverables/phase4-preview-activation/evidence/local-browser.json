@@ -1,5 +1,5 @@
 {
-  "baseCommit": "56cabd9722c8aa5dd1f09e0e8d4c644c34058649",
+  "baseCommit": "9f865dfe83bda1b121493ed186899ae6c9532684",
   "mode": "isolated UI fixture; synthetic learning state and mutation responses; not hosted or database authorization evidence",
   "browser": "156.0.8078.47",
   "sourceHashes": {
@@ -9,7 +9,7 @@
     "src/components/student/V2LearningWorkspace.tsx": "76ee48034a5a0ff4ad333a4ee8c31d2ff8c02c65eb732844f1f8a286ec89f1bc",
     "src/components/student/V2RecordingPlayer.tsx": "d17431c97caa2f781795d329be184aa173f0ef8f441af1290694c7c2e3094604",
     "src/components/student/v2CourseSession.module.css": "25c53fc0a273f8210dd0829588768e7f2c7062ddb4169fc28fdba17e4bcd02aa",
-    "src/components/student/v2Learning.module.css": "141a55d254c50166b21d83bfbc9fb9f1453bd6eb3f5cba6bb48ecd150bdffb2e",
+    "src/components/student/v2Learning.module.css": "2f1035c28a7b3b3e7fe89871a3625830fbb5fdca2463235d130ef644dba90ec3",
     "src/lib/v2Batches.ts": "cdd283bdff994a4c963cfccc58410dbdf9a31fbae5cd9d6e20cf028ddb4bead6",
     "src/lib/v2Learning.ts": "bdfccbf8c32059c55a250aeae7a1ca4ae89aa4b7674b2129c079f467e535a5ea",
     "src/lib/v2Meetings.ts": "714ee6ea4ce540d73b18876d5822ba7df27e26de377f5e79d5f7399d4a345a85",
@@ -63,6 +63,10 @@
     },
     {
       "name": "Focus mode and larger text preserve keyboard navigation on a narrow screen",
+      "status": "passed"
+    },
+    {
+      "name": "Long mobile outline stays bounded and supports keyboard selection of the last session",
       "status": "passed"
     },
     {
