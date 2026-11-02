@@ -3,7 +3,7 @@
   "scope": "Disposable local SQL and isolated module/route tests; hosted activation and acceptance remain separate.",
   "command": "npm run test:v2:phase4",
   "suiteCount": 5,
-  "testCount": 19,
+  "testCount": 20,
   "suites": [
     {
       "file": "scripts/v2-learning-feedback-database.test.mjs",
@@ -25,8 +25,8 @@
     },
     {
       "file": "scripts/phase4/fixtures.test.mjs",
-      "tests": 1,
-      "passed": 1,
+      "tests": 2,
+      "passed": 2,
       "failed": 0
     },
     {
@@ -40,9 +40,12 @@
     "scripts/v2-learning-feedback-database.test.mjs": "ef3a7821791634f5575db86a0093e288672b65f57baeb08fcdc7d2dc30c1ee04",
     "scripts/v2-learning-security.test.mjs": "0f5c8c7c1de5817feab50c5cd840c2ca1d4269d6e0478c41756ec5ea8a65235e",
     "scripts/phase4/recovery.test.mjs": "1c0446da8960c9d686af2b3d6479ba8f15f7afd0a9089482f5d50327f38f7689",
-    "scripts/phase4/fixtures.test.mjs": "e41a86c394f9367a296e570f75421df60348cf7f745f24448eca94dca0e44e60",
+    "scripts/phase4/fixtures.test.mjs": "02c2851007e06d97499a31d18cafc8d1d2f88ef8e7f88d798ef0a6badd4f3361",
     "scripts/phase4/activation.test.mjs": "e0f147e7899ae5716f671815223e6320776e12ad7737081ff5c4eba91d019afb",
     "scripts/verify-v2-phase4.mjs": "34a5cf48b0755ace7c6922aeeebb5c349308801d9387ba7a046029a99cbbd452",
+    "scripts/phase4/fixtures.mjs": "c01730ef21307c5181fc1e5db1e76481e2f41e672718dd46267b7cb7abdd0b74",
+    "scripts/phase4/rehearse-recovery.mjs": "7039ee5b8f380eb99558e38b17adde6f2e5857343541f4edbbc6b8c65d90ae23",
+    "scripts/phase4/prepare-activation.py": "72c1a745cc6f0f0dab94fbcd526987aaaae844814d8c6187b7801d938fd9685e",
     "src/app/api/v2/learning/route.ts": "6c0676b01cd5a8cbd03d9715611269f4a522b9f5da3e7f565ca1f8269e6c1b36",
     "src/lib/server/v2Learning.ts": "736d658be55179cde80df6b4b27d525dc258f8ac6520a143166674e02064f4a6",
     "src/lib/v2Learning.ts": "bdfccbf8c32059c55a250aeae7a1ca4ae89aa4b7674b2129c079f467e535a5ea",

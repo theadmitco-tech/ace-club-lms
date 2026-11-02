@@ -1,0 +1,68 @@
+{
+  "check": "phase4_recording_provider_acceptance",
+  "project": "eyphkkginlgoaxflauog",
+  "commit": "c0c4e3e65129bd24e7c46de57a82f29916f2a74f",
+  "runId": "a56891e7-5197-41ca-afa6-e5a45e0003c7",
+  "status": "failed",
+  "checks": [
+    {
+      "id": "real-course-feedback-initially-clear",
+      "status": "pass"
+    },
+    {
+      "id": "published-shared-recordings:di",
+      "status": "pass"
+    },
+    {
+      "id": "published-shared-recordings:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "published-shared-recordings:quant",
+      "status": "pass"
+    },
+    {
+      "id": "actual-shared-recordings-compared",
+      "status": "pass"
+    },
+    {
+      "id": "supported-real-recording-present",
+      "status": "pass"
+    },
+    {
+      "id": "recording-duration-safe-for-short-observation",
+      "status": "pass"
+    },
+    {
+      "id": "short-observation-remains-below-feedback-threshold",
+      "status": "pass"
+    }
+  ],
+  "limitations": [
+    "A short real playback checks provider integration and observed samples; it does not claim full viewing or attendance.",
+    "No artificial positions, provider events, completed feedback, recording source edits or real-course publication changes are used."
+  ],
+  "sharedReferences": [
+    {
+      "productCode": "di",
+      "recordings": 3
+    },
+    {
+      "productCode": "verbal",
+      "recordings": 0
+    },
+    {
+      "productCode": "quant",
+      "recordings": 1
+    }
+  ],
+  "provider": "youtube",
+  "recording": {
+    "sessionKey": "63a9319f-3e9a-5ff7-ab9a-4a5d59fb93fe",
+    "recordingKey": "40d88e3b-dd6f-542a-a29c-36a816084143",
+    "publicationRevision": 1,
+    "referenceSha256": "0299962d9f9fb0145efea904f0d09c3f052919d5601613217240fb229a5e3366"
+  },
+  "failure": "Provider acceptance stopped at the last recorded check; private resource references and browser diagnostics withheld.",
+  "finishedAt": "2026-11-02T13:57:19.806Z"
+}

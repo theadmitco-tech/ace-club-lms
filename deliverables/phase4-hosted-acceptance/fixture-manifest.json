@@ -1,0 +1,422 @@
+{
+  "project": "eyphkkginlgoaxflauog",
+  "runId": "a56891e7-5197-41ca-afa6-e5a45e0003c7",
+  "preview": "https://ace-club-837sypnle-theadmitco-techs-projects.vercel.app",
+  "commit": "9f865dfe83bda1b121493ed186899ae6c9532684",
+  "createdAt": "2026-11-02T01:32:41.725Z",
+  "status": "verification-completed",
+  "users": [
+    {
+      "id": "408e4cb0-3fd6-4587-a07b-db40b1196215",
+      "label": "admin",
+      "email": "ace-p4-admin-a56891e7-5197-41ca-afa6-e5a45e0003c7@example.invalid"
+    },
+    {
+      "id": "a3c95186-db55-42a5-a8bc-d5942f5d44ad",
+      "label": "full",
+      "email": "ace-p4-full-a56891e7-5197-41ca-afa6-e5a45e0003c7@example.invalid"
+    },
+    {
+      "id": "bed201b9-3110-465b-9101-e5cc954d9a36",
+      "label": "quant",
+      "email": "ace-p4-quant-a56891e7-5197-41ca-afa6-e5a45e0003c7@example.invalid"
+    },
+    {
+      "id": "fbd0e57c-0ae1-4159-b841-c72992d48349",
+      "label": "unregistered",
+      "email": "ace-p4-unregistered-a56891e7-5197-41ca-afa6-e5a45e0003c7@example.invalid"
+    },
+    {
+      "id": "c74df4dd-6a5f-4e8a-ba91-2219873edfda",
+      "label": "expired",
+      "email": "ace-p4-expired-a56891e7-5197-41ca-afa6-e5a45e0003c7@example.invalid"
+    },
+    {
+      "id": "21c33585-b164-46a3-8e44-db6e385de863",
+      "label": "revoked",
+      "email": "ace-p4-revoked-a56891e7-5197-41ca-afa6-e5a45e0003c7@example.invalid"
+    },
+    {
+      "id": "f54e3783-bc93-4e06-bdd2-4e0c026232dc",
+      "label": "inactive",
+      "email": "ace-p4-inactive-a56891e7-5197-41ca-afa6-e5a45e0003c7@example.invalid"
+    },
+    {
+      "id": "0ac8f807-91cc-419f-901f-168aeef4305a",
+      "label": "wrong_subject",
+      "email": "ace-p4-wrong_subject-a56891e7-5197-41ca-afa6-e5a45e0003c7@example.invalid"
+    },
+    {
+      "id": "4e15949c-040d-4e71-b1ca-d96f3af130b0",
+      "label": "empty",
+      "email": "ace-p4-empty-a56891e7-5197-41ca-afa6-e5a45e0003c7@example.invalid"
+    }
+  ],
+  "courses": [
+    {
+      "label": "full_course",
+      "product": "full_course",
+      "templateId": "b5fec5ca-5fb4-4912-ae8e-0a0fc97123a5",
+      "batchId": "64503e0d-abb2-476d-b7fa-d48e548de0d1",
+      "startDate": "2026-11-16",
+      "document": {
+        "title": "Phase 4 QA full_course",
+        "summary": "Synthetic acceptance fixture",
+        "durationDays": 1,
+        "sessions": [
+          {
+            "key": "a4af446f-cea7-4eaa-b876-5f566aa4cb03",
+            "title": "Phase 4 QA Quant 1",
+            "section": "quant",
+            "content": {
+              "preSessionReads": [
+                {
+                  "key": "e8d1e38b-8ded-4557-a10b-ea6aa38d0222",
+                  "title": "QA Quant 1 preSessionReads",
+                  "url": "https://example.test/phase4/quant/Quant-1/preSessionReads"
+                }
+              ],
+              "recordings": [
+                {
+                  "key": "62beb63b-8fa2-4ba2-866b-095acb4a8954",
+                  "title": "QA Quant 1 recordings",
+                  "url": "https://example.test/phase4/quant/Quant-1/recordings"
+                }
+              ],
+              "postSessionReads": [
+                {
+                  "key": "6acfae05-8eb4-4ef1-88d9-826c3b15a0ba",
+                  "title": "QA Quant 1 postSessionReads",
+                  "url": "https://example.test/phase4/quant/Quant-1/postSessionReads"
+                }
+              ],
+              "materials": [
+                {
+                  "key": "79167bde-e926-4168-b51a-fc2d062c6da7",
+                  "title": "QA Quant 1 materials",
+                  "url": "https://example.test/phase4/quant/Quant-1/materials"
+                }
+              ]
+            }
+          },
+          {
+            "key": "e09e53c4-62e5-4bae-bb6a-fb86556abcdc",
+            "title": "Phase 4 QA Quant 4",
+            "section": "quant",
+            "content": {
+              "preSessionReads": [
+                {
+                  "key": "1cd0e63c-802c-42f0-8de2-157095939cd3",
+                  "title": "QA Quant 4 preSessionReads",
+                  "url": "https://example.test/phase4/quant/Quant-4/preSessionReads"
+                }
+              ],
+              "recordings": [
+                {
+                  "key": "66988312-cfdd-4988-b9a8-aa0c25992005",
+                  "title": "QA Quant 4 recordings",
+                  "url": "https://example.test/phase4/quant/Quant-4/recordings"
+                }
+              ],
+              "postSessionReads": [
+                {
+                  "key": "84c89a81-2610-4ae0-818d-cadaf9dc7426",
+                  "title": "QA Quant 4 postSessionReads",
+                  "url": "https://example.test/phase4/quant/Quant-4/postSessionReads"
+                }
+              ],
+              "materials": [
+                {
+                  "key": "a3eed6b4-049d-488f-a32d-b0f4be072d39",
+                  "title": "QA Quant 4 materials",
+                  "url": "https://example.test/phase4/quant/Quant-4/materials"
+                }
+              ]
+            }
+          },
+          {
+            "key": "e20ed23d-988f-4ea2-848c-2666d7e77622",
+            "title": "Phase 4 QA Quant 5",
+            "section": "quant",
+            "content": {
+              "preSessionReads": [
+                {
+                  "key": "2b3033ae-1b95-43c2-9db9-ae476882ca12",
+                  "title": "QA Quant 5 preSessionReads",
+                  "url": "https://example.test/phase4/quant/Quant-5/preSessionReads"
+                }
+              ],
+              "recordings": [
+                {
+                  "key": "24680dcb-b0f8-4625-9346-e0c2c4797ebb",
+                  "title": "QA Quant 5 recordings",
+                  "url": "https://example.test/phase4/quant/Quant-5/recordings"
+                }
+              ],
+              "postSessionReads": [
+                {
+                  "key": "300966c6-aaf3-4b86-803c-b1c6bf82fd4a",
+                  "title": "QA Quant 5 postSessionReads",
+                  "url": "https://example.test/phase4/quant/Quant-5/postSessionReads"
+                }
+              ],
+              "materials": [
+                {
+                  "key": "579ef156-87b1-404f-a50d-791476bb61c3",
+                  "title": "QA Quant 5 materials",
+                  "url": "https://example.test/phase4/quant/Quant-5/materials"
+                }
+              ]
+            }
+          },
+          {
+            "key": "15591181-ede2-4110-8747-19ded97542c5",
+            "title": "Phase 4 QA Verbal 1",
+            "section": "verbal",
+            "content": {
+              "preSessionReads": [
+                {
+                  "key": "5a0bcc51-e816-4151-bf12-5a358142626d",
+                  "title": "QA Verbal 1 preSessionReads",
+                  "url": "https://example.test/phase4/verbal/Verbal-1/preSessionReads"
+                }
+              ],
+              "recordings": [
+                {
+                  "key": "89fb7544-f760-4858-b0c4-8393108336f0",
+                  "title": "QA Verbal 1 recordings",
+                  "url": "https://example.test/phase4/verbal/Verbal-1/recordings"
+                }
+              ],
+              "postSessionReads": [
+                {
+                  "key": "402b0763-4bfb-49dc-8f3d-be2b3d66aafb",
+                  "title": "QA Verbal 1 postSessionReads",
+                  "url": "https://example.test/phase4/verbal/Verbal-1/postSessionReads"
+                }
+              ],
+              "materials": [
+                {
+                  "key": "fdbdff4b-db6b-41c4-a49e-8fbe28f116b7",
+                  "title": "QA Verbal 1 materials",
+                  "url": "https://example.test/phase4/verbal/Verbal-1/materials"
+                }
+              ]
+            }
+          },
+          {
+            "key": "351a8662-78df-408f-98d8-ea528b6201fd",
+            "title": "Phase 4 QA DI 1",
+            "section": "di",
+            "content": {
+              "preSessionReads": [
+                {
+                  "key": "4b9a32f0-ec11-4098-8644-8d6e6192d6ca",
+                  "title": "QA DI 1 preSessionReads",
+                  "url": "https://example.test/phase4/di/DI-1/preSessionReads"
+                }
+              ],
+              "recordings": [
+                {
+                  "key": "24b4c3ee-0252-4af3-a243-132b85229663",
+                  "title": "QA DI 1 recordings",
+                  "url": "https://example.test/phase4/di/DI-1/recordings"
+                }
+              ],
+              "postSessionReads": [
+                {
+                  "key": "c9c9f307-4a95-49bb-b4d4-add7743b4cc9",
+                  "title": "QA DI 1 postSessionReads",
+                  "url": "https://example.test/phase4/di/DI-1/postSessionReads"
+                }
+              ],
+              "materials": [
+                {
+                  "key": "0f850592-3fc2-45cb-bc4d-d6bf0e7751b3",
+                  "title": "QA DI 1 materials",
+                  "url": "https://example.test/phase4/di/DI-1/materials"
+                }
+              ]
+            }
+          }
+        ],
+        "events": [
+          {
+            "key": "4b227e5e-5272-4d8c-9830-47bdd40733cc",
+            "title": "Phase 4 QA Quant 4 live",
+            "section": "quant",
+            "kind": "live",
+            "dayOffset": 0,
+            "localStartTime": "19:00",
+            "durationMinutes": 60,
+            "capacity": 8,
+            "instructor": ""
+          },
+          {
+            "key": "e1d604e6-d718-40e6-b2db-0b18496ef7f0",
+            "title": "Phase 4 QA Quant 5 live",
+            "section": "quant",
+            "kind": "live",
+            "dayOffset": 0,
+            "localStartTime": "19:00",
+            "durationMinutes": 60,
+            "capacity": 8,
+            "instructor": ""
+          }
+        ]
+      }
+    },
+    {
+      "label": "quant",
+      "product": "quant",
+      "templateId": "948f2a37-e70f-4e89-980a-fd21ac7e3f9a",
+      "batchId": "f5062afc-05b4-4694-b6e1-759abfcee94f",
+      "startDate": "2026-11-16",
+      "document": {
+        "title": "Phase 4 QA quant",
+        "summary": "Synthetic acceptance fixture",
+        "durationDays": 1,
+        "sessions": [
+          {
+            "key": "b1110fc1-83c7-46fb-ac40-e9507e9bdf04",
+            "title": "Phase 4 QA Quant 1",
+            "section": "quant",
+            "content": {
+              "preSessionReads": [
+                {
+                  "key": "0580764f-d04a-4d3e-a4e9-6721a20967ab",
+                  "title": "QA Quant 1 preSessionReads",
+                  "url": "https://example.test/phase4/quant/Quant-1/preSessionReads"
+                }
+              ],
+              "recordings": [
+                {
+                  "key": "8a4a510a-42a4-4f8e-a244-682b3eb4fb3d",
+                  "title": "QA Quant 1 recordings",
+                  "url": "https://example.test/phase4/quant/Quant-1/recordings"
+                }
+              ],
+              "postSessionReads": [
+                {
+                  "key": "ed033751-702b-4a6c-89b5-86deb7d57301",
+                  "title": "QA Quant 1 postSessionReads",
+                  "url": "https://example.test/phase4/quant/Quant-1/postSessionReads"
+                }
+              ],
+              "materials": [
+                {
+                  "key": "0ce64be2-8846-4104-8e31-bc25d5934ce3",
+                  "title": "QA Quant 1 materials",
+                  "url": "https://example.test/phase4/quant/Quant-1/materials"
+                }
+              ]
+            }
+          },
+          {
+            "key": "995d0597-6dc7-4304-b4f1-4ebe94c674d0",
+            "title": "Phase 4 QA Quant 4",
+            "section": "quant",
+            "content": {
+              "preSessionReads": [
+                {
+                  "key": "870dd9b2-431f-435a-9a60-e56d6c66d31f",
+                  "title": "QA Quant 4 preSessionReads",
+                  "url": "https://example.test/phase4/quant/Quant-4/preSessionReads"
+                }
+              ],
+              "recordings": [
+                {
+                  "key": "bc502b31-1599-436b-9128-c896bfb588c7",
+                  "title": "QA Quant 4 recordings",
+                  "url": "https://example.test/phase4/quant/Quant-4/recordings"
+                }
+              ],
+              "postSessionReads": [
+                {
+                  "key": "871c9c89-181f-4839-bbb9-24665b2585a7",
+                  "title": "QA Quant 4 postSessionReads",
+                  "url": "https://example.test/phase4/quant/Quant-4/postSessionReads"
+                }
+              ],
+              "materials": [
+                {
+                  "key": "7a99b3bc-7720-4f8c-a660-598a0554674a",
+                  "title": "QA Quant 4 materials",
+                  "url": "https://example.test/phase4/quant/Quant-4/materials"
+                }
+              ]
+            }
+          },
+          {
+            "key": "cb9ab66d-50ab-4237-8245-39f2010f91fd",
+            "title": "Phase 4 QA Quant 5",
+            "section": "quant",
+            "content": {
+              "preSessionReads": [
+                {
+                  "key": "0486f62f-7ec7-4909-99ee-8d79c8d228de",
+                  "title": "QA Quant 5 preSessionReads",
+                  "url": "https://example.test/phase4/quant/Quant-5/preSessionReads"
+                }
+              ],
+              "recordings": [
+                {
+                  "key": "16a033d2-3073-45c2-ac6a-2109ba0b1821",
+                  "title": "QA Quant 5 recordings",
+                  "url": "https://example.test/phase4/quant/Quant-5/recordings"
+                }
+              ],
+              "postSessionReads": [
+                {
+                  "key": "d3bbad5e-39bf-4008-a8e3-e7b13e7aa575",
+                  "title": "QA Quant 5 postSessionReads",
+                  "url": "https://example.test/phase4/quant/Quant-5/postSessionReads"
+                }
+              ],
+              "materials": [
+                {
+                  "key": "afc93e7a-1abf-499b-94c8-438be788e4cd",
+                  "title": "QA Quant 5 materials",
+                  "url": "https://example.test/phase4/quant/Quant-5/materials"
+                }
+              ]
+            }
+          }
+        ],
+        "events": [
+          {
+            "key": "210bae1f-ab7b-4ad4-8be6-1b19c39d28e8",
+            "title": "Phase 4 QA Quant 4 live",
+            "section": "quant",
+            "kind": "live",
+            "dayOffset": 0,
+            "localStartTime": "19:00",
+            "durationMinutes": 60,
+            "capacity": 8,
+            "instructor": ""
+          },
+          {
+            "key": "e4b9de30-15a0-40a4-9a5e-5ef40ceaaab3",
+            "title": "Phase 4 QA Quant 5 live",
+            "section": "quant",
+            "kind": "live",
+            "dayOffset": 0,
+            "localStartTime": "19:00",
+            "durationMinutes": 60,
+            "capacity": 8,
+            "instructor": ""
+          }
+        ]
+      }
+    }
+  ],
+  "realCourse": {
+    "batchId": "2b19ea33-150c-5ddd-aae7-134831603408"
+  },
+  "databasePasswordUsed": false,
+  "baseline": {
+    "md5": "27145d216badf73e85ee4a42930499a2",
+    "table_count": 85,
+    "excluded_generated_profiles": 9
+  }
+}

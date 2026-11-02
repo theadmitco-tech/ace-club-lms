@@ -1,0 +1,39 @@
+{
+  "check": "phase4_hosted_acceptance",
+  "runId": "a56891e7-5197-41ca-afa6-e5a45e0003c7",
+  "project": "eyphkkginlgoaxflauog",
+  "commit": "9f865dfe83bda1b121493ed186899ae6c9532684",
+  "startedAt": "2026-11-02T01:35:39.761Z",
+  "status": "failed",
+  "checks": [
+    {
+      "id": "exact-preview-and-staging",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-course-authorized-learning",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-course-resource-inventory",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-course-complete-outline",
+      "status": "fail",
+      "gates": []
+    }
+  ],
+  "limitations": [
+    "Synthetic fixtures prove the learning and authorization workflow. Existing imported libraries are compared read-only; external recording playback requires separate provider checks.",
+    "The temporary LMS form stores caller-authored feedback; no Tally or independent attendance verification is claimed.",
+    "Automatic playback threshold and seek/replay behavior are rehearsed locally. Hosted synthetic recordings use the explicitly labelled unsupported-provider self-report.",
+    "Synthetic material and reading HTTP denials are smoke checks only: these fixture references are unavailable even without a feedback gate. Gate isolation is established by hosted private-URL omission and caller RPC checks together with local route tests that reject before provider access.",
+    "Exact SQL cleanup and generated Auth account removal remain required before final acceptance."
+  ],
+  "failure": "Hosted verification stopped at the last recorded check; private provider and browser diagnostics withheld.",
+  "finishedAt": "2026-11-02T01:36:12.265Z"
+}

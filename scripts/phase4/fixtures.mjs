@@ -1,5 +1,6 @@
 import {randomUUID} from 'node:crypto';
 import {PROJECT,UUID,check,literal} from '../phase1-hosted-closeout-config.mjs';
+export const REAL_COURSE_ID='2b19ea33-150c-5ddd-aae7-134831603408';
 export const QA_CASES=[{label:'admin',role:'admin',products:[]},{label:'full',products:['full_batch']},{label:'quant',products:['quant_crash']},
  {label:'unregistered',products:['quant_crash']},{label:'expired',products:['quant_crash']},{label:'revoked',products:['quant_crash']},
  {label:'inactive',products:['quant_crash']},{label:'wrong_subject',products:['di_crash']},{label:'empty',products:[]}];
@@ -20,6 +21,7 @@ function validate(state){
  for(const c of QA_CASES){const u=state.users.find(u=>u.label===c.label);check(u&&UUID.test(u.id)&&u.email===`ace-p4-${c.label}-${state.runId}@example.invalid`,'QA identity mismatch.');}
  check(state.courses.length===2&&['full_course','quant'].every(label=>state.courses.some(c=>c.label===label&&c.product===label&&UUID.test(c.batchId)&&UUID.test(c.templateId))),'Invalid generated course scope.');
  check(new Set(state.courses.flatMap(c=>[c.batchId,c.templateId])).size===4,'Duplicate fixture identifiers.');
+ if(state.realCourse)check(state.realCourse.batchId===REAL_COURSE_ID&&!state.courses.some(c=>c.batchId===REAL_COURSE_ID),'Only the designated existing Full Course may be attached.');
 }
 const user=(state,label)=>state.users.find(u=>u.label===label);
 const purchasePlan=state=>QA_CASES.filter(c=>c.products.length).map(c=>({...c,userId:user(state,c.label).id,reference:`phase4-qa:${state.runId}:${c.label}`}));
@@ -39,6 +41,9 @@ do $$begin
  if (select count(*) from phase4_qa_users q join public.profiles p on p.id=q.id and p.email=q.email and p.role=case when q.label='admin' then 'admin' else 'student' end)<>${QA_CASES.length} then raise exception 'QA profile ownership mismatch';end if;
  if to_regprocedure('public.submit_v2_session_feedback(uuid,uuid,jsonb)') is null then raise exception 'Phase 4 activation is required';end if;
 end $$;
+${state.realCourse?`do $$begin
+ if not exists(select 1 from public.v2_course_batches b join lateral(select document from public.v2_batch_publication_revisions where batch_id=b.id order by revision desc limit 1) p on true where b.id='${REAL_COURSE_ID}' and b.product_code='full_course' and p.document->>'state'='published') then raise exception 'The designated existing Full Course must remain published';end if;
+end $$;`:''}
 create or replace function pg_temp.phase4_public_fingerprint() returns jsonb language plpgsql as $$
 declare t record;h text;hashes text:='';n integer:=0;
 begin
@@ -67,21 +72,26 @@ export function buildSetupSql(state){
  const enrollments=['quant','unregistered','expired','revoked','inactive'].map(label=>`perform public.set_v2_batch_enrollment('${quant.batchId}','${user(state,label).id}',true,0);${label!=='unregistered'?`perform public.set_v2_live_registration('${quant.batchId}','${user(state,label).id}',true,0);`:''}`).join('\n');
  return header(state)+`
 create temporary table phase4_qa_baseline on commit drop as select pg_temp.phase4_public_fingerprint() fingerprint;
-do $$declare v_request jsonb;v_preview jsonb;begin
+do $$declare v_request jsonb;v_preview jsonb;v_table text;v_found boolean;begin
  if exists(select 1 from public.v2_course_templates t join phase4_qa_courses q on q.template_id=t.id)
  or exists(select 1 from public.v2_course_batches b join phase4_qa_courses q on q.batch_id=b.id)
  or exists(select 1 from public.v2_purchases p join phase4_qa_users q on q.id=p.student_id) then raise exception 'QA fixtures already exist; setup must not repeat';end if;
+ ${state.realCourse?`foreach v_table in array array['v2_batch_enrollments','v2_live_registrations','v2_learning_progress','v2_session_feedback','v2_feedback_obligations','v2_recording_watch_sessions'] loop
+ execute format('select exists(select 1 from public.%I where batch_id=$1 and student_id in(select id from phase4_qa_users))',v_table) into v_found using '${REAL_COURSE_ID}'::uuid;
+ if v_found then raise exception 'QA account already contains existing-course activity';end if;
+ end loop;`:''}
  ${grants}
  perform set_config('request.jwt.claim.sub','${admin}',true);
  ${authoring}
  ${enrollments}
  perform public.set_v2_batch_enrollment('${full.batchId}','${user(state,'full').id}',true,0);
  perform public.set_v2_live_registration('${full.batchId}','${user(state,'full').id}',true,0);
+ ${state.realCourse?`perform public.set_v2_batch_enrollment('${REAL_COURSE_ID}','${user(state,'full').id}',true,0);`:''}
 end $$;
 update public.v2_purchases set confirmed_at=statement_timestamp()-interval '7 months' where student_id='${user(state,'expired').id}' and payment_reference=${literal(`phase4-qa:${state.runId}:expired`)};
 update public.v2_purchases set revoked_at=statement_timestamp() where student_id='${user(state,'revoked').id}' and payment_reference=${literal(`phase4-qa:${state.runId}:revoked`)};
 update public.profiles set is_active=false where id='${user(state,'inactive').id}';
-select jsonb_build_object('check','phase4_qa_fixture_setup','run_id',${literal(state.runId)},'qa_accounts',${QA_CASES.length},'batches',2,'purchases',7,'baseline',(select fingerprint from phase4_qa_baseline));
+select jsonb_build_object('check','phase4_qa_fixture_setup','run_id',${literal(state.runId)},'qa_accounts',${QA_CASES.length},'batches',2,'purchases',7,'real_course_enrollments',${state.realCourse?1:0},'baseline',(select fingerprint from phase4_qa_baseline));
 commit;
 `;
 }
@@ -96,13 +106,26 @@ do $$declare v_table text;v_foreign boolean;begin
  or exists(select 1 from public.v2_batch_publication_revisions r join phase4_qa_courses q on q.batch_id=r.batch_id where r.actor_id<>'${admin}') then raise exception 'Fixture revisions have unexpected ownership';end if;
  if exists(select 1 from public.v2_purchases p where p.student_id in(select id from phase4_qa_users) and not(${predicate})) then raise exception 'Generated accounts contain unexpected purchases';end if;
  if exists(select 1 from public.v2_batch_enrollments e where e.batch_id in(select batch_id from phase4_qa_courses) and e.student_id not in(select id from phase4_qa_users)) then raise exception 'Fixture batch contains a non-fixture Student';end if;
- if exists(select 1 from public.v2_learning_progress p where p.student_id in(select id from phase4_qa_users) and p.batch_id not in(select batch_id from phase4_qa_courses))
+ if exists(select 1 from public.v2_learning_progress p where p.student_id in(select id from phase4_qa_users) and p.batch_id not in(select batch_id from phase4_qa_courses) ${state.realCourse?`and not(p.batch_id='${REAL_COURSE_ID}' and p.student_id='${user(state,'full').id}')`:''})
  or exists(select 1 from public.v2_feedback_obligations o where o.student_id in(select id from phase4_qa_users) and o.batch_id not in(select batch_id from phase4_qa_courses)) then raise exception 'QA learning activity escaped fixture scope';end if;
  foreach v_table in array array['v2_learning_progress','v2_session_feedback','v2_feedback_obligations','v2_recording_watch_sessions','v2_live_registrations'] loop
   execute format('select exists(select 1 from public.%I where batch_id in(select batch_id from phase4_qa_courses) and student_id not in(select id from phase4_qa_users))',v_table) into v_foreign;
   if v_foreign then raise exception 'Fixture learning data contains a non-fixture Student';end if;
  end loop;
+${state.realCourse?`foreach v_table in array array['v2_batch_enrollments','v2_learning_progress','v2_recording_watch_sessions'] loop
+ execute format('select exists(select 1 from public.%I where batch_id=$1 and student_id in(select id from phase4_qa_users) and student_id<>$2)',v_table) into v_foreign using '${REAL_COURSE_ID}'::uuid,'${user(state,'full').id}'::uuid;
+ if v_foreign then raise exception 'Unexpected QA identity used the existing course';end if;
+ end loop;
+ foreach v_table in array array['v2_live_registrations','v2_feedback_obligations','v2_session_feedback'] loop
+ execute format('select exists(select 1 from public.%I where batch_id=$1 and student_id in(select id from phase4_qa_users))',v_table) into v_foreign using '${REAL_COURSE_ID}'::uuid;
+ if v_foreign then raise exception 'Existing-course QA scope exceeded read-only learning checks';end if;
+ end loop;`:''}
 end $$;
+${state.realCourse?`-- Only the generated Full Course QA identity loses its temporary learning state and enrollment.
+delete from public.v2_recording_watch_samples s using public.v2_recording_watch_sessions w where s.watch_id=w.id and w.batch_id='${REAL_COURSE_ID}' and w.student_id='${user(state,'full').id}';
+delete from public.v2_recording_watch_sessions where batch_id='${REAL_COURSE_ID}' and student_id='${user(state,'full').id}';
+delete from public.v2_learning_progress where batch_id='${REAL_COURSE_ID}' and student_id='${user(state,'full').id}';
+delete from public.v2_batch_enrollments where batch_id='${REAL_COURSE_ID}' and student_id='${user(state,'full').id}';`:''}
 delete from public.v2_recording_watch_samples s using public.v2_recording_watch_sessions w where s.watch_id=w.id and w.batch_id in(select batch_id from phase4_qa_courses);
 delete from public.v2_recording_watch_sessions where batch_id in(select batch_id from phase4_qa_courses);
 delete from public.v2_feedback_obligations where batch_id in(select batch_id from phase4_qa_courses);
