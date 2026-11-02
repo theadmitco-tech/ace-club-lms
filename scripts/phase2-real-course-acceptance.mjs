@@ -82,6 +82,8 @@ export async function verifyRealCourse({state,plan,sessions,browser,protectionCo
         ok(`real-notion-rendered:${index}`,(await reader.innerText()).trim().length>0||await reader.locator('img').count()>0,['P2-11']);
       }else{
         const frame=resource.locator('iframe');await frame.waitFor({state:'visible',timeout:30000});
+        // The provider defers embedded content until the Student scrolls it into view.
+        await frame.scrollIntoViewIfNeeded();
         ok(`real-notion-original-source:${index}`,await frame.getAttribute('src')===item.url&&await frame.getAttribute('title')===item.title,['P2-11','P2-12']);
         const contents=resource.frameLocator('iframe');await contents.locator('[data-block-id],.notion-page-content').first().waitFor({state:'visible',timeout:30000});
         const visibleText=(await contents.locator('body').innerText()).trim();

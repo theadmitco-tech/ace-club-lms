@@ -1,0 +1,27 @@
+{
+  "check": "phase2_original_recording_provider_metadata",
+  "sourceReferencesChanged": false,
+  "uniqueSources": 3,
+  "placementsInFullCourse": 4,
+  "checks": [
+    {
+      "index": 0,
+      "statusCode": 200,
+      "recognizedEmbed": true,
+      "providerVideoAvailable": true
+    },
+    {
+      "index": 1,
+      "statusCode": 200,
+      "recognizedEmbed": true,
+      "providerVideoAvailable": true
+    },
+    {
+      "index": 2,
+      "statusCode": 200,
+      "recognizedEmbed": true,
+      "providerVideoAvailable": true
+    }
+  ],
+  "playbackClaimed": false
+}

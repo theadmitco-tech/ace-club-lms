@@ -1,0 +1,20 @@
+{
+  "check": "phase2_account_closeout",
+  "project": "eyphkkginlgoaxflauog",
+  "runId": "307e2a9f-9265-45f9-9818-4ea52711684c",
+  "recordedAt": "2026-11-02T00:23:51.149Z",
+  "status": "passed",
+  "qaAuthAccountsAbsent": 9,
+  "qaProfilesAbsent": 9,
+  "qaPurchasesRemaining": 0,
+  "operatorAuditIdentityRetained": true,
+  "operatorProfileInactive": true,
+  "operatorAuthBanned": true,
+  "privatePasswordsRemoved": true,
+  "baselineRestored": true,
+  "baseline": {
+    "md5": "d960200e147961964330031a3762eb4a",
+    "table_count": 78,
+    "excluded_generated_profiles": 9
+  }
+}

@@ -102,7 +102,7 @@ function NotionReaderContent({
 
   if (status === 'source-fallback' && fallbackEmbedUrl) {
     return <div>
-      <p className="material-status" role="status">The inline reader is unavailable. The original Notion embed is shown below.</p>
+      <p className="material-inline-notice" role="status">The inline reader is unavailable. The original Notion embed is shown below.</p>
       <div className="notion-embed-shell"><iframe className="notion-fallback-embed" src={fallbackEmbedUrl} title={title}
         loading="eager" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen /></div>
       <a className="student-button student-button-secondary" href={fallbackEmbedUrl} target="_blank" rel="noreferrer">Open the original reading</a>

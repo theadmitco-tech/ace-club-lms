@@ -1,0 +1,14 @@
+{
+  "check": "phase2_qa_fixture_setup",
+  "run_id": "307e2a9f-9265-45f9-9818-4ea52711684c",
+  "batches": 5,
+  "baseline": {
+    "md5": "d960200e147961964330031a3762eb4a",
+    "table_count": 78,
+    "excluded_generated_profiles": 9
+  },
+  "purchases": 7,
+  "qa_accounts": 9,
+  "real_course_enrollments": 1,
+  "evidenceKind": "Operator-provided QA setup JSON, recorded after matching run, counts and real-course enrollment."
+}

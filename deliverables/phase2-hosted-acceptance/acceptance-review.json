@@ -1,0 +1,29 @@
+{
+  "check": "phase2_hosted_acceptance_review",
+  "evidenceKind": "Evidence-based review across retained execution reports; not a single uninterrupted run.",
+  "project": "eyphkkginlgoaxflauog",
+  "functionalCommit": "aee96df42dffb80948021d6d22392fb059189ee8",
+  "runId": "307e2a9f-9265-45f9-9818-4ea52711684c",
+  "status": "functionality-and-cleanup-verified-final-preview-pending",
+  "mainChecksPassed": 77,
+  "authoringChecksPassed": 14,
+  "targetedSecondReadingChecksPassed": 4,
+  "notionApiStatus": "The legacy embed references do not return validated API record maps. Both original embeds rendered; no API rendering claim is made.",
+  "resolvedHarnessIssues": [
+    "Admin heading assertion ran before streamed content was visible; explicit visibility wait passed.",
+    "The publication supplement initially used the wrong batch-edit request shape; pinned template identity with explicit session edits passed.",
+    "The second external embed deferred content outside the viewport; scrolling into view rendered the original reading and denial checks passed."
+  ],
+  "universalPublication": "The fixture runner excluded real batches from its mutation scope. The separately reviewed four-library publication passed 76 checks.",
+  "preservation": "Original 60-table reconciliation and guarded import preservation passed. The operator-reported cleanup restored the exact 78-table baseline; 72 subsequent library checks passed.",
+  "cleanupBaseline": "d960200e147961964330031a3762eb4a",
+  "productionChanged": false,
+  "prDraft": true,
+  "limitations": [
+    "Original Notion embeds remain provider-hosted.",
+    "Recording provider availability and original references were verified; sustained video playback was not claimed.",
+    "The unsupported mock-route smoke probe is excluded. Legacy data fingerprints and Phase 1 regression evidence support preservation."
+  ],
+  "cleanupEvidence": "cleanup-result.json",
+  "accountCloseoutEvidence": "account-closeout.json"
+}

@@ -1,0 +1,385 @@
+{
+  "runId": "307e2a9f-9265-45f9-9818-4ea52711684c",
+  "project": "eyphkkginlgoaxflauog",
+  "commit": "aee96df42dffb80948021d6d22392fb059189ee8",
+  "startedAt": "2026-11-02T00:09:48.996Z",
+  "status": "failed",
+  "checks": [
+    {
+      "id": "exact-preview-and-staging",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "anonymous-reading-denied",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "all-offerings-authored",
+      "status": "pass",
+      "gates": [
+        "P2-01",
+        "P2-03"
+      ]
+    },
+    {
+      "id": "undated-offerings-retained",
+      "status": "pass",
+      "gates": [
+        "P2-06"
+      ]
+    },
+    {
+      "id": "course-access:eligible",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "meeting-access:eligible",
+      "status": "pass",
+      "gates": [
+        "P2-13"
+      ]
+    },
+    {
+      "id": "unpublished-hidden:eligible",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "course-access:unregistered",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "meeting-access:unregistered",
+      "status": "pass",
+      "gates": [
+        "P2-13"
+      ]
+    },
+    {
+      "id": "unpublished-hidden:unregistered",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "course-access:expired",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "meeting-access:expired",
+      "status": "pass",
+      "gates": [
+        "P2-13"
+      ]
+    },
+    {
+      "id": "unpublished-hidden:expired",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "course-access:revoked",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "meeting-access:revoked",
+      "status": "pass",
+      "gates": [
+        "P2-13"
+      ]
+    },
+    {
+      "id": "unpublished-hidden:revoked",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "course-access:inactive",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "meeting-access:inactive",
+      "status": "pass",
+      "gates": [
+        "P2-13"
+      ]
+    },
+    {
+      "id": "unpublished-hidden:inactive",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "course-access:wrong_subject",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "meeting-access:wrong_subject",
+      "status": "pass",
+      "gates": [
+        "P2-13"
+      ]
+    },
+    {
+      "id": "unpublished-hidden:wrong_subject",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "course-access:empty",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "meeting-access:empty",
+      "status": "pass",
+      "gates": [
+        "P2-13"
+      ]
+    },
+    {
+      "id": "unpublished-hidden:empty",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "course-access:admin",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "meeting-access:admin",
+      "status": "pass",
+      "gates": [
+        "P2-13"
+      ]
+    },
+    {
+      "id": "unpublished-hidden:admin",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "full-course-programme-content",
+      "status": "pass",
+      "gates": [
+        "P2-02",
+        "P2-17"
+      ]
+    },
+    {
+      "id": "exact-pinned-session-content",
+      "status": "pass",
+      "gates": [
+        "P2-03",
+        "P2-10",
+        "P2-11"
+      ]
+    },
+    {
+      "id": "private-table-hidden:v2_course_templates",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "private-table-hidden:v2_course_template_revisions",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "private-table-hidden:v2_course_batches",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "private-table-hidden:v2_course_batch_revisions",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "private-table-hidden:v2_batch_meeting_revisions",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "private-table-hidden:v2_batch_publication_revisions",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "private-table-hidden:v2_batch_enrollments",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "private-table-hidden:v2_published_meetings",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "private-table-hidden:v2_live_registrations",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "private-table-hidden:v2_live_registration_audit",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "private-table-hidden:v2_live_class_completions",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "private-table-hidden:v2_shared_content_assets",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "private-table-hidden:v2_content_imports",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "private-table-hidden:v2_content_asset_placements",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "private-table-hidden:v2_publication_scope_requests",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "student-completion-denied",
+      "status": "pass",
+      "gates": [
+        "P2-14",
+        "P2-17"
+      ]
+    },
+    {
+      "id": "student-course-visible",
+      "status": "pass",
+      "gates": [
+        "P2-10",
+        "P2-11"
+      ]
+    },
+    {
+      "id": "student-session-stage-order",
+      "status": "pass",
+      "gates": [
+        "P2-03"
+      ]
+    },
+    {
+      "id": "student-course-mobile-fit",
+      "status": "pass",
+      "gates": [
+        "P2-11"
+      ]
+    },
+    {
+      "id": "unrelated-reading-api-denied",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "arbitrary-storage-path-denied",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "admin-authoring-visible",
+      "status": "fail",
+      "gates": [
+        "P2-01"
+      ]
+    }
+  ],
+  "limitations": [
+    "Synthetic fixtures prove application and authorization behavior; real-material import fidelity requires separate source mapping and comparison evidence.",
+    "External source sharing and private storage objects require actual imported-resource checks; synthetic resource URLs are not downloaded.",
+    "Existing legacy mock and worksheet content is protected by the SQL setup/cleanup fingerprint; authenticated legacy browser journeys remain separate.",
+    "Cleanup is required before final acceptance. Manual live registration does not establish a live-fee payment."
+  ],
+  "failure": "Hosted check failed: admin-authoring-visible",
+  "completedAt": "2026-11-02T00:10:27.140Z"
+}

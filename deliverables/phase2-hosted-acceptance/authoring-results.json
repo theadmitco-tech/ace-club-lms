@@ -1,0 +1,67 @@
+{
+  "check": "phase2_hosted_authoring_lifecycle",
+  "project": "eyphkkginlgoaxflauog",
+  "commit": "aee96df42dffb80948021d6d22392fb059189ee8",
+  "runId": "307e2a9f-9265-45f9-9818-4ea52711684c",
+  "scope": "Exact synthetic Verbal template and batch only; real library content is excluded.",
+  "checks": [
+    {
+      "id": "five-session-fields-saved-through-hosted-ui",
+      "status": "pass"
+    },
+    {
+      "id": "saved-session-heading-reopens",
+      "status": "pass"
+    },
+    {
+      "id": "template-edit-leaves-publication-pinned",
+      "status": "pass"
+    },
+    {
+      "id": "template-edit-leaves-publication-pinned",
+      "status": "pass"
+    },
+    {
+      "id": "undated-batch-revision-retains-independent-content",
+      "status": "pass"
+    },
+    {
+      "id": "publish-revision-2",
+      "status": "pass"
+    },
+    {
+      "id": "publish-retry-2",
+      "status": "pass"
+    },
+    {
+      "id": "unpublish-revision-3",
+      "status": "pass"
+    },
+    {
+      "id": "unpublish-retry-3",
+      "status": "pass"
+    },
+    {
+      "id": "publish-revision-4",
+      "status": "pass"
+    },
+    {
+      "id": "publish-retry-4",
+      "status": "pass"
+    },
+    {
+      "id": "outline-and-edited-session-published-together",
+      "status": "pass"
+    },
+    {
+      "id": "stale-publication-review-rejected",
+      "status": "pass"
+    },
+    {
+      "id": "original-template-revision-remains-immutable",
+      "status": "pass"
+    }
+  ],
+  "status": "passed",
+  "resumedFrom": "authoring-first-attempt.json"
+}

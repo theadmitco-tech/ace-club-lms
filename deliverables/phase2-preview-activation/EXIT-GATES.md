@@ -2,8 +2,7 @@
 
 **Current status, 2 November: Phase 1 complete; Phase 2 implementation and local
 verification passed. Staging schema activation, approved material import and
-four-library publication are complete. Hosted role/resource acceptance and exact
-QA cleanup remain pending.** The current
+four-library publication are complete. Hosted role/resource acceptance is recorded in the [current 17-gate checklist](../phase2-hosted-acceptance/EXIT-GATES.md); exact QA cleanup and account closeout have passed.** The current
 [implementation and evidence](../phase2-completion-2026-11-02/README.md) supersede
 the implementation-gap observations below. The original 17 requirements remain
 unchanged; none is marked complete solely from local or synthetic checks.

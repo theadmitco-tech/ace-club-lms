@@ -1,9 +1,9 @@
 {
   "project": "eyphkkginlgoaxflauog",
   "runId": "307e2a9f-9265-45f9-9818-4ea52711684c",
-  "preview": "https://ace-club-plzznqqzs-theadmitco-techs-projects.vercel.app",
-  "commit": "65b8d3fa5c00d9cdb6fdd9af94a8af926cfd9046",
-  "status": "accounts-created-awaiting-sql",
+  "preview": "https://ace-club-f1iabkb4j-theadmitco-techs-projects.vercel.app",
+  "commit": "aee96df42dffb80948021d6d22392fb059189ee8",
+  "status": "cleaned",
   "users": [
     {
       "id": "2df035e4-f406-4abf-9460-a3850e1a9b65",
@@ -369,5 +369,33 @@
     "batchRevision": 1,
     "itemCount": 19,
     "mappingReviewHash": "086263120ba599cad2b47ee76f809593728e02957e91c7469d9e506e8e16d0f0"
-  }
+  },
+  "baseline": {
+    "md5": "d960200e147961964330031a3762eb4a",
+    "table_count": 78,
+    "excluded_generated_profiles": 9
+  },
+  "retryReason": "Admin route assertion now waits for a visible streamed heading; first attempt stopped before fixture class completion.",
+  "cleanup": {
+    "check": "phase2_qa_fixture_cleanup",
+    "run_id": "307e2a9f-9265-45f9-9818-4ea52711684c",
+    "fingerprint": {
+      "md5": "d960200e147961964330031a3762eb4a",
+      "table_count": 78,
+      "excluded_generated_profiles": 9
+    },
+    "baseline_restored": true
+  },
+  "deletedAccountIds": [
+    "6c3ac735-ad59-478c-a104-264b66b65af4",
+    "0465a0db-a6a4-4004-9c0f-5acf10d0aed7",
+    "13342f35-9214-481e-8959-8b70c6b7d9b7",
+    "c51ef1b7-380e-4c9b-b4e6-1e4652be265a",
+    "2cd192e6-f365-440f-ba1c-8212506c57d9",
+    "f23fdf9d-d6db-45ee-8c89-bd1886baf2c9",
+    "18fda033-4c39-499b-a7b2-ceb598d7f679",
+    "1d0cd9f6-6831-4d1c-babe-52c9d6e7429c",
+    "2df035e4-f406-4abf-9460-a3850e1a9b65"
+  ],
+  "cleanedAt": "2026-11-02T00:23:35.774Z"
 }

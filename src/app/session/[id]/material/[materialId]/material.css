@@ -64,6 +64,16 @@
   color: var(--text-secondary);
 }
 
+.material-inline-notice {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #f1f5ee;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
 .material-status-error {
   padding: 26px;
   border: 1px solid rgba(164, 58, 46, 0.18);

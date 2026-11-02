@@ -1,0 +1,24 @@
+{
+  "check": "phase2_original_embed_content_inspection",
+  "sourceUrlsChanged": false,
+  "apiPageIdentityClaimed": false,
+  "checks": [
+    {
+      "index": 0,
+      "contentCharacters": 6816,
+      "visibleBlocks": 102,
+      "imageCount": 25,
+      "errorPage": false,
+      "passed": true
+    },
+    {
+      "index": 1,
+      "contentCharacters": 2183,
+      "visibleBlocks": 15,
+      "imageCount": 1,
+      "errorPage": false,
+      "passed": true
+    }
+  ],
+  "status": "passed"
+}

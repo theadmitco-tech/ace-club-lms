@@ -1,0 +1,42 @@
+{
+  "check": "phase2_hosted_resource_recheck",
+  "commit": "aee96df42dffb80948021d6d22392fb059189ee8",
+  "runId": "307e2a9f-9265-45f9-9818-4ea52711684c",
+  "project": "eyphkkginlgoaxflauog",
+  "checks": [
+    {
+      "id": "real-notion-original-source:1",
+      "status": "pass",
+      "gates": [
+        "P2-11",
+        "P2-12"
+      ]
+    },
+    {
+      "id": "real-notion-original-rendered:1",
+      "status": "pass",
+      "gates": [
+        "P2-11"
+      ]
+    },
+    {
+      "id": "real-notion-mobile-fit:1",
+      "status": "pass",
+      "gates": [
+        "P2-11"
+      ]
+    },
+    {
+      "id": "real-notion-negative:1",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    }
+  ],
+  "status": "passed",
+  "mutations": false,
+  "scope": "Second original reading viewport and denial checks; earlier PDF and first-reading evidence remains separate.",
+  "originalEmbedVerified": true,
+  "apiPageIdentityClaimed": false
+}

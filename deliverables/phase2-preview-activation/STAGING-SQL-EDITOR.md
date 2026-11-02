@@ -1,5 +1,7 @@
 # Staging SQL Editor activation — 28 October 2026
 
+> Historical activation instructions. Phase 2 staging activation, publication and fixture cleanup have completed. The [current completion handoff](../phase2-completion-2026-11-02/README.md) supersedes pending statuses below. Applied migrations and completed fixture SQL must not be rerun.
+
 Current state: **prepared and locally verified; no staging SQL executed**.
 Supabase OAuth remains blocked. Use the authenticated dashboard's
 [staging SQL Editor](https://supabase.com/dashboard/project/eyphkkginlgoaxflauog/sql).

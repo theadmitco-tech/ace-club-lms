@@ -1,0 +1,195 @@
+{
+  "check": "phase2_hosted_resource_recheck",
+  "commit": "aee96df42dffb80948021d6d22392fb059189ee8",
+  "runId": "307e2a9f-9265-45f9-9818-4ea52711684c",
+  "project": "eyphkkginlgoaxflauog",
+  "checks": [
+    {
+      "id": "real-course-exact-published-revision",
+      "status": "pass",
+      "gates": [
+        "P2-07",
+        "P2-08"
+      ]
+    },
+    {
+      "id": "real-course-exact-nineteen-resource-placements",
+      "status": "pass",
+      "gates": [
+        "P2-02",
+        "P2-03",
+        "P2-04",
+        "P2-10",
+        "P2-12"
+      ]
+    },
+    {
+      "id": "real-course-exact-student-titles",
+      "status": "pass",
+      "gates": [
+        "P2-10",
+        "P2-11"
+      ]
+    },
+    {
+      "id": "real-course-mobile-fit",
+      "status": "pass",
+      "gates": [
+        "P2-11"
+      ]
+    },
+    {
+      "id": "real-private-pdf:0",
+      "status": "pass",
+      "gates": [
+        "P2-04",
+        "P2-11",
+        "P2-12"
+      ]
+    },
+    {
+      "id": "real-private-pdf-negative:0",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "real-private-pdf:1",
+      "status": "pass",
+      "gates": [
+        "P2-04",
+        "P2-11",
+        "P2-12"
+      ]
+    },
+    {
+      "id": "real-private-pdf-negative:1",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "real-private-pdf:2",
+      "status": "pass",
+      "gates": [
+        "P2-04",
+        "P2-11",
+        "P2-12"
+      ]
+    },
+    {
+      "id": "real-private-pdf-negative:2",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "real-private-pdf:3",
+      "status": "pass",
+      "gates": [
+        "P2-04",
+        "P2-11",
+        "P2-12"
+      ]
+    },
+    {
+      "id": "real-private-pdf-negative:3",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "real-private-pdf:4",
+      "status": "pass",
+      "gates": [
+        "P2-04",
+        "P2-11",
+        "P2-12"
+      ]
+    },
+    {
+      "id": "real-private-pdf-negative:4",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "real-notion-authorized-response:0",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "real-notion-api:0",
+      "status": "inconclusive",
+      "gates": [],
+      "reason": "The authorized provider reader did not return a validated page; original embed rendering is checked separately."
+    },
+    {
+      "id": "real-notion-original-source:0",
+      "status": "pass",
+      "gates": [
+        "P2-11",
+        "P2-12"
+      ]
+    },
+    {
+      "id": "real-notion-original-rendered:0",
+      "status": "pass",
+      "gates": [
+        "P2-11"
+      ]
+    },
+    {
+      "id": "real-notion-mobile-fit:0",
+      "status": "pass",
+      "gates": [
+        "P2-11"
+      ]
+    },
+    {
+      "id": "real-notion-negative:0",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "real-notion-authorized-response:1",
+      "status": "pass",
+      "gates": [
+        "P2-17"
+      ]
+    },
+    {
+      "id": "real-notion-api:1",
+      "status": "inconclusive",
+      "gates": [],
+      "reason": "The authorized provider reader did not return a validated page; original embed rendering is checked separately."
+    },
+    {
+      "id": "real-notion-original-source:1",
+      "status": "pass",
+      "gates": [
+        "P2-11",
+        "P2-12"
+      ]
+    }
+  ],
+  "status": "failed",
+  "mutations": false,
+  "failureType": "TimeoutError",
+  "reason": "Read-only resource verification interrupted; private provider details withheld.",
+  "frameDiagnostics": [
+    {
+      "visible": true,
+      "sourceKind": "approved-notion-source"
+    }
+  ]
+}

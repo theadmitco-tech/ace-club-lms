@@ -1,5 +1,7 @@
 # Phase 2 Preview activation
 
+> Historical activation instructions. Phase 2 staging activation, publication and fixture cleanup have completed. The [current completion handoff](../phase2-completion-2026-11-02/README.md) supersedes pending statuses below. Applied migrations and completed fixture SQL must not be rerun.
+
 The [full Phase 2 completion checklist](EXIT-GATES.md) maps all 17 gates from
 the product reviewer's supplied draft, including requirements missing from the older authoring-only
 scope. Activating the six migrations and three flags alone is not phase completion.

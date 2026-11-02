@@ -1,9 +1,9 @@
 {
   "check": "phase2_approved_material_acceptance",
-  "mode": "publish-reviewed",
+  "mode": "verify-publication",
   "project": "eyphkkginlgoaxflauog",
   "importId": "2566de69-062e-57f2-a6ca-62e37905f9df",
-  "startedAt": "2026-11-02T00:03:28.436Z",
+  "startedAt": "2026-11-02T00:23:02.010Z",
   "checks": [
     {
       "id": "durable-operator-import-identity",
@@ -290,23 +290,7 @@
       "status": "pass"
     },
     {
-      "id": "explicit-previously-reviewed-scope-confirmed",
-      "status": "pass"
-    },
-    {
-      "id": "saved-publication-scope-exactly-four-approved-batches",
-      "status": "pass"
-    },
-    {
-      "id": "publication-review-remains-current",
-      "status": "pass"
-    },
-    {
-      "id": "publication-receipt-matches-approved-scope",
-      "status": "pass"
-    },
-    {
-      "id": "published-heads-match-approved-scope",
+      "id": "exact-library-batches-published",
       "status": "pass"
     }
   ],
@@ -316,31 +300,5 @@
     "Original legacy and Phase 1 full-table preservation is recorded by the guarded import SQL transaction.",
     "Publication requires the explicit publish-reviewed mode and exact previously inspected four-batch scope hash."
   ],
-  "publicationScope": {
-    "scopeHash": "acb572c72303a28ef8970d2aa6e4729a2ec38557ac308e4d801434c1467ff13b",
-    "batches": [
-      {
-        "batchId": "0716928d-26e2-5777-a716-b73b879d3e87",
-        "productCode": "verbal",
-        "publicationRevision": 1
-      },
-      {
-        "batchId": "2b19ea33-150c-5ddd-aae7-134831603408",
-        "productCode": "full_course",
-        "publicationRevision": 1
-      },
-      {
-        "batchId": "624c91a7-7b6a-5d54-ac1f-1d69c1972fb7",
-        "productCode": "di",
-        "publicationRevision": 1
-      },
-      {
-        "batchId": "75723cd2-d0f5-5719-a30f-521733f88286",
-        "productCode": "quant",
-        "publicationRevision": 1
-      }
-    ],
-    "published": true
-  },
-  "finishedAt": "2026-11-02T00:03:43.143Z"
+  "finishedAt": "2026-11-02T00:23:15.900Z"
 }

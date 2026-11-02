@@ -63,3 +63,23 @@ A passing synthetic run does not by itself close every Phase 2 gate.
 
 Concurrent unrelated staging writes can invalidate the cleanup fingerprint. That
 condition stops and rolls back cleanup; it never permits a baseline bypass.
+
+## Hosted authoring supplement
+
+`node scripts/phase2-hosted-authoring.mjs` uses only the exact generated Verbal
+template and batch after fixture setup. The browser changes and reopens the
+session heading and all four resource collections through the deployed Admin
+form. The initial published revision remains pinned until a separate reviewed
+batch publication. The supplement then verifies undated batch content edits,
+publish/unpublish/republish, request replay, stale review rejection and immutable
+original template history. All mutations remain inside the existing cleanup scope.
+
+A batch retains its original template identity and revision anchor; later content
+edits are supplied explicitly in its session document. The supplemental runner
+records its earlier interrupted attempt separately. The explicit
+`--resume-lifecycle` option requires the matching completed UI evidence and the
+expected synthetic template revision before continuing the publication checks.
+
+The main runner waits for the streamed Admin heading before checking its presence.
+The initial premature-heading assertion remains recorded as a failed first attempt;
+it is not presented as a product regression or omitted from the audit trail.
