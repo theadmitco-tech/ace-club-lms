@@ -21,6 +21,12 @@ function validate(state){
   check(state.users.length===QA_CASES.length&&new Set(state.users.map(u=>u.id)).size===QA_CASES.length,'Incomplete QA users.');
   for(const c of QA_CASES){const u=state.users.find(u=>u.label===c.label);check(u&&UUID.test(u.id)&&u.email===`ace-p2-${c.label}-${state.runId}@example.invalid`,'QA identity mismatch.');}
   check(state.courses.length===5&&state.courses.every(c=>UUID.test(c.batchId)&&UUID.test(c.templateId)&&UUID.test(c.eventKey)),'Invalid course fixture scope.');
+  if(state.realFullCourseBatchId!==undefined){
+    check(UUID.test(state.realFullCourseBatchId)&&!state.courses.some(c=>c.batchId===state.realFullCourseBatchId),'Invalid existing course fixture scope.');
+    const review=state.realCourseReview;
+    check(review&&UUID.test(review.templateId)&&Number.isInteger(review.publicationRevision)&&review.publicationRevision>0
+      &&Number.isInteger(review.batchRevision)&&review.batchRevision>0,'An exact reviewed real-course publication is required.');
+  }
 }
 const user=(state,label)=>state.users.find(u=>u.label===label);
 const purchasePlan=state=>QA_CASES.filter(c=>c.products.length).map(c=>({...c,userId:user(state,c.label).id,reference:`phase2-qa:${state.runId}:${c.label}`}));
@@ -71,6 +77,15 @@ export function buildPhase2SetupSql(state){
   }).join('\n');
   const enrollments=['eligible','unregistered','expired','revoked','inactive'].map(label=>`perform public.set_v2_batch_enrollment('${quant.batchId}','${user(state,label).id}',true,0);
  ${label!=='unregistered'?`perform public.set_v2_live_registration('${quant.batchId}','${user(state,label).id}',true,0);`:''}`).join('\n');
+  const realEnrollment=state.realFullCourseBatchId?`
+ if not exists(select 1 from public.v2_course_batches b join lateral (select revision,batch_revision,document from public.v2_batch_publication_revisions where batch_id=b.id order by revision desc limit 1)p on true
+   where b.id='${state.realFullCourseBatchId}' and b.product_code='full_course' and b.template_id='${state.realCourseReview.templateId}'
+   and p.document->>'state'='published' and p.revision=${state.realCourseReview.publicationRevision} and p.batch_revision=${state.realCourseReview.batchRevision})
+ then raise exception 'Reviewed real Full Course publication changed';end if;
+ if exists(select 1 from public.v2_batch_enrollments where batch_id='${state.realFullCourseBatchId}' and student_id='${user(state,'full').id}')
+ then raise exception 'Generated QA account already has a real-course enrollment';end if;
+ perform public.set_v2_batch_enrollment('${state.realFullCourseBatchId}','${user(state,'full').id}',true,0);
+ `:'';
   return header(state)+`
 create temporary table phase2_qa_baseline on commit drop as select pg_temp.phase2_public_fingerprint() fingerprint;
 do $$ declare v_request jsonb;v_preview jsonb;begin
@@ -83,11 +98,12 @@ do $$ declare v_request jsonb;v_preview jsonb;begin
  ${enrollments}
  perform public.set_v2_batch_enrollment('${full.batchId}','${user(state,'full').id}',true,0);
  perform public.set_v2_batch_enrollment('${di.batchId}','${user(state,'wrong_subject').id}',true,0);
+ ${realEnrollment}
 end $$;
 update public.v2_purchases set confirmed_at=statement_timestamp()-interval '7 months' where student_id='${user(state,'expired').id}' and payment_reference=${literal(`phase2-qa:${state.runId}:expired`)};
 update public.v2_purchases set revoked_at=statement_timestamp() where student_id='${user(state,'revoked').id}' and payment_reference=${literal(`phase2-qa:${state.runId}:revoked`)};
 update public.profiles set is_active=false where id='${user(state,'inactive').id}';
-select jsonb_build_object('check','phase2_qa_fixture_setup','run_id',${literal(state.runId)},'qa_accounts',${QA_CASES.length},'batches',5,'purchases',${purchasePlan(state).length},'baseline',(select fingerprint from phase2_qa_baseline));
+select jsonb_build_object('check','phase2_qa_fixture_setup','run_id',${literal(state.runId)},'qa_accounts',${QA_CASES.length},'batches',5,'purchases',${purchasePlan(state).length},'real_course_enrollments',${state.realFullCourseBatchId?1:0},'baseline',(select fingerprint from phase2_qa_baseline));
 commit;
 `;
 }
@@ -106,6 +122,8 @@ do $$ begin
  if exists(select 1 from public.v2_publication_scope_requests r,lateral jsonb_array_elements(r.result) d where r.actor_id='${admin}' and not exists(select 1 from phase2_qa_courses q where q.batch_id=(d->>'batchId')::uuid))
  then raise exception 'Publication scope contains non-fixture batches'; end if;
 end $$;
+${state.realFullCourseBatchId?`-- Exact generated Student enrollment only; the existing course and its publication remain unchanged.
+delete from public.v2_batch_enrollments where batch_id='${state.realFullCourseBatchId}' and student_id='${user(state,'full').id}' and actor_id='${admin}';`:''}
 delete from public.v2_publication_scope_requests where actor_id='${admin}';
 delete from public.v2_live_registration_audit where batch_id in(select batch_id from phase2_qa_courses);
 delete from public.v2_live_registrations where batch_id in(select batch_id from phase2_qa_courses);

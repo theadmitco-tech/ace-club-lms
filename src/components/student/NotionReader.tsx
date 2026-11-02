@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { ExtendedRecordMap } from 'notion-types';
-import { hasV2ReadingContent } from '@/lib/v2ReadingPreview';
+import { hasV2ReadingContent, v2ReadingPageId } from '@/lib/v2ReadingPreview';
 import { NotionRenderer } from 'react-notion-x';
 import 'react-notion-x/src/styles.css';
 import 'prismjs/themes/prism-tomorrow.css';
@@ -29,8 +29,8 @@ function getNotionUrl(sourceUrl?: string | null) {
 
 type NotionReaderProps = {
   pageId: string; sourceUrl?: string | null; title?: string;
-  mode?: 'student' | 'admin-preview'; readingType?: 'pre-read' | 'post-read';
-  endpoint?: string;
+  mode?: 'student' | 'admin-preview'; readingType?: 'pre-read' | 'post-read' | 'material';
+  endpoint?: string; allowSourceEmbedFallback?: boolean;
 };
 
 export function NotionReader(props: NotionReaderProps) {
@@ -40,15 +40,18 @@ export function NotionReader(props: NotionReaderProps) {
 function NotionReaderContent({
   pageId,
   sourceUrl,
-  title = 'Notion pre-read', mode = 'student', readingType = 'pre-read', endpoint,
+  title = 'Notion pre-read', mode = 'student', readingType = 'pre-read', endpoint, allowSourceEmbedFallback = false,
 }: NotionReaderProps) {
   const [recordMap, setRecordMap] = useState<ExtendedRecordMap | null>(null);
-  const [status, setStatus] = useState<'loading' | 'ready' | 'failed'>('loading');
+  const [status, setStatus] = useState<'loading' | 'ready' | 'failed' | 'source-fallback'>('loading');
   const [requestKey, setRequestKey] = useState(0);
   const notionUrl = getNotionUrl(sourceUrl);
-  const embedUrl = mode === 'student' && notionUrl && new URL(notionUrl).pathname.split('/').includes('ebd')
+  const embedUrl = mode === 'student' && !endpoint && notionUrl && new URL(notionUrl).pathname.split('/').includes('ebd')
     ? notionUrl
     : null;
+
+  const fallbackEmbedUrl = allowSourceEmbedFallback && notionUrl && v2ReadingPageId(notionUrl) === pageId
+    && new URL(notionUrl).pathname.split('/').includes('ebd') ? notionUrl : null;
 
   useEffect(() => {
     if (embedUrl) return;
@@ -58,7 +61,13 @@ function NotionReaderContent({
     const path = endpoint ?? (mode === 'admin-preview' ? '/api/admin/v2/reading-preview' : '/api/notion');
     fetch(`${path}${path.includes('?') ? '&' : '?'}pageId=${encodeURIComponent(pageId)}`, { signal: controller.signal, cache: 'no-store', credentials: 'same-origin' })
       .then(async (response) => {
-        if (!response.ok) throw new Error(`Notion request failed with ${response.status}`);
+        if (!response.ok) {
+          if (!ignore && fallbackEmbedUrl && [422,502,503,504].includes(response.status)) {
+            setStatus('source-fallback');
+            return;
+          }
+          throw new Error(`Notion request failed with ${response.status}`);
+        }
         const data = await response.json() as ExtendedRecordMap;
         if ((mode === 'admin-preview' || endpoint) && !hasV2ReadingContent(data, pageId)) throw new Error('Reading content is unavailable');
         if (!ignore) {
@@ -74,7 +83,7 @@ function NotionReaderContent({
       ignore = true;
       controller.abort();
     };
-  }, [embedUrl, pageId, requestKey, mode, endpoint]);
+  }, [embedUrl, fallbackEmbedUrl, pageId, requestKey, mode, endpoint]);
 
   if (embedUrl) {
     return (
@@ -89,6 +98,15 @@ function NotionReaderContent({
         />
       </div>
     );
+  }
+
+  if (status === 'source-fallback' && fallbackEmbedUrl) {
+    return <div>
+      <p className="material-status" role="status">The inline reader is unavailable. The original Notion embed is shown below.</p>
+      <div className="notion-embed-shell"><iframe className="notion-fallback-embed" src={fallbackEmbedUrl} title={title}
+        loading="eager" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen /></div>
+      <a className="student-button student-button-secondary" href={fallbackEmbedUrl} target="_blank" rel="noreferrer">Open the original reading</a>
+    </div>;
   }
 
   if (status === 'loading') {

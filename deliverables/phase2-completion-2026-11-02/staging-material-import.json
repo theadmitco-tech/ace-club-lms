@@ -1,0 +1,17 @@
+{
+  "check": "phase2_approved_material_import_summary",
+  "evidenceKind": "Sanitized summary of the operator-provided SQL Editor JSON result; not a new execution or a verbatim report.",
+  "stagingProject": "eyphkkginlgoaxflauog",
+  "importId": "2566de69-062e-57f2-a6ca-62e37905f9df",
+  "assets": 19,
+  "templates": 4,
+  "placements": 33,
+  "imported": true,
+  "replayed": false,
+  "published": false,
+  "legacyPreserved": true,
+  "legacyTableCount": 60,
+  "legacyFingerprint": "704b53b8f8a99bf138925d97218b7e7e281a9ef1d2b95f5bcfacad1a110a254e",
+  "programmeSessionsFullCourseOnly": true,
+  "acceptance": "Publication, authenticated website checks and exact QA cleanup remain separate."
+}

@@ -95,3 +95,37 @@ record, with hash placeholders resolved by the guarded SQL packet. It is not a
 ready-to-upload file for the Admin import interface. Ordinary reviewed transfer
 plans from the fingerprint-based mapping workflow contain their final source
 hashes and can use the Admin interface.
+
+## Durable staging operator and hosted verification
+
+`scripts/phase2-content-operator.mjs prepare` creates one neutral staging-only
+content operator. The state file remains outside version control with mode 0600.
+Ownership is bound to a generated email and administrator-owned run metadata;
+existing unrelated identities are never selected. No email delivery is requested.
+
+The same identity remains active through import, publication and hosted acceptance.
+After dedicated QA cleanup and its baseline comparison,
+`phase2-content-operator.mjs deactivate` deactivates only that owned profile,
+blocks subsequent sign-in, rotates the password and removes its private password
+from the state file. The inactive Auth/profile rows remain as immutable audit
+references; those rows are not disposable QA accounts.
+
+`scripts/phase2-material-acceptance.mjs` provides separate staged modes:
+
+1. `verify-import` compares all 19 assets, 33 placements, four destination documents
+   and every approved legacy source snapshot.
+2. `prepare-batches` creates four deterministic, unpublished learning-library
+   batches from the exact imported revisions. Existing matching batches are reused.
+3. `review-publication` derives the current publication scope from the server and
+   accepts exactly the four approved batches. Extra or altered batches reject review.
+4. `publish-reviewed EXACT_SCOPE_HASH` requires the inspected private review hash,
+   repeats the scope checks and atomically confirms the saved scope. A retry
+   recovers the same publication receipt without adding another revision.
+5. `verify-publication` records the actual published heads for subsequent
+   authenticated Student acceptance.
+
+The final private publication handoff contains only the staging project identifier
+and the four actual publication documents. QA enrollment attaches to those exact
+batches. The acceptance runner does not grant purchases or register live classes.
+API record comparisons remain distinct from browser rendering and protected file
+access evidence.

@@ -1,0 +1,25 @@
+{
+  "check": "phase2_recovered_worktree_verification",
+  "date": "2026-11-02",
+  "baseCommit": "78c33b0950ca39a97c75ef85e264a94592f13be8",
+  "phase1": {
+    "suites": 18,
+    "passed": 173,
+    "failed": 0
+  },
+  "phase2": {
+    "suites": 28,
+    "passed": 278,
+    "failed": 0
+  },
+  "browser": {
+    "passed": 43,
+    "failed": 0,
+    "authentication": "synthetic"
+  },
+  "lint": "passed; zero warnings",
+  "typecheck": "passed",
+  "webpackBuild": "passed",
+  "hostedAcceptance": "pending",
+  "phase1MigrationSha256": "ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7"
+}

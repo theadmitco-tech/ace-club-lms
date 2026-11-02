@@ -7,8 +7,9 @@
   "files": {
     "00-schema-preflight.sql": "61e891164c54e7e520a975aa24c6e4cc5d93424a6c9d394b97ac1ac369ec38d4",
     "01-ledger-and-definitions.sql": "7eff54a0e33e9a855bbb7b8cc83a8de247373557df49a3760b5ec26281d6b36a",
-    "02-apply-all-ten-if-absent.sql": "802621d8ac190af1e0e6f4d6c3b00a2464261214a2eb592a204446b2051bb71e",
-    "03-postflight.sql": "42e867493b9d5ab2fb3a9c811e2d0ccb91ff12ea72e4e8b208cc603c55f4994b",
+    "02-apply-all-ten-if-absent.sql": "bec53559407f26d38964106fcdf450b3669b7a915d9a7207b3cde28799d2e253",
+    "03-postflight.sql": "51bde6549164ffa768fe4db2910e4c967ec6894784234f5969650d9e82e27512",
+    "04-view-and-sequence-metadata.sql": "b2d4671e46a6da5d620b4235a9410dfa7bd0588508a62e3d46f47c1d3b2a517c",
     "source-migrations/20261019090000_add_v2_template_drafts.sql": "ac8ffd1121f548764b053a1913c726193c115bd1de38a5309e795c9d93940526",
     "source-migrations/20261019100000_add_v2_batch_drafts.sql": "56dc2a297441ecfa9a685a3d470789045b46e2ba7b92fe4c80c4ce000fcd20a9",
     "source-migrations/20261019110000_add_v2_private_meeting_drafts.sql": "ebbed93aad1b6fb7b5264848689c594b7856a8c3ad2346fa112a242bb01b0c9f",

@@ -28,7 +28,7 @@ function SessionResource({ item, kind, mode, readingEndpoint, sessionKey, batchI
   const [open, setOpen] = useState(false);
   const source = v2CourseResourceHref(item.url, { mode, sessionKey, batchId, itemKey: item.key });
   const pageId = v2ReadingPageId(item.url);
-  const reading = kind === 'preSessionReads' || kind === 'postSessionReads';
+  const reading = kind === 'preSessionReads' || kind === 'postSessionReads' || (kind === 'materials' && pageId !== null);
   const recording = kind === 'recordings' && source ? getYoutubeEmbedUrl(source) : null;
   return <div className={styles.resource}>
     <h5>{item.title || 'Untitled resource'}</h5>
@@ -37,8 +37,8 @@ function SessionResource({ item, kind, mode, readingEndpoint, sessionKey, batchI
         {open ? 'Close resource' : reading ? 'Read here' : 'Watch here'}
       </button>}
       {open && <ContentBoundary key={`${source}:${mode}`}>
-        {reading ? pageId ? <div className="material-content"><NotionReader pageId={pageId} sourceUrl={source} title={item.title}
-          mode={mode} readingType={kind === 'preSessionReads' ? 'pre-read' : 'post-read'} endpoint={readingEndpoint} /></div>
+        {reading ? pageId ? <div className="material-content"><NotionReader allowSourceEmbedFallback pageId={pageId} sourceUrl={source} title={item.title}
+          mode={mode} readingType={kind === 'materials' ? 'material' : kind === 'preSessionReads' ? 'pre-read' : 'post-read'} endpoint={readingEndpoint} /></div>
           : <p>Inline reading is available for Notion pages. This resource opens at its source.</p>
           : recording && <div className={styles.video}><iframe src={recording} title={item.title || 'Session recording'}
             allow="encrypted-media; picture-in-picture; fullscreen" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen /></div>}

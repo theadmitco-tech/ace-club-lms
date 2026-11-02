@@ -30,7 +30,7 @@ export function ReadingPreview({ item, sessionTitle, kind, position }: {
       <h4>{item.title || 'Untitled reading'}</h4>
       {!item.title.trim() ? <p role="alert">Add the student-facing title before previewing this reading.</p>
         : !pageId ? <p role="alert">Rendered preview requires a Notion page link with a page ID. This source has not been previewed.</p>
-          : <ReadingBoundary key={`${pageId}:${item.url}`}><NotionReader pageId={pageId} sourceUrl={item.url} title={item.title} mode="admin-preview" readingType={readingType} /></ReadingBoundary>}
+          : <ReadingBoundary key={`${pageId}:${item.url}`}><NotionReader allowSourceEmbedFallback pageId={pageId} sourceUrl={item.url} title={item.title} mode="admin-preview" readingType={readingType} /></ReadingBoundary>}
     </section>}
   </div>;
 }

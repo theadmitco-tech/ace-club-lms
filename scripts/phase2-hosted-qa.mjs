@@ -1,22 +1,23 @@
-import { randomUUID } from 'node:crypto';
+import { randomUUID,createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { existsSync,mkdirSync,readFileSync,writeFileSync,statSync } from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
 import { chromium } from 'playwright-core';
 import { PROJECT,ORIGIN,check,readConfig } from './phase1-hosted-closeout-config.mjs';
+import { canonicalCourseSessions,prepareRealCourseAttachment,verifyRealCourse } from './phase2-real-course-acceptance.mjs';
 import { QA_CASES,createQaCoursePlan,buildPhase2SetupSql,buildPhase2CleanupSql } from './phase2-hosted-qa-fixtures.mjs';
 
 const mode=process.argv[2];
-if(!['prepare','accept-baseline','verify','accept-cleanup','cleanup-accounts'].includes(mode)){
-  console.log('Modes: prepare <Preview URL> <40-character commit>, accept-baseline <setup JSON path>, verify, accept-cleanup <cleanup JSON path>, cleanup-accounts. Staging API keys only; SQL Editor setup/cleanup remain required.');process.exit(0);
+if(!['prepare','attach-real-course','accept-baseline','verify','accept-cleanup','cleanup-accounts'].includes(mode)){
+  console.log('Modes: prepare <Preview URL> <40-character commit>, attach-real-course <batch UUID> <private publication report> <private approved plan>, accept-baseline <setup JSON path>, verify, accept-cleanup <cleanup JSON path>, cleanup-accounts. Staging API keys only; SQL Editor setup/cleanup remain required.');process.exit(0);
 }
 const privatePath='/tmp/ace-phase2-hosted-qa-state.json',output=resolve('deliverables/phase2-hosted-acceptance');
 mkdirSync(output,{recursive:true});
 const safe=(result,stage)=>{check(!result.error,`${stage} failed; provider details withheld.`);return result.data;};
 const privateJson=path=>{const info=statSync(path);check(info.isFile()&&(info.mode&0o077)===0&&info.uid===process.getuid(),'Private QA files must be owned by the current user and chmod 600.');return JSON.parse(readFileSync(path,'utf8'));};
 let state=mode==='prepare'?null:privateJson(privatePath);
-const save=()=>{writeFileSync(privatePath,JSON.stringify(state,null,2),{mode:0o600});const {password,...manifest}=state;void password;writeFileSync(`${output}/fixture-manifest.json`,JSON.stringify(manifest,null,2));};
+const save=()=>{writeFileSync(privatePath,JSON.stringify(state,null,2),{mode:0o600});const {password,privateInputs,...manifest}=state;void password;void privateInputs;writeFileSync(`${output}/fixture-manifest.json`,JSON.stringify(manifest,null,2));};
 const saveSql=()=>{writeFileSync(`${output}/01-SETUP-FIXTURES.sql`,buildPhase2SetupSql(state));writeFileSync(`${output}/02-CLEANUP-FIXTURES.sql`,buildPhase2CleanupSql(state));};
 if(state){
   const candidate=new URL(state.preview);
@@ -24,10 +25,16 @@ if(state){
     &&/^ace-club(?:-lms)?-[a-z0-9-]+-theadmitco-techs-projects\.vercel\.app$/.test(candidate.hostname)
     &&candidate.origin===state.preview&&!candidate.username&&!candidate.password,'Wrong staging QA state.');
 }
+if(mode==='attach-real-course'){
+  const batchId=process.argv[3],publication=privateJson(process.argv[4]),plan=privateJson(process.argv[5]);
+  Object.assign(state,prepareRealCourseAttachment(state,batchId,publication,plan));
+  state.privateInputs={approvedPlanPath:resolve(process.argv[5]),approvedPlanSha256:createHash('sha256').update(readFileSync(process.argv[5])).digest('hex')};
+  save();saveSql();console.log(JSON.stringify({status:'real-course-attached-before-fixture-setup',batchId,resourceCount:state.realCourseReview.itemCount}));process.exit(0);
+}
 if(mode==='accept-baseline'){
   const result=JSON.parse(readFileSync(process.argv[3],'utf8'));
   check(result.check==='phase2_qa_fixture_setup'&&result.run_id===state.runId&&result.qa_accounts===9&&result.batches===5&&result.purchases===7
-    &&/^[a-f0-9]{32}$/.test(result.baseline?.md5)&&Number.isInteger(result.baseline?.table_count),'Setup report does not match the generated fixture run.');
+    &&(result.real_course_enrollments??0)===(state.realFullCourseBatchId?1:0)&&/^[a-f0-9]{32}$/.test(result.baseline?.md5)&&Number.isInteger(result.baseline?.table_count),'Setup report does not match the generated fixture run.');
   check(state.status==='accounts-created-awaiting-sql','QA setup report is not expected in the current state.');
   state.baseline=result.baseline;state.status='ready-for-verification';save();saveSql();console.log(JSON.stringify({status:state.status,runId:state.runId}));process.exit(0);
 }
@@ -111,7 +118,7 @@ if(mode==='prepare'){
     }
     const fullCourse=await rpc(sessions.full.client,'get_my_v2_published_course',{p_batch_id:full.batchId});ok('full-course-programme-content',fullCourse.sessions.some(s=>s.section==='programme'),['P2-02','P2-17']);
     const selected=await rpc(sessions.eligible.client,'get_my_v2_published_course',{p_batch_id:quant.batchId});
-    ok('exact-pinned-session-content',JSON.stringify(selected.sessions)===JSON.stringify(quant.document.sessions),['P2-03','P2-10','P2-11']);
+    ok('exact-pinned-session-content',JSON.stringify(canonicalCourseSessions(selected.sessions))===JSON.stringify(canonicalCourseSessions(quant.document.sessions)),['P2-03','P2-10','P2-11']);
     for(const table of ['v2_course_templates','v2_course_template_revisions','v2_course_batches','v2_course_batch_revisions','v2_batch_meeting_revisions','v2_batch_publication_revisions','v2_batch_enrollments','v2_published_meetings','v2_live_registrations','v2_live_registration_audit','v2_live_class_completions','v2_shared_content_assets','v2_content_imports','v2_content_asset_placements','v2_publication_scope_requests']){
       const result=await sessions.eligible.client.from(table).select('*').limit(1);ok(`private-table-hidden:${table}`,!result.error&&result.data.length===0,['P2-17']);
     }
@@ -146,7 +153,13 @@ if(mode==='prepare'){
     ok('audited-class-completion-replay',Boolean(completed?.completedAt)&&replay.replayed===true&&completed.completedAt===replay.completedAt,['P2-14','P2-15']);
     ok('completed-class-join-closed',await rpc(sessions.eligible.client,'get_my_v2_meeting',{p_batch_id:quant.batchId,p_event_key:quant.eventKey})===null,['P2-13','P2-14']);
     ok('completion-preserves-course-content',Boolean(await rpc(sessions.eligible.client,'get_my_v2_published_course',{p_batch_id:quant.batchId})),['P2-15']);
-    report.status=report.checks.some(c=>c.status==='not-run')?'partial-hosted-acceptance':'hosted-fixture-checks-passed';state.status='verification-completed';
+    if(state.realFullCourseBatchId){
+      const input=state.privateInputs;
+      check(input&&createHash('sha256').update(readFileSync(input.approvedPlanPath)).digest('hex')===input.approvedPlanSha256,'Reviewed real-course plan changed.');
+      report.realCourseAcceptance=await verifyRealCourse({state,plan:privateJson(input.approvedPlanPath),sessions,browser,protectionCookies,rpc,ok,note:(entry)=>{report.checks.push(entry);saveReport();}});
+      report.limitations=report.limitations.filter(value=>!value.startsWith('Synthetic fixtures prove')&&!value.startsWith('External source sharing'));
+    }
+    report.status=report.checks.some(c=>c.status==='not-run'||c.status==='inconclusive')?'partial-hosted-acceptance':'hosted-fixture-checks-passed';state.status='verification-completed';
   }catch(error){report.status='failed';report.failure=typeof error.message==='string'&&/^(Hosted check failed:|[A-Za-z_]+ failed; provider|Fixture publication)/.test(error.message)?error.message:'Verification interrupted; private provider details withheld.';state.status='verification-failed';process.exitCode=1;}
   finally{await browser?.close();report.completedAt=new Date().toISOString();saveReport();save();console.log(JSON.stringify({status:report.status,passed:report.checks.filter(c=>c.status==='pass').length,failed:report.checks.filter(c=>c.status==='fail').length,cleanupRequired:true}));}
 }

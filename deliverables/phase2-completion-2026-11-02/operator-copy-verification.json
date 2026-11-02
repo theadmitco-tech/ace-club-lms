@@ -1,0 +1,13 @@
+{
+  "check": "phase2_operator_activation_copy",
+  "generic_sha256": "bec53559407f26d38964106fcdf450b3669b7a915d9a7207b3cde28799d2e253",
+  "operator_sha256": "bd57ad4f8529af13acfc0471138b8c5eb653ae756310162f14c3002e6d9205e3",
+  "recovery_report_sha256": "7fb9ab7d6e66967623ef15244d0119179dcbcae3ad7aa703ab331c515ddaa5e4",
+  "source_body_and_guards_unchanged": true,
+  "acknowledgements_completed": [
+    "verified_project_ref",
+    "backup_restore_evidence"
+  ],
+  "live_view_guard": "pending at execution; no bypass",
+  "hosted_application": "not executed by packet preparation"
+}

@@ -14,6 +14,11 @@ manifest = json.loads((HERE / "activation-manifest.json").read_text())
 base = manifest["base_commit"]
 phase1 = "20261018090000_add_v2_product_entitlements.sql"
 phase1_sha = "ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7"
+recovery_reference = manifest["recovery_schema_reference"]
+view_hashes = recovery_reference["ordinary_public_views"]
+assert set(view_hashes) == {"worksheet_question_catalog", "worksheet_question_log_catalog"}
+assert all(re.fullmatch(r"[0-9a-f]{32}", value) for value in view_hashes.values())
+assert recovery_reference["public_sequence_count"] == 0
 
 
 def source(path):
@@ -60,6 +65,55 @@ versions = [name.split("_", 1)[0] for name, _, _ in migrations]
 authenticated_routines = sorted(set(name for block in re.findall(
     r"grant execute on function (.*?) to authenticated;", all_sql, re.I | re.S)
     for name in re.findall(r"public\.(\w+)\(", block)))
+
+recovery_guard = f"""-- Archive-reference definitions are compared with the current database here.
+-- Their presence in the manifest alone is not fresh staging verification.
+do $ace_recovery_schema_guard$
+declare
+  expected_views jsonb := {literal(json.dumps(view_hashes, sort_keys=True))}::jsonb;
+  actual_views jsonb;
+begin
+  if exists (select 1 from pg_class where relnamespace='public'::regnamespace and relkind='m') then
+    raise exception 'Unexpected public materialized view; recovery metadata requires review';
+  end if;
+  select coalesce(jsonb_object_agg(relname,md5(pg_get_viewdef(oid,true))),'{{}}')
+    into actual_views from pg_class where relnamespace='public'::regnamespace and relkind='v';
+  if actual_views is distinct from expected_views then
+    raise exception 'Current public view definitions differ from the recovered archive reference; application stopped before migration writes';
+  end if;
+  if exists (select 1 from pg_class where relnamespace='public'::regnamespace and relkind='S') then
+    raise exception 'Unexpected public sequence; recovery metadata requires review';
+  end if;
+end;
+$ace_recovery_schema_guard$;
+"""
+
+recovery_schema_snapshot = """select jsonb_build_object(
+  'views',(select coalesce(jsonb_agg(jsonb_build_object('name',relname,'kind',relkind,
+    'definition_md5',md5(pg_get_viewdef(oid,true)),'acl',relacl::text,'options',reloptions)
+    order by relname),'[]') from pg_class where relnamespace='public'::regnamespace and relkind in ('v','m')),
+  'sequences',(select coalesce(jsonb_agg(jsonb_build_object('name',relname,'acl',relacl::text)
+    order by relname),'[]') from pg_class where relnamespace='public'::regnamespace and relkind='S')
+) as fingerprint"""
+
+(OUT / "04-view-and-sequence-metadata.sql").write_text("""-- Read-only recovery metadata; no application records or sequence values are returned.
+-- This query supports review after a strict archive-reference guard mismatch.
+begin read only;
+set local statement_timeout='15s';
+set local lock_timeout='2s';
+select jsonb_build_object(
+  'check','phase2_public_view_and_sequence_metadata',
+  'server_version',current_setting('server_version'),
+  'read_only',current_setting('transaction_read_only'),
+  'views',(select coalesce(jsonb_agg(jsonb_build_object('name',relname,'kind',relkind,
+    'definition',pg_get_viewdef(oid,true),'definition_md5',md5(pg_get_viewdef(oid,true)),
+    'acl',relacl::text,'options',reloptions) order by relname),'[]')
+    from pg_class where relnamespace='public'::regnamespace and relkind in ('v','m')),
+  'sequences',(select coalesce(jsonb_agg(jsonb_build_object('name',relname,'acl',relacl::text)
+    order by relname),'[]') from pg_class where relnamespace='public'::regnamespace and relkind='S')
+);
+rollback;
+""")
 
 (OUT / "00-schema-preflight.sql").write_text(f"""-- Metadata-only inspection for verified staging; application records remain private.
 -- Dashboard project identity and a missing-object review remain operator checks.
@@ -253,6 +307,8 @@ begin
   if to_regprocedure('public.is_portal_admin()') is null then raise exception 'Missing Admin authorization dependency'; end if;
 end;
 $ace_preconditions$;
+{recovery_guard}
+create temporary table ace_recovery_schema_before on commit drop as {recovery_schema_snapshot};
 {existing_before}
 create temporary table ace_phase1_before on commit drop as {snapshot};
 
@@ -264,7 +320,17 @@ for filename, _, body in migrations:
     bundle += f"insert into supabase_migrations.schema_migrations(version,name,statements)\nvalues ({literal(version)},{literal(name)},array[$ace_source${body}$ace_source$]);\n\n"
 bundle += assertions
 bundle += existing_after
+bundle += recovery_guard
 bundle += f"""
+do $ace_recovery_schema_preservation$
+declare after_fingerprint jsonb;
+begin
+  {recovery_schema_snapshot.replace(' as fingerprint', '')} into after_fingerprint;
+  if after_fingerprint is distinct from (select fingerprint from ace_recovery_schema_before) then
+    raise exception 'Existing view definitions or privileges changed; rolling back Phase 2';
+  end if;
+end;
+$ace_recovery_schema_preservation$;
 do $ace_preservation$
 declare after_fingerprint jsonb;
 begin
@@ -276,12 +342,15 @@ end;
 $ace_preservation$;
 notify pgrst, 'reload schema';
 commit;
-select 'Phase 2 ten-migration transaction committed; run 00, 01, 03 and hosted acceptance next' as result;
+select jsonb_build_object('check','phase2_schema_activation','status','transaction committed',
+  'migration_count',10,'phase1_migration_reapplied',false,'existing_public_data_preserved',true,
+  'existing_view_definitions','matched archive reference at application and preserved',
+  'public_sequence_count',0,'hosted_acceptance','pending') as result;
 """
 (OUT / "02-apply-all-ten-if-absent.sql").write_text(bundle)
 (OUT / "03-postflight.sql").write_text(
     "-- Staging only. Read-only structural/privilege checks, not browser acceptance.\n"
-    "begin read only;\nset local statement_timeout='30s';\n" + assertions +
+    "begin read only;\nset local statement_timeout='30s';\n" + assertions + recovery_guard +
     "select 'Phase 2 structural and privilege checks passed; hosted acceptance remains pending' as result;\nrollback;\n"
 )
 checksums = {p.relative_to(OUT).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()

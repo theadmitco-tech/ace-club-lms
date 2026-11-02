@@ -53,6 +53,34 @@ begin
   if to_regprocedure('public.is_portal_admin()') is null then raise exception 'Missing Admin authorization dependency'; end if;
 end;
 $ace_preconditions$;
+-- Archive-reference definitions are compared with the current database here.
+-- Their presence in the manifest alone is not fresh staging verification.
+do $ace_recovery_schema_guard$
+declare
+  expected_views jsonb := '{"worksheet_question_catalog": "afbcbf74ed26ac711e97fa832bccd93b", "worksheet_question_log_catalog": "c55468134700b8fe3d37277edf568515"}'::jsonb;
+  actual_views jsonb;
+begin
+  if exists (select 1 from pg_class where relnamespace='public'::regnamespace and relkind='m') then
+    raise exception 'Unexpected public materialized view; recovery metadata requires review';
+  end if;
+  select coalesce(jsonb_object_agg(relname,md5(pg_get_viewdef(oid,true))),'{}')
+    into actual_views from pg_class where relnamespace='public'::regnamespace and relkind='v';
+  if actual_views is distinct from expected_views then
+    raise exception 'Current public view definitions differ from the recovered archive reference; application stopped before migration writes';
+  end if;
+  if exists (select 1 from pg_class where relnamespace='public'::regnamespace and relkind='S') then
+    raise exception 'Unexpected public sequence; recovery metadata requires review';
+  end if;
+end;
+$ace_recovery_schema_guard$;
+
+create temporary table ace_recovery_schema_before on commit drop as select jsonb_build_object(
+  'views',(select coalesce(jsonb_agg(jsonb_build_object('name',relname,'kind',relkind,
+    'definition_md5',md5(pg_get_viewdef(oid,true)),'acl',relacl::text,'options',reloptions)
+    order by relname),'[]') from pg_class where relnamespace='public'::regnamespace and relkind in ('v','m')),
+  'sequences',(select coalesce(jsonb_agg(jsonb_build_object('name',relname,'acl',relacl::text)
+    order by relname),'[]') from pg_class where relnamespace='public'::regnamespace and relkind='S')
+) as fingerprint;
 create temporary table ace_existing_before (
   table_name text primary key, row_count bigint not null, row_md5 text not null
 ) on commit drop;
@@ -4294,7 +4322,42 @@ begin
   end if;
 end;
 $ace_existing_preservation$;
+-- Archive-reference definitions are compared with the current database here.
+-- Their presence in the manifest alone is not fresh staging verification.
+do $ace_recovery_schema_guard$
+declare
+  expected_views jsonb := '{"worksheet_question_catalog": "afbcbf74ed26ac711e97fa832bccd93b", "worksheet_question_log_catalog": "c55468134700b8fe3d37277edf568515"}'::jsonb;
+  actual_views jsonb;
+begin
+  if exists (select 1 from pg_class where relnamespace='public'::regnamespace and relkind='m') then
+    raise exception 'Unexpected public materialized view; recovery metadata requires review';
+  end if;
+  select coalesce(jsonb_object_agg(relname,md5(pg_get_viewdef(oid,true))),'{}')
+    into actual_views from pg_class where relnamespace='public'::regnamespace and relkind='v';
+  if actual_views is distinct from expected_views then
+    raise exception 'Current public view definitions differ from the recovered archive reference; application stopped before migration writes';
+  end if;
+  if exists (select 1 from pg_class where relnamespace='public'::regnamespace and relkind='S') then
+    raise exception 'Unexpected public sequence; recovery metadata requires review';
+  end if;
+end;
+$ace_recovery_schema_guard$;
 
+do $ace_recovery_schema_preservation$
+declare after_fingerprint jsonb;
+begin
+  select jsonb_build_object(
+  'views',(select coalesce(jsonb_agg(jsonb_build_object('name',relname,'kind',relkind,
+    'definition_md5',md5(pg_get_viewdef(oid,true)),'acl',relacl::text,'options',reloptions)
+    order by relname),'[]') from pg_class where relnamespace='public'::regnamespace and relkind in ('v','m')),
+  'sequences',(select coalesce(jsonb_agg(jsonb_build_object('name',relname,'acl',relacl::text)
+    order by relname),'[]') from pg_class where relnamespace='public'::regnamespace and relkind='S')
+) into after_fingerprint;
+  if after_fingerprint is distinct from (select fingerprint from ace_recovery_schema_before) then
+    raise exception 'Existing view definitions or privileges changed; rolling back Phase 2';
+  end if;
+end;
+$ace_recovery_schema_preservation$;
 do $ace_preservation$
 declare after_fingerprint jsonb;
 begin
@@ -4330,4 +4393,7 @@ end;
 $ace_preservation$;
 notify pgrst, 'reload schema';
 commit;
-select 'Phase 2 ten-migration transaction committed; run 00, 01, 03 and hosted acceptance next' as result;
+select jsonb_build_object('check','phase2_schema_activation','status','transaction committed',
+  'migration_count',10,'phase1_migration_reapplied',false,'existing_public_data_preserved',true,
+  'existing_view_definitions','matched archive reference at application and preserved',
+  'public_sequence_count',0,'hosted_acceptance','pending') as result;

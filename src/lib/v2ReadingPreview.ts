@@ -1,10 +1,16 @@
-/** Only recognized public Notion page URLs can enter the draft reader. */
+/** Recognized Notion URLs supply candidate identifiers; provider content is validated separately. */
 export function v2ReadingPageId(source: string): string | null {
   try {
     const url = new URL(source);
-    if (url.protocol !== 'https:' || url.username || url.password || url.port || url.pathname.split('/').includes('ebd')
+    if (url.protocol !== 'https:' || url.username || url.password || url.port
       || !(url.hostname === 'notion.so' || url.hostname.endsWith('.notion.so')
         || url.hostname === 'notion.site' || url.hostname.endsWith('.notion.site'))) return null;
+    // Legacy public embeds retain their source URL; only the candidate page ID
+    // reaches the provider API, whose response must validate the actual page.
+    if (url.pathname.split('/').includes('ebd')) {
+      const embedded = url.pathname.match(/^\/ebd\/{1,2}([a-f0-9]{32}|[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/i);
+      return embedded ? embedded[1].replaceAll('-', '').toLowerCase() : null;
+    }
     const ids = url.pathname.split('/').map((part) => part.match(/(?:^|-)([a-f0-9]{32}|[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/i)?.[1])
       .filter((id): id is string => Boolean(id));
     return ids.length === 1 ? ids[0].replaceAll('-', '').toLowerCase() : null;

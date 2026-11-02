@@ -51,5 +51,25 @@ begin
   end if;
 end;
 $ace_postflight$;
+-- Archive-reference definitions are compared with the current database here.
+-- Their presence in the manifest alone is not fresh staging verification.
+do $ace_recovery_schema_guard$
+declare
+  expected_views jsonb := '{"worksheet_question_catalog": "afbcbf74ed26ac711e97fa832bccd93b", "worksheet_question_log_catalog": "c55468134700b8fe3d37277edf568515"}'::jsonb;
+  actual_views jsonb;
+begin
+  if exists (select 1 from pg_class where relnamespace='public'::regnamespace and relkind='m') then
+    raise exception 'Unexpected public materialized view; recovery metadata requires review';
+  end if;
+  select coalesce(jsonb_object_agg(relname,md5(pg_get_viewdef(oid,true))),'{}')
+    into actual_views from pg_class where relnamespace='public'::regnamespace and relkind='v';
+  if actual_views is distinct from expected_views then
+    raise exception 'Current public view definitions differ from the recovered archive reference; application stopped before migration writes';
+  end if;
+  if exists (select 1 from pg_class where relnamespace='public'::regnamespace and relkind='S') then
+    raise exception 'Unexpected public sequence; recovery metadata requires review';
+  end if;
+end;
+$ace_recovery_schema_guard$;
 select 'Phase 2 structural and privilege checks passed; hosted acceptance remains pending' as result;
 rollback;

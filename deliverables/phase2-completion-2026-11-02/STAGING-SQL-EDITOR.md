@@ -1,14 +1,45 @@
 # Phase 2 staging SQL Editor packet
 
-Status: local preparation. Hosted application, recovery evidence and acceptance
-remain separate checks. The earlier six-migration activation packet is historical;
-this packet includes the complete ten-migration implementation snapshot.
+Status: all ten migrations are installed, and the approved 19-asset import is
+confirmed. Operator-provided reconciliation reports exact ledger/routine matches
+and preservation of all sixty original application tables. Hosted website
+acceptance and QA cleanup remain pending. Activation files are historical
+execution records and must not be rerun against this staging installation.
 
 The sole target is staging project `eyphkkginlgoaxflauog`. Production configuration
 and PR #24 Draft status remain unchanged. Supabase SQL Editor access is sufficient
 for the operator steps; no database password is required by this packet.
 
-## Operator sequence
+The [operator activation copy](RUN-ACTIVATION.sql) now contains the verified staging
+identifier and a reference to the [application recovery report](application-recovery-report.json).
+The generic SQL packet retains its placeholders. The operator copy preserves every
+source body and guard; [copy verification](operator-copy-verification.json) records
+both hashes and the limited acknowledgement changes.
+
+The fresh snapshot rehearsal restored 60 public tables and 3,781 rows, verified
+all seven reported schema categories and the migration ledger, and validated
+foreign keys. It did not recover Auth credentials, platform configuration,
+Storage object bytes or Vault secrets. Those limits remain explicit in the report.
+The snapshot omitted view SQL and sequence state: the activation transaction
+therefore requires exactly the two recovered ordinary public view definitions,
+matching their archive-reference hashes, and zero public sequences. The later
+operator-provided reconciliation confirms the expected view hashes
+and absence of public sequences in staging.
+
+## Current staging status
+
+[Reconciliation summary](staging-reconciliation-result.json) and
+[material import summary](staging-material-import.json) record the supplied SQL
+Editor results. The original Phase 1 ledger is preserved; the real material
+import produced four unpublished templates. The existing-version activation
+error was resolved by read-only reconciliation, not migration replay.
+
+The next SQL Editor work is dedicated acceptance-fixture setup and exact cleanup,
+only after their regenerated identity manifests and current publication state
+have been reviewed. The approved import must not be repeated to reconstruct
+missing local files. Original source references remain private.
+
+## Historical activation sequence
 
 1. The operator confirms the staging project in the dashboard and executes
    [00-schema-preflight.sql](sql-editor/00-schema-preflight.sql), followed by
@@ -21,7 +52,8 @@ for the operator steps; no database password is required by this packet.
 3. A fresh recoverable staging backup and successful isolated restore rehearsal
    are recorded before application. A reference to an older backup, a schema-only
    catalogue or the synthetic local packet test does not satisfy that requirement.
-   No recovery acknowledgement has been supplied in the generated SQL.
+   The application-snapshot rehearsal supplies the scoped recovery reference in
+   the operator copy. It is not represented as full Supabase recovery.
 4. After those checks pass, the operator replaces only
    `REPLACE_WITH_VERIFIED_PROJECT_REF` and `REPLACE_WITH_BACKUP_RESTORE_EVIDENCE` in
    [02-apply-all-ten-if-absent.sql](sql-editor/02-apply-all-ten-if-absent.sql).
@@ -30,6 +62,11 @@ for the operator steps; no database password is required by this packet.
 5. A successful result is followed by [03-postflight.sql](sql-editor/03-postflight.sql)
    and a fresh run of the two metadata queries. Their results support structural
    acceptance; Preview activation and authenticated website acceptance follow.
+
+A view/sequence guard mismatch stops before migration writes. The read-only
+[view and sequence metadata query](sql-editor/04-view-and-sequence-metadata.sql)
+then supplies definitions and hashes for review; the guard is not bypassed and
+archive hashes are not automatically replaced with unreviewed current values.
 
 ## Transaction guarantees
 
@@ -62,7 +99,17 @@ PostgreSQL instance with synthetic ledger/data and accepts no hosted connection.
 Its report distinguishes local rollback/privilege checks from hosted recovery and
 end-to-end acceptance. No destructive hosted rollback script is included.
 
-The recorded [local verification](sql-editor/local-verification.json) contains ten
-passing packet checks. The [reference catalogue](sql-editor/local-reference-catalogue.json)
+The [local verification](sql-editor/local-verification.json) records the packet
+and reconciliation checks, with its execution time and synthetic scope. Its
+isolated fixture uses two synthetic views and substitutes
+only their hashes in disposable test SQL. The published packet retains the actual
+archive-reference hashes. Changed or additional views, materialized views, public
+sequences and view-privilege drift all fail closed in those tests.
+The [reference catalogue](sql-editor/local-reference-catalogue.json)
 describes the disposable database only; it is not evidence of installed staging
 objects or a recoverable staging backup.
+
+An existing-version safety stop is reconciled through the single read-only
+[activation report](RECONCILE-ACTIVATION.sql), as described in
+[the reconciliation notes](RECONCILIATION.md). No migration replay follows from
+that error alone.

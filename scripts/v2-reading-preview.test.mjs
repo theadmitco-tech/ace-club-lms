@@ -60,7 +60,7 @@ test('reading URLs accept only unambiguous HTTPS Notion page references', () => 
   }
   for (const url of ['', pageId, `http://notion.so/${pageId}`, `https://notion.so.evil.test/${pageId}`,
     `https://evil.test/${pageId}`, `https://user:password@notion.so/${pageId}`, `https://notion.so:8443/${pageId}`,
-    `https://notion.so/${pageId}/${pageId}`, `https://notion.so/ebd/${pageId}`, 'https://notion.so/no-page-id', `<iframe src="https://notion.so/${pageId}">`]) {
+    `https://notion.so/${pageId}/${pageId}`, `https://notion.so/ebd///${pageId}`, `https://notion.so/other/ebd/${pageId}`, 'https://notion.so/no-page-id', `<iframe src="https://notion.so/${pageId}">`]) {
     assert.equal(helpers.v2ReadingPageId(url), null, url);
   }
 });
@@ -117,3 +117,9 @@ test('empty content and provider/auth faults fail privately and can be retried',
   }
   h.state.fault = null; h.state.result = content(); assert.equal((await h.get()).status, 200);
 });
+
+ test('legacy Notion embed references expose only a candidate ID while keeping provider validation mandatory',()=>{
+  for(const source of [`https://notion.so/ebd/${pageId}`,`https://example.notion.site/ebd//${pageId}`])assert.equal(helpers.v2ReadingPageId(source),pageId);
+  for(const source of [`https://notion.so.evil.test/ebd/${pageId}`,`https://notion.so/ebd///${pageId}`,`https://notion.so/ebd/${pageId}/other`])assert.equal(helpers.v2ReadingPageId(source),null);
+  assert.equal(helpers.hasV2ReadingContent({},pageId),false);
+ });

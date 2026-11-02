@@ -105,6 +105,13 @@ import { NotionReader } from '@/components/student/NotionReader';
 import '@/app/session/[id]/material/[materialId]/material.css';
 export default function Page() { return <main className="material-content"><NotionReader pageId="123456781234123412341234567890ab" title="Student reading" /></main>; }
 `);
+  for (const mode of ['student','admin-preview']) await put(`src/app/reading-v2-${mode}-fixture/page.tsx`, `
+import { NotionReader } from '@/components/student/NotionReader';
+import '@/app/session/[id]/material/[materialId]/material.css';
+export default function Page() { return <main className="material-content"><NotionReader allowSourceEmbedFallback pageId="123456781234123412341234567890ab"
+ sourceUrl="https://example.notion.site/ebd//123456781234123412341234567890ab" title="Exact embedded reading title" mode="${mode}"
+ endpoint="${mode === 'student' ? '/api/v2/course-reading?batchId=synthetic-batch' : '/api/admin/v2/reading-preview'}" /></main>; }
+`);
   await put('src/lib/AuthContext.tsx', `'use client';
 import { clearDraftRecovery } from '@/lib/draftRecovery';
 const user = { id: 'synthetic-admin', role: 'admin', full_name: 'Synthetic Admin', email: 'admin@example.test' };

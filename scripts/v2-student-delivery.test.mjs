@@ -72,15 +72,18 @@ test('class completion requires matching validated receipt; transport failures r
 });
 test('Notion delivery rejects an unrelated reading before external fetch and disables shared caching',async()=>{
   const pageId='a'.repeat(32),requested=new URL(`https://example.test/api/v2/course-reading?batchId=${batchId}&pageId=${pageId}`);
-  let current=course,fetched=0;
+  let current=course,fetched=0,validContent=true;
   const api=load('src/app/api/v2/course-reading/route.ts',{'next/server':{NextResponse:{json:(body,options)=>({body,...options})}},
     'notion-client':{NotionAPI:class {async getPage(){fetched++;return {};}}},
     '@/lib/server/v2StudentDelivery':{getMyV2PublishedCourse:async()=>current},
-    '@/lib/v2ReadingPreview':{v2ReadingPageId:(url)=>url.endsWith(pageId)?pageId:null,hasV2ReadingContent:()=>true}});
+    '@/lib/v2ReadingPreview':{v2ReadingPageId:(url)=>url.endsWith(pageId)?pageId:null,hasV2ReadingContent:()=>validContent}});
   let result=await api.GET({nextUrl:requested});assert.equal(result.status,404);assert.equal(fetched,0);
   current={...course,sessions:[{...course.sessions[0],content:{...content,preSessionReads:[{key:randomUUID(),title:'Published reading',url:`https://notion.so/${pageId}`}]}}]};
   result=await api.GET({nextUrl:requested});assert.equal(fetched,1);assert.equal(result.headers['Cache-Control'],'private, no-store');assert.equal(result.headers.Vary,'Cookie');
-  current=null;result=await api.GET({nextUrl:requested});assert.equal(result.status,404);assert.equal(fetched,1);
+  current={...course,sessions:[{...course.sessions[0],content:{...content,materials:[{key:randomUUID(),title:'Published starter reading',url:`https://notion.so/ebd//${pageId}`}]}}]};
+  result=await api.GET({nextUrl:requested});assert.equal(fetched,2);assert.equal(result.headers['Cache-Control'],'private, no-store');
+  validContent=false;result=await api.GET({nextUrl:requested});assert.equal(result.status,422);assert.equal(fetched,3);
+  current=null;result=await api.GET({nextUrl:requested});assert.equal(result.status,404);assert.equal(fetched,3);
 });
 test('meeting redirect rechecks current access and never redirects denied callers',async()=>{
   let current=null;

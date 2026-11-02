@@ -5,6 +5,15 @@
   "staging_project": "eyphkkginlgoaxflauog",
   "production_changed": false,
   "phase1_preserved_sha256": "ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7",
+  "recovery_schema_reference": {
+    "status": "archive-reference definitions; current staging equality remains pending until the atomic application guard passes",
+    "definition_method": "md5(pg_get_viewdef(oid,true))",
+    "ordinary_public_views": {
+      "worksheet_question_catalog": "afbcbf74ed26ac711e97fa832bccd93b",
+      "worksheet_question_log_catalog": "c55468134700b8fe3d37277edf568515"
+    },
+    "public_sequence_count": 0
+  },
   "migration_sha256": {
     "20261019090000_add_v2_template_drafts.sql": "ac8ffd1121f548764b053a1913c726193c115bd1de38a5309e795c9d93940526",
     "20261019100000_add_v2_batch_drafts.sql": "56dc2a297441ecfa9a685a3d470789045b46e2ba7b92fe4c80c4ce000fcd20a9",

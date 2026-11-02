@@ -1,0 +1,51 @@
+{
+  "check": "phase2_application_recovery_rehearsal",
+  "status": "application-snapshot-rehearsal-passed",
+  "archiveVerified": true,
+  "freshSnapshotVerified": true,
+  "fullSupabaseRecovery": false,
+  "network": "private local Unix socket only",
+  "limitations": [
+    "Auth credentials and platform configuration are not recovered from the fresh public snapshot.",
+    "Storage object bytes and Vault secrets are outside this rehearsal.",
+    "A real restore into any shared environment requires a separately approved recovery action."
+  ],
+  "rehearsalTimeZone": "UTC",
+  "archivePublicTables": 56,
+  "localPublicTables": 60,
+  "knownSchemaPrepared": true,
+  "preparedViewDefinitionHashes": {
+    "worksheet_question_catalog": "afbcbf74ed26ac711e97fa832bccd93b",
+    "worksheet_question_log_catalog": "c55468134700b8fe3d37277edf568515"
+  },
+  "publicSequences": 0,
+  "viewDefinitionCoverage": "Archive definitions restored; current view SQL requires an independent matching-definition guard because the original public snapshot format omits view definitions.",
+  "sequenceCoverage": "No public sequences in the prepared schema; relation comparison must confirm none were introduced.",
+  "snapshotSha256": "a521b6c8cf9e8e0a36df7af4c500c157b8b559fb1a7863c68115234e0b3f6ac9",
+  "snapshotCapturedAt": "2026-11-01T19:45:09.931563+00:00",
+  "snapshotTableCount": 60,
+  "schemaComparison": {
+    "columns": true,
+    "indexes": true,
+    "policies": true,
+    "triggers": true,
+    "functions": true,
+    "relations": true,
+    "constraints": true
+  },
+  "representationNormalization": [
+    "Function comparison uses exact signature-keyed definitions and ACLs, independent of collation ordering.",
+    "Only the known mock_attempts_section_order_check associative AND grouping is normalized from the PostgreSQL 17 spelling to the equivalent PostgreSQL 18 spelling."
+  ],
+  "rowComparison": {
+    "rows": 3781,
+    "tables": 60,
+    "allRowsMatch": true,
+    "ledgerMatches": true,
+    "mismatchedTables": [],
+    "restoredFingerprint": "a9bd09227d07236e5f82b32eee7725d7",
+    "snapshotFingerprint": "a9bd09227d07236e5f82b32eee7725d7"
+  },
+  "localSelfTestPassed": false,
+  "completedAt": "2026-11-01T19:52:41.196Z"
+}

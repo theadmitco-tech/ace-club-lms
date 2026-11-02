@@ -1,15 +1,22 @@
 {
-  "verified_at": "2026-11-01T19:44:05.576Z",
-  "scope": "Disposable local PostgreSQL with synthetic ledger; not staging backup/restore or acceptance",
+  "verified_at": "2026-11-01T23:58:37.026Z",
+  "scope": "Disposable local PostgreSQL with synthetic ledger and explicit fixture-only view-hash substitution; not staging backup/restore or acceptance",
   "passed": [
     "read-only preflight and ledger/definition inventory execute before Phase 2",
+    "read-only reconciliation reports missing activation without aborting or changing data",
     "unacknowledged target and recovery gates fail without changes",
+    "unmodified archive-reference view hashes reject the synthetic database before migration writes",
+    "additional views, materialized views and sequences each stop before migration writes",
+    "a changed definition of an expected view stops before migration writes",
     "missing Phase 1 ledger stops without replaying Phase 1",
     "partial ledger, orphan relation and orphan routine each stop safely",
     "failure after all ten migrations rolls back schema, ledger and data",
     "Phase 1 data and prior ledger tampering both abort and roll back the transaction",
     "unrelated existing application data mutations abort and roll back",
+    "existing view privilege drift aborts and rolls back the transaction",
     "successful atomic application records exactly ten versions and preserves all existing application rows",
+    "read-only reconciliation verifies exact ten source bodies, eighteen table guards and final routine implementations",
+    "only exact designated new Auth/profile identities are excluded; an email mismatch restores that row to the comparison",
     "postflight validates eighteen private tables, RLS, role grants, RPCs and canonical mapping",
     "repeat application stops without changing installed state"
   ]

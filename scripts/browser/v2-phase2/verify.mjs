@@ -276,6 +276,28 @@ async function runTests() {
     assert.equal(studentCalls, 1); assert.equal(adminCalls, 0);
     await visible(page.locator('.notion b').filter({ hasText: 'Bold content' }));
   });
+  await test('V2 legacy embed references prefer the authorized reader and retain a visible source fallback', async (page) => {
+    let status = 200, sourceRequests = 0, apiRequests = 0;
+    await page.route('**/api/v2/course-reading?*', (route) => { apiRequests++; return route.fulfill({ status, json: status === 200 ? readingRecord() : {} }); });
+    await page.route('**/api/admin/v2/reading-preview?*', (route) => { apiRequests++; return route.fulfill({ status, json: status === 200 ? readingRecord() : {} }); });
+    await page.route('https://example.notion.site/ebd/**', (route) => { sourceRequests++; return route.fulfill({ contentType: 'text/html', body: '<p>Synthetic original reading</p>' }); });
+    await page.route('**/*reading-fixture-image.svg*', (route) => route.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" />' }));
+    await page.goto(`${origin}/reading-v2-student-fixture`); await text(page, 'Synthetic reading body');
+    assert.equal(apiRequests, 1); assert.equal(sourceRequests, 0); assert.equal(await page.locator('iframe').count(), 0);
+    status = 502;
+    for (const mode of ['student','admin-preview']) {
+      await page.goto(`${origin}/reading-v2-${mode}-fixture`);
+      await text(page, 'The inline reader is unavailable. The original Notion embed is shown below.');
+      const frame = page.locator('iframe'); await visible(frame);
+      assert.equal(await frame.getAttribute('src'), `https://example.notion.site/ebd//${readingId}`);
+      assert.equal(await frame.getAttribute('title'), 'Exact embedded reading title');
+      await visible(page.frameLocator('iframe').getByText('Synthetic original reading'));
+    }
+    assert.equal(sourceRequests, 2);
+    status = 403;
+    await page.goto(`${origin}/reading-v2-student-fixture`); await text(page, "We couldn't load this pre-read");
+    assert.equal(await page.locator('iframe').count(), 0); assert.equal(sourceRequests, 2);
+  });
   await test('Reading preview uses the reviewed batch revision and preserves reading order', async (page) => {
     await mockReading(page, (route) => route.fulfill({ json: readingRecord() }));
     const source = state.templates[1];

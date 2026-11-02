@@ -1,7 +1,8 @@
 # Phase 2 implementation and activation
 
-Status: implementation and local verification prepared; staging activation,
-actual material import and hosted acceptance remain pending. Phase 1 is complete.
+Status: staging schema activation and the approved material import are confirmed
+by operator-provided SQL Editor results. Publication, authenticated hosted
+acceptance and exact QA cleanup remain pending. Phase 1 is complete.
 PR #24 remains Draft and Production remains excluded from this work.
 
 ## Website changes
@@ -30,8 +31,15 @@ not publish anything. The exact private source packet remains outside Git.
 
 ## Exit-gate evidence map
 
-All hosted results remain pending. The following table records implementation and
-local evidence without treating either as hosted product acceptance.
+The [staging reconciliation](staging-reconciliation-result.json) confirms all ten
+migration bodies, final routine guards, eighteen private tables and preservation
+of all sixty original application tables. The
+[material import result](staging-material-import.json) confirms 19 assets and 33
+placements across four unpublished templates. Both files are labeled summaries
+of operator-provided results. Hosted website acceptance remains separate.
+
+The following table maps implementation and local evidence to each exit gate;
+these entries do not alone close a hosted product gate.
 
 | Gate | Implementation and local evidence |
 |---|---|
@@ -60,27 +68,38 @@ local evidence without treating either as hosted product acceptance.
 - ESLint with zero warnings, TypeScript and the local webpack build passed.
 - [UI evidence](ui-verification/README.md): 42 integrated browser cases and a
   focused visual-polish check. Browser authentication and data are synthetic.
-- [SQL packet verification](sql-editor/local-verification.json): ten isolated
-  transaction, preservation and privilege checks.
+- [SQL packet verification](sql-editor/local-verification.json) records isolated
+  transaction, preservation, privilege and reconciliation checks. The report
+  identifies the execution time and synthetic local scope.
 - The approved 19-asset import passed a private local source-snapshot rehearsal
-  and retry check. That rehearsal is not a staging backup or a hosted import.
+  and retry check. The later operator-provided import result confirms the staging
+  import separately; neither result proves browser rendering.
 
-## Required activation work
+## Completed staging work and remaining acceptance
 
-The [SQL Editor runbook](STAGING-SQL-EDITOR.md) contains the ten-migration packet.
-The original Phase 1 migration is excluded and retains its recorded SHA256.
-A fresh [application recovery export](00-EXPORT-APPLICATION-RECOVERY.sql) is
-prepared for a private local restore rehearsal. It excludes Auth credentials,
-Storage object bytes and platform configuration; no full-platform recovery claim
-is made. The existing older archive is not treated as a fresh backup.
+The [SQL Editor runbook](STAGING-SQL-EDITOR.md) records the completed activation
+and read-only reconciliation. The ten migrations are applied and must not be
+replayed. The original Phase 1 migration remains excluded and retains its
+recorded SHA256.
 
-After metadata and recovery verification, staging application and postflight
-precede the three review-branch-only Preview flags. Dedicated QA fixtures then
-exercise authenticated website/API flows and exact cleanup. The real import
-requires an explicitly selected active Admin identity and a separate publication
-review. The supplied source content includes ten Notion references pointing to
-two distinct pages; exact live rendering and source completeness remain separate
-acceptance checks.
+The preserved [application recovery report](application-recovery-report.json)
+records the earlier private local restore rehearsal: 60 tables, 3,781 rows and the
+original ledger matched. Auth credentials, Storage object bytes, Vault secrets
+and platform configuration were excluded; no fresh full-platform recovery claim
+is made. That preserved report is not a newly repeated rehearsal.
+
+The approved source content is imported into four unpublished templates. The
+next steps are exact four-offering publication review, an updated branch-only
+Preview deployment, authenticated Student/Admin acceptance, protected PDF and
+Notion rendering checks, and exact fixture cleanup. The ten Notion references
+point to two distinct original pages; live source accessibility and content
+completeness remain explicit acceptance checks.
+
+The temporary checkout and private QA files were unavailable when work resumed.
+The pushed source and saved handoff files were restored into an isolated
+persistent worktree. Existing staging QA identities and publication state require
+reconciliation before any fixture or account creation is repeated. Credentials
+and private source references remain outside version control.
 
 No payment is taken, no Production variable is changed, and no PR merge/readiness
 change is included. All completion claims require recorded hosted evidence.

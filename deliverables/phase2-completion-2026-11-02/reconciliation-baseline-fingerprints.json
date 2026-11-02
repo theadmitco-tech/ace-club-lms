@@ -1,0 +1,310 @@
+{
+  "captured_at": "2026-11-01T19:45:09.931563+00:00",
+  "source_snapshot_sha256": "a521b6c8cf9e8e0a36df7af4c500c157b8b559fb1a7863c68115234e0b3f6ac9",
+  "tables": {
+    "courses": {
+      "row_count": 13,
+      "row_md5": "d49397e6ca2c055f4338c51bc9648fa3"
+    },
+    "payments": {
+      "row_count": 0,
+      "row_md5": "d751713988987e9331980363e24189ce"
+    },
+    "profiles": {
+      "row_count": 9,
+      "row_md5": "b5049cb65b41ec7667d3a41240e6bfda"
+    },
+    "sessions": {
+      "row_count": 251,
+      "row_md5": "fddf08506487eef78815af4db2591d72"
+    },
+    "materials": {
+      "row_count": 74,
+      "row_md5": "0d1c4a252de931898b86179408a6d557"
+    },
+    "mock_media": {
+      "row_count": 10,
+      "row_md5": "af21364af1a736bfc115aeaec6367420"
+    },
+    "enrollments": {
+      "row_count": 4,
+      "row_md5": "c52228a514c2a00ba1ebce886f9ce7e0"
+    },
+    "mock_topics": {
+      "row_count": 84,
+      "row_md5": "fe2704763ab5094a91a9e21324665b4b"
+    },
+    "v2_products": {
+      "row_count": 4,
+      "row_md5": "0ec545a7ee7c8dbd5500f8f781dd2cec"
+    },
+    "mock_imports": {
+      "row_count": 8,
+      "row_md5": "925b24ad77525eab924875b0d0051163"
+    },
+    "mock_stimuli": {
+      "row_count": 26,
+      "row_md5": "0bed07cdd3556db9517d62957c5f0426"
+    },
+    "v2_purchases": {
+      "row_count": 0,
+      "row_md5": "d751713988987e9331980363e24189ce"
+    },
+    "mock_attempts": {
+      "row_count": 4,
+      "row_md5": "588e56a16a1ab1ce0252616fba611482"
+    },
+    "practice_sets": {
+      "row_count": 0,
+      "row_md5": "d751713988987e9331980363e24189ce"
+    },
+    "registrations": {
+      "row_count": 0,
+      "row_md5": "d751713988987e9331980363e24189ce"
+    },
+    "mock_questions": {
+      "row_count": 164,
+      "row_md5": "91d6cc28e550f3e548ad6694850a9955"
+    },
+    "mock_responses": {
+      "row_count": 132,
+      "row_md5": "7d21093f16d7e60669977d79ae6fd730"
+    },
+    "master_sessions": {
+      "row_count": 31,
+      "row_md5": "f17c8bcf3bc6f7252480c8a1dc28151b"
+    },
+    "course_templates": {
+      "row_count": 4,
+      "row_md5": "4d1d53fe9de01e055adbfa1300aee5b0"
+    },
+    "master_materials": {
+      "row_count": 13,
+      "row_md5": "017adc9bf3281d55f664cee7119c71e4"
+    },
+    "mock_assessments": {
+      "row_count": 5,
+      "row_md5": "8efa3a08945ffee210591d3c8ad46375"
+    },
+    "mock_import_items": {
+      "row_count": 200,
+      "row_md5": "1bd9ff44e1ae072033ae2d4c2c880eab"
+    },
+    "mock_review_edits": {
+      "row_count": 1,
+      "row_md5": "e514be2613f46258e3f859e0cfeeb6e5"
+    },
+    "practice_attempts": {
+      "row_count": 0,
+      "row_md5": "d751713988987e9331980363e24189ce"
+    },
+    "v2_price_versions": {
+      "row_count": 4,
+      "row_md5": "29f7278b543ff356a5a4b163747e2598"
+    },
+    "v2_product_grants": {
+      "row_count": 0,
+      "row_md5": "d751713988987e9331980363e24189ce"
+    },
+    "mock_attempt_items": {
+      "row_count": 132,
+      "row_md5": "37f6f567ea544f12ffa0b054903efc87"
+    },
+    "practice_questions": {
+      "row_count": 0,
+      "row_md5": "d751713988987e9331980363e24189ce"
+    },
+    "mock_question_media": {
+      "row_count": 0,
+      "row_md5": "d751713988987e9331980363e24189ce"
+    },
+    "mock_stimulus_media": {
+      "row_count": 10,
+      "row_md5": "113669a3d6a9c3ba2111dc26f477496c"
+    },
+    "master_practice_sets": {
+      "row_count": 0,
+      "row_md5": "d751713988987e9331980363e24189ce"
+    },
+    "mock_assessment_audit": {
+      "row_count": 39,
+      "row_md5": "31436407260a317f8dd1247e90fc9fcc"
+    },
+    "mock_assessment_items": {
+      "row_count": 196,
+      "row_md5": "5792d2ab8339b82d1d4c07662dbd1cb5"
+    },
+    "mock_attempt_sections": {
+      "row_count": 10,
+      "row_md5": "ef8371608b27659eec7d3eb0099a030a"
+    },
+    "mock_question_options": {
+      "row_count": 909,
+      "row_md5": "10b09a504ad255366096f8a7e077a871"
+    },
+    "student_question_logs": {
+      "row_count": 600,
+      "row_md5": "423cf7b89db0653c73498045840a614c"
+    },
+    "course_template_events": {
+      "row_count": 211,
+      "row_md5": "16df6448268f32bb16ef48b33bf58675"
+    },
+    "master_worksheet_plans": {
+      "row_count": 0,
+      "row_md5": "d751713988987e9331980363e24189ce"
+    },
+    "mock_source_namespaces": {
+      "row_count": 3,
+      "row_md5": "b1965b90b59589cebb5155e23f8234d2"
+    },
+    "student_worksheet_logs": {
+      "row_count": 0,
+      "row_md5": "d751713988987e9331980363e24189ce"
+    },
+    "mock_assignment_testers": {
+      "row_count": 2,
+      "row_md5": "3bf4cc223ad9e9a779ff5bcb9cbb32cf"
+    },
+    "mock_attempt_item_notes": {
+      "row_count": 1,
+      "row_md5": "c99adc47ce7ba60c1720c5dd910a0546"
+    },
+    "mock_operation_receipts": {
+      "row_count": 135,
+      "row_md5": "1a8c71fb2442305a9053f87492f1c3c0"
+    },
+    "mock_question_revisions": {
+      "row_count": 168,
+      "row_md5": "6b0d69b88125ce2d964e3d3eebdf6350"
+    },
+    "mock_stimulus_revisions": {
+      "row_count": 26,
+      "row_md5": "ef365a15a542d51cbae31bf5afa7e93f"
+    },
+    "worksheet_daily_targets": {
+      "row_count": 0,
+      "row_md5": "d751713988987e9331980363e24189ce"
+    },
+    "course_template_sections": {
+      "row_count": 31,
+      "row_md5": "f92aa5d48a787346fc9f71a29330e534"
+    },
+    "master_practice_attempts": {
+      "row_count": 0,
+      "row_md5": "d751713988987e9331980363e24189ce"
+    },
+    "mock_assessment_sections": {
+      "row_count": 13,
+      "row_md5": "f5ccdd1c785888ef80f42be82f87405e"
+    },
+    "mock_assessment_versions": {
+      "row_count": 6,
+      "row_md5": "99e4de190cee849a1d20273ac363b561"
+    },
+    "course_template_resources": {
+      "row_count": 70,
+      "row_md5": "a6bf41039701c8123eece142c9fc6a96"
+    },
+    "course_template_revisions": {
+      "row_count": 19,
+      "row_md5": "22d2eb592008c1246493b0496fda04ff"
+    },
+    "master_practice_questions": {
+      "row_count": 0,
+      "row_md5": "d751713988987e9331980363e24189ce"
+    },
+    "master_worksheet_questions": {
+      "row_count": 150,
+      "row_md5": "3e87a15501a4b334a77d133f2ae90003"
+    },
+    "student_course_preferences": {
+      "row_count": 1,
+      "row_md5": "f1964e938f5907539c063075d33adb63"
+    },
+    "mock_assessment_assignments": {
+      "row_count": 7,
+      "row_md5": "c8991d683e1fc9d7e3456a9a19bef5b5"
+    },
+    "material_worksheet_questions": {
+      "row_count": 0,
+      "row_md5": "d751713988987e9331980363e24189ce"
+    },
+    "mock_source_namespace_members": {
+      "row_count": 1,
+      "row_md5": "8a361235be3dda5a6b5838d2d19a555c"
+    },
+    "master_worksheet_session_rules": {
+      "row_count": 0,
+      "row_md5": "d751713988987e9331980363e24189ce"
+    },
+    "student_material_question_logs": {
+      "row_count": 0,
+      "row_md5": "d751713988987e9331980363e24189ce"
+    }
+  },
+  "ledger": {
+    "20260731051000": "2355e37b0b5b68c1ddfe082d89e39ac8",
+    "20260731062700": "95aaa1815b10cc03d71ef0def6c305e2",
+    "20260731110000": "5f333c7c8885d14d0cfeccf87e57f4f9",
+    "20260731150000": "3cde5e4dca973ca4be1cfe64edadb1e4",
+    "20260731160000": "4049e055e3413190a1147c3f3c38b7e2",
+    "20260731170000": "2e0aa9501ef2d91223625f94c7e0a8e7",
+    "20260731180000": "9bf49294d0bc67c37bd325a838ce8f3e",
+    "20260801085900": "507d41fe6ed8fa107c9fe38c7609cc13",
+    "20260801090000": "851708574d1c051b9ce2d274e22e05cb",
+    "20260802100000": "b3ffa9573a230c2addf6543953333a40",
+    "20260802180000": "cada0619be51fb721d0ce3d136f39b73",
+    "20260802230000": "72abe74a6535693fa7ba3ef0183776c8",
+    "20260802234500": "5821930bf6fd826541490602d7524551",
+    "20260802235900": "b6cdc1bcec18657b1cecf7a2cc4c9688",
+    "20260811170000": "4cbfd9cfd29372c659071feb7f57043a",
+    "20260813081141": "e431b05e6854a9f12abff8a1d4aa6912",
+    "20260817090845": "aae4ba696a9bcb0dbf628f1b7ae1b370",
+    "20260817143000": "2b6df12ad5718cfe303d2f56ee01d17b",
+    "20260817170000": "913239e834425f5b7371622f5f9712fb",
+    "20260817233540": "79c8ddeb86e422ae64072b639bf8d4aa",
+    "20260818113000": "48b4b81c49dd6cab20c224571abdf52d",
+    "20260818170000": "8cea5a2d42f9a58c594a157d9e4a6741",
+    "20260818173000": "2a6ec8fdb859dac3f5bb315bdbd8838a",
+    "20260820114212": "bcbda9ce6724b29c618dee333a7f3297",
+    "20260821093017": "e89a95751b5011a5f5098fc0cd0fa708",
+    "20260821105003": "24c1bcea79ea072f2aad8c08d712b933",
+    "20260821114500": "6ad39093a9cc39da88965b2f1ae29973",
+    "20260822110000": "99f9a77e3de2652d242e1d6ec73b55ca",
+    "20260822213000": "634a36489c708745a95d0abda5c0948a",
+    "20260823100000": "eaf4b154c89b7360d0a6083a7ea87465",
+    "20260823101000": "6df78ff249857a39b46cfc3d29fa0960",
+    "20260823102000": "7284f58b96dec44048032355426e12aa",
+    "20260823110000": "6e25ff3d6946a141e39dfd9e1d7adb4c",
+    "20260823111000": "5359715a5a24d309988ff02ede52cb6d",
+    "20260823112000": "b56259351fc0b1658bfa20ce09437b51",
+    "20260824150000": "e5da945a504ef0491a182ffd901bba3d",
+    "20260824173000": "279e01c3bc30bc64cd412504a7b070c9",
+    "20260824190000": "3ac1fecf29141a5479b418c13a17ad87",
+    "20260825100000": "ea242c540e05a701f802988d346f5582",
+    "20260830112501": "ecd1e89ab1e19bdc5de2ffc8ae70a5ba",
+    "20260830133000": "9641876a90388581fa533ed1dc28e2b2",
+    "20260830133001": "4401da896e106ec29b31f2cf26f4663b",
+    "20260906133422": "e435c90a1934df7bea0faee89da415ac",
+    "20260906133536": "bcbd216993930c9a468384d9d56e205f",
+    "20260924120000": "6342272df6ab90762a192137b7a73cd2",
+    "20260925100000": "ceb45fb1e3dcf10e9ff9aecb71e5c990",
+    "20261018090000": "55b05e5510f3208d91971b2616af2ec7"
+  },
+  "designated_profiles_absent_from_snapshot": true,
+  "designated_new_profile_ids": [
+    "2df035e4-f406-4abf-9460-a3850e1a9b65",
+    "1d0cd9f6-6831-4d1c-babe-52c9d6e7429c",
+    "2cd192e6-f365-440f-ba1c-8212506c57d9",
+    "0465a0db-a6a4-4004-9c0f-5acf10d0aed7",
+    "f23fdf9d-d6db-45ee-8c89-bd1886baf2c9",
+    "13342f35-9214-481e-8959-8b70c6b7d9b7",
+    "c51ef1b7-380e-4c9b-b4e6-1e4652be265a",
+    "6c3ac735-ad59-478c-a104-264b66b65af4",
+    "18fda033-4c39-499b-a7b2-ceb598d7f679",
+    "f02daad1-88bf-4276-8050-1b0cc1b2d76d"
+  ],
+  "derivation": "Recovery aggregates originally computed directly in PostgreSQL from the raw snapshot; recovered unchanged from the saved reconciliation SQL. No application records or JavaScript numeric conversion are involved.",
+  "recovered_from_reconciliation_sha256": "b8610b4aba6bbee6190d8f06c58c3261090d26c7fb035f4f9246d8d78b2e1301"
+}
