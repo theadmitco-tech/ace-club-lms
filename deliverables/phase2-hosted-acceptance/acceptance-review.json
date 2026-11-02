@@ -4,7 +4,7 @@
   "project": "eyphkkginlgoaxflauog",
   "functionalCommit": "aee96df42dffb80948021d6d22392fb059189ee8",
   "runId": "307e2a9f-9265-45f9-9818-4ea52711684c",
-  "status": "functionality-and-cleanup-verified-final-preview-pending",
+  "status": "complete-in-staging",
   "mainChecksPassed": 77,
   "authoringChecksPassed": 14,
   "targetedSecondReadingChecksPassed": 4,
@@ -25,5 +25,8 @@
     "The unsupported mock-route smoke probe is excluded. Legacy data fingerprints and Phase 1 regression evidence support preservation."
   ],
   "cleanupEvidence": "cleanup-result.json",
-  "accountCloseoutEvidence": "account-closeout.json"
+  "accountCloseoutEvidence": "account-closeout.json",
+  "deliveryCommit": "cfe59e2bff723294a4c965db0c6258fa713bcf04",
+  "finalSmokeEvidence": "final-preview-smoke.json",
+  "deliveryEvidence": "delivery-verification.json"
 }

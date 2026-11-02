@@ -1,0 +1,35 @@
+{
+  "check": "phase2_final_preview_smoke",
+  "commit": "cfe59e2bff723294a4c965db0c6258fa713bcf04",
+  "preview": "https://ace-club-krq5xawca-theadmitco-techs-projects.vercel.app",
+  "project": "eyphkkginlgoaxflauog",
+  "recordedAt": "2026-11-02T00:26:52.678Z",
+  "scope": "Anonymous deployment/environment/catalogue checks after authenticated acceptance and exact fixture cleanup; no account recreation.",
+  "checks": [
+    {
+      "id": "exact-preview-commit-and-staging",
+      "status": "pass"
+    },
+    {
+      "id": "anonymous-session-and-private-access-denials",
+      "status": "pass"
+    },
+    {
+      "id": "live-catalogue-prices",
+      "status": "pass"
+    },
+    {
+      "id": "online-purchasing-remains-unavailable",
+      "status": "pass"
+    },
+    {
+      "id": "catalogue-mobile-fit",
+      "status": "pass"
+    },
+    {
+      "id": "anonymous-course-reading-denied",
+      "status": "pass"
+    }
+  ],
+  "status": "passed"
+}

@@ -1,6 +1,6 @@
 # Phase 2 implementation and activation
 
-Status: staging functionality and cleanup verified; final delivery verification remains pending. Phase 1 is preserved. Production is unchanged and PR #24 remains Draft and unmerged.
+Status: complete in staging; all 17 functional gates, cleanup and delivery checks passed. Phase 1 is preserved. Production is unchanged and PR #24 remains Draft and unmerged.
 
 The existing LMS now includes four-offering course configuration, the IST calendar, ordered Student sessions, shared resource import, reviewed multi-offering publication, protected course/PDF/reading delivery, explicit live registration and audited class completion. The approved 19 assets are published through 33 placements in Full Course, Quant, Verbal and DI libraries. No real purchase or payment was created.
 
@@ -15,3 +15,5 @@ The [application recovery report](application-recovery-report.json) records the 
 The [operator-reported cleanup](../phase2-hosted-acceptance/cleanup-result.json) restored baseline `d960200e147961964330031a3762eb4a` across 78 tables. The [account closeout](../phase2-hosted-acceptance/account-closeout.json) independently verifies removal of all nine QA Auth accounts and profiles, zero remaining QA purchases, and the inactive, banned content operator retained for audit history. The four real libraries passed 72 post-cleanup checks. Setup and cleanup SQL are retained as historical execution artifacts and must not be rerun for this completed fixture run.
 
 The GitHub connection rejected the PR-description update with HTTP 403. The [prepared description](pr24-description.md) remains available for the review handoff; code pushes succeeded. No readiness, merge or Production release is implied by staging acceptance.
+
+The tested [Preview](https://ace-club-krq5xawca-theadmitco-techs-projects.vercel.app) is READY at implementation commit `cfe59e2bff723294a4c965db0c6258fa713bcf04`. GitHub Verify run `41366980879` passed, followed by six read-only final smoke checks. The [delivery record](../phase2-hosted-acceptance/delivery-verification.json) distinguishes the tested implementation from the subsequent documentation-only closeout commit. The stable branch Preview serves the latest pushed revision.

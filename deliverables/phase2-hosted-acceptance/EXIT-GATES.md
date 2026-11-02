@@ -1,6 +1,6 @@
 # Phase 2 acceptance checklist
 
-Status: functionality and cleanup verified in staging; final delivery verification remains pending. Production is unchanged and PR #24 remains Draft.
+Status: complete in staging; all 17 functional gates, fixture cleanup, account closeout and delivery verification passed. Production is unchanged and PR #24 remains Draft.
 
 This checklist synthesizes the [acceptance review](acceptance-review.json), [main hosted checks](hosted-results.json), [authoring lifecycle](authoring-results.json), [targeted reading recheck](resource-recheck.json), [IST schedule](ist-schedule.json), and [reviewed library publication](../phase2-preview-activation/evidence/material-acceptance-2026-11-02-publish-reviewed.json). Earlier interrupted attempts remain retained and explained in the review.
 
@@ -29,4 +29,6 @@ The API reader remains unavailable for the two legacy Notion embed references; t
 - [x] Exact fixture cleanup restores the recorded 78-table baseline.
 - [x] Nine synthetic QA accounts are removed.
 - [x] The retained content operator is deactivated after baseline verification.
-- [ ] Final evidence is committed and the Preview build is verified.
+- [x] Final implementation and acceptance evidence are committed; the Preview is READY and GitHub Verify passed.
+
+The [delivery record](delivery-verification.json) and [final smoke check](final-preview-smoke.json) identify the tested implementation commit. The subsequent completion-record commit changes documentation and evidence only.
