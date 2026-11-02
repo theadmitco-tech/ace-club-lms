@@ -3,8 +3,9 @@
 Status: all ten migrations are installed, and the approved 19-asset import is
 confirmed. Operator-provided reconciliation reports exact ledger/routine matches
 and preservation of all sixty original application tables. Hosted website
-acceptance and QA cleanup remain pending. Activation files are historical
-execution records and must not be rerun against this staging installation.
+acceptance, fixture cleanup and account closeout have passed. No further SQL
+Editor execution is required for Phase 2. Activation and fixture files are
+historical execution records and must not be rerun against this staging installation.
 
 The sole target is staging project `eyphkkginlgoaxflauog`. Production configuration
 and PR #24 Draft status remain unchanged. Supabase SQL Editor access is sufficient
@@ -34,12 +35,17 @@ Editor results. The original Phase 1 ledger is preserved; the real material
 import produced four unpublished templates. The existing-version activation
 error was resolved by read-only reconciliation, not migration replay.
 
-The next SQL Editor work is dedicated acceptance-fixture setup and exact cleanup,
-using the reviewed [setup file](../phase2-hosted-acceptance/01-SETUP-FIXTURES.sql).
-The existing nine QA identities were verified, and the four approved library
-batches are now published. Setup adds one dedicated QA enrollment to the
-Full Course library; it does not alter its content or publication. The approved import must not be repeated to reconstruct
-missing local files. Original source references remain private.
+The four approved library batches remain published. The dedicated fixture run
+completed with the [exact 78-table baseline restored](../phase2-hosted-acceptance/cleanup-result.json).
+The [account closeout](../phase2-hosted-acceptance/account-closeout.json) verifies
+removal of all nine synthetic QA accounts and their test purchases. The content
+operator remains inactive and banned, retaining its audit identity. The
+[completed acceptance checklist](../phase2-hosted-acceptance/EXIT-GATES.md)
+records the functional and delivery gates.
+
+The setup and cleanup files are retained as evidence of the completed run.
+Neither those files nor the approved import are recovery steps for missing local
+files. Original source references remain private.
 
 ## Historical activation sequence
 
