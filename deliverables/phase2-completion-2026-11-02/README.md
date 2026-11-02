@@ -14,8 +14,16 @@ The [application recovery report](application-recovery-report.json) records the 
 
 The [operator-reported cleanup](../phase2-hosted-acceptance/cleanup-result.json) restored baseline `d960200e147961964330031a3762eb4a` across 78 tables. The [account closeout](../phase2-hosted-acceptance/account-closeout.json) independently verifies removal of all nine QA Auth accounts and profiles, zero remaining QA purchases, and the inactive, banned content operator retained for audit history. The four real libraries passed 72 post-cleanup checks. Setup and cleanup SQL are retained as historical execution artifacts and must not be rerun for this completed fixture run.
 
-The GitHub connection still rejects the PR-title and description update with HTTP 403 (`Resource not accessible by integration`), including the final handoff retry. The [prepared description](pr24-description.md) remains available for the review handoff; code pushes succeeded. No readiness, merge or Production release is implied by staging acceptance.
+The PR title and description were updated by the operator and independently
+verified through the connected GitHub read API. The published body exactly
+matches the [prepared description](pr24-description.md); the [handoff verification](pr24-handoff-verification.json)
+records the result. The earlier integration write restriction no longer blocks
+this completed handoff. No readiness, merge or Production release is implied by
+staging acceptance.
 
 The tested [Preview](https://ace-club-krq5xawca-theadmitco-techs-projects.vercel.app) is READY at implementation commit `cfe59e2bff723294a4c965db0c6258fa713bcf04`. GitHub Verify run `41366980879` passed, followed by six read-only final smoke checks. The [delivery record](../phase2-hosted-acceptance/delivery-verification.json) distinguishes the tested implementation from the subsequent documentation-only closeout commit. The stable branch Preview serves the latest pushed revision.
 
-No further SQL Editor execution is required for Phase 2. The remaining external handoff action is publication of the prepared PR description through a GitHub connection authorized to edit PR #24. The proposed title is “Complete Phase 2 course publishing and protected student delivery”.
+No further SQL Editor execution or implementation work is required for Phase 2.
+The staging implementation and review handoff are complete. Reviewer approval,
+PR readiness, merge into `codex/v2-integration` and any Production release remain
+separate controlled actions.
