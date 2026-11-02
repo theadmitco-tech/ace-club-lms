@@ -1,3 +1,4 @@
+import { contentAssetPath,contentAssetExtension } from './v2ContentAssets';
 import { isV2ContentUrl, type V2SessionContentKind } from './v2Templates';
 
 export const V2_SESSION_STAGES: readonly { kind: V2SessionContentKind; title: string; description: string }[] = [
@@ -17,6 +18,12 @@ export function v2ResourceUrl(value: string): string | null {
 export function v2CourseResourceHref(value: string, context: {
   mode: 'admin-preview' | 'student'; sessionKey: string; itemKey: string; batchId?: string;
 }): string | null {
+  const asset=contentAssetPath(value);
+  if(asset){
+    if(context.mode==='admin-preview')return `/api/admin/v2/content/file?path=${encodeURIComponent(asset)}`;
+    if(!context.batchId)return null;
+    return `/api/v2/content/file?batchId=${encodeURIComponent(context.batchId)}&sessionKey=${encodeURIComponent(context.sessionKey)}&itemKey=${encodeURIComponent(context.itemKey)}&format=${contentAssetExtension(asset)}`;
+  }
   if (value.startsWith('/api/materials/file?path=') && isV2ContentUrl(value)) {
     if (context.mode === 'admin-preview') return value.replace('/api/materials/file?', '/api/admin/v2/materials/file?');
     if (!context.batchId) return null;

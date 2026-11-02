@@ -245,6 +245,7 @@ test('course page never serializes stale resource URLs against newer gates or mi
     '@/lib/server/portalAuthorization': { requirePortalRole: async () => ({ role: 'student' }) },
     '@/lib/server/v2StudentScheduleFeature': { isV2StudentScheduleEnabled: () => true },
     '@/lib/server/v2StudentDelivery': { getMyV2PublishedCourse: async () => privateCourse },
+    '@/lib/server/v2ContentPublishing': {readMyContentPlacements:async()=>[]},
     '@/components/student/StudentHeader': { StudentHeader: 'Header' }, '@/components/student/V2CourseSessionView': { V2CourseSessionView: 'LegacySession' },
     '../../../dashboard/dashboard.css': {},
   });

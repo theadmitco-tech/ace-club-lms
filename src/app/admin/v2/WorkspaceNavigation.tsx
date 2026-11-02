@@ -8,13 +8,14 @@ const destinations = [
   ['/admin/v2', 'Overview'],
   ['/admin/v2/access', 'Products & access'],
   ['/admin/v2/templates', 'Course content'],
+  ['/admin/v2/content', 'Content publishing'],
   ['/admin/v2/batches', 'Batches & publishing'],
 ] as const;
 
-export default function WorkspaceNavigation() {
+export default function WorkspaceNavigation({ contentEnabled = false }: { contentEnabled?: boolean }) {
   const pathname = usePathname();
   return <nav className={styles.navigation} aria-label="Course workspace">
-    {destinations.map(([href, label]) => <AdminDraftLink key={href} href={href} prefetch={false}
+    {destinations.filter(([href]) => href !== '/admin/v2/content' || contentEnabled).map(([href, label]) => <AdminDraftLink key={href} href={href} prefetch={false}
       aria-current={(href === '/admin/v2' ? pathname === href : pathname.startsWith(href)) ? 'page' : undefined}>
       {label}
     </AdminDraftLink>)}

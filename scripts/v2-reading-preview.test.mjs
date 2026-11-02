@@ -16,7 +16,7 @@ function load(file, dependencies = {}) {
   return exports;
 }
 const helpers = load('src/lib/v2ReadingPreview.ts');
-const presentation = load('src/lib/v2SessionPresentation.ts', { './v2Templates': load('src/lib/v2Templates.ts') });
+const presentation = load('src/lib/v2SessionPresentation.ts', { './v2Templates': load('src/lib/v2Templates.ts'), './v2ContentAssets':load('src/lib/v2ContentAssets.ts') });
 const pageId = '123456781234123412341234567890ab';
 const uuid = '12345678-1234-1234-1234-1234567890ab';
 const paragraph = '22345678-1234-1234-1234-1234567890ab';

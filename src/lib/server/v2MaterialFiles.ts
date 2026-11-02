@@ -1,4 +1,5 @@
 import 'server-only';
+import { readContentWorkspace } from './v2ContentPublishing';
 import { createClient as createAdminClient } from '@supabase/supabase-js';
 import { COURSE_MATERIALS_BUCKET, createProtectedMaterialUrl, getProtectedMaterialPath, isSupportedProtectedMaterialPath } from '@/lib/materialFiles';
 import { isV2TemplateAuthoringEnabled } from '@/lib/server/v2TemplateFeature';
@@ -15,17 +16,19 @@ export function canonicalV2MaterialPath(reference: string): string | null {
 export async function getV2StudentMaterialPath(batchId: unknown, sessionKey: unknown, itemKey: unknown): Promise<string | null> {
   if (!isV2MeetingBatchId(batchId) || !isV2MeetingBatchId(sessionKey) || !isV2MeetingBatchId(itemKey)) return null;
   const course = await getMyV2PublishedCourse(batchId);
-  const item = course?.sessions.find((session) => session.key === sessionKey)?.content.materials.find((material) => material.key === itemKey);
-  return item ? canonicalV2MaterialPath(item.url) : null;
+  const item = course?.sessions.find((session) => session.key === sessionKey)?.content;
+  const resource=item && Object.values(item).flat().find(material=>material.key===itemKey);
+  return resource ? canonicalV2MaterialPath(resource.url) : null;
 }
 export async function getV2AdminMaterialPath(value: unknown): Promise<string | null> {
   try {
     if (!isV2TemplateAuthoringEnabled() || typeof value !== 'string' || !isSupportedProtectedMaterialPath(value)
       || (await getPortalIdentity())?.role !== 'admin') return null;
     const reference = createProtectedMaterialUrl(value);
-    const [templates,batches] = await Promise.all([listV2TemplateDrafts(),listV2BatchDrafts()]);
+    const [templates,batches,workspace] = await Promise.all([listV2TemplateDrafts(),listV2BatchDrafts(),readContentWorkspace()]);
     const documents = [...(templates.status === 'ready' ? templates.templates.map((template) => template.document) : []),
       ...(batches.status === 'ready' ? batches.drafts : [])];
+    if(workspace?.items.some(i=>!i.deleted&&i.document.url===reference))return value;
     return documents.some((document) => [...(document.sessions ?? []),...document.events]
       .some((session) => session.content?.materials.some((item) => item.url === reference))) ? value : null;
   } catch { return null; }
