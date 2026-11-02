@@ -1,0 +1,524 @@
+{
+  "check": "phase4_application_row_recovery_rehearsal",
+  "tables": [
+    {
+      "md5": "16df6448268f32bb16ef48b33bf58675",
+      "rows": 211,
+      "table": "course_template_events",
+      "matches": true
+    },
+    {
+      "md5": "a6bf41039701c8123eece142c9fc6a96",
+      "rows": 70,
+      "table": "course_template_resources",
+      "matches": true
+    },
+    {
+      "md5": "22d2eb592008c1246493b0496fda04ff",
+      "rows": 19,
+      "table": "course_template_revisions",
+      "matches": true
+    },
+    {
+      "md5": "f92aa5d48a787346fc9f71a29330e534",
+      "rows": 31,
+      "table": "course_template_sections",
+      "matches": true
+    },
+    {
+      "md5": "4d1d53fe9de01e055adbfa1300aee5b0",
+      "rows": 4,
+      "table": "course_templates",
+      "matches": true
+    },
+    {
+      "md5": "d49397e6ca2c055f4338c51bc9648fa3",
+      "rows": 13,
+      "table": "courses",
+      "matches": true
+    },
+    {
+      "md5": "c52228a514c2a00ba1ebce886f9ce7e0",
+      "rows": 4,
+      "table": "enrollments",
+      "matches": true
+    },
+    {
+      "md5": "017adc9bf3281d55f664cee7119c71e4",
+      "rows": 13,
+      "table": "master_materials",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "master_practice_attempts",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "master_practice_questions",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "master_practice_sets",
+      "matches": true
+    },
+    {
+      "md5": "f17c8bcf3bc6f7252480c8a1dc28151b",
+      "rows": 31,
+      "table": "master_sessions",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "master_worksheet_plans",
+      "matches": true
+    },
+    {
+      "md5": "3e87a15501a4b334a77d133f2ae90003",
+      "rows": 150,
+      "table": "master_worksheet_questions",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "master_worksheet_session_rules",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "material_worksheet_questions",
+      "matches": true
+    },
+    {
+      "md5": "0d1c4a252de931898b86179408a6d557",
+      "rows": 74,
+      "table": "materials",
+      "matches": true
+    },
+    {
+      "md5": "c8991d683e1fc9d7e3456a9a19bef5b5",
+      "rows": 7,
+      "table": "mock_assessment_assignments",
+      "matches": true
+    },
+    {
+      "md5": "31436407260a317f8dd1247e90fc9fcc",
+      "rows": 39,
+      "table": "mock_assessment_audit",
+      "matches": true
+    },
+    {
+      "md5": "5792d2ab8339b82d1d4c07662dbd1cb5",
+      "rows": 196,
+      "table": "mock_assessment_items",
+      "matches": true
+    },
+    {
+      "md5": "f5ccdd1c785888ef80f42be82f87405e",
+      "rows": 13,
+      "table": "mock_assessment_sections",
+      "matches": true
+    },
+    {
+      "md5": "99e4de190cee849a1d20273ac363b561",
+      "rows": 6,
+      "table": "mock_assessment_versions",
+      "matches": true
+    },
+    {
+      "md5": "8efa3a08945ffee210591d3c8ad46375",
+      "rows": 5,
+      "table": "mock_assessments",
+      "matches": true
+    },
+    {
+      "md5": "3bf4cc223ad9e9a779ff5bcb9cbb32cf",
+      "rows": 2,
+      "table": "mock_assignment_testers",
+      "matches": true
+    },
+    {
+      "md5": "c99adc47ce7ba60c1720c5dd910a0546",
+      "rows": 1,
+      "table": "mock_attempt_item_notes",
+      "matches": true
+    },
+    {
+      "md5": "37f6f567ea544f12ffa0b054903efc87",
+      "rows": 132,
+      "table": "mock_attempt_items",
+      "matches": true
+    },
+    {
+      "md5": "ef8371608b27659eec7d3eb0099a030a",
+      "rows": 10,
+      "table": "mock_attempt_sections",
+      "matches": true
+    },
+    {
+      "md5": "588e56a16a1ab1ce0252616fba611482",
+      "rows": 4,
+      "table": "mock_attempts",
+      "matches": true
+    },
+    {
+      "md5": "1bd9ff44e1ae072033ae2d4c2c880eab",
+      "rows": 200,
+      "table": "mock_import_items",
+      "matches": true
+    },
+    {
+      "md5": "925b24ad77525eab924875b0d0051163",
+      "rows": 8,
+      "table": "mock_imports",
+      "matches": true
+    },
+    {
+      "md5": "af21364af1a736bfc115aeaec6367420",
+      "rows": 10,
+      "table": "mock_media",
+      "matches": true
+    },
+    {
+      "md5": "1a8c71fb2442305a9053f87492f1c3c0",
+      "rows": 135,
+      "table": "mock_operation_receipts",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "mock_question_media",
+      "matches": true
+    },
+    {
+      "md5": "10b09a504ad255366096f8a7e077a871",
+      "rows": 909,
+      "table": "mock_question_options",
+      "matches": true
+    },
+    {
+      "md5": "6b0d69b88125ce2d964e3d3eebdf6350",
+      "rows": 168,
+      "table": "mock_question_revisions",
+      "matches": true
+    },
+    {
+      "md5": "91d6cc28e550f3e548ad6694850a9955",
+      "rows": 164,
+      "table": "mock_questions",
+      "matches": true
+    },
+    {
+      "md5": "7d21093f16d7e60669977d79ae6fd730",
+      "rows": 132,
+      "table": "mock_responses",
+      "matches": true
+    },
+    {
+      "md5": "e514be2613f46258e3f859e0cfeeb6e5",
+      "rows": 1,
+      "table": "mock_review_edits",
+      "matches": true
+    },
+    {
+      "md5": "8a361235be3dda5a6b5838d2d19a555c",
+      "rows": 1,
+      "table": "mock_source_namespace_members",
+      "matches": true
+    },
+    {
+      "md5": "b1965b90b59589cebb5155e23f8234d2",
+      "rows": 3,
+      "table": "mock_source_namespaces",
+      "matches": true
+    },
+    {
+      "md5": "0bed07cdd3556db9517d62957c5f0426",
+      "rows": 26,
+      "table": "mock_stimuli",
+      "matches": true
+    },
+    {
+      "md5": "113669a3d6a9c3ba2111dc26f477496c",
+      "rows": 10,
+      "table": "mock_stimulus_media",
+      "matches": true
+    },
+    {
+      "md5": "ef365a15a542d51cbae31bf5afa7e93f",
+      "rows": 26,
+      "table": "mock_stimulus_revisions",
+      "matches": true
+    },
+    {
+      "md5": "fe2704763ab5094a91a9e21324665b4b",
+      "rows": 84,
+      "table": "mock_topics",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "payments",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "practice_attempts",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "practice_questions",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "practice_sets",
+      "matches": true
+    },
+    {
+      "md5": "98de7831ca2176f6fc86dcf61c7a0f52",
+      "rows": 10,
+      "table": "profiles",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "registrations",
+      "matches": true
+    },
+    {
+      "md5": "fddf08506487eef78815af4db2591d72",
+      "rows": 251,
+      "table": "sessions",
+      "matches": true
+    },
+    {
+      "md5": "f1964e938f5907539c063075d33adb63",
+      "rows": 1,
+      "table": "student_course_preferences",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "student_material_question_logs",
+      "matches": true
+    },
+    {
+      "md5": "423cf7b89db0653c73498045840a614c",
+      "rows": 600,
+      "table": "student_question_logs",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "student_worksheet_logs",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "v2_batch_enrollments",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "v2_batch_meeting_revisions",
+      "matches": true
+    },
+    {
+      "md5": "02b664f595160da8250774d4ca7acef3",
+      "rows": 4,
+      "table": "v2_batch_publication_revisions",
+      "matches": true
+    },
+    {
+      "md5": "d6059e45a3c72a15c8243f2398c8b813",
+      "rows": 33,
+      "table": "v2_content_asset_placements",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "v2_content_asset_replacements",
+      "matches": true
+    },
+    {
+      "md5": "bdad478721b5697cdb5393ece6f51284",
+      "rows": 1,
+      "table": "v2_content_imports",
+      "matches": true
+    },
+    {
+      "md5": "a5d99f821e2b47385e6acb5ac5d55f0d",
+      "rows": 4,
+      "table": "v2_course_batch_revisions",
+      "matches": true
+    },
+    {
+      "md5": "05f9b8179b1a0a7c1c03e11b2e1fe625",
+      "rows": 4,
+      "table": "v2_course_batches",
+      "matches": true
+    },
+    {
+      "md5": "20d7dcd6cddc7e4a3d7d3ae629b43867",
+      "rows": 4,
+      "table": "v2_course_offerings",
+      "matches": true
+    },
+    {
+      "md5": "b1bb73088d432a0783016c3457afd99f",
+      "rows": 8,
+      "table": "v2_course_template_revisions",
+      "matches": true
+    },
+    {
+      "md5": "5839f24b48da7f89ac6b4cc4f5026560",
+      "rows": 4,
+      "table": "v2_course_templates",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "v2_live_class_completions",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "v2_live_registration_audit",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "v2_live_registrations",
+      "matches": true
+    },
+    {
+      "md5": "29f7278b543ff356a5a4b163747e2598",
+      "rows": 4,
+      "table": "v2_price_versions",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "v2_product_grants",
+      "matches": true
+    },
+    {
+      "md5": "0ec545a7ee7c8dbd5500f8f781dd2cec",
+      "rows": 4,
+      "table": "v2_products",
+      "matches": true
+    },
+    {
+      "md5": "2d59e7885b30cdb293de5177f18aa50b",
+      "rows": 1,
+      "table": "v2_publication_scope_requests",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "v2_published_meetings",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "v2_purchases",
+      "matches": true
+    },
+    {
+      "md5": "62d37546f3cc376264b1eda5cce706b6",
+      "rows": 19,
+      "table": "v2_shared_content_asset_revisions",
+      "matches": true
+    },
+    {
+      "md5": "9cb43ad9eafd2eeac9c553398c0e2efe",
+      "rows": 19,
+      "table": "v2_shared_content_assets",
+      "matches": true
+    },
+    {
+      "md5": "d751713988987e9331980363e24189ce",
+      "rows": 0,
+      "table": "worksheet_daily_targets",
+      "matches": true
+    }
+  ],
+  "ledgerMd5": "9bd44028bf3ea54ee2f4954f2042e748",
+  "capturedAt": "2026-11-02T01:12:22.721665+00:00",
+  "ledgerMatches": true,
+  "routineGuards": [
+    {
+      "signature": "get_my_v2_batch_schedules()",
+      "sourceMd5": "b151b679ceed090553ccb9a5d06a39a6",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "securityDefiner": true
+    },
+    {
+      "signature": "get_my_v2_meeting(uuid,uuid)",
+      "sourceMd5": "22456120dce3677862078245852e9483",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "securityDefiner": true
+    },
+    {
+      "signature": "get_my_v2_published_course(uuid)",
+      "sourceMd5": "ed6fdee7291d7954c7fefd02fb70b0a6",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "securityDefiner": true
+    }
+  ],
+  "activationRehearsal": {
+    "check": "phase4_activation",
+    "sourceSha256": "edaa5148af61d151ea4d59436929db652fbb5fc6c3bdeba0d7c2711b0af4f958",
+    "phase3Activated": false,
+    "hostedAcceptance": "separate",
+    "migrationVersion": "20261102170000",
+    "newPrivateTables": 7,
+    "functionsVerified": 19,
+    "existingRowsPreserved": true,
+    "phase1LedgerPreserved": true,
+    "existingApplicationTables": 78
+  },
+  "snapshotSha256": "76797990e51637732d2a938cc7aeded2785ed975fc79b6e791e9dfe5259a936c",
+  "status": "application-rows-restored",
+  "fullPlatformRecovery": false,
+  "limitations": [
+    "Auth identities are synthetic placeholders; credentials are not recovered.",
+    "Additional migration-ledger metadata is preserved as JSONB; its original column types are not included in the export.",
+    "Storage objects and platform configuration are excluded.",
+    "Views, relation grants, RLS policies and triggers calling private-schema functions are not restored by this application-row rehearsal.",
+    "Migration activation requires separate schema/privilege reconciliation and preservation checks."
+  ]
+}

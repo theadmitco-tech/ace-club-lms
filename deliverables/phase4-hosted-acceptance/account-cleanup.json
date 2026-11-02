@@ -1,0 +1,18 @@
+{
+  "check": "phase4_qa_account_cleanup",
+  "project": "eyphkkginlgoaxflauog",
+  "runId": "a56891e7-5197-41ca-afa6-e5a45e0003c7",
+  "verifiedAt": "2026-11-02T14:35:12.403Z",
+  "status": "passed",
+  "deletedAccounts": 9,
+  "remainingGeneratedProfiles": 0,
+  "remainingGeneratedPurchases": 0,
+  "baselineRestored": true,
+  "baseline": {
+    "md5": "27145d216badf73e85ee4a42930499a2",
+    "table_count": 85,
+    "excluded_generated_profiles": 9
+  },
+  "qaPasswordRemoved": true,
+  "scope": "Only the nine recorded synthetic Auth identities and their generated profiles."
+}

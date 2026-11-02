@@ -1,0 +1,12 @@
+{
+  "check": "phase4_preview_environment",
+  "deploymentId": "dpl_HUhSFLKKCybqxDPdtsywaFaozamo",
+  "preview": "https://ace-club-isl6k1bgn-theadmitco-techs-projects.vercel.app",
+  "commit": "9f865dfe83bda1b121493ed186899ae6c9532684",
+  "stagingProject": "eyphkkginlgoaxflauog",
+  "environment": "pass",
+  "anonymousPrivatePurchaseRead": "denied",
+  "anonymousAccessRpc": "denied",
+  "authenticatedAcceptance": "pending",
+  "productionBaselineDeployment": "dpl_8axtycbJUpFX8cPWhVtkhGf6p9Kj"
+}

@@ -1,0 +1,19 @@
+{
+  "project": "ace-club-lms",
+  "branch": "intern/v2-phase-4-review",
+  "stagingProject": "eyphkkginlgoaxflauog",
+  "branchOnlyPreviewKeys": [
+    "V2_TEMPLATE_AUTHORING_ENABLED",
+    "V2_BATCH_AUTHORING_ENABLED",
+    "V2_STUDENT_SCHEDULE_ENABLED",
+    "V2_LEARNING_DELIVERY_ENABLED",
+    "V2_INDIVIDUAL_UPGRADE_POLICY",
+    "SUPABASE_SERVICE_ROLE_KEY"
+  ],
+  "serverCredentialUpload": "Explicitly authorized for the Phase 4 Preview branch",
+  "productionVariableMetadataUnchanged": true,
+  "productionBranch": "main",
+  "productionCommit": "940ea7835734a8fb22a6451a30b31084b11d5c97",
+  "productionDeploymentBaseline": "dpl_8axtycbJUpFX8cPWhVtkhGf6p9Kj",
+  "phase3Activated": false
+}

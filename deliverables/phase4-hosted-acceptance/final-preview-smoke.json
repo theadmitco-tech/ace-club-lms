@@ -1,0 +1,32 @@
+{
+  "check": "phase4_final_preview_smoke",
+  "commit": "c0c4e3e65129bd24e7c46de57a82f29916f2a74f",
+  "preview": "https://ace-club-dd78or5n2-theadmitco-techs-projects.vercel.app",
+  "checks": [
+    {
+      "id": "exact-commit-and-staging",
+      "status": "pass"
+    },
+    {
+      "id": "public-course-catalog",
+      "status": "pass"
+    },
+    {
+      "id": "anonymous-redirect:/schedule/v2",
+      "status": "pass"
+    },
+    {
+      "id": "anonymous-redirect:/admin/v2/templates",
+      "status": "pass"
+    },
+    {
+      "id": "anonymous-protected-file-denied",
+      "status": "pass"
+    },
+    {
+      "id": "anonymous-learning-update-denied",
+      "status": "pass"
+    }
+  ],
+  "status": "passed"
+}

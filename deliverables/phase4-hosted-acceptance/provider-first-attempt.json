@@ -1,0 +1,54 @@
+{
+  "check": "phase4_recording_provider_acceptance",
+  "project": "eyphkkginlgoaxflauog",
+  "commit": "9f865dfe83bda1b121493ed186899ae6c9532684",
+  "runId": "a56891e7-5197-41ca-afa6-e5a45e0003c7",
+  "status": "failed",
+  "checks": [
+    {
+      "id": "real-course-feedback-initially-clear",
+      "status": "pass"
+    },
+    {
+      "id": "published-shared-recordings:di",
+      "status": "pass"
+    },
+    {
+      "id": "published-shared-recordings:verbal",
+      "status": "pass"
+    },
+    {
+      "id": "published-shared-recordings:quant",
+      "status": "pass"
+    },
+    {
+      "id": "actual-shared-recordings-compared",
+      "status": "pass"
+    },
+    {
+      "id": "supported-real-recording-present",
+      "status": "pass"
+    }
+  ],
+  "limitations": [
+    "A short real playback checks provider integration and observed samples; it does not claim full viewing or attendance.",
+    "No artificial positions, provider events, completed feedback, recording source edits or real-course publication changes are used."
+  ],
+  "sharedReferences": [
+    {
+      "productCode": "di",
+      "recordings": 3
+    },
+    {
+      "productCode": "verbal",
+      "recordings": 0
+    },
+    {
+      "productCode": "quant",
+      "recordings": 1
+    }
+  ],
+  "provider": "youtube",
+  "failure": "Provider acceptance stopped at the last recorded check; private resource references and browser diagnostics withheld.",
+  "finishedAt": "2026-11-02T01:43:36.071Z"
+}

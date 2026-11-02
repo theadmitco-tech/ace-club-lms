@@ -1,0 +1,513 @@
+{
+  "check": "phase4_hosted_acceptance",
+  "runId": "a56891e7-5197-41ca-afa6-e5a45e0003c7",
+  "project": "eyphkkginlgoaxflauog",
+  "commit": "9f865dfe83bda1b121493ed186899ae6c9532684",
+  "startedAt": "2026-11-02T01:36:38.734Z",
+  "status": "failed",
+  "checks": [
+    {
+      "id": "exact-preview-and-staging",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-course-authorized-learning",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-course-resource-inventory",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-course-complete-outline",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-private-pdf:0",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-private-pdf-unauthorized:0",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-private-pdf:1",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-private-pdf-unauthorized:1",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-private-pdf:2",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-private-pdf-unauthorized:2",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-private-pdf:3",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-private-pdf-unauthorized:3",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-private-pdf:4",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-private-pdf-unauthorized:4",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-reading-authorized-response:0",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-reading-provider:0",
+      "status": "inconclusive",
+      "reason": "The authorized provider API did not return a validated page; original embed rendering is checked separately."
+    },
+    {
+      "id": "real-reading-original-source:0",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-reading-original-rendered:0",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-reading-mobile-fit:0",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-reading-unauthorized:0",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-reading-authorized-response:1",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-reading-provider:1",
+      "status": "inconclusive",
+      "reason": "The authorized provider API did not return a validated page; original embed rendering is checked separately."
+    },
+    {
+      "id": "real-reading-original-source:1",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-reading-original-rendered:1",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-reading-mobile-fit:1",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-reading-unauthorized:1",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-recording-observation-initialization-only",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "real-resources-and-feedback-preserved",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "course-access:quant",
+      "status": "pass",
+      "gates": [
+        "P4-05",
+        "P4-11"
+      ]
+    },
+    {
+      "id": "learning-access:quant",
+      "status": "pass",
+      "gates": [
+        "P4-11"
+      ]
+    },
+    {
+      "id": "meeting-access:quant",
+      "status": "pass",
+      "gates": [
+        "P4-03",
+        "P4-11"
+      ]
+    },
+    {
+      "id": "course-access:unregistered",
+      "status": "pass",
+      "gates": [
+        "P4-05",
+        "P4-11"
+      ]
+    },
+    {
+      "id": "learning-access:unregistered",
+      "status": "pass",
+      "gates": [
+        "P4-11"
+      ]
+    },
+    {
+      "id": "meeting-access:unregistered",
+      "status": "pass",
+      "gates": [
+        "P4-03",
+        "P4-11"
+      ]
+    },
+    {
+      "id": "course-access:expired",
+      "status": "pass",
+      "gates": [
+        "P4-05",
+        "P4-11"
+      ]
+    },
+    {
+      "id": "learning-access:expired",
+      "status": "pass",
+      "gates": [
+        "P4-11"
+      ]
+    },
+    {
+      "id": "meeting-access:expired",
+      "status": "pass",
+      "gates": [
+        "P4-03",
+        "P4-11"
+      ]
+    },
+    {
+      "id": "course-access:revoked",
+      "status": "pass",
+      "gates": [
+        "P4-05",
+        "P4-11"
+      ]
+    },
+    {
+      "id": "learning-access:revoked",
+      "status": "pass",
+      "gates": [
+        "P4-11"
+      ]
+    },
+    {
+      "id": "meeting-access:revoked",
+      "status": "pass",
+      "gates": [
+        "P4-03",
+        "P4-11"
+      ]
+    },
+    {
+      "id": "course-access:inactive",
+      "status": "pass",
+      "gates": [
+        "P4-05",
+        "P4-11"
+      ]
+    },
+    {
+      "id": "learning-access:inactive",
+      "status": "pass",
+      "gates": [
+        "P4-11"
+      ]
+    },
+    {
+      "id": "meeting-access:inactive",
+      "status": "pass",
+      "gates": [
+        "P4-03",
+        "P4-11"
+      ]
+    },
+    {
+      "id": "course-access:wrong_subject",
+      "status": "pass",
+      "gates": [
+        "P4-05",
+        "P4-11"
+      ]
+    },
+    {
+      "id": "learning-access:wrong_subject",
+      "status": "pass",
+      "gates": [
+        "P4-11"
+      ]
+    },
+    {
+      "id": "meeting-access:wrong_subject",
+      "status": "pass",
+      "gates": [
+        "P4-03",
+        "P4-11"
+      ]
+    },
+    {
+      "id": "course-access:empty",
+      "status": "pass",
+      "gates": [
+        "P4-05",
+        "P4-11"
+      ]
+    },
+    {
+      "id": "learning-access:empty",
+      "status": "pass",
+      "gates": [
+        "P4-11"
+      ]
+    },
+    {
+      "id": "meeting-access:empty",
+      "status": "pass",
+      "gates": [
+        "P4-03",
+        "P4-11"
+      ]
+    },
+    {
+      "id": "course-access:admin",
+      "status": "pass",
+      "gates": [
+        "P4-05",
+        "P4-11"
+      ]
+    },
+    {
+      "id": "learning-access:admin",
+      "status": "pass",
+      "gates": [
+        "P4-11"
+      ]
+    },
+    {
+      "id": "meeting-access:admin",
+      "status": "pass",
+      "gates": [
+        "P4-03",
+        "P4-11"
+      ]
+    },
+    {
+      "id": "full-course-three-subjects",
+      "status": "pass",
+      "gates": [
+        "P4-02"
+      ]
+    },
+    {
+      "id": "individual-course-scope",
+      "status": "pass",
+      "gates": [
+        "P4-05"
+      ]
+    },
+    {
+      "id": "unregistered-live-details-hidden",
+      "status": "pass",
+      "gates": [
+        "P4-03"
+      ]
+    },
+    {
+      "id": "private-table-denied:v2_learning_progress",
+      "status": "pass",
+      "gates": [
+        "P4-11"
+      ]
+    },
+    {
+      "id": "private-table-denied:v2_session_feedback",
+      "status": "pass",
+      "gates": [
+        "P4-11"
+      ]
+    },
+    {
+      "id": "private-table-denied:v2_feedback_obligations",
+      "status": "pass",
+      "gates": [
+        "P4-11"
+      ]
+    },
+    {
+      "id": "private-table-denied:v2_live_session_mappings",
+      "status": "pass",
+      "gates": [
+        "P4-11"
+      ]
+    },
+    {
+      "id": "private-table-denied:v2_live_session_mapping_audit",
+      "status": "pass",
+      "gates": [
+        "P4-11"
+      ]
+    },
+    {
+      "id": "private-table-denied:v2_recording_watch_sessions",
+      "status": "pass",
+      "gates": [
+        "P4-11"
+      ]
+    },
+    {
+      "id": "private-table-denied:v2_recording_watch_samples",
+      "status": "pass",
+      "gates": [
+        "P4-11"
+      ]
+    },
+    {
+      "id": "shared-recording-reference-retained",
+      "status": "pass",
+      "gates": [
+        "P4-04"
+      ]
+    },
+    {
+      "id": "arbitrary-session-order",
+      "status": "pass",
+      "gates": [
+        "P4-06"
+      ]
+    },
+    {
+      "id": "student-mobile-fit",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "session-open-not-feedback",
+      "status": "pass",
+      "gates": [
+        "P4-06"
+      ]
+    },
+    {
+      "id": "recording-self-report-created-obligation",
+      "status": "pass",
+      "gates": [
+        "P4-07"
+      ]
+    },
+    {
+      "id": "subject-only-lock-with-current-session-open",
+      "status": "pass",
+      "gates": [
+        "P4-07",
+        "P4-08"
+      ]
+    },
+    {
+      "id": "locked-session-resource-urls-omitted",
+      "status": "pass",
+      "gates": [
+        "P4-08",
+        "P4-11"
+      ]
+    },
+    {
+      "id": "locked-resource-url-not-in-html",
+      "status": "pass",
+      "gates": [
+        "P4-11"
+      ]
+    },
+    {
+      "id": "cross-student-feedback-denied",
+      "status": "pass",
+      "gates": [
+        "P4-11"
+      ]
+    },
+    {
+      "id": "locked-progress-write-denied",
+      "status": "pass",
+      "gates": [
+        "P4-11"
+      ]
+    },
+    {
+      "id": "synthetic-material-denial-smoke",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "synthetic-reading-denial-smoke",
+      "status": "pass",
+      "gates": []
+    },
+    {
+      "id": "anonymous-meeting-route-denied",
+      "status": "pass",
+      "gates": [
+        "P4-03",
+        "P4-11"
+      ]
+    }
+  ],
+  "limitations": [
+    "Synthetic fixtures prove the learning and authorization workflow. Existing imported libraries are compared read-only; external recording playback requires separate provider checks.",
+    "The temporary LMS form stores caller-authored feedback; no Tally or independent attendance verification is claimed.",
+    "Automatic playback threshold and seek/replay behavior are rehearsed locally. Hosted synthetic recordings use the explicitly labelled unsupported-provider self-report.",
+    "Synthetic material and reading HTTP denials are smoke checks only: these fixture references are unavailable even without a feedback gate. Gate isolation is established by hosted private-URL omission and caller RPC checks together with local route tests that reject before provider access.",
+    "Exact SQL cleanup and generated Auth account removal remain required before final acceptance."
+  ],
+  "realCourse": {
+    "batchId": "2b19ea33-150c-5ddd-aae7-134831603408",
+    "publicationRevision": 1,
+    "resources": 19,
+    "pdfs": 5,
+    "readings": 2,
+    "apiReadingsVerified": 0,
+    "originalEmbedsVerified": 2,
+    "resourceFingerprint": "d7dc99e737e6950c5bb5c9bee4e7917df6a60413a600d12e6eccee807e881325",
+    "videoPlaybackVerified": false,
+    "feedbackCreated": false
+  },
+  "failure": "Hosted verification stopped at the last recorded check; private provider and browser diagnostics withheld.",
+  "finishedAt": "2026-11-02T01:40:01.141Z"
+}

@@ -19,7 +19,7 @@ const meeting={batchId,eventKey,url:'https://meet.google.com/abc-defg-hij',publi
 const registration={batchId,studentId,active:true,expectedRevision:0};
 function harness(role='student') {
   const state={role,enabled:true,calls:[],clients:0,result:{data:null,error:null},fault:''};
-  const api=load('src/lib/server/v2StudentDelivery.ts',{'server-only':{},'@/lib/v2StudentDelivery':contracts,'@/lib/v2Meetings':meetings,'@/lib/v2Enrollments':enrollments,
+  const api=load('src/lib/server/v2StudentDelivery.ts',{'./v2LearningFeature':{isV2LearningEnabled:()=>false},'server-only':{},'@/lib/v2StudentDelivery':contracts,'@/lib/v2Meetings':meetings,'@/lib/v2Enrollments':enrollments,
     '@/lib/server/v2StudentScheduleFeature':{isV2StudentScheduleEnabled:()=>state.enabled},
     '@/lib/server/portalAuthorization':{getPortalIdentity:async()=>{if(state.fault==='auth')throw Error('secret');return state.role?{role:state.role,id:studentId}:null;}},
     '@/utils/supabase/server':{createClient:async()=>{state.clients++;if(state.fault==='client')throw Error('secret');return {rpc:async(...args)=>{state.calls.push(args);if(state.fault==='rpc')throw Error('secret');return state.result;}};}}});
@@ -75,6 +75,7 @@ test('Notion delivery rejects an unrelated reading before external fetch and dis
   let current=course,fetched=0,validContent=true;
   const api=load('src/app/api/v2/course-reading/route.ts',{'next/server':{NextResponse:{json:(body,options)=>({body,...options})}},
     'notion-client':{NotionAPI:class {async getPage(){fetched++;return {};}}},
+    '@/lib/server/v2LearningFeature':{isV2LearningEnabled:()=>false},'@/lib/v2Meetings':meetings,
     '@/lib/server/v2StudentDelivery':{getMyV2PublishedCourse:async()=>current},
     '@/lib/v2ReadingPreview':{v2ReadingPageId:(url)=>url.endsWith(pageId)?pageId:null,hasV2ReadingContent:()=>validContent}});
   let result=await api.GET({nextUrl:requested});assert.equal(result.status,404);assert.equal(fetched,0);

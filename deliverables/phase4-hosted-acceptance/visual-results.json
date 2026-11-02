@@ -1,0 +1,61 @@
+{
+  "check": "phase4_hosted_visual_review",
+  "recordedAt": "2026-11-02T01:44:01.095Z",
+  "commit": "c0c4e3e65129bd24e7c46de57a82f29916f2a74f",
+  "preview": "https://ace-club-494ol3t4k-theadmitco-techs-projects.vercel.app",
+  "stagingProject": "eyphkkginlgoaxflauog",
+  "sourceHashes": {
+    "src/components/student/v2Learning.module.css": "2f1035c28a7b3b3e7fe89871a3625830fbb5fdca2463235d130ef644dba90ec3"
+  },
+  "environment": {
+    "status": "pass",
+    "httpStatus": 200,
+    "commitMatches": true,
+    "stagingMatches": true,
+    "role": "signed_out"
+  },
+  "viewports": [
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "outlineCount": 31,
+      "outlineHeight": 888,
+      "outlineScrollHeight": 3880,
+      "outlineClientHeight": 886,
+      "outlineTop": 571.234375,
+      "contentTop": 571.234375,
+      "contentGap": -888,
+      "outlinePosition": "sticky",
+      "outlineOverflow": "auto",
+      "horizontalOverflow": false,
+      "status": "pass"
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "outlineCount": 31,
+      "outlineHeight": 379.796875,
+      "outlineScrollHeight": 3684,
+      "outlineClientHeight": 378,
+      "outlineTop": 903.34375,
+      "contentTop": 1309.140625,
+      "contentGap": 26,
+      "outlinePosition": "static",
+      "outlineOverflow": "auto",
+      "horizontalOverflow": false,
+      "status": "pass"
+    }
+  ],
+  "limitations": [
+    "Read-only page navigation and responsive layout inspection only; no feedback, playback, session selection or fixture changes were performed.",
+    "Screenshots remain private outside version control. Keyboard outline selection is covered by the local thirteen-case browser suite."
+  ],
+  "visualReview": "pass",
+  "visualObservations": [
+    "Desktop course outline remains bounded beside the selected session; labels and resource controls remain legible.",
+    "At 390px width, the outline is approximately 380px high and the selected content begins 26px below it. No horizontal overflow or overlapping controls were observed.",
+    "The real Full Course retains all 31 outline entries within the scrollable region."
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "check": "phase4_qa_fixture_cleanup",
+  "run_id": "a56891e7-5197-41ca-afa6-e5a45e0003c7",
+  "fingerprint": {
+    "md5": "27145d216badf73e85ee4a42930499a2",
+    "table_count": 85,
+    "excluded_generated_profiles": 9
+  },
+  "baseline_restored": true
+}

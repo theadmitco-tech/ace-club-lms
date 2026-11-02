@@ -1,4 +1,5 @@
 import 'server-only';
+import { isV2LearningEnabled } from './v2LearningFeature';
 import { getPortalIdentity } from '@/lib/server/portalAuthorization';
 import { isV2StudentScheduleEnabled } from '@/lib/server/v2StudentScheduleFeature';
 import { createClient } from '@/utils/supabase/server';
@@ -50,7 +51,7 @@ export async function completeV2LiveClass(input: {batchId:string;eventKey:string
     if (!isV2StudentScheduleEnabled() || !input || !isV2MeetingBatchId(input.batchId) || !isV2MeetingBatchId(input.eventKey)
       || !Number.isInteger(input.publicationRevision) || input.publicationRevision < 1 || (await getPortalIdentity())?.role !== 'admin') return failure;
     const client = await createClient();
-    const {data,error} = await client.rpc('complete_v2_live_class',{p_batch_id:input.batchId,p_event_key:input.eventKey,p_publication_revision:input.publicationRevision});
+    const {data,error} = await client.rpc(isV2LearningEnabled() ? 'complete_v2_learning_live_class' : 'complete_v2_live_class',{p_batch_id:input.batchId,p_event_key:input.eventKey,p_publication_revision:input.publicationRevision});
     if (!error && data?.eventKey === input.eventKey && typeof data.completedAt === 'string' && Number.isFinite(Date.parse(data.completedAt)) && typeof data.replayed === 'boolean') return {status:'success' as const};
   } catch { /* Completion never falls back to a client-derived success state. */ }
   return failure;

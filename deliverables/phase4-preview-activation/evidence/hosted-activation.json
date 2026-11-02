@@ -1,0 +1,16 @@
+{
+  "evidenceSource": "Operator-supplied staging SQL Editor result",
+  "project": "eyphkkginlgoaxflauog",
+  "result": {
+    "check": "phase4_activation",
+    "sourceSha256": "edaa5148af61d151ea4d59436929db652fbb5fc6c3bdeba0d7c2711b0af4f958",
+    "phase3Activated": false,
+    "hostedAcceptance": "separate",
+    "migrationVersion": "20261102170000",
+    "newPrivateTables": 7,
+    "functionsVerified": 19,
+    "existingRowsPreserved": true,
+    "phase1LedgerPreserved": true,
+    "existingApplicationTables": 78
+  }
+}

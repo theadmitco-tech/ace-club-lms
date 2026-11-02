@@ -7,6 +7,8 @@ import { V2_SESSION_STAGES, v2CourseResourceHref } from '@/lib/v2SessionPresenta
 import { getYoutubeEmbedUrl } from '@/lib/youtube';
 import type { V2CourseSession, V2SessionContentItem, V2SessionContentKind } from '@/lib/v2Templates';
 import styles from './v2CourseSession.module.css';
+import type { V2ResourceLearning } from './V2LearningWorkspace';
+import { V2RecordingPlayer, v2RecordingSource } from './V2RecordingPlayer';
 import '@/app/session/[id]/material/[materialId]/material.css';
 
 const NotionReader = dynamic(() => import('./NotionReader').then((module) => module.NotionReader), {
@@ -21,9 +23,9 @@ class ContentBoundary extends Component<{ children: ReactNode }, { failed: boole
   }
 }
 
-function SessionResource({ item, kind, mode, readingEndpoint, sessionKey, batchId }: {
+function SessionResource({ item, kind, mode, readingEndpoint, sessionKey, batchId, learning }: {
   item: V2SessionContentItem; kind: V2SessionContentKind; mode: 'admin-preview' | 'student'; readingEndpoint?: string;
-  sessionKey: string; batchId?: string;
+  sessionKey: string; batchId?: string; learning?: V2ResourceLearning;
 }) {
   const [open, setOpen] = useState(false);
   const source = v2CourseResourceHref(item.url, { mode, sessionKey, batchId, itemKey: item.key });
@@ -33,23 +35,24 @@ function SessionResource({ item, kind, mode, readingEndpoint, sessionKey, batchI
   return <div className={styles.resource}>
     <h5>{item.title || 'Untitled resource'}</h5>
     {!source ? <p role="alert">A valid resource source and authorized course context are required.</p> : <>
-      {(reading || recording) && <button type="button" className={styles.button} aria-expanded={open} onClick={() => setOpen(!open)}>
-        {open ? 'Close resource' : reading ? 'Read here' : 'Watch here'}
+      {(reading || recording || learning && learning.feedbackTracking !== false && kind === 'recordings') && <button type="button" className={styles.button} aria-expanded={open} onClick={() => { setOpen(!open); if (!open && learning && kind === 'preSessionReads') void learning.onProgress(item.key, 'opened'); }}>
+        {open ? 'Close resource' : reading ? 'Read here' : learning && v2RecordingSource(source).kind === 'external' ? 'Recording options' : 'Watch here'}
       </button>}
       {open && <ContentBoundary key={`${source}:${mode}`}>
         {reading ? pageId ? <div className="material-content"><NotionReader allowSourceEmbedFallback pageId={pageId} sourceUrl={source} title={item.title}
           mode={mode} readingType={kind === 'materials' ? 'material' : kind === 'preSessionReads' ? 'pre-read' : 'post-read'} endpoint={readingEndpoint} /></div>
           : <p>Inline reading is available for Notion pages. This resource opens at its source.</p>
-          : recording && <div className={styles.video}><iframe src={recording} title={item.title || 'Session recording'}
+          : learning && learning.feedbackTracking !== false && batchId && kind === 'recordings' ? <V2RecordingPlayer url={source} title={item.title || 'Session recording'} batchId={batchId} sessionKey={sessionKey} recordingKey={item.key} publicationRevision={learning.publicationRevision} onFeedbackDue={learning.onFeedbackDue} /> : recording && <div className={styles.video}><iframe src={recording} title={item.title || 'Session recording'}
             allow="encrypted-media; picture-in-picture; fullscreen" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen /></div>}
       </ContentBoundary>}
-      <a className={styles.source} href={source} target="_blank" rel="noreferrer">Open {item.title || 'resource'} in a new tab <span aria-hidden="true">↗</span></a>
+      {learning && kind === 'preSessionReads' && <div><small className={styles.progress}>{learning.progress.some(p => p.itemKey === item.key && p.status === 'read') ? '● Marked as read' : learning.progress.some(p => p.itemKey === item.key) ? '● Previously opened' : 'Ready to read'}</small><button type="button" className={styles.button} disabled={learning.progress.some(p => p.itemKey === item.key && p.status === 'read')} onClick={() => void learning.onProgress(item.key, 'read')}>Mark as read</button><p className={styles.empty}>A personal visual reminder; opening or reading does not trigger feedback.</p></div>}
+      <a className={styles.source} onClick={() => { if (learning && kind === 'preSessionReads') void learning.onProgress(item.key, 'opened'); }} href={source} target="_blank" rel="noreferrer">Open {item.title || 'resource'} in a new tab <span aria-hidden="true">↗</span></a>
     </>}
   </div>;
 }
 
-export function V2CourseSessionView({ session, mode, readingEndpoint, batchId }: {
-  session: V2CourseSession; mode: 'admin-preview' | 'student'; readingEndpoint?: string; batchId?: string;
+export function V2CourseSessionView({ session, mode, readingEndpoint, batchId, learning }: {
+  session: V2CourseSession; mode: 'admin-preview' | 'student'; readingEndpoint?: string; batchId?: string; learning?: V2ResourceLearning;
 }) {
   return <article className={styles.session} aria-label={`Session content: ${session.title}`}>
     <header className={styles.heading}>
@@ -62,7 +65,7 @@ export function V2CourseSessionView({ session, mode, readingEndpoint, batchId }:
         <summary><span className={styles.number}>{index + 1}</span><span><strong>{title}</strong><small>{description}</small></span>
           <span className={styles.count}>{session.content[kind].length}</span></summary>
         <div className={styles.resources}>{session.content[kind].length === 0 ? <p className={styles.empty}>No {title.toLowerCase()} has been added.</p>
-          : session.content[kind].map((item) => <SessionResource key={item.key} item={item} kind={kind} mode={mode} readingEndpoint={readingEndpoint} sessionKey={session.key} batchId={batchId} />)}</div>
+          : session.content[kind].map((item) => <SessionResource key={item.key} item={item} kind={kind} mode={mode} readingEndpoint={readingEndpoint} sessionKey={session.key} batchId={batchId} learning={mode === 'student' ? learning : undefined} />)}</div>
       </details>
     </li>)}</ol>
   </article>;
