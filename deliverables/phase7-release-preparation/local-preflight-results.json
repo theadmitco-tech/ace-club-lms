@@ -1,0 +1,41 @@
+{
+  "check": "phase7_preflight_local_rehearsal",
+  "recordedAt": "2026-11-03T14:26:50.632Z",
+  "scope": "Disposable local PostgreSQL only; no Production query, backup restore, release or rollback rehearsal.",
+  "status": "passed",
+  "checks": [
+    {
+      "id": "source-hashes-match-and-release-remains-unapproved",
+      "status": "pass"
+    },
+    {
+      "id": "absent-v2-schema-is-reported-without-acceptance",
+      "status": "pass"
+    },
+    {
+      "id": "empty-ledger-is-not-created-or-repaired",
+      "status": "pass"
+    },
+    {
+      "id": "installed-v2-tables-report-rls",
+      "status": "pass"
+    },
+    {
+      "id": "routine-fingerprints-and-privileges-are-reported",
+      "status": "pass"
+    },
+    {
+      "id": "private-bucket-metadata-is-reported",
+      "status": "pass"
+    },
+    {
+      "id": "restrictive-storage-policy-is-reported",
+      "status": "pass"
+    },
+    {
+      "id": "existing-ledger-products-and-storage-metadata-preserved",
+      "status": "pass"
+    }
+  ],
+  "sqlSha256": "177fd13f9e395f2869c476b805b3f52fde761521eee6cb1403b6d04b6608f5dd"
+}

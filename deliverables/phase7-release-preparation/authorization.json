@@ -1,0 +1,17 @@
+{
+  "check": "phase7_release_authorization_template",
+  "status": "not authorized",
+  "releaseCommit": null,
+  "stagingAcceptanceEvidence": null,
+  "productOwnerDecision": null,
+  "decisionRecordedAt": null,
+  "merge": {"approved": false, "sourceCommit": null, "baseBranch": "main", "expectedBaseCommit": null},
+  "migrations": {"approved": false, "project": "owmlxsnzogfapotmjrqk", "orderedMissingSet": [], "packetSha256": null},
+  "configuration": {"approved": false, "variableNamesAndTargets": [], "deploymentAssignmentChanges": []},
+  "dataOperations": {"approved": false, "manifestSha256": null, "scope": []},
+  "deployment": {"approved": false, "project": "ace-club-lms", "method": null, "artifactId": null},
+  "domainAssignment": {"approved": false, "artifactId": null, "domains": []},
+  "smokeWrites": {"approved": false, "fixtureScope": [], "paymentAmountAndRefundPlan": null},
+  "rollback": {"approved": false, "artifactId": null, "compatibilityEvidence": null, "databaseRestoreApproved": false},
+  "limitation": "This editable template is not proof of authorization. Any completed record requires an explicit linked decision for the exact candidate and actions; it is not consumed by an automated deployment."
+}

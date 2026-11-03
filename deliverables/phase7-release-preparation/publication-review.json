@@ -1,0 +1,19 @@
+{
+  "check": "phase7_publication_review",
+  "scope": "Preparation changes only; inherited history and applied migrations were not rewritten.",
+  "reviewedFileCount": 15,
+  "personalAttributionFound": false,
+  "privatePathsOrCredentialsFound": false,
+  "newGeneratedPdfs": 0,
+  "newScreenshots": 0,
+  "newArchivedPatches": 0,
+  "applicationSourceAndMigrationsUnchanged": true,
+  "automaticPhase7DeploymentDisabled": true,
+  "expectedCommitAttribution": "Project Automation <automation@users.noreply.github.com>",
+  "validation": {
+    "metadataPreflight": "8 checks passed in disposable PostgreSQL",
+    "targetedEslint": "passed",
+    "diffWhitespace": "passed",
+    "fullBuild": "not rerun; no application or dependency change"
+  }
+}
