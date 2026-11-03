@@ -1,0 +1,15 @@
+{
+  "check": "phase5_activation",
+  "sourceSha256": "b4ccac5d81fa4e55cb5bf0a5dd7a84de81f135fc514a1d51206977793435edb4",
+  "phase3Activated": false,
+  "hostedAcceptance": "separate",
+  "migrationVersion": "20261103090000",
+  "newPrivateTables": 3,
+  "functionsVerified": 14,
+  "privateStorageBucket": true,
+  "existingRowsPreserved": true,
+  "phase1LedgerPreserved": true,
+  "storageMigrationSha256": "14ce35774ae0d305145b1bf16feb6d4aa2732d4d57049450f109331654e13f24",
+  "existingApplicationTables": 85,
+  "evidenceSource": "SQL Editor result supplied by the staging operator"
+}

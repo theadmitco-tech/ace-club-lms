@@ -1,0 +1,28 @@
+{
+  "check": "phase5_hosted_reorder_and_new_tab_preview",
+  "runId": "93a9ab13-1986-4124-9370-ea86b4355823",
+  "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6",
+  "status": "passed",
+  "checks": [
+    {
+      "id": "initial-independent-resource-order",
+      "status": "pass"
+    },
+    {
+      "id": "edited-resource-order-reaches-student",
+      "status": "pass"
+    },
+    {
+      "id": "actual-admin-link-opens-student-preview-in-new-tab",
+      "status": "pass"
+    },
+    {
+      "id": "new-tab-navigation-does-not-write-learning",
+      "status": "pass"
+    },
+    {
+      "id": "hosted-mobile-preview-has-no-horizontal-overflow",
+      "status": "pass"
+    }
+  ]
+}

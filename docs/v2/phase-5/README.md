@@ -1,6 +1,6 @@
 # Phase 5 — Independent content publishing
 
-Status: implementation and local validation complete; no Phase 5 staging activation or acceptance is claimed.
+Status: implementation, local validation and initial staging activation complete; final hosted acceptance and cleanup remain pending.
 
 The review branch is `intern/v2-phase-5-review`, based on the Phase 4 candidate
 `5b4a2b12ca93c68079e523d1349b94c966893f7a`. Phase 4 remains a separate Draft PR.
@@ -42,6 +42,24 @@ provider-level DRM or revoke a previously copied external provider link.
 Notion remains the authoring source. The controlled renderer is attempted first;
 clear failures and the reviewed original-embed fallback remain available. No bulk
 Notion conversion or original-material rewrite is part of this phase.
+
+## Content launch procedure
+
+The Admin opens Course publishing → Content publishing, creates a reading draft
+with the existing Notion source URL, and selects the entitled course/session and
+one of the five reading locations. The new-tab Student preview shows the proposed
+placement before publication. The Admin checks the rendered reading or its explicit
+provider-failure state and original-source fallback, then reviews the named scope
+and confirms immediate publication. Unsupported content remains clearly unavailable
+until its source or replacement is corrected; the LMS does not silently publish a
+conversion or broaden provider sharing permissions.
+
+Native recordings and PDFs follow the same draft, preview and reviewed-publication
+sequence after upload. Supported uploads are MP4, WebM or PDF, up to 50 MiB; larger
+recordings retain their approved external provider. A replacement receives a new
+resource identity. Publication deletion removes access through LMS resource routes
+while preserving audit history. The Admin reviews the Student presentation after
+publication and can unpublish the item independently if delivery needs correction.
 
 ## Exit gates
 

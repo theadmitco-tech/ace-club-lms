@@ -1,0 +1,261 @@
+{
+  "check": "phase5_hosted_acceptance",
+  "project": "eyphkkginlgoaxflauog",
+  "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6",
+  "runId": "93a9ab13-1986-4124-9370-ea86b4355823",
+  "status": "passed",
+  "checks": [
+    {
+      "id": "exact-preview-commit-and-staging",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "admin-content-workspace-visible",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "draft-is-not-student-visible",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "preview-uses-student-outline-without-writes",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "universal-scope-names-both-offerings",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "universal-publication-reaches-authorized-students",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "placement-QA-independent-reading",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "placement-QA-area_top",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "placement-QA-before_video",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "placement-QA-after_video",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "placement-QA-after_course",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "notion-reading-renders-or-explains-provider-failure",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "notion-original-source-retained",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "video-readings-surround-the-recording",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "reading-reminder-never-creates-feedback",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "independent-heading-edit-delivered",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "heading-unpublish-restores-original-label",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "browser-private-recording-upload",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "private-recording-streams-range-without-token-redirect",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "direct-storage-browser-download-denied",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "eligible-quant-private-file-available",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "empty-course-denied",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "empty-protected-file-denied",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "expired-course-denied",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "expired-protected-file-denied",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "revoked-course-denied",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "revoked-protected-file-denied",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "inactive-course-denied",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "inactive-protected-file-denied",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "wrong_subject-course-denied",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "wrong_subject-protected-file-denied",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "anonymous-file-denied",
+      "status": "pass",
+      "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+    },
+    {
+      "id": "continuation-exact-preview-commit-and-staging",
+      "status": "pass",
+      "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+    },
+    {
+      "id": "continuation-admin-editor-rendered",
+      "status": "pass",
+      "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+    },
+    {
+      "id": "stale-confirmation-rejected",
+      "status": "pass",
+      "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+    },
+    {
+      "id": "replacement-denies-old-resource-key",
+      "status": "pass",
+      "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+    },
+    {
+      "id": "unpublish-denies-file-without-restoring-original",
+      "status": "pass",
+      "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+    },
+    {
+      "id": "deletion-denies-file",
+      "status": "pass",
+      "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+    },
+    {
+      "id": "student-admin-workspace-denied",
+      "status": "pass",
+      "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+    },
+    {
+      "id": "student-admin-upload-denied",
+      "status": "pass",
+      "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+    },
+    {
+      "id": "student-preview-rpc-denied",
+      "status": "pass",
+      "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+    },
+    {
+      "id": "v2_content_items-direct-read-denied",
+      "status": "pass",
+      "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+    },
+    {
+      "id": "v2_content_item_revisions-direct-read-denied",
+      "status": "pass",
+      "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+    },
+    {
+      "id": "v2_content_publication_audit-direct-read-denied",
+      "status": "pass",
+      "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+    },
+    {
+      "id": "browser-pdf-upload-and-protected-delivery",
+      "status": "pass",
+      "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+    },
+    {
+      "id": "subject-feedback-removes-independent-reading-placements",
+      "status": "pass",
+      "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+    },
+    {
+      "id": "subject-feedback-denies-private-worksheet",
+      "status": "pass",
+      "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+    },
+    {
+      "id": "other-subject-remains-accessible",
+      "status": "pass",
+      "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+    },
+    {
+      "id": "original-course-publications-unchanged-during-continuation",
+      "status": "pass",
+      "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+    }
+  ],
+  "limitations": [
+    "Dedicated synthetic accounts and batches are used. Hosted cleanup and account removal remain separate gates.",
+    "Private recording streaming is verified; previously copied external provider links remain controlled by their providers."
+  ],
+  "resumedFromPassingAssertions": 32,
+  "initialCommit": "b181d91635248c196313c421cd1b1b5b545e5a90",
+  "preview": "https://ace-club-oyzycu0ld-theadmitco-techs-projects.vercel.app"
+}

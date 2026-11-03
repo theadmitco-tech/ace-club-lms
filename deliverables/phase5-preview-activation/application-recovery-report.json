@@ -476,7 +476,7 @@
       "matches": true
     },
     {
-      "md5": "a3196a37dd069d074ea253a2c27fb1a2",
+      "md5": "5ab1a7b583b3ffc1615ba0d2d4a693dc",
       "rows": 1,
       "table": "v2_recording_watch_samples",
       "matches": true
@@ -513,7 +513,7 @@
     }
   ],
   "ledgerMd5": "9c2bd2aed8c916eb0ec41333d7589d0b",
-  "capturedAt": "2026-11-02T15:54:03.594165+00:00",
+  "capturedAt": "2026-11-03T10:26:00.573116+00:00",
   "ledgerMatches": true,
   "routineGuards": [
     {
@@ -564,7 +564,8 @@
     "storageMigrationSha256": "14ce35774ae0d305145b1bf16feb6d4aa2732d4d57049450f109331654e13f24",
     "existingApplicationTables": 85
   },
-  "snapshotSha256": "d65e1aa47f6618c6fb70812e01ae868dfe71da50e2bf646267c9964bde943be8",
+  "snapshotSha256": "d231d6cbe58214e405c58d65256cd258ace0eafc231b769297a560dec0e04409",
+  "sourceSerializationVerified": true,
   "status": "application-rows-restored",
   "fullPlatformRecovery": false,
   "limitations": [
@@ -573,7 +574,5 @@
     "Storage objects and platform configuration are excluded.",
     "Views, relation grants, RLS policies and triggers calling private-schema functions are not restored by this application-row rehearsal.",
     "Migration activation requires separate schema/privilege reconciliation and preservation checks."
-  ],
-  "activationBaselineAccepted": false,
-  "activationBlocker": "The prior export lacks verified source serialization; a checksummed recovery envelope and successful rehearsal are required."
+  ]
 }

@@ -1,3 +1,4 @@
+import {privateFile} from './private-files.mjs';
 import {randomUUID} from 'node:crypto';
 import {existsSync,mkdirSync,readFileSync,writeFileSync,statSync} from 'node:fs';
 import {resolve} from 'node:path';
@@ -8,7 +9,7 @@ import {QA_CASES,REAL_COURSE_ID,createCoursePlan,buildSetupSql,buildCleanupSql} 
 import {verifyPhase5Hosted} from './hosted-verification.mjs';
 const mode=process.argv[2],modes=['prepare','accept-baseline','verify','accept-cleanup','cleanup-accounts'];
 if(!modes.includes(mode)){console.log('Modes: prepare <Preview URL> <commit>; accept-baseline <setup JSON>; verify; accept-cleanup <cleanup JSON>; cleanup-accounts. SQL Editor setup and cleanup remain separate required actions.');process.exit(0);}
-const privatePath='/tmp/ace-phase5-hosted-qa-state.json',output=resolve('deliverables/phase5-hosted-acceptance');
+const privatePath=privateFile('hosted-qa-state.json'),output=resolve('deliverables/phase5-hosted-acceptance');
 mkdirSync(output,{recursive:true});
 function privateJson(path){const info=statSync(path);check(info.isFile()&&(info.mode&0o077)===0&&info.uid===process.getuid(),'Private QA state must be owned by the current user and chmod 600.');return JSON.parse(readFileSync(path,'utf8'));}
 function parseReport(path){let result=JSON.parse(readFileSync(path,'utf8'));if(Array.isArray(result)&&result.length===1)result=result[0];if(!result.check&&Object.keys(result).length===1)result=Object.values(result)[0];return result;}
@@ -25,12 +26,29 @@ if(mode==='accept-cleanup'){
  const result=parseReport(process.argv[3]);check(result.check==='phase5_qa_fixture_cleanup'&&result.run_id===state.runId&&result.baseline_restored===true&&result.fingerprint?.md5===state.baseline?.md5&&result.fingerprint?.table_count===state.baseline?.table_count,'Cleanup did not restore the recorded application baseline.');
  state.cleanup=result;state.status='sql-cleaned';save();console.log(JSON.stringify({status:state.status,runId:state.runId}));process.exit(0);
 }
-const config=readConfig('/tmp/ace-phase1-staging.env',{database:false});
+const config=readConfig(privateFile('staging.env'),{database:false});
 const options={auth:{persistSession:false,autoRefreshToken:false},global:{fetch:(url,init)=>fetch(url,{...init,signal:AbortSignal.timeout(20000)})}};
 const service=createClient(ORIGIN,config.SUPABASE_SERVICE_ROLE_KEY,options);
 const safe=(result,label)=>{check(!result.error,`${label} failed; private provider diagnostics withheld.`);return result.data;};
-const rpc=async(client,name,args)=>safe(await client.rpc(name,args),name);
-const verifyOwned=async u=>{const data=safe(await service.auth.admin.getUserById(u.id),'QA identity verification');check(data.user.email===u.email&&data.user.user_metadata.phase5_qa_run===state.runId,'Generated account ownership mismatch.');};
+const rpc=async(client,name,args)=>{
+ let result;
+ for(let attempt=0;attempt<3;attempt++){
+  result=await client.rpc(name,args);
+  if(!/^(get_|list_|read_)/.test(name)||!result.error||result.status!==0)break;
+  if(attempt<2)await new Promise(resolve=>setTimeout(resolve,1000));
+ }
+ return safe(result,name);
+};
+// Only read-only identity checks retry transient transport failures; mutations never retry here.
+const verifyOwned=async u=>{
+ let result;
+ for(let attempt=0;attempt<3;attempt++){
+  result=await service.auth.admin.getUserById(u.id);
+  if(!result.error||!(result.error.name==='AuthRetryableFetchError'||result.error.status===0))break;
+  if(attempt<2)await new Promise(resolve=>setTimeout(resolve,1000));
+ }
+ const data=safe(result,'QA identity verification');check(data.user.email===u.email&&data.user.user_metadata.phase5_qa_run===state.runId,'Generated account ownership mismatch.');
+};
 async function signIn(u){
  await verifyOwned(u);let cookies=[];
  const client=createServerClient(ORIGIN,config.SUPABASE_ANON_KEY,{...options,cookies:{getAll:()=>cookies,setAll:items=>{for(const c of items){cookies=cookies.filter(old=>old.name!==c.name);cookies.push(c);}}}});

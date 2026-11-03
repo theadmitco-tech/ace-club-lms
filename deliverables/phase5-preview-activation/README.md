@@ -1,71 +1,91 @@
 # Phase 5 Preview activation
 
-Status: implementation and local validation complete; staging activation and hosted acceptance pending.
+Status: implementation, staging activation and functional hosted acceptance passed;
+exact QA cleanup and review handoff remain pending.
 
-The isolated review branch is `intern/v2-phase-5-review`, based on Phase 4 commit
-`5b4a2b12ca93c68079e523d1349b94c966893f7a`. Production remains unchanged. No merge
-or PR readiness change is included. Phase 3 remains inactive.
+The isolated branch is `intern/v2-phase-5-review`, based on Phase 4 commit
+`5b4a2b12ca93c68079e523d1349b94c966893f7a`. Production remains unchanged and Phase 3
+remains inactive. PR readiness and merging are separate decisions.
 
-## Completed local work
+## Website delivery
 
-Independent content drafts, scope review, immediate publication, unpublishing,
-replacement, deletion and per-placement ordering are implemented. Readings support
-all five required locations. Admin preview renders the Student components in a new
-tab with learning writes disabled. Private MP4/WebM/PDF uploads use a separate
-staging bucket and authenticated streaming. Existing Notion rendering, explicit
-failure states and the original embed fallback remain available.
+Admin → Course publishing → Content publishing provides independent content drafts,
+editing, replacement, deletion, per-placement ordering, explicit scope review and
+immediate publish/unpublish actions. Readings support all five required locations.
+The actual Student renderer opens in a new authenticated tab with learning writes
+disabled. Private MP4/WebM/PDF uploads support files up to 50 MiB and authenticated
+streaming. Existing Notion rendering, explicit provider failures and original-source
+fallback remain available. Hosting and launch procedures are documented in
+[the Phase 5 design](../../docs/v2/phase-5/README.md).
 
-Phase 1 (18 suites), Phase 2 (28 suites), Phase 4 (five suites), Phase 5 database,
-storage, resource authorization, recovery and cleanup checks passed. Six Phase 5
-browser journeys and 13 Phase 4 browser regressions passed. TypeScript, lint and
-webpack build passed. Synthetic tests do not establish hosted acceptance.
+The [tested Preview](https://ace-club-oyzycu0ld-theadmitco-techs-projects.vercel.app)
+is READY at implementation commit `a999e2a1a642edbe5e31e256bd2920ea34a0f1e6`.
+Its environment check confirms staging project `eyphkkginlgoaxflauog`.
+[GitHub Verify](https://github.com/theadmitco-tech/ace-club-lms/actions/runs/41634923633)
+passed. The branch-only staging service key and feature flags remain scoped to
+Preview; existing environment-variable metadata was preserved. The latest Production
+deployment remains `dpl_8axtycbJUpFX8cPWhVtkhGf6p9Kj`.
 
-The fresh application recovery copy restored 85 tables / 3,919 rows. The activation
-packet passed a local rehearsal against that copy without changing existing rows.
-The original Phase 1 ledger remains preserved. Storage platform recovery is not
-claimed: the rehearsal uses a synthetic Storage catalogue for the new bucket.
+## Acceptance evidence
 
-## Activation sequence
+Seven Phase 5 local suites / 12 tests passed, alongside the earlier Phase 1, 2 and 4
+regressions, six Phase 5 browser journeys and 13 Phase 4 browser regressions.
+TypeScript, lint and webpack build passed.
 
-1. The staging SQL Editor project must be `eyphkkginlgoaxflauog`.
-2. The complete `RUN-ACTIVATION.sql` packet installs two new migrations atomically.
-   Its final JSON must identify `phase5_activation` and preserved existing rows.
-   A stale baseline or prior installation causes rejection; rerunning migrations
-   without reconciliation is prohibited.
-3. The Phase 5 Preview branch receives the existing Phase 4 feature configuration
-   plus `V2_CONTENT_PUBLISHING_ENABLED=true`. A staging service key override requires
-   branch-specific authorization; the previous overrides apply to other branches.
-4. Dedicated QA accounts and fixture SQL support hosted authorization, publication,
-   placement, upload, replacement and preview checks.
-5. Exact SQL cleanup restores the recorded baseline, followed by generated Auth
-   account removal and independently verified absence. Existing walkthrough
-   accounts, grants, libraries and progress remain outside cleanup scope.
+Hosted evidence records 49 main assertions, eight Admin preview-matrix assertions,
+five reordering/new-tab assertions and an independent authenticated direct-Storage
+denial check. The initial 32 main assertions and Storage check retain `b181d91`
+attribution; the continuation and supplemental reports identify `a999e2a`.
+The intervening application changes add the typed stale-conflict response and HTTP
+409 handling. Reports do not attribute earlier observations to a later deployment.
 
-## Evidence
+The hosted checks cover draft isolation, universal scope, all five placements,
+Notion rendering or explicit provider failure, visual reading reminders, private
+uploads and byte ranges, role/access restrictions, stale confirmation rejection,
+replacement/unpublish/delete revocation, worksheet delivery, subject feedback gates,
+independent subject access, reordering and actual new-tab preview navigation.
+Both synthetic uploaded objects were removed after testing. Independent absence
+verification follows SQL cleanup. Private screenshots were inspected for placement
+and ordering and remain outside Git.
 
-- `application-recovery-report.json`: sanitized row-recovery and activation rehearsal.
-- `activation-manifest.json`: proposed migration hashes and expected routine guards.
-- `local-browser-results.json`: six synthetic UI journeys and source hashes.
-- `phase4-browser-regression.json`: 13 synthetic learning journeys and source hashes.
-- `../../docs/v2/phase-5/README.md`: design, hosting boundaries and outstanding gates.
+The detailed [exit-gate checklist](../phase5-hosted-acceptance/EXIT-GATES.md) links
+individual reports and distinguishes functional acceptance from cleanup.
 
-No Phase 5 exit gate is represented as fully closed before hosted validation and
-cleanup are recorded. Phase 4 remains a separate Draft PR; the Phase 5 review is
-stacked on its branch until an authorized integration occurs.
+## Recovery and additive migrations
 
-## Activation interruption
+The exact recovery envelope restored 85 existing application tables / 3,919 rows,
+including the existing walkthrough. A checksummed PostgreSQL text payload preserves
+numeric precision and scale that an ordinary dashboard JSON round trip can normalize.
+The first stale-baseline activation attempt aborted safely. The regenerated packet
+passed the exact recovery rehearsal and was applied in staging. Storage platform
+recovery is not claimed; local tests use a synthetic Storage catalogue.
 
-The first hosted attempt rejected the baseline at `v2_recording_watch_samples`
-before migrations were applied. A repeated export contained the same logical rows.
-The old JSON export could normalize numeric scale during dashboard copying; its
-local restoration report does not establish byte-exact hosted row preservation.
-The corrected `01-EXPORT-EXACT-RECOVERY.sql` wraps the PostgreSQL payload in a
-checksummed string. A new exact recovery and regenerated activation packet are
-required before another attempt. Numeric precision and scale survive a simulated
-dashboard JSON round trip in the corrected local regression test.
+The applied Phase 5 migrations are:
 
-The approved Phase 5 service key and feature flags are scoped to its Preview branch.
-The existing environment-variable metadata remained unchanged. Preview deployment
-`dpl_9JeYtqpyrwMP53fFSbx9DvZRGPbG` passed the public environment check at `66f12f4`.
-GitHub Verify run `41475812117` passed for that commit. GitHub integration permissions
-returned 403 when Draft PR creation was attempted; no Phase 5 PR exists yet.
+- `20261103090000`: three private content tables and publishing functions.
+- `20261103091000`: private content Storage bucket and access restrictions.
+- `20261103100000`: read-only Admin workspace/preview compatibility repair.
+- `20261103110000`: deterministic conflict responses using `PT409`.
+
+The read-only repair preserves the locking authorization guard on write operations.
+The conflict repair avoids the documented [PostgREST retry-loop behavior](https://supabase.com/kb/troubleshooting/high-cpu-and-infinite-transaction-retries-when-using-custom-error-codes-in-rpc-functions)
+for custom `40001` errors. The metadata diagnostic found no lingering requests; no
+sessions were stopped. Hosted stale confirmation now returns HTTP 409.
+
+Activation and repair receipts verify preserved rows, prior migration ledger and
+function security metadata. Original Phase 1, 2 and 4 migrations were not reapplied
+or edited. Existing course revisions and the walkthrough remain outside QA scope.
+
+## Remaining closeout
+
+The finalized `../phase5-hosted-acceptance/02-CLEANUP-FIXTURES.sql` packet removes
+only the recorded two synthetic batches, seven purchases, eleven independent content
+items, generated learning records and temporary QA enrollment. It requires the exact
+88-table baseline `ac53ab317feeb1386221ee45fd623932`; a mismatch rolls cleanup back.
+The nine generated Auth identities are removed only after that result is verified,
+followed by independent Auth/profile/purchase/Storage absence checks.
+
+A separate Draft PR targets `intern/v2-phase-4-review`. Earlier creation returned
+GitHub integration 403; no Phase 5 PR currently exists. The prepared description is
+`pr-description.md`. Completion is not claimed until cleanup and final handoff are
+recorded.

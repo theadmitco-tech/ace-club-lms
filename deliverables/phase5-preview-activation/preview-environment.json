@@ -1,11 +1,8 @@
 {
-  "check": "phase5_public_preview_environment",
-  "commit": "66f12f4856b661bae94c844143a00a373844449f",
+  "check": "phase5_preview_environment",
+  "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6",
   "stagingProject": "eyphkkginlgoaxflauog",
-  "environment": {
-    "id": "environment",
-    "status": "pass",
-    "observation": "Preview environment and staging public-client configuration match."
-  },
-  "hostedAcceptance": "not yet performed"
+  "status": "pass",
+  "preview": "https://ace-club-oyzycu0ld-theadmitco-techs-projects.vercel.app",
+  "hostedAcceptance": "Environment verified; remaining authenticated acceptance and cleanup are separate."
 }

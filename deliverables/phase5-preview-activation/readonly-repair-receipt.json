@@ -1,0 +1,11 @@
+{
+  "check": "phase5_readonly_repair",
+  "sourceSha256": "3e1b752f96cfda032a951f4ac305d671dfb7bddff7cd881f01aa3579851384cd",
+  "migrationVersion": "20261103100000",
+  "functionsRepaired": 2,
+  "existingRowsPreserved": true,
+  "originalLedgerPreserved": true,
+  "existingApplicationTables": 88,
+  "functionSecurityMetadataPreserved": true,
+  "evidenceSource": "SQL Editor result supplied by the staging operator"
+}

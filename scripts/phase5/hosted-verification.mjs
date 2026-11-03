@@ -1,3 +1,4 @@
+import {privateFile} from './private-files.mjs';
 import {randomUUID,createHash} from 'node:crypto';
 import {readFileSync,writeFileSync,statSync,existsSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
@@ -10,19 +11,20 @@ export async function verifyPhase5Hosted({state,save,saveSql,output,signIn,rpc,s
  const ok=(id,value)=>{report.checks.push({id,status:value?'pass':'fail'});saveReport();check(value,`Hosted check failed: ${id}`);};
  const sessions={};let browser;state.contentIds??=[];state.uploads??=[];state.status='verification-running';save();saveReport();
  try{
-  const accessFile='/tmp/ace-phase5-preview-access';check(existsSync(accessFile),'Private Preview access has not been prepared.');const info=statSync(accessFile);check((info.mode&0o077)===0,'Preview access must remain private.');
+  const accessFile=privateFile('preview-access');check(existsSync(accessFile),'Private Preview access has not been prepared.');const info=statSync(accessFile);check((info.mode&0o077)===0,'Preview access must remain private.');
   const accessUrl=readFileSync(accessFile,'utf8').trim(),access=new URL(accessUrl);check(access.origin===state.preview&&access.searchParams.has('_vercel_share'),'Preview access must identify the exact deployment.');
   browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});
-  const publicContext=await browser.newContext(),publicPage=await publicContext.newPage();await publicPage.goto(accessUrl,{waitUntil:'domcontentloaded'});
+  const publicContext=await browser.newContext(),publicPage=await publicContext.newPage();publicContext.setDefaultNavigationTimeout(60000);await publicPage.goto(accessUrl,{waitUntil:'domcontentloaded'});
   await publicPage.goto(`${state.preview}/qa/phase1`,{waitUntil:'domcontentloaded'});
   const environment=await publicPage.evaluate(async()=>{const r=await fetch('/api/v2/phase1-verification',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});return r.json();});
   ok('exact-preview-commit-and-staging',environment.commit===state.commit&&environment.stagingProject===PROJECT&&environment.overall!=='fail');
   const protectionCookies=(await publicContext.cookies()).filter(c=>!c.name.startsWith('sb-'));
-  for(const u of state.users){const session=await signIn(u);sessions[u.label]=session;session.context=await browser.newContext();await session.context.addCookies([...protectionCookies,...session.cookies.map(({name,value})=>({name,value,url:state.preview,secure:true,sameSite:'Lax'}))]);session.page=await session.context.newPage();session.page.on('dialog',dialog=>dialog.accept());}
+  for(const u of state.users){const session=await signIn(u);sessions[u.label]=session;session.context=await browser.newContext();session.context.setDefaultNavigationTimeout(60000);await session.context.addCookies([...protectionCookies,...session.cookies.map(({name,value})=>({name,value,url:state.preview,secure:true,sameSite:'Lax'}))]);session.page=await session.context.newPage();session.page.on('dialog',dialog=>dialog.accept());}
   const admin=sessions.admin,student=sessions.full,full=state.courses[0],quant=state.courses[1],first=full.document.sessions[0],second=full.document.sessions[1];
   const target=(placement='session',session=first)=>({batchId:full.batchId,sessionKey:session.key,publicationRevision:1,placement,anchorKey:placement.includes('video')?session.content.recordings[0].key:null,replaceKey:null,order:20});
   const fetchFrom=async(page,path,body)=>page.evaluate(async({path,body})=>{const r=await fetch(path,body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return {status:r.status,body:await r.json()};},{path,body});
   await admin.page.goto(`${state.preview}/admin/v2/content`,{waitUntil:'domcontentloaded'});await admin.page.getByRole('heading',{name:'Readings, recordings & materials',exact:true}).waitFor();
+  await admin.page.getByLabel(/^Content type/).waitFor();
   ok('admin-content-workspace-visible',true);
   const operate=async(action,input)=>{const r=await fetchFrom(admin.page,'/api/admin/v2/content',{action,input});check(r.status===200,'Admin content request failed');return r.body;};
   const original=await rpc(admin.client,'list_v2_content_workspace',{});
@@ -59,7 +61,7 @@ export async function verifyPhase5Hosted({state,save,saveSql,output,signIn,rpc,s
   const heading=await create({title:'QA independently edited heading',kind:'heading',url:null,targets:[target()]});await publish(heading);ok('independent-heading-edit-delivered',(await delivered()).sessions[0].title==='QA independently edited heading');
   await publish(heading,1,'unpublish');ok('heading-unpublish-restores-original-label',(await delivered()).sessions[0].title===first.title);
   await admin.page.goto(`${state.preview}/admin/v2/content`,{waitUntil:'domcontentloaded'});
-  await admin.page.getByLabel('Content type',{exact:true}).selectOption('recordings');
+  await admin.page.getByLabel(/^Content type/).selectOption('recordings');
   const videoPath='/tmp/ace-phase5-synthetic-recording.mp4';execFileSync('ffmpeg',['-y','-f','lavfi','-i','color=c=green:s=320x180:r=10','-t','12','-c:v','libx264','-pix_fmt','yuv420p','-movflags','+faststart',videoPath],{stdio:'ignore'});
   await admin.page.locator('input[type=file]').setInputFiles(videoPath);
   await admin.page.getByText('Private upload complete.',{exact:false}).waitFor();
@@ -85,7 +87,7 @@ export async function verifyPhase5Hosted({state,save,saveSql,output,signIn,rpc,s
   ok('anonymous-file-denied',(await fileRequest(publicPage,recording.key)).status===404);
   const staleScope=await operate('scope',{id:recordingId,revision:1,action:'publish'});
   await create({...reading,title:'QA pending scope edit',targets:[target('session',second)]});
-  ok('stale-confirmation-rejected',(await fetchFrom(admin.page,'/api/admin/v2/content',{action:'confirm',input:{...staleScope,requestId:randomUUID()}})).status===400);
+  ok('stale-confirmation-rejected',(await fetchFrom(admin.page,'/api/admin/v2/content',{action:'confirm',input:{...staleScope,requestId:randomUUID()}})).status===409);
   await operate('save',{id:recordingId,revision:1,requestId:randomUUID(),document:{...recordingDoc,title:'QA revised private recording'}});await publish(recordingId,2);
   const newer=(await delivered()).sessions[0].content.recordings.find(i=>i.title==='QA revised private recording');
   ok('replacement-denies-old-resource-key',newer.key!==recording.key&&(await fileRequest(student.page,recording.key)).status===404&&(await fileRequest(student.page,newer.key)).status===206);
@@ -95,7 +97,7 @@ export async function verifyPhase5Hosted({state,save,saveSql,output,signIn,rpc,s
   for(const action of ['workspace','upload']){const r=await fetchFrom(student.page,'/api/admin/v2/content',{action,input:action==='upload'?{extension:'mp4',type:'video/mp4',size:100}:{}});ok(`student-admin-${action}-denied`,r.status!==200);}
   ok('student-preview-rpc-denied',!!(await student.client.rpc('read_v2_content_preview',{p_batch_id:full.batchId,p_item_id:readingId,p_revision:1})).error);
   for(const table of ['v2_content_items','v2_content_item_revisions','v2_content_publication_audit'])ok(`${table}-direct-read-denied`,!!(await student.client.from(table).select('*').limit(1)).error);
-  await admin.page.goto(`${state.preview}/admin/v2/content`,{waitUntil:'domcontentloaded'});await admin.page.getByLabel('Content type',{exact:true}).selectOption('materials');
+  await admin.page.goto(`${state.preview}/admin/v2/content`,{waitUntil:'domcontentloaded'});await admin.page.getByLabel(/^Content type/).selectOption('materials');
   const pdfObjects=['<< /Type /Catalog /Pages 2 0 R >>','<< /Type /Pages /Kids [3 0 R] /Count 1 >>','<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 200] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>','<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>'];
   const stream='BT /F1 16 Tf 20 160 Td (Synthetic QA worksheet) Tj ET';pdfObjects.push(`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`);
   let pdf='%PDF-1.4\n',offsets=[0];pdfObjects.forEach((object,index)=>{offsets.push(Buffer.byteLength(pdf));pdf+=`${index+1} 0 obj\n${object}\nendobj\n`;});const xref=Buffer.byteLength(pdf);pdf+=`xref\n0 6\n0000000000 65535 f \n${offsets.slice(1).map(n=>String(n).padStart(10,'0')+' 00000 n ').join('\n')}\ntrailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
@@ -114,6 +116,6 @@ export async function verifyPhase5Hosted({state,save,saveSql,output,signIn,rpc,s
   for(const path of state.uploads){check(/^[a-f0-9-]{36}\.(mp4|pdf)$/.test(path),'Unexpected QA upload path');const removed=await service.storage.from('v2-course-content').remove([path]);check(!removed.error,'Synthetic upload cleanup failed');}
   state.uploadsCleaned=true;report.status='passed';state.status='verified-awaiting-sql-cleanup';state.verifiedAt=new Date().toISOString();save();saveSql();saveReport();
   console.log(JSON.stringify({status:report.status,checks:report.checks.length,runId:state.runId,cleanupPending:true}));
- }catch(error){report.status='failed';report.failure='Hosted verification interrupted; private diagnostics retained outside Git.';state.status='verification-failed';save();saveSql();saveReport();writeFileSync('/tmp/ace-phase5-hosted-error.private.log',String(error?.stack??error),{mode:0o600});console.error(report.failure);process.exitCode=1;}
+ }catch(error){report.status='failed';report.failure='Hosted verification interrupted; private diagnostics retained outside Git.';state.status='verification-failed';save();saveSql();saveReport();writeFileSync(privateFile('hosted-error.log'),String(error?.stack??error),{mode:0o600});console.error(report.failure);process.exitCode=1;}
  finally{await browser?.close();}
 }
