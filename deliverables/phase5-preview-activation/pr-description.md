@@ -6,6 +6,6 @@ Staging project `eyphkkginlgoaxflauog` contains the initial Phase 5 migrations a
 
 Validation includes seven Phase 5 local suites / 12 tests, six synthetic Phase 5 browser journeys, prior-phase regressions, lint, TypeScript and webpack build. Hosted reports contain 49 main assertions, eight preview-matrix assertions, five reordering/new-tab assertions and an independent direct-Storage denial check. Each report identifies its tested commit. [GitHub Verify](https://github.com/theadmitco-tech/ace-club-lms/actions/runs/41634923633) passed at `a999e2a`, and the [tested LMS Preview](https://ace-club-oyzycu0ld-theadmitco-techs-projects.vercel.app) is READY.
 
-Functional hosted acceptance passed. Exact 88-table QA cleanup and independent account/object absence verification remain pending; both synthetic uploads have already been removed. The exit-gate evidence is recorded in `deliverables/phase5-hosted-acceptance/EXIT-GATES.md`.
+Functional hosted acceptance and exact QA cleanup passed. The original 88-table baseline was restored; all nine synthetic Auth identities were removed. Fourteen independent checks confirm account/profile/purchase/object absence and baseline restoration. Existing libraries and the walkthrough remain preserved. The exit-gate evidence is recorded in `deliverables/phase5-hosted-acceptance/EXIT-GATES.md`.
 
 The proposed PR remains Draft and unmerged, targeting `intern/v2-phase-4-review`. Production is unchanged and Phase 3 payment activation remains separate.

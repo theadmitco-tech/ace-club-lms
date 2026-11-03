@@ -4,7 +4,7 @@
   "preview": "https://ace-club-oyzycu0ld-theadmitco-techs-projects.vercel.app",
   "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6",
   "createdAt": "2026-11-03T10:28:14.868Z",
-  "status": "verified-awaiting-sql-cleanup",
+  "status": "cleaned",
   "users": [
     {
       "id": "a260283f-eb26-467a-b991-e804272b69f2",
@@ -446,5 +446,27 @@
   ],
   "uploadsCleaned": true,
   "verifiedAt": "2026-11-03T12:37:13.715Z",
-  "supplementalVerified": true
+  "supplementalVerified": true,
+  "cleanup": {
+    "check": "phase5_qa_fixture_cleanup",
+    "run_id": "93a9ab13-1986-4124-9370-ea86b4355823",
+    "fingerprint": {
+      "md5": "ac53ab317feeb1386221ee45fd623932",
+      "table_count": 88,
+      "excluded_generated_profiles": 9
+    },
+    "baseline_restored": true
+  },
+  "deletedAccountIds": [
+    "52632b7c-b5f2-4e0d-9c7d-7c5284e890d6",
+    "073cccfc-f93b-4c94-bd5b-58b1abe91ee2",
+    "015a5ae4-5052-487c-9549-2f889d464b8d",
+    "4f3ea3b5-3ebb-46a7-9e8b-1851012f9518",
+    "e6256780-5fc0-4ff3-be33-887484404ad3",
+    "2df4bd46-52eb-44ab-9948-52c66bb8fddd",
+    "067d771f-aa64-4b6a-8f3d-8ddda62d81fb",
+    "a49ac1d2-f572-4267-8eed-2acf1e3e81e8",
+    "a260283f-eb26-467a-b991-e804272b69f2"
+  ],
+  "cleanedAt": "2026-11-03T12:47:34.731Z"
 }

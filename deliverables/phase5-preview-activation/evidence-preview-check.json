@@ -1,0 +1,14 @@
+{
+  "check": "phase5_evidence_commit_smoke",
+  "commit": "65220a723850c934e4b7a73331f5bf1414b44069",
+  "implementationCommit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6",
+  "applicationSourceIdentical": true,
+  "preview": "https://ace-club-j8lbkg82o-theadmitco-techs-projects.vercel.app",
+  "deploymentId": "dpl_Anf1ZUnHkcB9kALWDoRPkDhqmApT",
+  "target": "Preview",
+  "state": "READY",
+  "protectedVerificationPageStatus": 200,
+  "githubVerifyRun": 41637938828,
+  "githubVerifyConclusion": "success",
+  "scope": "Vercel metadata and protected GET smoke check; exact staging configuration and authenticated acceptance are recorded for the identical implementation source."
+}

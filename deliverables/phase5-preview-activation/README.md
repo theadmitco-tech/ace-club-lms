@@ -1,7 +1,7 @@
 # Phase 5 Preview activation
 
-Status: implementation, staging activation and functional hosted acceptance passed;
-exact QA cleanup and review handoff remain pending.
+Status: Phase 5 implementation, staging activation, hosted acceptance and exact QA
+cleanup complete. Draft PR creation remains a separate handoff action.
 
 The isolated branch is `intern/v2-phase-5-review`, based on Phase 4 commit
 `5b4a2b12ca93c68079e523d1349b94c966893f7a`. Production remains unchanged and Phase 3
@@ -44,8 +44,8 @@ Notion rendering or explicit provider failure, visual reading reminders, private
 uploads and byte ranges, role/access restrictions, stale confirmation rejection,
 replacement/unpublish/delete revocation, worksheet delivery, subject feedback gates,
 independent subject access, reordering and actual new-tab preview navigation.
-Both synthetic uploaded objects were removed after testing. Independent absence
-verification follows SQL cleanup. Private screenshots were inspected for placement
+Both synthetic uploaded objects were removed after testing and independently
+verified absent. Private screenshots were inspected for placement
 and ordering and remain outside Git.
 
 The detailed [exit-gate checklist](../phase5-hosted-acceptance/EXIT-GATES.md) links
@@ -76,16 +76,25 @@ Activation and repair receipts verify preserved rows, prior migration ledger and
 function security metadata. Original Phase 1, 2 and 4 migrations were not reapplied
 or edited. Existing course revisions and the walkthrough remain outside QA scope.
 
-## Remaining closeout
+## Cleanup and handoff
 
-The finalized `../phase5-hosted-acceptance/02-CLEANUP-FIXTURES.sql` packet removes
+The finalized `../phase5-hosted-acceptance/02-CLEANUP-FIXTURES.sql` packet removed
 only the recorded two synthetic batches, seven purchases, eleven independent content
-items, generated learning records and temporary QA enrollment. It requires the exact
-88-table baseline `ac53ab317feeb1386221ee45fd623932`; a mismatch rolls cleanup back.
-The nine generated Auth identities are removed only after that result is verified,
-followed by independent Auth/profile/purchase/Storage absence checks.
+items, generated learning records and temporary QA enrollment. The operator receipt
+confirms exact restoration of the 88-table baseline
+`ac53ab317feeb1386221ee45fd623932`. All nine generated Auth identities were then
+removed. Fourteen independent checks confirm Auth/profile/purchase/Storage absence
+and the matching cleanup baseline. Existing libraries and the walkthrough remain
+preserved.
 
-A separate Draft PR targets `intern/v2-phase-4-review`. Earlier creation returned
-GitHub integration 403; no Phase 5 PR currently exists. The prepared description is
-`pr-description.md`. Completion is not claimed until cleanup and final handoff are
-recorded.
+Evidence commit `65220a7` contains identical application source to the tested
+implementation. [GitHub Verify](https://github.com/theadmitco-tech/ace-club-lms/actions/runs/41637938828)
+passed for that evidence commit. The final cleanup record changes documentation and
+evidence only.
+
+A separate Draft PR targets `intern/v2-phase-4-review`. A renewed creation attempt
+returned GitHub integration 403; no Phase 5 PR exists. The prepared description is
+`pr-description.md`, with title **Phase 5: independent content publishing and private
+resources**. The [comparison page](https://github.com/theadmitco-tech/ace-club-lms/compare/intern/v2-phase-4-review...intern/v2-phase-5-review?expand=1)
+supports manual Draft PR creation. Production release, PR readiness and merging
+remain separate decisions.

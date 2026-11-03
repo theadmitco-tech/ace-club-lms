@@ -1,0 +1,64 @@
+{
+  "check": "phase5_independent_cleanup_verification",
+  "project": "eyphkkginlgoaxflauog",
+  "runId": "93a9ab13-1986-4124-9370-ea86b4355823",
+  "status": "passed",
+  "checks": [
+    {
+      "id": "generated-auth-admin-absent",
+      "status": "pass"
+    },
+    {
+      "id": "generated-auth-full-absent",
+      "status": "pass"
+    },
+    {
+      "id": "generated-auth-quant-absent",
+      "status": "pass"
+    },
+    {
+      "id": "generated-auth-unregistered-absent",
+      "status": "pass"
+    },
+    {
+      "id": "generated-auth-expired-absent",
+      "status": "pass"
+    },
+    {
+      "id": "generated-auth-revoked-absent",
+      "status": "pass"
+    },
+    {
+      "id": "generated-auth-inactive-absent",
+      "status": "pass"
+    },
+    {
+      "id": "generated-auth-wrong_subject-absent",
+      "status": "pass"
+    },
+    {
+      "id": "generated-auth-empty-absent",
+      "status": "pass"
+    },
+    {
+      "id": "generated-profiles-absent",
+      "status": "pass"
+    },
+    {
+      "id": "generated-v2_purchases-absent",
+      "status": "pass"
+    },
+    {
+      "id": "synthetic-upload-1-absent",
+      "status": "pass"
+    },
+    {
+      "id": "synthetic-upload-2-absent",
+      "status": "pass"
+    },
+    {
+      "id": "exact-88-table-baseline-restored",
+      "status": "pass"
+    }
+  ]
+}

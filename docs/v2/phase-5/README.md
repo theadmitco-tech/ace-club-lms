@@ -1,6 +1,6 @@
 # Phase 5 — Independent content publishing
 
-Status: implementation, local validation and initial staging activation complete; final hosted acceptance and cleanup remain pending.
+Status: implementation, staging acceptance and exact QA cleanup complete. Draft PR creation remains a separate handoff action.
 
 The review branch is `intern/v2-phase-5-review`, based on the Phase 4 candidate
 `5b4a2b12ca93c68079e523d1349b94c966893f7a`. Phase 4 remains a separate Draft PR.
@@ -63,18 +63,19 @@ publication and can unpublish the item independently if delivery needs correctio
 
 ## Exit gates
 
-- [ ] Independent create/edit/replace/preview/publish/unpublish/reorder actions.
-- [ ] Five-placement matrix passes in Admin preview and Student delivery.
-- [ ] Notion rendering and explicit provider failures remain usable.
-- [ ] Real Student components render preview without learning writes.
-- [ ] Universal scope is visible and stale confirmations are rejected.
-- [ ] Reading reminders remain visual; no completion analytics are introduced.
-- [ ] Replacement/deletion denies stale protected resource requests.
-- [ ] Full new-tab Admin Student-view preview is available.
-- [ ] Original course rows, migrations and walkthrough records are preserved.
+- [x] Independent create/edit/replace/preview/publish/unpublish/reorder actions.
+- [x] Five-placement matrix passes in Admin preview and Student delivery.
+- [x] Notion rendering and explicit provider failures remain usable.
+- [x] Real Student components render preview without learning writes.
+- [x] Universal scope is visible and stale confirmations are rejected.
+- [x] Reading reminders remain visual; no completion analytics are introduced.
+- [x] Replacement/deletion denies stale protected resource requests.
+- [x] Full new-tab Admin Student-view preview is available.
+- [x] Original course rows, migrations and walkthrough records are preserved.
 
-Evidence must include local and hosted permission tests, exact Preview commit,
-recovery rehearsal, activation receipt, rendering checks and exact QA cleanup.
+Evidence includes local and hosted permission tests, exact Preview commits,
+recovery rehearsal, activation and additive repair receipts, rendering checks and
+exact QA cleanup. The [exit-gate record](../../../deliverables/phase5-hosted-acceptance/EXIT-GATES.md) links the reports and handoff boundary.
 
 Storage limits and upload behavior follow the [Supabase file-limit documentation](https://supabase.com/docs/guides/storage/uploads/file-limits) and [standard-upload documentation](https://supabase.com/docs/guides/storage/uploads/standard-uploads).
 

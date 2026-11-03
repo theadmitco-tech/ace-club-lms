@@ -13,7 +13,7 @@
   "deploymentState": "READY",
   "deploymentTarget": "Preview",
   "hostedConflictRepair": "applied; operator receipt verified against the committed migration SHA-256",
-  "finalHostedAcceptance": "pending",
+  "finalHostedAcceptance": "passed; exact cleanup and independent absence checks completed",
   "githubVerify": {
     "id": 41634923633,
     "conclusion": "success",
