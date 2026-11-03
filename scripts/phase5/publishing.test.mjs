@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
+import {readFileSync} from 'node:fs';
 import {withDisposablePostgres} from '../helpers/disposable-postgres.mjs';
 import {bootstrap} from './helpers.mjs';
 import {PROJECT,literal} from '../phase1-hosted-closeout-config.mjs';
@@ -17,6 +18,18 @@ test('independent publication, five placements, preview isolation and access enf
  const admin=state.users.find(u=>u.label==='admin').id,student=state.users.find(u=>u.label==='full').id;
  const full=state.courses[0],session=full.document.sessions[0],second=full.document.sessions[1];
  const as=(id,sql)=>`begin;set local role authenticated;set local request.jwt.claim.sub='${id}';${sql};commit;`;
+ const asRead=(id,sql)=>`begin read only;set local role authenticated;set local request.jwt.claim.sub='${id}';${sql};commit;`;
+ rejects(asRead(admin,'select public.list_v2_content_workspace()'),/SELECT FOR SHARE in a read-only transaction/);
+ query(`create schema supabase_migrations;create table supabase_migrations.schema_migrations(version text primary key,name text,statements text[]);insert into supabase_migrations.schema_migrations values('20261103090000','add_v2_content_publishing',array[${literal(readFileSync('supabase/migrations/'+migration,'utf8'))}]),('20261103091000','add_v2_private_content_storage',array['synthetic storage ledger']);`);
+ const repairPacket=readFileSync('deliverables/phase5-preview-activation/REPAIR-READONLY-PREVIEWS.sql','utf8');
+ const repaired=JSON.parse(query(repairPacket));assert.equal(repaired.existingRowsPreserved,true);assert.equal(repaired.originalLedgerPreserved,true);assert.equal(repaired.functionSecurityMetadataPreserved,true);
+ rejects(repairPacket,/Read-only repair already recorded/);
+ const conflictPacket=readFileSync('deliverables/phase5-preview-activation/REPAIR-CONFLICT-RESPONSES.sql','utf8');
+ const conflictRepair=JSON.parse(query(conflictPacket));assert.equal(conflictRepair.functionsRepaired,5);assert.equal(conflictRepair.existingRowsPreserved,true);assert.equal(conflictRepair.functionSecurityMetadataPreserved,true);
+ rejects(conflictPacket,/Conflict repair already recorded/);
+ const workspace=JSON.parse(query(asRead(admin,'select public.list_v2_content_workspace()')));assert.equal(workspace.courses.length,2);
+ rejects(asRead(student,'select public.list_v2_content_workspace()'),/Admin access required/);
+ const rpcRead=(id,name,args)=>JSON.parse(query(asRead(id,`select public.${name}(${args})`))||'null');
  const rpc=(id,name,args)=>JSON.parse(query(as(id,`select public.${name}(${args})`))||'null');
  const target=(placement='session',s=session)=>({batchId:full.batchId,sessionKey:s.key,publicationRevision:1,placement,anchorKey:placement.includes('video')?s.content.recordings[0].key:null,replaceKey:null,order:50});
  const doc=(targets,kind='preSessionReads')=>({title:'Independent reading',kind,url:'https://example.test/independent-reading',targets});
@@ -28,7 +41,7 @@ test('independent publication, five placements, preview isolation and access enf
   const id=randomUUID(),d=doc([target(placement)]);save(id,0,d);
   assert.deepEqual(course(),beforeWithPublished());
   const counts=query("select (select count(*) from public.v2_learning_progress)||':'||(select count(*) from public.v2_feedback_obligations)||':'||(select count(*) from public.v2_recording_watch_sessions)");
-  const preview=rpc(admin,'read_v2_content_preview',`'${full.batchId}','${id}',1`);assert(preview.placements.some(x=>x.placement===placement));
+  const preview=rpcRead(admin,'read_v2_content_preview',`'${full.batchId}','${id}',1`);assert(preview.placements.some(x=>x.placement===placement));
   assert.equal(query("select (select count(*) from public.v2_learning_progress)||':'||(select count(*) from public.v2_feedback_obligations)||':'||(select count(*) from public.v2_recording_watch_sessions)"),counts);
   release(id,1);assert(rpc(student,'get_my_v2_content_placements',`'${full.batchId}'`).some(x=>x.placement===placement));
   published=course();
@@ -62,7 +75,10 @@ test('independent publication, five placements, preview isolation and access enf
  save(replacement,1,{...rd,url:'https://example.test/newer.mp4'});assert.equal(course().sessions[0].content.recordings[0].url,rd.url);
  const stale=rpc(admin,'v2_content_scope',`'${replacement}',2,'publish'`);
  save(randomUUID(),0,doc([target('session',second)]));
- rejects(as(admin,`select public.publish_v2_content_item('${replacement}',2,'publish','${randomUUID()}','${stale.fingerprint}')`),/Scope changed/);
+ const beforeStale=query(`select publication_version from public.v2_content_items where id='${replacement}'`);
+ query(as(admin,`do $$begin perform public.publish_v2_content_item('${replacement}',2,'publish','${randomUUID()}','${stale.fingerprint}');raise exception 'Stale confirmation unexpectedly succeeded';exception when sqlstate 'PT409' then null;end;$$`));
+ assert.equal(query(`select publication_version from public.v2_content_items where id='${replacement}'`),beforeStale);
+ query(as(admin,`do $$begin perform public.save_v2_content_item('${replacement}',0,'${randomUUID()}',${j(rd)});raise exception 'Stale draft unexpectedly succeeded';exception when sqlstate 'PT409' then null;end;$$`));
  release(replacement,2);assert.notEqual(course().sessions[0].content.recordings[0].key,recording.key);
  rejects(as(student,`select public.record_v2_recording_sample('${watch.watchId}','${randomUUID()}',10,100,true)`),/Published recording unavailable/);
  release(replacement,2,'unpublish');assert(!rpc(student,'get_my_v2_content_placements',`'${full.batchId}'`).some(p=>p.placement.includes('video')));assert.equal(course().sessions[0].content.recordings.length,0);

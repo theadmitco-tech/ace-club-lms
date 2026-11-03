@@ -6,6 +6,9 @@ import { isV2MeetingBatchId } from '@/lib/v2Meetings';
 import { isV2PublishedCourse, type V2PublishedCourse } from '@/lib/v2StudentDelivery';
 import { validContentDocument, validContentPlacements, type ContentWorkspace, type ContentPlacementView } from '@/lib/v2ContentPublishing';
 export function isV2ContentPublishingEnabled() { return isV2LearningEnabled() && process.env.V2_CONTENT_PUBLISHING_ENABLED === 'true'; }
+export class ContentConflictError extends Error {
+  constructor() { super('The content or course scope changed. Reload and review again.'); this.name='ContentConflictError'; }
+}
 export async function contentOperation(action: string, input: Record<string, unknown>) {
   if (!isV2ContentPublishingEnabled() || (await getPortalIdentity())?.role !== 'admin') throw new Error('Active Admin content access required.');
   const revision = Number.isInteger(input.revision) && Number(input.revision) >= 0 && Number(input.revision) <= 2147483645;
@@ -20,7 +23,8 @@ export async function contentOperation(action: string, input: Record<string, unk
     name='publish_v2_content_item';args={p_id:input.id,p_revision:input.revision,p_action:input.action,p_request_id:input.requestId,p_fingerprint:input.fingerprint};
   } else throw new Error('The content request is invalid.');
   const {data,error}=await (await createClient()).rpc(name,args);
-  if(error || !data) throw new Error(error?.code==='40001' ? 'The content or course scope changed. Reload and review again.' : 'The action could not be confirmed. Check the source, current course scope and Admin access.');
+  if(error?.code==='PT409' || error?.code==='40001') throw new ContentConflictError();
+  if(error || !data) throw new Error('The action could not be confirmed. Check the source, current course scope and Admin access.');
   return data;
 }
 export async function readContentWorkspace(): Promise<ContentWorkspace | null> {
