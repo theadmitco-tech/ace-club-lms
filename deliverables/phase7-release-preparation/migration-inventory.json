@@ -1,0 +1,130 @@
+{
+  "check": "phase7_source_migration_inventory",
+  "sourceBaseline": "298000058e862bb3b0a11525c40cd45cc0e0a039",
+  "observedMain": "940ea7835734a8fb22a6451a30b31084b11d5c97",
+  "releaseCandidate": null,
+  "approvedForExecution": false,
+  "phase3Included": false,
+  "scope": "Added repository migrations against the observed main commit; not a Production ledger diff or complete future release set.",
+  "migrations": [
+    {
+      "version": "20261018090000",
+      "path": "supabase/migrations/20261018090000_add_v2_product_entitlements.sql",
+      "sourceSha256": "ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261019090000",
+      "path": "supabase/migrations/20261019090000_add_v2_template_drafts.sql",
+      "sourceSha256": "ac8ffd1121f548764b053a1913c726193c115bd1de38a5309e795c9d93940526",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261019100000",
+      "path": "supabase/migrations/20261019100000_add_v2_batch_drafts.sql",
+      "sourceSha256": "56dc2a297441ecfa9a685a3d470789045b46e2ba7b92fe4c80c4ce000fcd20a9",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261019110000",
+      "path": "supabase/migrations/20261019110000_add_v2_private_meeting_drafts.sql",
+      "sourceSha256": "ebbed93aad1b6fb7b5264848689c594b7856a8c3ad2346fa112a242bb01b0c9f",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261020090000",
+      "path": "supabase/migrations/20261020090000_add_v2_outline_schedules.sql",
+      "sourceSha256": "60ad573ecb52e3f52d3e9bbf4e74e04d8cdd52a8a82bde1694be37eb8b075c7b",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261020100000",
+      "path": "supabase/migrations/20261020100000_add_v2_batch_publication.sql",
+      "sourceSha256": "67dfa87d955b7cbf27dee0e45fe6b6ed469d0dd51c9d3df2c7466a67f2ee7b6e",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261025100000",
+      "path": "supabase/migrations/20261025100000_add_v2_enrolled_schedules.sql",
+      "sourceSha256": "73949fb28c3e9692406efd509a83974806a588fac5e81f898e9ddc6e30b73a0a",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261102100000",
+      "path": "supabase/migrations/20261102100000_add_v2_programme_content.sql",
+      "sourceSha256": "5b911ea86793d5dbf65f90c7932ed2c2d7570852174f3ddfa8febd558d913ed4",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261102110000",
+      "path": "supabase/migrations/20261102110000_add_v2_student_delivery.sql",
+      "sourceSha256": "47a460e04fdc7aebdb0b0d5c1ad967f31c38c4da2827776c9bbc287511b59702",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261102120000",
+      "path": "supabase/migrations/20261102120000_add_v2_content_imports.sql",
+      "sourceSha256": "9b5090efa2c6ea565ac6a3188bc148af0539c62715b50544eeede94aadfd88e9",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261102130000",
+      "path": "supabase/migrations/20261102130000_add_v2_publication_scopes.sql",
+      "sourceSha256": "0a1ea7fb252ca4f3f3370e60fe8001e895029d26ad3aae57b3e69bb3af77f88a",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261102170000",
+      "path": "supabase/migrations/20261102170000_add_v2_learning_feedback.sql",
+      "sourceSha256": "edaa5148af61d151ea4d59436929db652fbb5fc6c3bdeba0d7c2711b0af4f958",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261103090000",
+      "path": "supabase/migrations/20261103090000_add_v2_content_publishing.sql",
+      "sourceSha256": "b4ccac5d81fa4e55cb5bf0a5dd7a84de81f135fc514a1d51206977793435edb4",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261103091000",
+      "path": "supabase/migrations/20261103091000_add_v2_private_content_storage.sql",
+      "sourceSha256": "14ce35774ae0d305145b1bf16feb6d4aa2732d4d57049450f109331654e13f24",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261103100000",
+      "path": "supabase/migrations/20261103100000_fix_v2_content_readonly_previews.sql",
+      "sourceSha256": "3e1b752f96cfda032a951f4ac305d671dfb7bddff7cd881f01aa3579851384cd",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261103110000",
+      "path": "supabase/migrations/20261103110000_fix_v2_content_conflict_responses.sql",
+      "sourceSha256": "8c245203566f84ba7a82ebcf5f194b9a4af2bbc36acde5b68d3255468ddf8e62",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261103120000",
+      "path": "supabase/migrations/20261103120000_fix_v2_integration_conflicts.sql",
+      "sourceSha256": "c921797533b1761a634729e6997712dc7b8389cbf5a50996280a323b813a9eb4",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    }
+  ]
+}

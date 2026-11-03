@@ -1,0 +1,5 @@
+Phase 7 prepares a conditional Production release plan from the Phase 6 evidence baseline. It adds an exact 17-file source migration inventory, a metadata-only SQL preflight with local PostgreSQL coverage, environment/deployment observations, recovery and rollback procedures, smoke checks and an unapproved authorization template.
+
+This is preparation only. Phase 3 provider integration, complete Phase 6 acceptance, Production feature enablement, a final release candidate, Production schema reconciliation and restore/rollback rehearsal remain outstanding. The current V2 runtime continues to reject Production. No Production configuration, migration, data, deployment, domain or payment action is performed.
+
+The proposed PR remains Draft and unmerged against `intern/v2-phase-6-review`. Automatic deployment is disabled only for the Phase 7 preparation branch in addition to the existing Phase 6 rule. The complete status and evidence are recorded in `deliverables/phase7-release-preparation/README.md`.

@@ -1,0 +1,100 @@
+{
+  "check": "phase7_readonly_platform_inventory",
+  "recordedAt": "2026-11-03 14:27:03 UTC",
+  "scope": "Git refs and Vercel deployment/environment metadata only. No database connection, decrypted values, deployments or configuration changes.",
+  "sourceBaseline": "298000058e862bb3b0a11525c40cd45cc0e0a039",
+  "remotePhase6Head": "bcc0231e51ae93e266a3232aa316ef934b0e825b",
+  "remoteMainHead": "940ea7835734a8fb22a6451a30b31084b11d5c97",
+  "phase6EvidenceCommitPushed": false,
+  "projectId": "prj_2lW0zANcAnI81eURRZrJTMSCxuLr",
+  "production": {
+    "deploymentId": "dpl_8axtycbJUpFX8cPWhVtkhGf6p9Kj",
+    "state": "READY",
+    "target": "production",
+    "url": "https://ace-club-ncy27sq8f-theadmitco-techs-projects.vercel.app",
+    "rollbackCandidate": true,
+    "gitCommit": null,
+    "gitCommitLimitation": "Deployment metadata omits source commit; main HEAD is not substituted for deployment provenance.",
+    "productionBranch": "main",
+    "productionBranchEvidence": "Previously supplied operator confirmation; connected project response omits this setting."
+  },
+  "projectReferences": {
+    "staging": "eyphkkginlgoaxflauog",
+    "production": "owmlxsnzogfapotmjrqk",
+    "verification": "Expected references from repository and prior verified staging diagnostic; current Production secret contents were not inspected."
+  },
+  "productionVariableMetadata": [
+    {
+      "key": "NEXT_PUBLIC_SITE_URL",
+      "type": "sensitive",
+      "targets": [
+        "production"
+      ],
+      "sharedWithPreview": false
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      "type": "sensitive",
+      "targets": [
+        "production"
+      ],
+      "sharedWithPreview": false
+    },
+    {
+      "key": "SUPABASE_SERVICE_ROLE_KEY",
+      "type": "sensitive",
+      "targets": [
+        "production"
+      ],
+      "sharedWithPreview": false
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_URL",
+      "type": "sensitive",
+      "targets": [
+        "production"
+      ],
+      "sharedWithPreview": false
+    },
+    {
+      "key": "RAZORPAY_KEY_ID",
+      "type": "sensitive",
+      "targets": [
+        "preview",
+        "production"
+      ],
+      "sharedWithPreview": true
+    },
+    {
+      "key": "RAZORPAY_KEY_SECRET",
+      "type": "sensitive",
+      "targets": [
+        "preview",
+        "production"
+      ],
+      "sharedWithPreview": true
+    },
+    {
+      "key": "NEXT_PUBLIC_RAZORPAY_KEY_ID",
+      "type": "sensitive",
+      "targets": [
+        "preview",
+        "production"
+      ],
+      "sharedWithPreview": true
+    },
+    {
+      "key": "RAZORPAY_WEBHOOK_SECRET",
+      "type": "sensitive",
+      "targets": [
+        "preview",
+        "production"
+      ],
+      "sharedWithPreview": true
+    }
+  ],
+  "fullEnvironmentSeparationVerified": false,
+  "productionDatabasePreflight": "not run",
+  "productionBackupRestore": "not verified",
+  "releaseApproved": false
+}
