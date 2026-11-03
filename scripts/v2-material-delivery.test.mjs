@@ -13,7 +13,7 @@ const batchId=randomUUID(),sessionKey=randomUUID(),itemKey=randomUUID();
 const path=`worksheets/${randomUUID()}/${randomUUID()}.pdf`,ref=material.createProtectedMaterialUrl(path);
 function harness(){
   const state={enabled:true,role:'student',course:null,templates:[],batches:[],signs:[],fetches:[],signedUrl:`https://staging.example.test/storage/v1/object/sign/course-materials/${path}?token=private-token`};
-  const api=load('src/lib/server/v2MaterialFiles.ts',{'server-only':{},'@/lib/materialFiles':material,
+  const api=load('src/lib/server/v2MaterialFiles.ts',{'server-only':{},'@/lib/materialFiles':material,'./v2ContentPublishing':{readContentWorkspace:async()=>null},
     '@supabase/supabase-js':{createClient:()=>({storage:{from:bucket=>({createSignedUrl:async(p,seconds)=>{state.signs.push({bucket,path:p,seconds});return {data:{signedUrl:state.signedUrl},error:null};}})}})},
     '@/lib/server/v2TemplateFeature':{isV2TemplateAuthoringEnabled:()=>state.enabled},
     '@/lib/server/portalAuthorization':{getPortalIdentity:async()=>state.role?{role:state.role}:null},

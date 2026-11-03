@@ -1,0 +1,8 @@
+{
+  "check": "phase5_authenticated_direct_storage_denial",
+  "runId": "93a9ab13-1986-4124-9370-ea86b4355823",
+  "commit": "b181d91635248c196313c421cd1b1b5b545e5a90",
+  "status": "pass",
+  "qaObjectExistsBeforeAndAfter": true,
+  "authenticatedStudentDirectDownloadStatus": 400
+}

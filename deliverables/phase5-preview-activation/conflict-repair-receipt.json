@@ -1,0 +1,10 @@
+{
+  "check": "phase5_conflict_response_repair",
+  "sourceSha256": "8c245203566f84ba7a82ebcf5f194b9a4af2bbc36acde5b68d3255468ddf8e62",
+  "migrationVersion": "20261103110000",
+  "functionsRepaired": 5,
+  "existingRowsPreserved": true,
+  "originalLedgerPreserved": true,
+  "existingApplicationTables": 88,
+  "functionSecurityMetadataPreserved": true
+}

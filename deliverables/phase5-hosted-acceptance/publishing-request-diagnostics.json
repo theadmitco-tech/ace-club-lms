@@ -1,0 +1,7 @@
+{
+  "check": "phase5_publishing_request_diagnostics",
+  "runId": "93a9ab13-1986-4124-9370-ea86b4355823",
+  "candidateBackends": [],
+  "onlyRecordedQaContent": true,
+  "source": "Operator-supplied SQL Editor result"
+}

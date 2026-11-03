@@ -196,11 +196,14 @@ Reduce routine Admin work for recordings, pre-reads, and video-adjacent reading 
 
 ### Exit gate
 
-- [ ] Admin can manage all five reading placements.
-- [ ] Preview reflects the intended student-facing placement.
-- [ ] Published and unpublished states are clear.
-- [ ] Unsupported or failed Notion content is handled safely.
-- [ ] Recording replacement and deletion do not expose stale or unauthorised content.
+- [x] Admin can manage all five reading placements.
+- [x] Preview reflects the intended student-facing placement.
+- [x] Published and unpublished states are clear.
+- [x] Unsupported or failed Notion content is handled safely.
+- [x] Recording replacement and deletion do not expose stale or unauthorised content.
+
+Staging evidence and the separate Draft PR handoff boundary are recorded in the
+[Phase 5 exit gates](../../../deliverables/phase5-hosted-acceptance/EXIT-GATES.md).
 
 ## Phase 6 — Integrated QA and staging acceptance
 

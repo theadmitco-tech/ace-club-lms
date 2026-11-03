@@ -1,0 +1,18 @@
+{
+  "check": "phase5_preview_environment_scope",
+  "project": "ace-club-lms",
+  "branch": "intern/v2-phase-5-review",
+  "target": "preview",
+  "stagingProject": "eyphkkginlgoaxflauog",
+  "preexistingEnvironmentMetadataUnchanged": true,
+  "branchOnlyKeys": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "V2_INDIVIDUAL_UPGRADE_POLICY",
+    "V2_TEMPLATE_AUTHORING_ENABLED",
+    "V2_BATCH_AUTHORING_ENABLED",
+    "V2_STUDENT_SCHEDULE_ENABLED",
+    "V2_LEARNING_DELIVERY_ENABLED",
+    "V2_CONTENT_PUBLISHING_ENABLED"
+  ],
+  "productionMutationPerformed": false
+}

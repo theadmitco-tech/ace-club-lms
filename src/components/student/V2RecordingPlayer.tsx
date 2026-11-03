@@ -25,6 +25,10 @@ function youtubeApi(): Promise<Youtube> {
   return browser.aceYoutubeApi;
 }
 export function v2RecordingSource(url: string): { kind: 'youtube'; id: string } | { kind: 'native' } | { kind: 'external' } {
+  if (/^\/api\/(?:admin\/)?v2\/content\/file\?/.test(url)) {
+    const params=new URL(url,'https://preview.invalid').searchParams;
+    if(['mp4','webm'].includes(params.get('format')??'')||/\.(mp4|webm)$/.test(params.get('path')??''))return {kind:'native'};
+  }
   const youtube = getYoutubeVideoId(url);
   if (youtube) return { kind: 'youtube', id: youtube };
   try {

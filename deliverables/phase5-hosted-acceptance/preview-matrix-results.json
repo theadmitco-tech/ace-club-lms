@@ -1,0 +1,41 @@
+{
+  "check": "phase5_hosted_admin_preview_matrix",
+  "runId": "93a9ab13-1986-4124-9370-ea86b4355823",
+  "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6",
+  "preview": "https://ace-club-oyzycu0ld-theadmitco-techs-projects.vercel.app",
+  "status": "passed",
+  "checks": [
+    {
+      "id": "preview-placement-QA-independent-reading",
+      "status": "pass"
+    },
+    {
+      "id": "preview-placement-QA-area_top",
+      "status": "pass"
+    },
+    {
+      "id": "preview-placement-QA-before_video",
+      "status": "pass"
+    },
+    {
+      "id": "preview-placement-QA-after_video",
+      "status": "pass"
+    },
+    {
+      "id": "preview-placement-QA-after_course",
+      "status": "pass"
+    },
+    {
+      "id": "preview-reading-order-surrounds-current-recording",
+      "status": "pass"
+    },
+    {
+      "id": "preview-placement-matrix-mobile-width",
+      "status": "pass"
+    },
+    {
+      "id": "preview-placement-matrix-no-learning-writes",
+      "status": "pass"
+    }
+  ]
+}

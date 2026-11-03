@@ -1,0 +1,22 @@
+{
+  "check": "phase5_conflict_fix_local_validation",
+  "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6",
+  "localSuites": 7,
+  "localSuitesPassed": true,
+  "lintPassed": true,
+  "typescriptPassed": true,
+  "webpackBuildPassed": true,
+  "conflictPacketPreservesRowsAndSecurityMetadata": true,
+  "conflictFunctionChangesLimitedToSqlstate": true,
+  "preview": "https://ace-club-oyzycu0ld-theadmitco-techs-projects.vercel.app",
+  "deploymentId": "dpl_AUgtNeGKMeFr3HReUd2h6XqpSuJn",
+  "deploymentState": "READY",
+  "deploymentTarget": "Preview",
+  "hostedConflictRepair": "applied; operator receipt verified against the committed migration SHA-256",
+  "finalHostedAcceptance": "passed; exact cleanup and independent absence checks completed",
+  "githubVerify": {
+    "id": 41634923633,
+    "conclusion": "success",
+    "url": "https://github.com/theadmitco-tech/ace-club-lms/actions/runs/41634923633"
+  }
+}
