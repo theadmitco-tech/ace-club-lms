@@ -1,0 +1,13 @@
+{
+  "provenance": "Operator-supplied SQL Editor result; recorded 2026-11-03.",
+  "check": "phase6_integration_conflict_repair",
+  "sourceSha256": "c921797533b1761a634729e6997712dc7b8389cbf5a50996280a323b813a9eb4",
+  "phase3Activated": false,
+  "hostedAcceptance": "separate",
+  "migrationVersion": "20261103120000",
+  "functionsRepaired": 18,
+  "existingRowsPreserved": true,
+  "originalLedgerPreserved": true,
+  "existingApplicationTables": 88,
+  "functionSecurityMetadataPreserved": true
+}

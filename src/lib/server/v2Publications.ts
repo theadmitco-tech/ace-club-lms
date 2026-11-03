@@ -6,7 +6,7 @@ import { isV2Publication, isV2PublicationFingerprint, isV2PublicationInput, publ
   type V2Publication, type V2PublicationPreview, type V2PublicationSave } from '@/lib/v2Publications';
 
 const failure = 'Publication could not be confirmed. Retry the same review or reload the latest batch.';
-const errorMessage = (code?: string) => code === '40001'
+const errorMessage = (code?: string) => (code === '40001' || code === 'PT409')
   ? 'The draft or publication changed. Reload and review it again.'
   : code === '22023' ? 'Review the batch, publication state and exact live-session schedule.' : failure;
 

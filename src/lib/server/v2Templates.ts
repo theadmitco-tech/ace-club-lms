@@ -38,7 +38,7 @@ export async function saveV2TemplateDraft(value: unknown): Promise<V2TemplateSav
       || data.template.id !== input.id || data.template.productCode !== input.productCode
       || data.template.revision !== input.expectedRevision + 1
       || !sameV2TemplateDocument(data.template.document, input.document)) {
-      if (error?.code === '40001') return { status: 'error', message: 'A newer revision exists. Reload the latest draft before saving again.' };
+      if ((error?.code === '40001' || error?.code === 'PT409')) return { status: 'error', message: 'A newer revision exists. Reload the latest draft before saving again.' };
       if (error?.code === '22023') return { status: 'error', message: 'The draft or retry does not match the saved template. Reload the latest draft and review the fields.' };
       return { status: 'error', message: 'The draft could not be saved. Retry the same submission or reload the latest draft.' };
     }

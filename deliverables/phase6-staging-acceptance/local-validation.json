@@ -1,0 +1,39 @@
+{
+  "check": "phase6_local_validation",
+  "recordedAt": "2026-11-03T13:11:21.505873+00:00",
+  "scope": "Local working candidate; hosted and payment acceptance remain separate.",
+  "checks": {
+    "phase1": {
+      "tests": 173,
+      "status": "passed",
+      "logSha256": "f655d1932071282ca96dee2c2e8bddbd9798426aff496cc498c5d6ba9d386b13"
+    },
+    "phase2": {
+      "tests": 278,
+      "status": "passed",
+      "logSha256": "d44d381f9ea94e4ccd9b9bf9a8fc24a05a4a0686d1c6c80bbf505d5dc268f7b4"
+    },
+    "phase4": {
+      "tests": 20,
+      "status": "passed",
+      "logSha256": "0b23581bdeb5f9e24da3c2a3360161d57200bbfff0c89b2757d53b3a2ad4ace9"
+    },
+    "phase5": {
+      "tests": 12,
+      "status": "passed",
+      "logSha256": "0a3e3691abb879a863fd05fb36c3d4a6b170432dabba6bf2ff6f0b521d99a289"
+    },
+    "lint": {
+      "status": "passed",
+      "logSha256": "aab1b9707db75be14ec80161fb7811042062c6d41944e36dec4d496032962c94"
+    },
+    "types": {
+      "status": "passed",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "build": {
+      "status": "passed",
+      "logSha256": "0bf7aeeaa83ff46b805e5f691a74091183c2b7952b83bd59dbc9468969e78071"
+    }
+  }
+}

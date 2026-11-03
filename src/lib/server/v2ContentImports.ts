@@ -39,7 +39,7 @@ export async function contentImportOperation(operation: unknown, input: unknown)
     const client = await createClient();
     const { data, error } = await client.rpc(selected.name, selected.args);
     if (error || !data || typeof data !== 'object' || Array.isArray(data)) {
-      return { status: 'error', message: error?.code === '40001'
+      return { status: 'error', message: (error?.code === '40001' || error?.code === 'PT409')
         ? 'The source, destination or reviewed scope changed. Reload the current material and review again.'
         : 'The content action could not be completed. Check the selected sources, destination revisions and Admin access.' };
     }

@@ -1,0 +1,36 @@
+{
+  "recordedAt": "2026-11-03T13:07:51.491Z",
+  "check": "phase6_baseline_remote_verification",
+  "candidate": "879be1fcf2b32f6a4ef42ae431ca3ac6521fa06d",
+  "pullRequest": {
+    "number": 26,
+    "url": "https://github.com/theadmitco-tech/ace-club-lms/pull/26",
+    "head": "879be1fcf2b32f6a4ef42ae431ca3ac6521fa06d",
+    "headBranch": "intern/v2-phase-5-review",
+    "baseBranch": "intern/v2-phase-4-review",
+    "draft": true,
+    "merged": false
+  },
+  "ci": {
+    "id": 41639039800,
+    "status": "completed",
+    "conclusion": "success",
+    "commit": "879be1fcf2b32f6a4ef42ae431ca3ac6521fa06d",
+    "url": "https://github.com/theadmitco-tech/ace-club-lms/actions/runs/41639039800"
+  },
+  "preview": {
+    "id": "dpl_3XPRQHRNieXvVyQcuVvAWkBz8QFU",
+    "url": "https://ace-club-k3rulap2r-theadmitco-techs-projects.vercel.app",
+    "state": "READY",
+    "target": null,
+    "commit": "879be1fcf2b32f6a4ef42ae431ca3ac6521fa06d",
+    "branch": "intern/v2-phase-5-review"
+  },
+  "phase6RepairDeployed": false,
+  "production": {
+    "id": "dpl_8axtycbJUpFX8cPWhVtkhGf6p9Kj",
+    "state": "READY",
+    "url": "https://ace-club-ncy27sq8f-theadmitco-techs-projects.vercel.app",
+    "target": "production"
+  }
+}

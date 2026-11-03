@@ -32,7 +32,7 @@ export async function saveV2MeetingDraft(value: unknown): Promise<V2MeetingSaveR
     const input = value as V2MeetingInput;
     const client = await createClient();
     const { data, error } = await client.rpc('save_v2_meeting_draft', { p_request: input });
-    if (error) return { status: 'error', message: error.code === '40001'
+    if (error) return { status: 'error', message: (error.code === '40001' || error.code === 'PT409')
       ? 'The schedule or meeting draft changed. Reload the latest version before editing.'
       : error.code === '22023' ? 'Review the meeting links and event identities, then reload if needed.' : failure };
     if (!isV2MeetingReceipt(data) || data.batchId !== input.batchId || data.batchRevision !== input.batchRevision

@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main, codex/v2-integration]
   push:
-    branches: [main, codex/v2-integration, intern/v2-phase-2-review, intern/v2-phase-4-review, intern/v2-phase-5-review]
+    branches: [main, codex/v2-integration, intern/v2-phase-2-review, intern/v2-phase-4-review, intern/v2-phase-5-review, intern/v2-phase-6-review]
 
 permissions:
   contents: read
@@ -60,6 +60,7 @@ jobs:
       - run: npm run test:v2:phase2
       - run: npm run test:v2:phase4
       - run: npm run test:v2:phase5
+      - run: npm run test:v2:phase6
       - run: ./node_modules/.bin/tsc --noEmit --incremental false
       - run: npm run build
       - name: Verify the locked installation leaves manifests unchanged
