@@ -1,0 +1,28 @@
+{
+  "check": "phase6_hosted_cleanup",
+  "project": "eyphkkginlgoaxflauog",
+  "runId": "62316ce8-b9a6-4399-8b4e-bf1571fc80b3",
+  "recordedAt": "2026-11-03T13:29:02.478Z",
+  "migration": "20261103120000",
+  "status": "passed",
+  "scope": "Dedicated synthetic identities; deliberately rejected requests; no purchases, course edits or payment provider calls.",
+  "checks": [
+    {
+      "id": "admin-auth-absent",
+      "status": "pass"
+    },
+    {
+      "id": "admin-profile-absent",
+      "status": "pass"
+    },
+    {
+      "id": "student-auth-absent",
+      "status": "pass"
+    },
+    {
+      "id": "student-profile-absent",
+      "status": "pass"
+    }
+  ],
+  "scriptSha256": "12ed820dc2dbe91f4c4162ea7314a72ae78340e43e46d220de0b2fbe0eb7fb1a"
+}

@@ -1,0 +1,20 @@
+{
+  "check": "phase6_publication_review",
+  "implementationCommit": "bcc0231e51ae93e266a3232aa316ef934b0e825b",
+  "textReview": "Changed authored text uses role-based third-person explanations; quoted interface labels and technical identifiers remain exact. No personal attribution, private paths, credentials or share links were found.",
+  "images": [
+    {
+      "path": "deliverables/phase6-staging-acceptance/student-empty-access.png",
+      "sha256": "11445bb01639353963ddceefe76cd597d036861d5e1bf81f9a870188b0ea2409",
+      "dimensions": [
+        1256,
+        774
+      ],
+      "metadataEmpty": true,
+      "visualReview": "Synthetic role-based identity and existing interface labels only."
+    }
+  ],
+  "archivedPatches": 0,
+  "generatedPdfs": 0,
+  "expectedCommitAttribution": "Project Automation <automation@users.noreply.github.com>"
+}

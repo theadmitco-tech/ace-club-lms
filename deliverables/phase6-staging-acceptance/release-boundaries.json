@@ -1,0 +1,18 @@
+{
+  "check": "phase6_release_boundaries",
+  "recordedAt": "2026-11-03T13:27:21.094Z",
+  "productionDeployment": "dpl_8axtycbJUpFX8cPWhVtkhGf6p9Kj",
+  "productionState": "READY",
+  "productionDeploymentUnchanged": true,
+  "productionDatabaseMutationsPerformed": false,
+  "phase3Activated": false,
+  "existingPullRequest": {
+    "number": 26,
+    "draft": true,
+    "merged": false,
+    "head": "879be1fcf2b32f6a4ef42ae431ca3ac6521fa06d",
+    "base": "intern/v2-phase-4-review"
+  },
+  "phase4PrRecheck": "Read returned connector internal error; no PR #25 mutation was attempted.",
+  "phase6PrCreated": false
+}

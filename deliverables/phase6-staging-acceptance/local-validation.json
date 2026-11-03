@@ -1,7 +1,7 @@
 {
   "check": "phase6_local_validation",
   "recordedAt": "2026-11-03T13:11:21.505873+00:00",
-  "scope": "Local working candidate; hosted and payment acceptance remain separate.",
+  "scope": "Local implementation source identical to the named commit; hosted and payment acceptance remain separate.",
   "checks": {
     "phase1": {
       "tests": 173,
@@ -35,5 +35,6 @@
       "status": "passed",
       "logSha256": "0bf7aeeaa83ff46b805e5f691a74091183c2b7952b83bd59dbc9468969e78071"
     }
-  }
+  },
+  "implementationCommit": "bcc0231e51ae93e266a3232aa316ef934b0e825b"
 }

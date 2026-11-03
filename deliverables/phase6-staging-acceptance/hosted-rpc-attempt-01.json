@@ -1,0 +1,68 @@
+{
+  "check": "phase6_hosted_rpc",
+  "project": "eyphkkginlgoaxflauog",
+  "runId": "62316ce8-b9a6-4399-8b4e-bf1571fc80b3",
+  "recordedAt": "2026-11-03T13:16:42.774Z",
+  "migration": "20261103120000",
+  "status": "failed",
+  "scope": "Dedicated synthetic identities; deliberately rejected requests; no purchases, course edits or payment provider calls.",
+  "checks": [
+    {
+      "id": "template-bounded-postgrest-conflict",
+      "status": "pass",
+      "httpStatus": 409,
+      "code": "PT409",
+      "durationMs": 5222
+    },
+    {
+      "id": "enrollment-bounded-postgrest-conflict",
+      "status": "pass",
+      "httpStatus": 409,
+      "code": "PT409",
+      "durationMs": 5427
+    },
+    {
+      "id": "registration-bounded-postgrest-conflict",
+      "status": "pass",
+      "httpStatus": 409,
+      "code": "PT409",
+      "durationMs": 5224
+    },
+    {
+      "id": "publication-bounded-postgrest-conflict",
+      "status": "pass",
+      "httpStatus": 409,
+      "code": "PT409",
+      "durationMs": 5223
+    },
+    {
+      "id": "template-student-denied",
+      "status": "pass"
+    },
+    {
+      "id": "enrollment-student-denied",
+      "status": "pass"
+    },
+    {
+      "id": "registration-student-denied",
+      "status": "pass"
+    },
+    {
+      "id": "publication-student-denied",
+      "status": "pass"
+    },
+    {
+      "id": "authoring-and-publications-unchanged",
+      "status": "pass"
+    },
+    {
+      "id": "synthetic-student-has-no-access",
+      "status": "pass"
+    },
+    {
+      "id": "no-generated-v2_purchases",
+      "status": "fail"
+    }
+  ],
+  "scriptSha256": "12ed820dc2dbe91f4c4162ea7314a72ae78340e43e46d220de0b2fbe0eb7fb1a"
+}

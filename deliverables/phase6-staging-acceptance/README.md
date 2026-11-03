@@ -2,7 +2,7 @@
 
 Status: **in progress; full acceptance blocked by Phase 3 payment integration and Product Owner sign-off**. Provider selection and test access remain pending as confirmed on 2026-11-03. Fixture-granted access does not establish successful payment fulfillment or the atomic eight-place limit.
 
-The branch is `intern/v2-phase-6-review`, based on Phase 5 candidate `879be1fcf2b32f6a4ef42ae431ca3ac6521fa06d`. PR #26 remains Draft and unmerged against `intern/v2-phase-4-review`. The reviewed baseline Preview is https://ace-club-k3rulap2r-theadmitco-techs-projects.vercel.app and uses staging project `eyphkkginlgoaxflauog`. The repair candidate requires separate deployed verification. Production remains excluded.
+The branch is `intern/v2-phase-6-review`, based on Phase 5 candidate `879be1fcf2b32f6a4ef42ae431ca3ac6521fa06d`. PR #26 remains Draft and unmerged against `intern/v2-phase-4-review`. The reviewed baseline Preview is https://ace-club-k3rulap2r-theadmitco-techs-projects.vercel.app and uses staging project `eyphkkginlgoaxflauog`. The implementation candidate is `bcc0231e51ae93e266a3232aa316ef934b0e825b`; its [Phase 6 Preview](https://ace-club-dmc32ekp8-theadmitco-techs-projects.vercel.app) is READY and [GitHub Verify](https://github.com/theadmitco-tech/ace-club-lms/actions/runs/41642502494) passed. Hosted repair checks are recorded separately below. Production remains excluded.
 
 ## Completed independent work
 
@@ -12,14 +12,17 @@ The branch is `intern/v2-phase-6-review`, based on Phase 5 candidate `879be1fcf2
 - The complete SQL Editor packet passed source-drift rejection, repeat rejection, exact function-body verification, row preservation, original-ledger preservation and security metadata checks. The operator-supplied staging receipt confirms the repair across 88 application tables. No Phase 3 migration was activated.
 - Local integration records contain 56 passing assertions; repair rehearsal records contain nine checks; nine adapter tests cover both conflict codes, single-call behavior, sanitized messages and Student denial. Prior-phase suites, lint, TypeScript and webpack build passed locally.
 
+Hosted verification passed 14 RPC assertions and 11 distinct browser assertions at `bcc0231`. Stale template, enrollment, live-registration and publication requests returned HTTP 409 / `PT409` within the request bounds. Student attempts were denied and authoring/publication snapshots remained unchanged. The actual template Server Action displayed the specific reload guidance. Admin editors, Student empty-access/upgrade states and direct-resource denial passed. The browser report preserves the four previously completed assertions when continuing after a screenshot locator interruption.
+
+Both dedicated QA accounts were removed. Four independent cleanup checks confirmed that both Auth identities and both profiles were absent; the private QA password was discarded. The rejected test requests created no purchases, enrollments, registrations or course content. The existing libraries and walkthrough remain preserved.
+
 Supabase documents why custom `40001` errors can trigger transaction retries: [official troubleshooting discussion](https://github.com/orgs/supabase/discussions/50151). The earlier Phase 5 hosted timeout and repair supplied the project-specific precedent. Older paths were inspected locally before repair; no pre-repair infinite retry was deliberately triggered on staging.
 
 ## Remaining acceptance
 
-1. Hosted verification of the applied conflict repair and the exact Phase 6 Preview.
-2. Provider selection, authorized test credentials and completion of Phase 3 on an integrated candidate.
-3. Provider-backed Full Course/Quant/Verbal/DI purchase, retry/webhook, upgrade and eight-place concurrency checks, followed by affected integrated regressions.
-4. Explicit Product Owner acceptance or rejection of that exact candidate. No acceptance is inferred from a successful walkthrough, PR creation or CI.
+1. Provider selection, authorized test credentials and completion of Phase 3 on an integrated candidate. The unpublished Phase 3 work must be reconciled with current Phase 4 learning gates, Phase 5 delivery and the Phase 6 conflict repair before its migrations are activated; the older branch must not overwrite these later functions.
+2. Provider-backed Full Course/Quant/Verbal/DI purchase, retry/webhook, upgrade and eight-place concurrency checks, followed by affected integrated regressions.
+3. Explicit Product Owner acceptance or rejection of that exact candidate. No acceptance is inferred from a successful walkthrough, PR creation or CI.
 
 The temporary LMS feedback form remains the approved Phase 4 substitute. Tally replacement, provider-controlled external sharing, Production launch and PR readiness remain separately controlled.
 
@@ -32,7 +35,22 @@ The temporary LMS feedback form remains the approved Phase 4 substitute. Tally r
 - [Local integrated results](local-integrated-results.json)
 - [Repair rehearsal](local-conflict-repair-results.json)
 - [Applied repair receipt](repair-receipt.json)
+- [Hosted RPC results](hosted-rpc-results.json)
+- [Hosted browser results](hosted-browser-results.json)
+- [Hosted cleanup results](hosted-cleanup-results.json)
+- [Reviewed Student screenshot](student-empty-access.png)
+- [Exact Preview environment](preview-environment.json)
+- [Implementation CI](implementation-ci.json)
+- [Release boundaries](release-boundaries.json)
 - [Exact routine inventory](conflict-routines.json)
 - [Baseline remote verification](baseline-remote-verification.json)
 
 The applied repair packet must not be rerun. Existing source migrations remain unchanged. Future deployment or database changes invalidate affected evidence and require a new exact-candidate check.
+
+## Draft PR handoff
+
+Creation through the connected GitHub integration returned `403: Resource not accessible by integration`; no Phase 6 PR was created. The [prepared description](pr-description.md) targets `intern/v2-phase-5-review` from `intern/v2-phase-6-review`. The PR must remain Draft and unmerged. Branch-specific automatic deployment is disabled in `vercel.json`; the reviewed Preview was created explicitly after the staging configuration was verified. Other branch deployment rules remain at their existing defaults.
+
+## Evidence limitations
+
+The first RPC attempt stopped when the local curl adapter omitted response count headers; the corrected adapter retained those headers and the complete 14-assertion run passed. The first browser attempt stopped before the diagnostic report rendered. The next attempt passed the first four assertions, then stopped at an ambiguous screenshot locator. The final continuation retained those attributed results and completed the remaining read-only assertions. Attempt reports remain available and are not represented as complete passing runs. No payment provider was called.
