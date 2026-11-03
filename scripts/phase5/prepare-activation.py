@@ -4,7 +4,7 @@ import hashlib,json,re
 ROOT=Path(__file__).resolve().parents[2]
 OUT=ROOT/'deliverables/phase5-preview-activation'
 report=json.loads((OUT/'application-recovery-report.json').read_text())
-assert report['status']=='application-rows-restored' and report['ledgerMatches'] and all(t['matches'] for t in report['tables'])
+assert report.get('sourceSerializationVerified') is True and report['status']=='application-rows-restored' and report['ledgerMatches'] and all(t['matches'] for t in report['tables'])
 filename='20261103090000_add_v2_content_publishing.sql'
 raw=(ROOT/'supabase/migrations'/filename).read_text()
 assert hashlib.sha256((ROOT/'supabase/migrations/20261018090000_add_v2_product_entitlements.sql').read_bytes()).hexdigest()=='ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7'

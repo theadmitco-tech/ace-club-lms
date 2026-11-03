@@ -3,8 +3,8 @@
   "storageSha256": "14ce35774ae0d305145b1bf16feb6d4aa2732d4d57049450f109331654e13f24",
   "migration": "20261103090000_add_v2_content_publishing.sql",
   "sha256": "b4ccac5d81fa4e55cb5bf0a5dd7a84de81f135fc514a1d51206977793435edb4",
-  "snapshotSha256": "b980f7199042333983bcd81b6b51d72c6e0076bbbf5989e28b990315becb4d4a",
-  "snapshotCapturedAt": "2026-11-02T15:42:46.825014+00:00",
+  "snapshotSha256": "d65e1aa47f6618c6fb70812e01ae868dfe71da50e2bf646267c9964bde943be8",
+  "snapshotCapturedAt": "2026-11-02T15:54:03.594165+00:00",
   "tableCount": 85,
   "tablesAdded": [
     "v2_content_items",
@@ -122,5 +122,7 @@
         "authenticated"
       ]
     }
-  ]
+  ],
+  "activationBaselineAccepted": false,
+  "activationBlocker": "The prior export lacks verified source serialization; a checksummed recovery envelope and successful rehearsal are required."
 }

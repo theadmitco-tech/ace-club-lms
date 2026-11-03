@@ -2,7 +2,9 @@
 -- The result contains private application records and must remain outside Git/chat.
 -- The operator verifies eyphkkginlgoaxflauog in the dashboard before execution.
 -- This is an application-data snapshot, not an Auth/storage/platform backup.
+rollback;
 begin isolation level repeatable read;
+set local timezone='UTC';
 set local statement_timeout='60s';
 set local lock_timeout='5s';
 create function pg_temp.phase5_application_recovery()
@@ -34,5 +36,8 @@ begin
   );
 end;
 $function$;
-select pg_temp.phase5_application_recovery() as application_recovery;
+-- The payload remains a string through dashboard JSON copying, preserving numeric scale.
+with snapshot as materialized (select pg_temp.phase5_application_recovery()::text payload)
+select jsonb_build_object('format','phase5-recovery-envelope-v2','payload',payload,
+ 'payloadSha256',encode(sha256(convert_to(payload,'UTF8')),'hex')) as application_recovery from snapshot;
 rollback;

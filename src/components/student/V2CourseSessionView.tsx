@@ -63,8 +63,9 @@ export function V2PlacedReadings({ sessions, placements, placement, anchorKey, m
       if (!session) return [];
       return (['preSessionReads','postSessionReads'] as const).flatMap(kind => session.content[kind].filter(i => i.key === p.key).map(item => ({item,kind,session})));
     });
-  if (!resources.length) return null;
-  return <section aria-label={placement.replaceAll('_',' ')} className={styles.resources}>{resources.map(({item,kind,session}) =>
+  const uniqueResources = resources.filter((resource,index) => resources.findIndex(other => other.item.key === resource.item.key) === index);
+  if (!uniqueResources.length) return null;
+  return <section aria-label={placement.replaceAll('_',' ')} className={styles.resources}>{uniqueResources.map(({item,kind,session}) =>
     <SessionResource key={`${session.key}:${item.key}`} item={item} kind={kind} sessionKey={session.key} mode={mode} batchId={batchId}
       readingEndpoint={mode === 'admin-preview' ? '/api/admin/v2/reading-preview' : `/api/v2/course-reading?batchId=${batchId}&sessionKey=${session.key}`}
       learning={mode === 'student' ? learningForSession?.(session.key) : undefined} />)}</section>;

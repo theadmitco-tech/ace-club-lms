@@ -1,7 +1,11 @@
 -- STAGING ONLY: eyphkkginlgoaxflauog. The dashboard project must be verified before execution.
 -- This atomic packet adds Phase 5 only. Phase 1/2 ledger rows and all existing application records are preserved.
--- Recovery source SHA256: b980f7199042333983bcd81b6b51d72c6e0076bbbf5989e28b990315becb4d4a
+-- Recovery source SHA256: d65e1aa47f6618c6fb70812e01ae868dfe71da50e2bf646267c9964bde943be8
 rollback;
+-- The previous dashboard export did not preserve numeric serialization.
+do $superseded$ begin
+ raise exception 'Superseded activation packet: a checksummed recovery export and successful regeneration are required';
+end $superseded$;
 begin;
 set local timezone='UTC';
 set local statement_timeout='60s';

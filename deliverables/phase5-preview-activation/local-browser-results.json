@@ -1,14 +1,14 @@
 {
-  "baseCommit": "5b4a2b12ca93c68079e523d1349b94c966893f7a",
+  "baseCommit": "66f12f4856b661bae94c844143a00a373844449f",
   "mode": "isolated UI fixture; synthetic learning state and mutation responses; not hosted or database authorization evidence",
   "browser": "156.0.8078.47",
   "sourceHashes": {
-    "src/app/admin/v2/content/ContentEditor.tsx": "7d0669652ba44d52b48d5f32ec6587cd4bb7862103a8f3a6c81ee3dee6de4ddd",
-    "src/app/admin/v2/content/content.module.css": "de61d609783c137f3584aceb44e6d31dc4767dd6f1801189b82b4f35b3f83215",
+    "src/app/admin/v2/content/ContentEditor.tsx": "28c1792cc9b9a585e52c0f1223bb40c2affbd0d04148e4224cbf12955dc0d5c5",
+    "src/app/admin/v2/content/content.module.css": "95d756ec025c84b89cec18ecf72a985e9bb4554829d354c685ad756590c90829",
     "src/app/session/[id]/material/[materialId]/material.css": "5a84d928a3b5ba8776f44cda141cbf190b5407c3abd358cc32907c3be7f3b30b",
     "src/components/AdminDraftNavigation.tsx": "66c2cb37d18fc5ef00d42ed852acba3ea8cfcac3e21b823ba611f98ff841d0ea",
     "src/components/student/NotionReader.tsx": "de6aa3c60952d661577547ece27871e60769868328527fc283f1889a96890475",
-    "src/components/student/V2CourseSessionView.tsx": "1f14ad04db7a46c49e8043a08054b80abffd5bf0bd6aefbce31341d66928e2d7",
+    "src/components/student/V2CourseSessionView.tsx": "191e6dc2decdd614b96b5eafacaffcce8999a743c6edfc19dac4a568732c5198",
     "src/components/student/V2LearningWorkspace.tsx": "036bfa1234ffcb4cbec0d5efcfc7de972aff483ca6d36f43c6fe2d357fd1343b",
     "src/components/student/V2RecordingPlayer.tsx": "a114c4b578521b0f2fe318e138b55b09eaffc0286ae5384cb45996f8f65f732f",
     "src/components/student/v2CourseSession.module.css": "25c53fc0a273f8210dd0829588768e7f2c7062ddb4169fc28fdba17e4bcd02aa",
@@ -29,6 +29,10 @@
   "results": [
     {
       "name": "Five reading placements render once and follow the video order",
+      "status": "passed"
+    },
+    {
+      "name": "Universal outer readings appear once across authorized session targets",
       "status": "passed"
     },
     {

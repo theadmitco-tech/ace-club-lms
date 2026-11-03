@@ -29,7 +29,7 @@ test('activation packet rejects stale recovery and replay while preserving rows 
    end loop;return result;end;$$;
    select jsonb_build_object('tables',pg_temp.recovery_tables(),'ledgerMd5',(select md5(coalesce(jsonb_agg(to_jsonb(m) order by version),'[]')::text) from supabase_migrations.schema_migrations m),
     'routineGuards',(select jsonb_agg(jsonb_build_object('signature',p.oid::regprocedure::text,'sourceMd5',md5(p.prosrc),'securityDefiner',p.prosecdef,'configuration',to_jsonb(p.proconfig))) from pg_proc p where p.pronamespace='public'::regnamespace and p.proname in ('get_my_v2_published_course','get_my_v2_meeting','get_my_v2_batch_schedules','v2_learning_course_base')));`));
-  report.status='application-rows-restored';report.ledgerMatches=true;report.snapshotSha256=createHash('sha256').update(JSON.stringify(report)).digest('hex');
+  report.sourceSerializationVerified=true;report.status='application-rows-restored';report.ledgerMatches=true;report.snapshotSha256=createHash('sha256').update(JSON.stringify(report)).digest('hex');
   for(const path of ['scripts/phase5','supabase/migrations','deliverables/phase5-preview-activation'])mkdirSync(join(directory,path),{recursive:true});
   copyFileSync('scripts/phase5/prepare-activation.py',join(directory,'scripts/phase5/prepare-activation.py'));
   for(const file of [migration,'20261103091000_add_v2_private_content_storage.sql','20261018090000_add_v2_product_entitlements.sql'])copyFileSync(`supabase/migrations/${file}`,join(directory,'supabase/migrations',file));

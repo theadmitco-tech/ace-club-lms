@@ -1,0 +1,11 @@
+{
+  "check": "phase5_public_preview_environment",
+  "commit": "66f12f4856b661bae94c844143a00a373844449f",
+  "stagingProject": "eyphkkginlgoaxflauog",
+  "environment": {
+    "id": "environment",
+    "status": "pass",
+    "observation": "Preview environment and staging public-client configuration match."
+  },
+  "hostedAcceptance": "not yet performed"
+}

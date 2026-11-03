@@ -30,6 +30,7 @@ export async function verifyPhase5Hosted({state,save,saveSql,output,signIn,rpc,s
   const create=async document=>{const id=randomUUID();state.contentIds.push(id);save();saveSql();await operate('save',{id,revision:0,requestId:randomUUID(),document});return id;};
   const publish=async(id,revision=1,action='publish')=>{const scope=await operate('scope',{id,revision,action});await operate('confirm',{...scope,requestId:randomUUID()});return scope;};
   const delivered=()=>rpc(student.client,'get_my_v2_published_course',{p_batch_id:full.batchId});
+  const notionSource=original.courses.filter(c=>!state.courses.some(f=>f.batchId===c.batchId)).flatMap(c=>c.sessions).flatMap(s=>[...s.content.preSessionReads,...s.content.postSessionReads]).find(i=>/notion\.(so|site)|notion\.com/.test(i.url));
   const reading={title:'QA independent reading',kind:'preSessionReads',url:'https://example.test/phase5/reading',targets:[target('before_course'),{...target('before_course'),batchId:quant.batchId,sessionKey:quant.document.sessions[0].key}]};
   const readingId=await create(reading);
   ok('draft-is-not-student-visible',!JSON.stringify(await delivered()).includes(reading.title));
@@ -41,9 +42,17 @@ export async function verifyPhase5Hosted({state,save,saveSql,output,signIn,rpc,s
   ok('preview-uses-student-outline-without-writes',learningRequests===0&&JSON.stringify(await rpc(student.client,'get_my_v2_learning_state',{p_batch_id:full.batchId}))===JSON.stringify(beforePreview));
   const scope=await publish(readingId);ok('universal-scope-names-both-offerings',scope.targets.length===2&&scope.targets.every(t=>t.courseTitle&&t.sessionTitle));
   ok('universal-publication-reaches-authorized-students',JSON.stringify(await delivered()).includes(reading.title)&&JSON.stringify(await rpc(sessions.quant.client,'get_my_v2_published_course',{p_batch_id:quant.batchId})).includes(reading.title));
-  for(const placement of ['area_top','before_video','after_video','after_course']){const id=await create({...reading,title:`QA ${placement}`,targets:[target(placement)]});await publish(id);}
+  for(const placement of ['area_top','before_video','after_video','after_course']){const id=await create({...reading,title:`QA ${placement}`,kind:placement==='after_video'?'postSessionReads':'preSessionReads',url:placement==='after_video'&&notionSource?notionSource.url:reading.url,targets:[target(placement)]});await publish(id);}
   await student.page.goto(`${state.preview}/schedule/v2/${full.batchId}`,{waitUntil:'domcontentloaded'});
   for(const title of [reading.title,'QA area_top','QA before_video','QA after_video','QA after_course']){await student.page.getByRole('heading',{name:title,exact:true}).waitFor();ok(`placement-${title.replaceAll(' ','-')}`,true);}
+  if(notionSource){
+   const card=student.page.getByRole('heading',{name:'QA after_video',exact:true}).locator('..');await card.getByRole('button',{name:'Read here',exact:true}).click();
+   await card.locator('.notion,iframe,[role=alert]').first().waitFor({state:'visible',timeout:30000});
+   const displayed=await card.locator('.notion,iframe').count()>0;
+   const explicitFailure=await card.getByRole('alert').count()>0;
+   ok('notion-reading-renders-or-explains-provider-failure',displayed||explicitFailure);
+   await card.getByRole('link',{name:/Open QA after_video/}).waitFor();ok('notion-original-source-retained',true);
+  }else{throw new Error('Existing Notion reading fixture unavailable');}
   const order=await student.page.locator('h5').allTextContents();ok('video-readings-surround-the-recording',order.indexOf('QA before_video')<order.indexOf(first.content.recordings[0].title)&&order.indexOf('QA after_video')>order.indexOf(first.content.recordings[0].title));
   await student.page.getByRole('button',{name:'Mark as read',exact:true}).first().click();
   const afterReading=await rpc(student.client,'get_my_v2_learning_state',{p_batch_id:full.batchId});ok('reading-reminder-never-creates-feedback',afterReading.obligations.length===0);
@@ -86,9 +95,23 @@ export async function verifyPhase5Hosted({state,save,saveSql,output,signIn,rpc,s
   for(const action of ['workspace','upload']){const r=await fetchFrom(student.page,'/api/admin/v2/content',{action,input:action==='upload'?{extension:'mp4',type:'video/mp4',size:100}:{}});ok(`student-admin-${action}-denied`,r.status!==200);}
   ok('student-preview-rpc-denied',!!(await student.client.rpc('read_v2_content_preview',{p_batch_id:full.batchId,p_item_id:readingId,p_revision:1})).error);
   for(const table of ['v2_content_items','v2_content_item_revisions','v2_content_publication_audit'])ok(`${table}-direct-read-denied`,!!(await student.client.from(table).select('*').limit(1)).error);
+  await admin.page.goto(`${state.preview}/admin/v2/content`,{waitUntil:'domcontentloaded'});await admin.page.getByLabel('Content type',{exact:true}).selectOption('materials');
+  const pdfObjects=['<< /Type /Catalog /Pages 2 0 R >>','<< /Type /Pages /Kids [3 0 R] /Count 1 >>','<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 200] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>','<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>'];
+  const stream='BT /F1 16 Tf 20 160 Td (Synthetic QA worksheet) Tj ET';pdfObjects.push(`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`);
+  let pdf='%PDF-1.4\n',offsets=[0];pdfObjects.forEach((object,index)=>{offsets.push(Buffer.byteLength(pdf));pdf+=`${index+1} 0 obj\n${object}\nendobj\n`;});const xref=Buffer.byteLength(pdf);pdf+=`xref\n0 6\n0000000000 65535 f \n${offsets.slice(1).map(n=>String(n).padStart(10,'0')+' 00000 n ').join('\n')}\ntrailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  await admin.page.locator('input[type=file]').setInputFiles({name:'synthetic-worksheet.pdf',mimeType:'application/pdf',buffer:Buffer.from(pdf)});await admin.page.getByText('Private upload complete.',{exact:false}).waitFor();
+  const pdfUrl=await admin.page.getByLabel(/^Resource URL/).inputValue(),pdfPath=pdfUrl.split('/').at(-1);check(pdfUrl===`${ORIGIN}/storage/v1/object/authenticated/v2-course-content/${pdfPath}`&&/^[a-f0-9-]{36}\.pdf$/.test(pdfPath),'Private PDF reference mismatch');state.uploads.push(pdfPath);save();
+  const pdfId=await create({title:'QA private worksheet',kind:'materials',url:pdfUrl,targets:[target()]});await publish(pdfId);
+  const pdfItem=(await delivered()).sessions[0].content.materials.find(i=>i.title==='QA private worksheet');
+  const pdfRequest=async()=>student.page.evaluate(async path=>{const r=await fetch(path);return {status:r.status,type:r.headers.get('content-type'),signature:(await r.text()).slice(0,8)};},`/api/v2/content/file?batchId=${full.batchId}&sessionKey=${first.key}&itemKey=${pdfItem.key}&format=pdf`);
+  const pdfResponse=await pdfRequest();ok('browser-pdf-upload-and-protected-delivery',pdfResponse.status===200&&pdfResponse.type==='application/pdf'&&pdfResponse.signature.startsWith('%PDF-1.4'));
+  await rpc(student.client,'report_v2_recording_watched',{p_batch_id:full.batchId,p_session_key:second.key,p_recording_key:second.content.recordings[0].key,p_publication_revision:1});
+  ok('subject-feedback-removes-independent-reading-placements',!(await rpc(student.client,'get_my_v2_content_placements',{p_batch_id:full.batchId})).some(p=>p.sessionKey===first.key));
+  ok('subject-feedback-denies-private-worksheet',(await pdfRequest()).status===404);
+  ok('other-subject-remains-accessible',(await delivered()).sessions.some(s=>s.section==='verbal'));
   const current=await rpc(admin.client,'list_v2_content_workspace',{});ok('original-course-publications-unchanged',createHash('sha256').update(JSON.stringify(current.courses.filter(c=>!state.courses.some(f=>f.batchId===c.batchId)))).digest('hex')===originalHash);
   // Private test objects are removed only from the exact generated upload list after access denial checks.
-  for(const path of state.uploads){check(/^[a-f0-9-]{36}\.mp4$/.test(path),'Unexpected QA upload path');const removed=await service.storage.from('v2-course-content').remove([path]);check(!removed.error,'Synthetic upload cleanup failed');}
+  for(const path of state.uploads){check(/^[a-f0-9-]{36}\.(mp4|pdf)$/.test(path),'Unexpected QA upload path');const removed=await service.storage.from('v2-course-content').remove([path]);check(!removed.error,'Synthetic upload cleanup failed');}
   state.uploadsCleaned=true;report.status='passed';state.status='verified-awaiting-sql-cleanup';state.verifiedAt=new Date().toISOString();save();saveSql();saveReport();
   console.log(JSON.stringify({status:report.status,checks:report.checks.length,runId:state.runId,cleanupPending:true}));
  }catch(error){report.status='failed';report.failure='Hosted verification interrupted; private diagnostics retained outside Git.';state.status='verification-failed';save();saveSql();saveReport();writeFileSync('/tmp/ace-phase5-hosted-error.private.log',String(error?.stack??error),{mode:0o600});console.error(report.failure);process.exitCode=1;}

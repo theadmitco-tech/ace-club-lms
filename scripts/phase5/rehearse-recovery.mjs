@@ -26,6 +26,12 @@ insert into phase5_snapshot values(${delimiter}${raw}${delimiter}::jsonb);
 update phase5_snapshot set doc=case when jsonb_typeof(doc)='array' then doc->0 else doc end;
 update phase5_snapshot set doc=coalesce(doc->'application_recovery',doc);
 update phase5_snapshot set doc=case when jsonb_typeof(doc)='string' then (doc#>>'{}')::jsonb else doc end;
+do $envelope$ declare e jsonb;begin
+ select doc into strict e from phase5_snapshot;
+ if e->>'format'<>'phase5-recovery-envelope-v2' or jsonb_typeof(e->'payload') is distinct from 'string'
+ or encode(sha256(convert_to(e->>'payload','UTF8')),'hex') is distinct from e->>'payloadSha256' then raise exception 'Exact recovery envelope required; payload hash mismatch or old export format';end if;
+ update phase5_snapshot set doc=(e->>'payload')::jsonb;
+end;$envelope$;
 do $restore$ declare s jsonb;t record;c record;f record;definitions text;columns_list text;type_name text;auth_column text;begin
  select doc into strict s from phase5_snapshot;
  if s->>'format'<>'phase5-application-recovery-v1' or jsonb_typeof(s->'tables')<>'object' then raise exception 'Unexpected recovery format';end if;
@@ -90,7 +96,7 @@ select jsonb_build_object('check','phase5_application_row_recovery_rehearsal','c
   }
  });
  report.snapshotSha256=createHash('sha256').update(raw).digest('hex');
- report.status='application-rows-restored';report.fullPlatformRecovery=false;
+ report.sourceSerializationVerified=true;report.status='application-rows-restored';report.fullPlatformRecovery=false;
  report.limitations=['Auth identities are synthetic placeholders; credentials are not recovered.', 'Additional migration-ledger metadata is preserved as JSONB; its original column types are not included in the export.','Storage objects and platform configuration are excluded.','Views, relation grants, RLS policies and triggers calling private-schema functions are not restored by this application-row rehearsal.','Migration activation requires separate schema/privilege reconciliation and preservation checks.'];
  writeFileSync(resolve(output),JSON.stringify(report,null,2)+'\n');
  console.log(JSON.stringify({check:report.check,status:report.status,tables:report.tables.length,rows:report.tables.reduce((n,t)=>n+t.rows,0),allRowsMatch:true,fullPlatformRecovery:false}));

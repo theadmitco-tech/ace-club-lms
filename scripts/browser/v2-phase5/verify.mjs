@@ -153,6 +153,11 @@ async function runTests() {
   assert(positions.indexOf('Reading after_course')>positions.indexOf('Practice worksheet'));
   await noOverflow(page);
  },true);
+ await test('Universal outer readings appear once across authorized session targets',async page=>{
+  fivePlacements();const outer=state.placements.find(p=>p.placement==='before_course');state.placements.push({...outer,sessionKey:quant5});
+  state.extraSessions=[{key:id(1001),title:'Another Quant session',section:'quant',content:{...content(1001),preSessionReads:[state.placedItems[0]]}}];state.placements.push({...outer,sessionKey:id(1001)});
+  await page.goto(origin);assert.equal(await page.getByRole('heading',{name:'Reading before_course',exact:true}).count(),1);
+ });
  await test('Admin preview navigation and readings make no learning requests',async page=>{
   fivePlacements();state.preview=true;await page.goto(origin);
   await page.getByRole('button',{name:'Read here',exact:true}).first().click();

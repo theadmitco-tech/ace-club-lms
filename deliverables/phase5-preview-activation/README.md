@@ -16,7 +16,7 @@ staging bucket and authenticated streaming. Existing Notion rendering, explicit
 failure states and the original embed fallback remain available.
 
 Phase 1 (18 suites), Phase 2 (28 suites), Phase 4 (five suites), Phase 5 database,
-storage, resource authorization, recovery and cleanup checks passed. Five Phase 5
+storage, resource authorization, recovery and cleanup checks passed. Six Phase 5
 browser journeys and 13 Phase 4 browser regressions passed. TypeScript, lint and
 webpack build passed. Synthetic tests do not establish hosted acceptance.
 
@@ -45,10 +45,27 @@ claimed: the rehearsal uses a synthetic Storage catalogue for the new bucket.
 
 - `application-recovery-report.json`: sanitized row-recovery and activation rehearsal.
 - `activation-manifest.json`: proposed migration hashes and expected routine guards.
-- `local-browser-results.json`: five synthetic UI journeys and source hashes.
+- `local-browser-results.json`: six synthetic UI journeys and source hashes.
 - `phase4-browser-regression.json`: 13 synthetic learning journeys and source hashes.
 - `../../docs/v2/phase-5/README.md`: design, hosting boundaries and outstanding gates.
 
 No Phase 5 exit gate is represented as fully closed before hosted validation and
 cleanup are recorded. Phase 4 remains a separate Draft PR; the Phase 5 review is
 stacked on its branch until an authorized integration occurs.
+
+## Activation interruption
+
+The first hosted attempt rejected the baseline at `v2_recording_watch_samples`
+before migrations were applied. A repeated export contained the same logical rows.
+The old JSON export could normalize numeric scale during dashboard copying; its
+local restoration report does not establish byte-exact hosted row preservation.
+The corrected `01-EXPORT-EXACT-RECOVERY.sql` wraps the PostgreSQL payload in a
+checksummed string. A new exact recovery and regenerated activation packet are
+required before another attempt. Numeric precision and scale survive a simulated
+dashboard JSON round trip in the corrected local regression test.
+
+The approved Phase 5 service key and feature flags are scoped to its Preview branch.
+The existing environment-variable metadata remained unchanged. Preview deployment
+`dpl_9JeYtqpyrwMP53fFSbx9DvZRGPbG` passed the public environment check at `66f12f4`.
+GitHub Verify run `41475812117` passed for that commit. GitHub integration permissions
+returned 403 when Draft PR creation was attempted; no Phase 5 PR exists yet.
