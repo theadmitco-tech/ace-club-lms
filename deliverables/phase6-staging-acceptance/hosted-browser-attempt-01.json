@@ -1,0 +1,11 @@
+{
+  "check": "phase6_hosted_browser_conflict",
+  "recordedAt": "2026-11-03T13:21:26.196Z",
+  "commit": "bcc0231e51ae93e266a3232aa316ef934b0e825b",
+  "preview": "https://ace-club-dmc32ekp8-theadmitco-techs-projects.vercel.app",
+  "project": "eyphkkginlgoaxflauog",
+  "status": "failed",
+  "scope": "Dedicated synthetic Admin/Student; no purchase, enrollment, course edit or payment. A new-template request is deliberately changed to reference a nonexistent revision.",
+  "checks": [],
+  "scriptSha256": "0063d3a4ef15695ca3253a3032097a7e52619f2b3f9d0fbd0e01abe2dd42c413"
+}

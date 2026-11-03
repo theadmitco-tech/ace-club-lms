@@ -1,0 +1,12 @@
+{
+  "check": "phase6_pr_handoff",
+  "status": "manual_creation_required",
+  "reason": "GitHub integration returned 403: Resource not accessible by integration.",
+  "head": "intern/v2-phase-6-review",
+  "base": "intern/v2-phase-5-review",
+  "draftRequired": true,
+  "mergeAuthorized": false,
+  "title": "Phase 6: integrated acceptance and bounded conflict responses",
+  "description": "pr-description.md",
+  "compareUrl": "https://github.com/theadmitco-tech/ace-club-lms/compare/intern/v2-phase-5-review...intern/v2-phase-6-review?expand=1"
+}

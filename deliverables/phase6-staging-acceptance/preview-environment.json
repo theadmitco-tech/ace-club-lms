@@ -1,0 +1,72 @@
+{
+  "check": "phase6_preview_environment",
+  "recordedAt": "2026-11-03T13:17:45.724Z",
+  "branch": "intern/v2-phase-6-review",
+  "commit": "bcc0231e51ae93e266a3232aa316ef934b0e825b",
+  "preview": "https://ace-club-dmc32ekp8-theadmitco-techs-projects.vercel.app",
+  "deploymentId": "dpl_7Ygrnh6DBCUjUN2g4v7KMUPBRwS3",
+  "state": "READY",
+  "target": "preview",
+  "stagingProject": "eyphkkginlgoaxflauog",
+  "stagingPublicClientVerification": "Passed in the hosted browser diagnostic: exact implementation commit and staging public-client configuration matched.",
+  "productionVariableMetadataPreserved": true,
+  "branchVariables": [
+    {
+      "key": "V2_INDIVIDUAL_UPGRADE_POLICY",
+      "type": "plain",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "intern/v2-phase-6-review"
+    },
+    {
+      "key": "V2_TEMPLATE_AUTHORING_ENABLED",
+      "type": "plain",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "intern/v2-phase-6-review"
+    },
+    {
+      "key": "V2_BATCH_AUTHORING_ENABLED",
+      "type": "plain",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "intern/v2-phase-6-review"
+    },
+    {
+      "key": "V2_STUDENT_SCHEDULE_ENABLED",
+      "type": "plain",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "intern/v2-phase-6-review"
+    },
+    {
+      "key": "V2_LEARNING_DELIVERY_ENABLED",
+      "type": "plain",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "intern/v2-phase-6-review"
+    },
+    {
+      "key": "V2_CONTENT_PUBLISHING_ENABLED",
+      "type": "plain",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "intern/v2-phase-6-review"
+    },
+    {
+      "key": "SUPABASE_SERVICE_ROLE_KEY",
+      "type": "sensitive",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "intern/v2-phase-6-review"
+    }
+  ],
+  "secretValuesOmitted": true
+}

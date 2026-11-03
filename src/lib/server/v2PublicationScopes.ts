@@ -6,7 +6,7 @@ import { isPublicationScopeInput, isPublicationScopeReview, type PublicationScop
 import { isV2Publication, isV2PublicationFingerprint, type V2Publication } from '@/lib/v2Publications';
 
 type Failure = { status: 'error'; message: string };
-const failure = (code?: string): Failure => ({ status: 'error', message: code === '40001'
+const failure = (code?: string): Failure => ({ status: 'error', message: (code === '40001' || code === 'PT409')
   ? 'The publication scope changed. Cancel this review and review the current scope.'
   : code === '22023' ? 'The selected offerings need saved batches and valid live schedules.'
   : 'Publication could not be confirmed. Retry the same review or reload the latest scope.' });

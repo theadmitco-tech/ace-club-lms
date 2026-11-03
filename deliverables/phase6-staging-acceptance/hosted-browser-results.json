@@ -1,0 +1,65 @@
+{
+  "check": "phase6_hosted_browser_conflict",
+  "recordedAt": "2026-11-03T13:25:50.653Z",
+  "commit": "bcc0231e51ae93e266a3232aa316ef934b0e825b",
+  "preview": "https://ace-club-dmc32ekp8-theadmitco-techs-projects.vercel.app",
+  "project": "eyphkkginlgoaxflauog",
+  "status": "passed",
+  "scope": "Dedicated synthetic Admin/Student; no purchase, enrollment, course edit or payment. A new-template request is deliberately changed to reference a nonexistent revision.",
+  "checks": [
+    {
+      "id": "exact-preview-staging-and-commit",
+      "status": "pass",
+      "sourceReport": "hosted-browser-attempt-02.json",
+      "recordedAt": "2026-11-03T13:23:51.092Z"
+    },
+    {
+      "id": "public-course-options-render",
+      "status": "pass",
+      "sourceReport": "hosted-browser-attempt-02.json",
+      "recordedAt": "2026-11-03T13:23:51.092Z"
+    },
+    {
+      "id": "admin-template-editor-loads",
+      "status": "pass",
+      "sourceReport": "hosted-browser-attempt-02.json",
+      "recordedAt": "2026-11-03T13:23:51.092Z"
+    },
+    {
+      "id": "stale-server-action-displays-specific-reload-guidance",
+      "status": "pass",
+      "sourceReport": "hosted-browser-attempt-02.json",
+      "recordedAt": "2026-11-03T13:23:51.092Z"
+    },
+    {
+      "id": "rejected-browser-action-created-no-template",
+      "status": "pass"
+    },
+    {
+      "id": "admin-batch-editor-loads",
+      "status": "pass"
+    },
+    {
+      "id": "admin-content-workspace-loads",
+      "status": "pass"
+    },
+    {
+      "id": "student-empty-access-state",
+      "status": "pass"
+    },
+    {
+      "id": "student-ineligible-upgrade-state",
+      "status": "pass"
+    },
+    {
+      "id": "student-admin-editor-denied",
+      "status": "pass"
+    },
+    {
+      "id": "student-unentitled-direct-resource-denied",
+      "status": "pass"
+    }
+  ],
+  "resumedFrom": "hosted-browser-attempt-02.json",
+  "scriptSha256": "fc63ab1cf4c5dd435135d7ed30d094b7371c1e60b50336719fa020e47d11b6b9"
+}

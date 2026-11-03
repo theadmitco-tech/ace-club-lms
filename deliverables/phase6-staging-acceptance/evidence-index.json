@@ -1,0 +1,2187 @@
+{
+  "check": "phase6_inherited_evidence_index",
+  "baselineCandidate": "879be1fcf2b32f6a4ef42ae431ca3ac6521fa06d",
+  "reports": [
+    {
+      "path": "deliverables/phase1-closeout-2026-11-01/passwordless-qa/hosted-results.json",
+      "sha256": "dbccd5f6a9cfe185251dceeee91b497ad9c8024dab799cbdeb0ead1e4efca1c7",
+      "scope": "Inherited evidence; no new execution is claimed.",
+      "status": "passed-scoped-checks",
+      "reportCommit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+      "recordedAt": "2026-11-01T18:46:15.348Z",
+      "provenanceCommit": "2b53c2e06ea8f9b1aeeb2ffc55b75772d0f8b8c5",
+      "provenanceCommitDate": "2026-11-02T00:32:36+05:30",
+      "dateLimitation": null,
+      "checks": [
+        {
+          "id": "sql-fixtures-complete-and-owned",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "exact-hosted-candidate",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-list:q",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:q:quant_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:q:verbal_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:q:di_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:q:full_batch",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:q:quant_crash:quant",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:q:quant_crash:verbal",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:q:quant_crash:di",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-price:q->qv",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-expiry:q->qv",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-price:q->qd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-expiry:q->qd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-price:q->qvd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-expiry:q->qvd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-list:v",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:v:quant_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:v:verbal_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:v:di_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:v:full_batch",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:v:verbal_crash:quant",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:v:verbal_crash:verbal",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:v:verbal_crash:di",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-price:v->qv",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-expiry:v->qv",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-price:v->vd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-expiry:v->vd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-price:v->qvd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-expiry:v->qvd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-list:d",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:d:quant_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:d:verbal_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:d:di_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:d:full_batch",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:d:di_crash:quant",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:d:di_crash:verbal",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:d:di_crash:di",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-price:d->qd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-expiry:d->qd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-price:d->vd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-expiry:d->vd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-price:d->qvd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-expiry:d->qvd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-list:qv",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:qv:quant_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:qv:verbal_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:qv:di_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:qv:full_batch",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qv:quant_crash:quant",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qv:quant_crash:verbal",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qv:quant_crash:di",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qv:verbal_crash:quant",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qv:verbal_crash:verbal",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qv:verbal_crash:di",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-price:qv->qvd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-expiry:qv->qvd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-list:qd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:qd:quant_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:qd:verbal_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:qd:di_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:qd:full_batch",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qd:quant_crash:quant",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qd:quant_crash:verbal",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qd:quant_crash:di",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qd:di_crash:quant",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qd:di_crash:verbal",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qd:di_crash:di",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-price:qd->qvd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-expiry:qd->qvd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-list:vd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:vd:quant_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:vd:verbal_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:vd:di_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:vd:full_batch",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:vd:verbal_crash:quant",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:vd:verbal_crash:verbal",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:vd:verbal_crash:di",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:vd:di_crash:quant",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:vd:di_crash:verbal",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:vd:di_crash:di",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-price:vd->qvd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-expiry:vd->qvd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-list:qvd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:qvd:quant_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:qvd:verbal_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:qvd:di_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:qvd:full_batch",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qvd:quant_crash:quant",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qvd:quant_crash:verbal",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qvd:quant_crash:di",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qvd:verbal_crash:quant",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qvd:verbal_crash:verbal",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qvd:verbal_crash:di",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qvd:di_crash:quant",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qvd:di_crash:verbal",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:qvd:di_crash:di",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-rejected:qvd",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-list:full",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:full:quant_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:full:verbal_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:full:di_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:full:full_batch",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:full:full_batch:quant",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:full:full_batch:verbal",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:full:full_batch:di",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-rejected:full",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-list:expired",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:expired:quant_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:expired:verbal_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:expired:di_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:expired:full_batch",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-rejected:expired",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-list:revoked",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:revoked:quant_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:revoked:verbal_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:revoked:di_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:revoked:full_batch",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-rejected:revoked",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-list:inactive",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:inactive:quant_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:inactive:verbal_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:inactive:di_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:inactive:full_batch",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "inactive-page-redirect",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-list:multiple",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:multiple:quant_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:multiple:verbal_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:multiple:di_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:multiple:full_batch",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:multiple:quant_crash:quant",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:multiple:quant_crash:verbal",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:multiple:quant_crash:di",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:multiple:verbal_crash:quant",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:multiple:verbal_crash:verbal",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:multiple:verbal_crash:di",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-rejected:multiple",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-list:mixed",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:mixed:quant_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:mixed:verbal_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:mixed:di_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:mixed:full_batch",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:mixed:verbal_crash:quant",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:mixed:verbal_crash:verbal",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "section:mixed:verbal_crash:di",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-list:empty",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:empty:quant_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:empty:verbal_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:empty:di_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:empty:full_batch",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "upgrade-rejected:empty",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-list:admin",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:admin:quant_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:admin:verbal_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:admin:di_crash",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "access-boundary:admin:full_batch",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "foreign-fixture-confirmed",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "cross-student:q:v2_purchases",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "cross-student:q:v2_product_grants",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "cross-student:inactive:v2_purchases",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "cross-student:inactive:v2_product_grants",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "grant-denied:anon",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "insert-denied:anon:v2_purchases",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "update-denied:anon:v2_purchases",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "delete-denied:anon:v2_purchases",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "insert-denied:anon:v2_product_grants",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "update-denied:anon:v2_product_grants",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "delete-denied:anon:v2_product_grants",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "grant-denied:student",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "insert-denied:student:v2_purchases",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "update-denied:student:v2_purchases",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "delete-denied:student:v2_purchases",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "insert-denied:student:v2_product_grants",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "update-denied:student:v2_product_grants",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "delete-denied:student:v2_product_grants",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "grant-denied:admin",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "insert-denied:admin:v2_purchases",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "update-denied:admin:v2_purchases",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "delete-denied:admin:v2_purchases",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "insert-denied:admin:v2_product_grants",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "update-denied:admin:v2_product_grants",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "delete-denied:admin:v2_product_grants",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "student-admin-route-denied",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "purchases-unchanged-by-ui-and-denial-probes",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        }
+      ]
+    },
+    {
+      "path": "deliverables/phase1-closeout-2026-11-01/passwordless-qa/student-legacy-results.json",
+      "sha256": "2df1263cb86de2a5a4c3da1cf56fc30155d6ef85ada672cbb2500a4d0ec87020",
+      "scope": "Inherited evidence; no new execution is claimed.",
+      "status": "passed-student-legacy-checks",
+      "reportCommit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+      "recordedAt": "2026-11-01T18:53:25.460Z",
+      "provenanceCommit": "2b53c2e06ea8f9b1aeeb2ffc55b75772d0f8b8c5",
+      "provenanceCommitDate": "2026-11-02T00:32:36+05:30",
+      "dateLimitation": null,
+      "checks": [
+        {
+          "id": "candidate-and-admin-session",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "existing-student-bulk-enrollment",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "enrollment-persisted",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "enrolled-dashboard",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "draft-session-hidden-from-student-timeline",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "unenrolled-material-hidden",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "future-worksheet-rpc-denied",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "future-file-route-denied",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "unenrolled-file-route-denied",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "released-protected-pdf-opens",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "draft-session-page-denied",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "student-schedule-published-session",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "worksheet-status-persists",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "worksheet-comment-persists",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "worksheet-save-reached-database",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "practice-overview-retains-worksheet",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "enrolled-inactive-batch-stays-accessible",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "inactive-batch-worksheet-stays-accessible",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        }
+      ]
+    },
+    {
+      "path": "deliverables/phase1-closeout-2026-11-01/passwordless-qa/admin-legacy-results.json",
+      "sha256": "11ae5861c2a78572db1b33d2c66f032c7c2f1c697c1b15fd546295de5c19716e",
+      "scope": "Inherited evidence; no new execution is claimed.",
+      "status": "passed-scoped-legacy-checks",
+      "reportCommit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+      "recordedAt": "2026-11-01T18:57:11.611Z",
+      "provenanceCommit": "2b53c2e06ea8f9b1aeeb2ffc55b75772d0f8b8c5",
+      "provenanceCommitDate": "2026-11-02T00:32:36+05:30",
+      "dateLimitation": null,
+      "checks": [
+        {
+          "id": "candidate-and-admin-session",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "admin-editor-add-refresh",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "admin-editor-edit-persists",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "admin-editor-delete-refresh",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "admin-editor-csv-import-persists",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "admin-editor-failed-delete-retains-question",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "admin-editor-retry-after-network-failure",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        },
+        {
+          "id": "legacy-public-batch-list-responds",
+          "status": "pass",
+          "commit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4"
+        }
+      ]
+    },
+    {
+      "path": "deliverables/phase2-hosted-acceptance/authoring-results.json",
+      "sha256": "8f26f4d69412b052f1a7390adb0873f08889f149fb8411d70f3430fbf9aa6680",
+      "scope": "Inherited evidence; no new execution is claimed.",
+      "status": "passed",
+      "reportCommit": "aee96df42dffb80948021d6d22392fb059189ee8",
+      "recordedAt": null,
+      "provenanceCommit": "cfe59e2bff723294a4c965db0c6258fa713bcf04",
+      "provenanceCommitDate": "2026-11-02T05:54:20+05:30",
+      "dateLimitation": "Execution timestamp absent; provenance commit date is not a test execution date.",
+      "checks": [
+        {
+          "id": "five-session-fields-saved-through-hosted-ui",
+          "status": "pass",
+          "commit": "aee96df42dffb80948021d6d22392fb059189ee8"
+        },
+        {
+          "id": "saved-session-heading-reopens",
+          "status": "pass",
+          "commit": "aee96df42dffb80948021d6d22392fb059189ee8"
+        },
+        {
+          "id": "template-edit-leaves-publication-pinned",
+          "status": "pass",
+          "commit": "aee96df42dffb80948021d6d22392fb059189ee8"
+        },
+        {
+          "id": "template-edit-leaves-publication-pinned",
+          "status": "pass",
+          "commit": "aee96df42dffb80948021d6d22392fb059189ee8"
+        },
+        {
+          "id": "undated-batch-revision-retains-independent-content",
+          "status": "pass",
+          "commit": "aee96df42dffb80948021d6d22392fb059189ee8"
+        },
+        {
+          "id": "publish-revision-2",
+          "status": "pass",
+          "commit": "aee96df42dffb80948021d6d22392fb059189ee8"
+        },
+        {
+          "id": "publish-retry-2",
+          "status": "pass",
+          "commit": "aee96df42dffb80948021d6d22392fb059189ee8"
+        },
+        {
+          "id": "unpublish-revision-3",
+          "status": "pass",
+          "commit": "aee96df42dffb80948021d6d22392fb059189ee8"
+        },
+        {
+          "id": "unpublish-retry-3",
+          "status": "pass",
+          "commit": "aee96df42dffb80948021d6d22392fb059189ee8"
+        },
+        {
+          "id": "publish-revision-4",
+          "status": "pass",
+          "commit": "aee96df42dffb80948021d6d22392fb059189ee8"
+        },
+        {
+          "id": "publish-retry-4",
+          "status": "pass",
+          "commit": "aee96df42dffb80948021d6d22392fb059189ee8"
+        },
+        {
+          "id": "outline-and-edited-session-published-together",
+          "status": "pass",
+          "commit": "aee96df42dffb80948021d6d22392fb059189ee8"
+        },
+        {
+          "id": "stale-publication-review-rejected",
+          "status": "pass",
+          "commit": "aee96df42dffb80948021d6d22392fb059189ee8"
+        },
+        {
+          "id": "original-template-revision-remains-immutable",
+          "status": "pass",
+          "commit": "aee96df42dffb80948021d6d22392fb059189ee8"
+        }
+      ]
+    },
+    {
+      "path": "deliverables/phase2-hosted-acceptance/ist-schedule.json",
+      "sha256": "2d453a207b52ae90d3d99d317790c659448ed026a47c4c9ea6cdd6e40c90ccc0",
+      "scope": "Inherited evidence; no new execution is claimed.",
+      "status": "receipt-or-observations",
+      "reportCommit": null,
+      "recordedAt": null,
+      "provenanceCommit": "cfe59e2bff723294a4c965db0c6258fa713bcf04",
+      "provenanceCommitDate": "2026-11-02T05:54:20+05:30",
+      "dateLimitation": "Execution timestamp absent; provenance commit date is not a test execution date.",
+      "checks": [
+        {
+          "id": "live-class-retains-ist-zone",
+          "status": "recorded-observation",
+          "commit": null
+        },
+        {
+          "id": "live-class-start-instant",
+          "status": "recorded-observation",
+          "commit": null
+        },
+        {
+          "id": "live-class-end-instant",
+          "status": "recorded-observation",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "path": "deliverables/phase4-hosted-acceptance/hosted-results.json",
+      "sha256": "955f026ff7a20954a9091a730ddf6a0e13d7aa474ac6b3fd11ee65da0bb49a87",
+      "scope": "Inherited evidence; no new execution is claimed.",
+      "status": "hosted-fixture-checks-passed",
+      "reportCommit": "9f865dfe83bda1b121493ed186899ae6c9532684",
+      "recordedAt": "2026-11-02T01:42:28.762Z",
+      "provenanceCommit": "4ddf0b4da0d2682aaf70e86ea84266cf46c0d9a7",
+      "provenanceCommitDate": "2026-11-02T19:34:46+05:30",
+      "dateLimitation": null,
+      "checks": [
+        {
+          "id": "exact-preview-and-staging",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-course-authorized-learning",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-course-resource-inventory",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-course-complete-outline",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-private-pdf:0",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-private-pdf-unauthorized:0",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-private-pdf:1",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-private-pdf-unauthorized:1",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-private-pdf:2",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-private-pdf-unauthorized:2",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-private-pdf:3",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-private-pdf-unauthorized:3",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-private-pdf:4",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-private-pdf-unauthorized:4",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-reading-authorized-response:0",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-reading-provider:0",
+          "status": "inconclusive",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-reading-original-source:0",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-reading-original-rendered:0",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-reading-mobile-fit:0",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-reading-unauthorized:0",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-reading-authorized-response:1",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-reading-provider:1",
+          "status": "inconclusive",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-reading-original-source:1",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-reading-original-rendered:1",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-reading-mobile-fit:1",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-reading-unauthorized:1",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-recording-observation-initialization-only",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "real-resources-and-feedback-preserved",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "course-access:quant",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "learning-access:quant",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "meeting-access:quant",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "course-access:unregistered",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "learning-access:unregistered",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "meeting-access:unregistered",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "course-access:expired",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "learning-access:expired",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "meeting-access:expired",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "course-access:revoked",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "learning-access:revoked",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "meeting-access:revoked",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "course-access:inactive",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "learning-access:inactive",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "meeting-access:inactive",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "course-access:wrong_subject",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "learning-access:wrong_subject",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "meeting-access:wrong_subject",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "course-access:empty",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "learning-access:empty",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "meeting-access:empty",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "course-access:admin",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "learning-access:admin",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "meeting-access:admin",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "full-course-three-subjects",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "individual-course-scope",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "unregistered-live-details-hidden",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "private-table-denied:v2_learning_progress",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "private-table-denied:v2_session_feedback",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "private-table-denied:v2_feedback_obligations",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "private-table-denied:v2_live_session_mappings",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "private-table-denied:v2_live_session_mapping_audit",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "private-table-denied:v2_recording_watch_sessions",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "private-table-denied:v2_recording_watch_samples",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "shared-recording-reference-retained",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "arbitrary-session-order",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "student-mobile-fit",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "session-open-not-feedback",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "recording-self-report-created-obligation",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "subject-only-lock-with-current-session-open",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "locked-session-resource-urls-omitted",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "locked-resource-url-not-in-html",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "cross-student-feedback-denied",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "locked-progress-write-denied",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "synthetic-material-denial-smoke",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "synthetic-reading-denial-smoke",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "anonymous-meeting-route-denied",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "exact-preview-and-staging",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "browser-feedback-confirmed-unlock",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "admin-explicit-mappings-rendered",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "admin-mapped-live-completion",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "missed-live-does-not-request-invented-ratings",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "missed-live-unlocks-with-recording-preserved",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "completed-live-meeting-closed",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "unpublished-course-and-learning-denied",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        },
+        {
+          "id": "existing-real-libraries-unchanged",
+          "status": "pass",
+          "commit": "9f865dfe83bda1b121493ed186899ae6c9532684"
+        }
+      ]
+    },
+    {
+      "path": "deliverables/phase4-hosted-acceptance/provider-results.json",
+      "sha256": "3186421dae37c521b59dec836e1b07ac3950e6da3e24a45cadebad21218b7aa7",
+      "scope": "Inherited evidence; no new execution is claimed.",
+      "status": "passed",
+      "reportCommit": "c0c4e3e65129bd24e7c46de57a82f29916f2a74f",
+      "recordedAt": "2026-11-02T13:59:06.329Z",
+      "provenanceCommit": "4ddf0b4da0d2682aaf70e86ea84266cf46c0d9a7",
+      "provenanceCommitDate": "2026-11-02T19:34:46+05:30",
+      "dateLimitation": null,
+      "checks": [
+        {
+          "id": "real-course-feedback-initially-clear",
+          "status": "pass",
+          "commit": "c0c4e3e65129bd24e7c46de57a82f29916f2a74f"
+        },
+        {
+          "id": "published-shared-recordings:di",
+          "status": "pass",
+          "commit": "c0c4e3e65129bd24e7c46de57a82f29916f2a74f"
+        },
+        {
+          "id": "published-shared-recordings:verbal",
+          "status": "pass",
+          "commit": "c0c4e3e65129bd24e7c46de57a82f29916f2a74f"
+        },
+        {
+          "id": "published-shared-recordings:quant",
+          "status": "pass",
+          "commit": "c0c4e3e65129bd24e7c46de57a82f29916f2a74f"
+        },
+        {
+          "id": "actual-shared-recordings-compared",
+          "status": "pass",
+          "commit": "c0c4e3e65129bd24e7c46de57a82f29916f2a74f"
+        },
+        {
+          "id": "supported-real-recording-present",
+          "status": "pass",
+          "commit": "c0c4e3e65129bd24e7c46de57a82f29916f2a74f"
+        },
+        {
+          "id": "recording-duration-safe-for-short-observation",
+          "status": "pass",
+          "commit": "c0c4e3e65129bd24e7c46de57a82f29916f2a74f"
+        },
+        {
+          "id": "short-observation-remains-below-feedback-threshold",
+          "status": "pass",
+          "commit": "c0c4e3e65129bd24e7c46de57a82f29916f2a74f"
+        },
+        {
+          "id": "real-provider-playback-advanced",
+          "status": "pass",
+          "commit": "c0c4e3e65129bd24e7c46de57a82f29916f2a74f"
+        },
+        {
+          "id": "real-observations-confirmed-by-server",
+          "status": "pass",
+          "commit": "c0c4e3e65129bd24e7c46de57a82f29916f2a74f"
+        },
+        {
+          "id": "short-playback-created-no-feedback-or-source-change",
+          "status": "pass",
+          "commit": "c0c4e3e65129bd24e7c46de57a82f29916f2a74f"
+        }
+      ]
+    },
+    {
+      "path": "deliverables/phase5-hosted-acceptance/hosted-results.json",
+      "sha256": "500fc438d3f4523844f5446fedd0e5653690cbc7681488549512ca319f50c12b",
+      "scope": "Inherited evidence; no new execution is claimed.",
+      "status": "passed",
+      "reportCommit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6",
+      "recordedAt": null,
+      "provenanceCommit": "65220a723850c934e4b7a73331f5bf1414b44069",
+      "provenanceCommitDate": "2026-11-03T18:11:52+05:30",
+      "dateLimitation": "Execution timestamp absent; provenance commit date is not a test execution date.",
+      "checks": [
+        {
+          "id": "exact-preview-commit-and-staging",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "admin-content-workspace-visible",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "draft-is-not-student-visible",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "preview-uses-student-outline-without-writes",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "universal-scope-names-both-offerings",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "universal-publication-reaches-authorized-students",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "placement-QA-independent-reading",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "placement-QA-area_top",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "placement-QA-before_video",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "placement-QA-after_video",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "placement-QA-after_course",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "notion-reading-renders-or-explains-provider-failure",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "notion-original-source-retained",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "video-readings-surround-the-recording",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "reading-reminder-never-creates-feedback",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "independent-heading-edit-delivered",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "heading-unpublish-restores-original-label",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "browser-private-recording-upload",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "private-recording-streams-range-without-token-redirect",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "direct-storage-browser-download-denied",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "eligible-quant-private-file-available",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "empty-course-denied",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "empty-protected-file-denied",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "expired-course-denied",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "expired-protected-file-denied",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "revoked-course-denied",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "revoked-protected-file-denied",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "inactive-course-denied",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "inactive-protected-file-denied",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "wrong_subject-course-denied",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "wrong_subject-protected-file-denied",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "anonymous-file-denied",
+          "status": "pass",
+          "commit": "b181d91635248c196313c421cd1b1b5b545e5a90"
+        },
+        {
+          "id": "continuation-exact-preview-commit-and-staging",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "continuation-admin-editor-rendered",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "stale-confirmation-rejected",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "replacement-denies-old-resource-key",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "unpublish-denies-file-without-restoring-original",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "deletion-denies-file",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "student-admin-workspace-denied",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "student-admin-upload-denied",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "student-preview-rpc-denied",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "v2_content_items-direct-read-denied",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "v2_content_item_revisions-direct-read-denied",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "v2_content_publication_audit-direct-read-denied",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "browser-pdf-upload-and-protected-delivery",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "subject-feedback-removes-independent-reading-placements",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "subject-feedback-denies-private-worksheet",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "other-subject-remains-accessible",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "original-course-publications-unchanged-during-continuation",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        }
+      ]
+    },
+    {
+      "path": "deliverables/phase5-hosted-acceptance/preview-matrix-results.json",
+      "sha256": "64b3b95cc0cae95b1002a3a7b7b72293c19862a2db9b33f7020c5588005b7b3f",
+      "scope": "Inherited evidence; no new execution is claimed.",
+      "status": "passed",
+      "reportCommit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6",
+      "recordedAt": null,
+      "provenanceCommit": "65220a723850c934e4b7a73331f5bf1414b44069",
+      "provenanceCommitDate": "2026-11-03T18:11:52+05:30",
+      "dateLimitation": "Execution timestamp absent; provenance commit date is not a test execution date.",
+      "checks": [
+        {
+          "id": "preview-placement-QA-independent-reading",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "preview-placement-QA-area_top",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "preview-placement-QA-before_video",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "preview-placement-QA-after_video",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "preview-placement-QA-after_course",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "preview-reading-order-surrounds-current-recording",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "preview-placement-matrix-mobile-width",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "preview-placement-matrix-no-learning-writes",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        }
+      ]
+    },
+    {
+      "path": "deliverables/phase5-hosted-acceptance/reorder-preview-results.json",
+      "sha256": "f37237421465b713f4900fb29e826dd5bb39ffcbe319246471053d703724f32f",
+      "scope": "Inherited evidence; no new execution is claimed.",
+      "status": "passed",
+      "reportCommit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6",
+      "recordedAt": null,
+      "provenanceCommit": "65220a723850c934e4b7a73331f5bf1414b44069",
+      "provenanceCommitDate": "2026-11-03T18:11:52+05:30",
+      "dateLimitation": "Execution timestamp absent; provenance commit date is not a test execution date.",
+      "checks": [
+        {
+          "id": "initial-independent-resource-order",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "edited-resource-order-reaches-student",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "actual-admin-link-opens-student-preview-in-new-tab",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "new-tab-navigation-does-not-write-learning",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        },
+        {
+          "id": "hosted-mobile-preview-has-no-horizontal-overflow",
+          "status": "pass",
+          "commit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6"
+        }
+      ]
+    },
+    {
+      "path": "deliverables/phase5-hosted-acceptance/direct-storage-check.json",
+      "sha256": "839673feb837f087e99cbd7bc65a320f66e842d2f1c326ee2cde1561108bbafd",
+      "scope": "Inherited evidence; no new execution is claimed.",
+      "status": "pass",
+      "reportCommit": "b181d91635248c196313c421cd1b1b5b545e5a90",
+      "recordedAt": null,
+      "provenanceCommit": "65220a723850c934e4b7a73331f5bf1414b44069",
+      "provenanceCommitDate": "2026-11-03T18:11:52+05:30",
+      "dateLimitation": "Execution timestamp absent; provenance commit date is not a test execution date.",
+      "checks": []
+    },
+    {
+      "path": "deliverables/phase5-hosted-acceptance/cleanup-verification.json",
+      "sha256": "050f85a26e3e56618ac90f223ae2e258b0cec386a5f8f4c4d3c7dfe76c6c6663",
+      "scope": "Inherited evidence; no new execution is claimed.",
+      "status": "passed",
+      "reportCommit": null,
+      "recordedAt": null,
+      "provenanceCommit": "879be1fcf2b32f6a4ef42ae431ca3ac6521fa06d",
+      "provenanceCommitDate": "2026-11-03T18:19:44+05:30",
+      "dateLimitation": "Execution timestamp absent; provenance commit date is not a test execution date.",
+      "checks": [
+        {
+          "id": "generated-auth-admin-absent",
+          "status": "pass",
+          "commit": null
+        },
+        {
+          "id": "generated-auth-full-absent",
+          "status": "pass",
+          "commit": null
+        },
+        {
+          "id": "generated-auth-quant-absent",
+          "status": "pass",
+          "commit": null
+        },
+        {
+          "id": "generated-auth-unregistered-absent",
+          "status": "pass",
+          "commit": null
+        },
+        {
+          "id": "generated-auth-expired-absent",
+          "status": "pass",
+          "commit": null
+        },
+        {
+          "id": "generated-auth-revoked-absent",
+          "status": "pass",
+          "commit": null
+        },
+        {
+          "id": "generated-auth-inactive-absent",
+          "status": "pass",
+          "commit": null
+        },
+        {
+          "id": "generated-auth-wrong_subject-absent",
+          "status": "pass",
+          "commit": null
+        },
+        {
+          "id": "generated-auth-empty-absent",
+          "status": "pass",
+          "commit": null
+        },
+        {
+          "id": "generated-profiles-absent",
+          "status": "pass",
+          "commit": null
+        },
+        {
+          "id": "generated-v2_purchases-absent",
+          "status": "pass",
+          "commit": null
+        },
+        {
+          "id": "synthetic-upload-1-absent",
+          "status": "pass",
+          "commit": null
+        },
+        {
+          "id": "synthetic-upload-2-absent",
+          "status": "pass",
+          "commit": null
+        },
+        {
+          "id": "exact-88-table-baseline-restored",
+          "status": "pass",
+          "commit": null
+        }
+      ]
+    },
+    {
+      "path": "deliverables/phase5-preview-activation/activation-receipt.json",
+      "sha256": "0e81346025ad06822b81064f30bd5b84c51be803aab5623ecdbaab07bfd4f90c",
+      "scope": "Inherited evidence; no new execution is claimed.",
+      "status": "receipt-or-observations",
+      "reportCommit": null,
+      "recordedAt": null,
+      "provenanceCommit": "65220a723850c934e4b7a73331f5bf1414b44069",
+      "provenanceCommitDate": "2026-11-03T18:11:52+05:30",
+      "dateLimitation": "Execution timestamp absent; provenance commit date is not a test execution date.",
+      "checks": []
+    },
+    {
+      "path": "deliverables/phase5-preview-activation/readonly-repair-receipt.json",
+      "sha256": "a041a94192b202773bc504fec21dd2a740f540dde4b651643bd93ab089d54467",
+      "scope": "Inherited evidence; no new execution is claimed.",
+      "status": "receipt-or-observations",
+      "reportCommit": null,
+      "recordedAt": null,
+      "provenanceCommit": "65220a723850c934e4b7a73331f5bf1414b44069",
+      "provenanceCommitDate": "2026-11-03T18:11:52+05:30",
+      "dateLimitation": "Execution timestamp absent; provenance commit date is not a test execution date.",
+      "checks": []
+    },
+    {
+      "path": "deliverables/phase5-preview-activation/conflict-repair-receipt.json",
+      "sha256": "d2024c75ab1d17a0295c783294ef089fddc1a9ab0734709dc34cf2b95a741a1f",
+      "scope": "Inherited evidence; no new execution is claimed.",
+      "status": "receipt-or-observations",
+      "reportCommit": null,
+      "recordedAt": null,
+      "provenanceCommit": "65220a723850c934e4b7a73331f5bf1414b44069",
+      "provenanceCommitDate": "2026-11-03T18:11:52+05:30",
+      "dateLimitation": "Execution timestamp absent; provenance commit date is not a test execution date.",
+      "checks": []
+    }
+  ]
+}

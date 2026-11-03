@@ -12,7 +12,7 @@ type BatchListResult = { status: 'ready'; drafts: V2BatchDraft[] }
 
 const failure = 'The schedule could not be confirmed. Retry the same operation or reload the latest drafts.';
 function message(code?: string) {
-  if (code === '40001') return 'The batch or template changed. Reload the latest drafts and review the schedule again.';
+  if ((code === '40001' || code === 'PT409')) return 'The batch or template changed. Reload the latest drafts and review the schedule again.';
   if (code === '22023') return 'Review the schedule fields and saved template. Event identities and the template start date must be preserved when editing.';
   return failure;
 }

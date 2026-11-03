@@ -1,0 +1,28 @@
+{
+  "check": "phase6_hosted_browser_conflict",
+  "recordedAt": "2026-11-03T13:23:51.092Z",
+  "commit": "bcc0231e51ae93e266a3232aa316ef934b0e825b",
+  "preview": "https://ace-club-dmc32ekp8-theadmitco-techs-projects.vercel.app",
+  "project": "eyphkkginlgoaxflauog",
+  "status": "failed",
+  "scope": "Dedicated synthetic Admin/Student; no purchase, enrollment, course edit or payment. A new-template request is deliberately changed to reference a nonexistent revision.",
+  "checks": [
+    {
+      "id": "exact-preview-staging-and-commit",
+      "status": "pass"
+    },
+    {
+      "id": "public-course-options-render",
+      "status": "pass"
+    },
+    {
+      "id": "admin-template-editor-loads",
+      "status": "pass"
+    },
+    {
+      "id": "stale-server-action-displays-specific-reload-guidance",
+      "status": "pass"
+    }
+  ],
+  "scriptSha256": "864a73e5aa9fa7cfa44f40bc9cf7adcaf63fdf4f88b134333b350cc2823e675c"
+}
