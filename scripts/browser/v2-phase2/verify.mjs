@@ -151,7 +151,7 @@ async function runTests() {
     await button(modal, 'Previous month').click();
     await modal.getByRole('button', { name: '2026-11-03', exact: true }).click();
     assert.equal(await page.getByLabel('Date', { exact: true }).inputValue(), '2026-11-02');
-    await button(modal, 'Use this date').click();
+    await button(modal, 'Use date & time').click();
     assert.equal(await page.getByLabel('Date', { exact: true }).inputValue(), '2026-11-03');
     assert.equal(await modal.isVisible(), false);
     assert.equal(await calendar.evaluate((element) => element === document.activeElement), true);

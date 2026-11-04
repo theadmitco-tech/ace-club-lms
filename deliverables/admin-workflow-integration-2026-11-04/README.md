@@ -1,5 +1,7 @@
 # Admin workflow integration
 
+The subsequent annotated revision is documented in [the review follow-up](../admin-workflow-review-2026-11-05/README.md). The evidence below identifies the earlier deployed implementation.
+
 Status: implemented, deployed and verified in the staging Preview. Both dedicated QA accounts were removed; four independent checks confirmed Auth and profile absence.
 
 The Admin wireframe is integrated into the existing LMS on `intern/v2-admin-workflow-review`, based on `intern/v2-phase-7-review`. The staging content-publishing gate selects the new dashboard. Production continues to use the existing dashboard and rejects the V2 workspace.

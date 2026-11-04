@@ -1,0 +1,44 @@
+{
+  "scope": "Local synthetic verification; new hosted deployment pending",
+  "baseCommit": "e00bfa79dc5a1d5995094467cd99ec6cd9bb6df5",
+  "sourcePdfSha256": "80fa2598e6cdb99e9ec4f54e4e581ef01e79ba0705e533ea08c96db20ac5b842",
+  "results": {
+    "phase2Suites": 28,
+    "phase2Checks": 278,
+    "adminBrowserCases": 10,
+    "resourceBrowserCases": 11,
+    "inheritedBrowserCases": 43,
+    "resourceOrderChecks": 4,
+    "studentAccessChecks": 4,
+    "lint": "passed",
+    "typecheck": "passed",
+    "webpackBuild": "passed"
+  },
+  "sourceHashes": {
+    "scripts/browser/admin-workflow/verify.mjs": "0de239707c2c0d0375d58f181e198ac8a9053570d6dcfcf291f98833660d7499",
+    "scripts/browser/v2-phase2/verify.mjs": "cd3be9d9d9aba79cc29b233bdb6c5aa8f79a042befebf2a722013037a637d597",
+    "scripts/browser/v2-phase5/verify.mjs": "0ffbb5ff53a20b44274e4a8c97dbea1df0b3f1814aa70b28beb7823d4582788f",
+    "scripts/v2-batch-authoring.test.mjs": "2926106f606a8f24edea248acaf2d81b01701c0f986fc1ef680849935a390ab8",
+    "src/app/admin/AdminShell.tsx": "1439f56574b45d33497433ec481d5e4e4f788a8c784af542a6d811b889a92e4f",
+    "src/app/admin/page.tsx": "82e29b6ab1ac87f7c33a5b508f6d49851ad5a3cd347d220dfc519936b5e4308e",
+    "src/app/admin/v2/WorkspaceNavigation.tsx": "fea7a52aef1db4ce6b3c570936b3fa72e1c4c9cd2e6a874c2ee30ce7eb82fae0",
+    "src/app/admin/v2/batches/BatchDatePicker.tsx": "db8d7879b776ebab3174c54db0fef17a86564ceb4bc14649c5756fa5203e2794",
+    "src/app/admin/v2/batches/BatchDraftEditor.tsx": "5cd25127fa6a17d1bddda8698fa3971d70c1395df8dfb65b7f5fff3ab57c35bc",
+    "src/app/admin/v2/batches/BatchWorkspace.tsx": "9ae31f5a6ace130bcdf659cfe4c2aba773566100dc05f5188712b46525846db7",
+    "src/app/admin/v2/batches/[batchId]/live/LiveOperations.tsx": "368a925ddca0b196b8759d1041d02e614a659d733cc4e4f80d774d1ae3fba251",
+    "src/app/admin/v2/batches/page.tsx": "bdd289f0d9a2f5ef4fadfc7f08ff5935c4519f950725510ed83a24d4fbdba118",
+    "src/app/admin/v2/content/ContentEditor.tsx": "6eb208569133af0d2a98f78566dfbee63d4e7485d0b63e2ccc14022607c4381c",
+    "src/app/admin/v2/content/CourseResourceBrowser.tsx": "620962a845a3bd1106de71781b0993afdc668456435c20740f4cd19bec7e102e",
+    "src/app/admin/v2/content/PlacementEditor.tsx": "19afcaa40655f1c8d89f7901cc5079a637e1af596a879d5283a9a5430d0528f0",
+    "src/app/admin/v2/content/content.module.css": "f2a7ff535d95d2ae63aff9eb78b049803a9dad7d2a88d9ba1c77e85cff96ecf8",
+    "src/app/admin/v2/templates/CourseSessions.tsx": "d1e14632c841821b03eb8701f1ca6e2e0bb32c6af7be0163eb89e4bbf2072647",
+    "src/app/admin/workflow.css": "9ad23393f1a2dfbdd347dfd235a6937fa04e0701acfb370fa2b6faf0792bca8c",
+    "src/lib/adminResourceOrder.ts": "9ce5150c03f5f64064e8a6cb7f9ac2b47c618f26d324431c2e751e56c09a3cce",
+    "scripts/admin-resource-order.test.mjs": "553d15cc5a2953d34801875da4010de43f862537c0f57bdd72ccc61f9ddacee6"
+  },
+  "limitations": [
+    "Browser cases use synthetic adapters and do not constitute hosted authorization acceptance.",
+    "Earlier interrupted runs exposed a missing browser executable, stale test labels, and a calendar label collision; final reruns passed.",
+    "The annotated PDF remains outside version control; the review mapping is paraphrased."
+  ]
+}

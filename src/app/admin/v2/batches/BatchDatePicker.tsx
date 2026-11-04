@@ -8,12 +8,13 @@ const dateKey = (date: Date) => date.toISOString().slice(0, 10);
 const monthName = (date: Date) => new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date);
 const validDate = (value: string) => /^20\d{2}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)) && dateKey(new Date(value)) === value;
 
-export function BatchDatePicker({ id, label, value, onChange, required = false, events = [] }: {
-  id: string; label: string; value: string; onChange: (value: string) => void; required?: boolean; events?: CalendarEvent[];
+export function BatchDatePicker({ id, label, value, onChange, required = false, events = [], time, onDateTimeChange }: {
+  id: string; label: string; value: string; onChange: (value: string) => void; required?: boolean; events?: CalendarEvent[]; time?: string; onDateTimeChange?: (date: string, time: string) => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const heading = useId();
   const [selection,setSelection]=useState(value);
+  const [selectedTime,setSelectedTime]=useState(time ?? '');
   const [month, setMonth] = useState('2026-01-01');
   const firstDay = new Date(`${month}T00:00:00Z`);
   const offset = (firstDay.getUTCDay() + 6) % 7;
@@ -26,6 +27,7 @@ export function BatchDatePicker({ id, label, value, onChange, required = false, 
     const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
     setMonth(`${(validDate(value) ? value : today).slice(0, 7)}-01`);
     setSelection(value);
+    setSelectedTime(time ?? '');
     dialog.current?.showModal();
   }
   function moveMonth(delta: number) {
@@ -57,7 +59,8 @@ export function BatchDatePicker({ id, label, value, onChange, required = false, 
           .map((event, index) => <li key={`${event.date}:${index}`}><time dateTime={event.date}>{event.date}{event.time ? ` · ${event.time} IST` : ''}</time><span>{event.title}</span></li>)}</ul>
           : <p>No live classes scheduled in this month.</p>}
       </section>
-      <div className={styles.top}><button type="button" className="btn btn-secondary" onClick={()=>dialog.current?.close()}>Cancel</button><button type="button" className="btn btn-primary" disabled={!validDate(selection)} onClick={()=>{onChange(selection);dialog.current?.close();}}>Use this date</button></div>
+      {onDateTimeChange && <label htmlFor={`${id}-calendar-time`}>Time for selected date (IST)<input id={`${id}-calendar-time`} className="form-input" type="time" value={selectedTime} onChange={event=>setSelectedTime(event.target.value)}/></label>}
+      <div className={styles.top}><button type="button" className="btn btn-secondary" onClick={()=>dialog.current?.close()}>Cancel</button><button type="button" className="btn btn-primary" disabled={!validDate(selection)||(!!onDateTimeChange&&!/^([01]\d|2[0-3]):[0-5]\d$/.test(selectedTime))} onClick={()=>{if(onDateTimeChange)onDateTimeChange(selection,selectedTime);else onChange(selection);dialog.current?.close();}}>{onDateTimeChange?'Use date & time':'Use this date'}</button></div>
     </dialog>
   </div>;
 }

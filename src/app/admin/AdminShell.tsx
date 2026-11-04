@@ -50,14 +50,12 @@ function AdminShellContent({ children, showCoursePublishing = false, workflowEna
   }
 
   const primaryItems = [
-    { href: '/admin', label: 'Home', icon: '⌂' },
     { href: '/admin/v2/content', label: 'Course content', icon: '▤' },
     { href: '/admin/v2/batches', label: 'Batches', icon: '▦' },
     { href: '/admin/v2/students', label: 'Students', icon: '○' },
   ];
   const moreItems = [
     { href: '/admin/v2/templates', label: 'Course templates' },
-    { href: '/admin/v2/imports', label: 'Shared library & imports' },
     { href: '/admin/v2/access', label: 'Prices & purchase history' },
     { href: '/admin/users', label: 'Account management' },
     { href: '/admin/progress', label: 'Student progress' },
@@ -100,8 +98,8 @@ function AdminShellContent({ children, showCoursePublishing = false, workflowEna
           {navItems.map((item) => (
             <button
               key={item.href}
-              aria-current={pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href + '/')) ? 'page' : undefined}
-              className={`sidebar-nav-item ${(pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href + '/'))) ? 'active' : ''}`}
+              aria-current={pathname === item.href || (item.href !== '/admin' && (pathname.startsWith(item.href + '/') || (workflowEnabled && item.href === '/admin/v2/content' && (pathname.startsWith('/admin/v2/templates') || pathname.startsWith('/admin/v2/imports'))))) ? 'page' : undefined}
+              className={`sidebar-nav-item ${(pathname === item.href || (item.href !== '/admin' && (pathname.startsWith(item.href + '/') || (workflowEnabled && item.href === '/admin/v2/content' && (pathname.startsWith('/admin/v2/templates') || pathname.startsWith('/admin/v2/imports')))))) ? 'active' : ''}`}
               onClick={() => {
                 if (!confirmLeave()) return;
                 router.push(item.href);

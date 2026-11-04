@@ -61,7 +61,7 @@ jobs:
       - run: npm run test:v2:phase4
       - run: npm run test:v2:phase5
       - run: npm run test:v2:phase6
-      - run: node --test scripts/admin-student-access.test.mjs
+      - run: node --test scripts/admin-student-access.test.mjs scripts/admin-resource-order.test.mjs
       - run: npm run test:v2:phase7
       - run: ./node_modules/.bin/tsc --noEmit --incremental false
       - run: npm run build

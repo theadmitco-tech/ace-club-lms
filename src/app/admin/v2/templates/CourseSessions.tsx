@@ -7,10 +7,10 @@ import type { V2Section } from '@/lib/v2Products';
 import { emptyV2SessionContent, type V2CourseSession, type V2CourseSessionSection } from '@/lib/v2Templates';
 import styles from './templates.module.css';
 
-export function CourseSessionsEditor({ sessions, sections, onChange }: {
-  sessions: V2CourseSession[]; sections: V2Section[]; onChange: (sessions: V2CourseSession[]) => void;
+export function CourseSessionsEditor({ sessions, sections, onChange, initialSessionKey = '' }: {
+  initialSessionKey?: string; sessions: V2CourseSession[]; sections: V2Section[]; onChange: (sessions: V2CourseSession[]) => void;
 }) {
-  const [selectedKey,setSelectedKey]=useState('');
+  const [selectedKey,setSelectedKey]=useState(initialSessionKey);
   const selected=sessions.find(session=>session.key===selectedKey)??sessions[0];
   const update = (key: string, patch: Partial<V2CourseSession>) => onChange(sessions.map((session) => session.key === key ? { ...session, ...patch } : session));
   return <section className={styles.sessions} aria-label="Course sessions and content">

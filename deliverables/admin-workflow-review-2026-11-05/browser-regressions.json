@@ -1,0 +1,251 @@
+{
+  "baseCommit": "e00bfa79dc5a1d5995094467cd99ec6cd9bb6df5",
+  "mode": "isolated UI fixture; synthetic auth and DAL; not staging or authorization evidence",
+  "stylesheetAdjustment": "Remove external font imports from fixture globals.css; other copied screen files remain exact.",
+  "browser": "156.0.8078.47",
+  "hashes": {
+    "src/lib/server/v2Phase1Feature.ts": "fa2b89f8464c3505e503c73fd7536a2a31fa7723ebdfb2cb1cd03612a64fa352",
+    "src/app/admin/v2/layout.tsx": "a00fdb4b80da25a0c329a9787fc539bf505b7d98ed3fe5e6b51990e1ec2005a9",
+    "src/app/admin/v2/WorkspaceNavigation.tsx": "fea7a52aef1db4ce6b3c570936b3fa72e1c4c9cd2e6a874c2ee30ce7eb82fae0",
+    "src/app/admin/v2/workspace.module.css": "881d9d63b26d4aefd49b7efb912bcdc4c132a38843b6d1185df915d0cf6abcea",
+    "src/app/admin/v2/page.tsx": "b9a8846183ce57f81962e8ef195d3fea186f096090cd7bcc07071dee99cb195b",
+    "src/app/admin/v2/templates/ReadingPreview.tsx": "ea08797ef2cf11a1dfa29e512ef44b1bcfd2d21722313c8ff5a51f626eef3d5d",
+    "src/components/student/NotionReader.tsx": "de6aa3c60952d661577547ece27871e60769868328527fc283f1889a96890475",
+    "src/components/student/V2CourseSessionView.tsx": "191e6dc2decdd614b96b5eafacaffcce8999a743c6edfc19dac4a568732c5198",
+    "src/components/student/V2LearningWorkspace.tsx": "036bfa1234ffcb4cbec0d5efcfc7de972aff483ca6d36f43c6fe2d357fd1343b",
+    "src/components/student/V2LearningLibrary.tsx": "f569cc932ca1bf900c0a338256cc966a4b7c6e0279dc8ee2a5db64984c3e2bfb",
+    "src/components/student/V2RecordingPlayer.tsx": "a114c4b578521b0f2fe318e138b55b09eaffc0286ae5384cb45996f8f65f732f",
+    "src/components/student/v2Learning.module.css": "2f1035c28a7b3b3e7fe89871a3625830fbb5fdca2463235d130ef644dba90ec3",
+    "src/lib/v2Learning.ts": "bdfccbf8c32059c55a250aeae7a1ca4ae89aa4b7674b2129c079f467e535a5ea",
+    "src/lib/v2StudentDelivery.ts": "4607ae93554d432746b7dc27a490a8e95a12581872b14397420fe3ff7ad748c2",
+    "src/components/student/v2CourseSession.module.css": "25c53fc0a273f8210dd0829588768e7f2c7062ddb4169fc28fdba17e4bcd02aa",
+    "src/lib/v2SessionPresentation.ts": "1b2159e08a40d2c2430f80d62fdb77c961da4debd5e27bc1d5fed5124f92e3b4",
+    "src/lib/v2ContentAssets.ts": "60ac8111d22c6ad8df52fb91cf3cac2f24ecc46ba8b9334c7447fa7ca68ae388",
+    "src/lib/v2ContentPublishing.ts": "e2ae6374390e0d998832118559eb812386afedb561f1ca13f6d6a2bb65e45ad4",
+    "src/lib/youtube.ts": "c4154560e720a7cc63d2aaa30ff41944240eab04bd85d7d62980186360f3d62d",
+    "src/lib/v2ReadingPreview.ts": "c3c914c1437e9971dc94bfb6b4da3c1b5d97d14cdff1739eb0ad253945c33f9f",
+    "src/app/session/[id]/material/[materialId]/material.css": "5a84d928a3b5ba8776f44cda141cbf190b5407c3abd358cc32907c3be7f3b30b",
+    "src/app/schedule/v2/page.tsx": "2fe3c926ca8a2ba2251969fc0d245ad032a00a3798ab48dbd35914f55efd58c3",
+    "src/app/dashboard/dashboard.css": "1263275a91e701b9b7682669c62f0daac7e3845719df4c33feacf0cfcf9d5aac",
+    "src/components/student/StudentHeader.tsx": "69135ddf3b3fdc6921319f3a6ec31210adc55207a1240768ea33e5c52918b962",
+    "src/components/student/studentPreview.module.css": "cb07592b7b09ebd1211724914367049cca3f58681ea8f108ac89a0210d9e1374",
+    "src/components/student/SignOutButton.tsx": "9ada77d4cecad38d2d9729d8d20d975a919a6fa6b95fdc70516f009dc819622b",
+    "src/lib/v2Enrollments.ts": "ec5ceec1a5f25267e14072c7317af4027c19e9cb8d897f38716ba67ece44471b",
+    "src/app/admin/v2/batches/[batchId]/students/page.tsx": "ca94fcd16f0c70f5bb6a74d95a8211bf4531ee4c9b9128e631873b991aea37d6",
+    "src/app/admin/v2/batches/[batchId]/students/EnrollmentEditor.tsx": "ab0a845a0dcb3f5c04e741bfa41487d240d17d7d415c42365d93b808d313a74b",
+    "src/app/admin/v2/batches/[batchId]/students/actions.ts": "75e9e9f19e935d0f3ed5f434995c4dff1641df53d263835e14797ed41c224d1e",
+    "src/app/admin/AdminShell.tsx": "1439f56574b45d33497433ec481d5e4e4f788a8c784af542a6d811b889a92e4f",
+    "src/app/admin/admin.css": "8a536bf66de9d105e8e2aa378eddd6434cfafba01dadfe6677158ccc97b6049e",
+    "src/app/admin/workflow.css": "9ad23393f1a2dfbdd347dfd235a6937fa04e0701acfb370fa2b6faf0792bca8c",
+    "src/app/admin/v2/batches/BatchWorkspace.tsx": "9ae31f5a6ace130bcdf659cfe4c2aba773566100dc05f5188712b46525846db7",
+    "src/components/AdminDraftNavigation.tsx": "66c2cb37d18fc5ef00d42ed852acba3ea8cfcac3e21b823ba611f98ff841d0ea",
+    "src/components/DraftRecovery.tsx": "f1a2f1d6113a849692b3642b2a07fcf6aa13d2846c11126b92ba7eeb487b7d33",
+    "src/components/student/WorksheetLog.tsx": "01bf0138827455325a31a54b096dfddc3c047d052d38639d8e505533f4e2aafa",
+    "src/lib/studentPractice.ts": "0518a13a95f4d1d7e23cc9f007d0d27ef3fa041111cf31623cc3a21bb07db007",
+    "src/lib/worksheetRecovery.ts": "207ff4f92b52bd45c9da5e0088538ce4ebdfb26b24cbd3dd0b52497a05997861",
+    "src/lib/draftRecovery.ts": "09185b2311f9a5b374d721216097f431a87c0f588847214b6601f8073980c788",
+    "src/lib/v2WorkspaceRecovery.ts": "a8bbb559c6ae95e30da63ec93ed5d4439cc52c57333526aeb8cbace6e1b7392f",
+    "src/components/BrandLogo.tsx": "56a57e01003d4195f1ae2a7b771fbd5ab9dccb84fc9765b88445165fcc583a0f",
+    "src/app/admin/v2/templates/page.tsx": "da10ca39137f68ac1a6d0c933ce65f34e1ee27739db34b912662a95f62656efa",
+    "src/app/admin/v2/templates/TemplateEditor.tsx": "03a978d167e3aecd5d67ced799c48fc976fc58cb6a39f74e617f947e70bebe60",
+    "src/app/admin/v2/templates/CourseSessions.tsx": "d1e14632c841821b03eb8701f1ca6e2e0bb32c6af7be0163eb89e4bbf2072647",
+    "src/app/admin/v2/templates/actions.ts": "649e9f6e158f0ca8b46c1ee85e2b224bdb9519deb123dbb795f30338f35894ad",
+    "src/app/admin/v2/templates/templates.module.css": "2ae40a54d801dcc5204edaeb559094e8e8bcc9b9dcddb5318b0d6fa3c9fcdda7",
+    "src/app/admin/v2/batches/page.tsx": "bdd289f0d9a2f5ef4fadfc7f08ff5935c4519f950725510ed83a24d4fbdba118",
+    "src/app/admin/v2/batches/BatchDraftEditor.tsx": "5cd25127fa6a17d1bddda8698fa3971d70c1395df8dfb65b7f5fff3ab57c35bc",
+    "src/app/admin/v2/batches/BatchDatePicker.tsx": "db8d7879b776ebab3174c54db0fef17a86564ceb4bc14649c5756fa5203e2794",
+    "src/app/admin/v2/batches/batchCalendar.module.css": "99cae2fa42cab2b6feec0b7e17e688b567cba6ee18ff48f14eefa351ed607b85",
+    "src/app/admin/v2/batches/PublicationPanel.tsx": "55f55234d614425de2d7150cf697ed311e55c863a6481d6018304001f4a65ac2",
+    "src/app/admin/v2/batches/PublicationScopePanel.tsx": "f6b56af09e77a42a27d616c8615005b4b4e58da9bbc424508c96c4a05ede0385",
+    "src/app/admin/v2/batches/scopeActions.ts": "87a21823b3bc35720683bc0204f20c1a5d728b0ebe03e17ea33b0a3510bab1d7",
+    "src/lib/v2PublicationScopes.ts": "b2cf7b3df5b22e50b3330062f15319bd3c958e51245eed0ab5f10ffc85b0f5f4",
+    "src/app/admin/v2/batches/actions.ts": "2b315677034de2e5e02ee4946d2a9b1cfac7638243598e9496df94e438be40f4",
+    "src/app/admin/v2/batches/[batchId]/meeting/page.tsx": "f1841d99691e6ccbfb98ba581ec71716cc5f2a3dd2fdb89e17f81699eb385a39",
+    "src/app/admin/v2/batches/[batchId]/meeting/MeetingDraftEditor.tsx": "8c154456a3748a56e64368b87a732212df436d40c691b1ffc4b891778ace43c4",
+    "src/app/admin/v2/batches/[batchId]/meeting/actions.ts": "00a333d7415d92e22c747c1977980e33e95d6aafb1d170b3fb51e8d79e063297",
+    "src/lib/v2Products.ts": "cf0833e5cc92920a48215c06760a69cfc42e7cf37c096bba459ca439268cbd1e",
+    "src/lib/v2Templates.ts": "7824905327aa90eaf5cddd94ce2454a3d13a54bc543b582e9b01b22aa22ab114",
+    "src/lib/v2Batches.ts": "cdd283bdff994a4c963cfccc58410dbdf9a31fbae5cd9d6e20cf028ddb4bead6",
+    "src/lib/v2Meetings.ts": "714ee6ea4ce540d73b18876d5822ba7df27e26de377f5e79d5f7399d4a345a85",
+    "src/lib/v2Publications.ts": "f714f6a5caba0a7f8b3bba87a228d528042a289be55668e808807d706e968c55",
+    "public/5.svg": "6712128c2ebc5febc738bda30b4eb69d794eaa96f4908ffa14ff213e5ca0f068",
+    "public/6.svg": "81cd3689a08965edb8cbc24aa4abc99887faa9d148e9a96ac99958e7481625b6",
+    "src/app/globals.css": "690066d83344100d091d06483c787145cb63558dbbe1d9d2494e73faf96545bd"
+  },
+  "results": [
+    {
+      "name": "Offering publication review lists exact batches and preserves stale and interrupted confirmations",
+      "status": "passed"
+    },
+    {
+      "name": "Batch calendar selects an IST date without saving and restores keyboard focus",
+      "status": "passed"
+    },
+    {
+      "name": "Full session preview matches four-stage order and never writes progress or publication",
+      "status": "passed"
+    },
+    {
+      "name": "Reading preview renders draft title, rich content and placement without saving on mobile",
+      "status": "passed"
+    },
+    {
+      "name": "Reading preview replaces changed sources and never shows stale content after failure",
+      "status": "passed"
+    },
+    {
+      "name": "Reading preview reports empty and unsupported sources and retries a failed fetch",
+      "status": "passed"
+    },
+    {
+      "name": "Reading preview shared renderer keeps Student requests on the material-authorized endpoint",
+      "status": "passed"
+    },
+    {
+      "name": "V2 legacy embed references prefer the authorized reader and retain a visible source fallback",
+      "status": "passed"
+    },
+    {
+      "name": "Reading preview uses the reviewed batch revision and preserves reading order",
+      "status": "passed"
+    },
+    {
+      "name": "Enrolled schedule renders published live times and undated outlines on mobile",
+      "status": "passed"
+    },
+    {
+      "name": "Enrolled schedule distinguishes empty and failed reads",
+      "status": "passed"
+    },
+    {
+      "name": "Enrollment review confirms by keyboard and removes on mobile",
+      "status": "passed"
+    },
+    {
+      "name": "Interrupted enrollment reloads committed state without repeating a stale confirmation",
+      "status": "passed"
+    },
+    {
+      "name": "Empty screens and recoverable list errors",
+      "status": "passed"
+    },
+    {
+      "name": "Four product forms, keyboard save and native validation",
+      "status": "passed"
+    },
+    {
+      "name": "Complete individual content saves without a live schedule and survives reload",
+      "status": "passed"
+    },
+    {
+      "name": "Course content preview, edit and publication are independent of live scheduling",
+      "status": "passed"
+    },
+    {
+      "name": "Template interrupted save, busy state and retry identity",
+      "status": "passed"
+    },
+    {
+      "name": "Batch review, publish, independent edits, unpublish and republish",
+      "status": "passed"
+    },
+    {
+      "name": "Batch stale errors and interrupted confirmations preserve review",
+      "status": "passed"
+    },
+    {
+      "name": "An interrupted publication review cannot be silently replaced",
+      "status": "passed"
+    },
+    {
+      "name": "Template event reordering survives recovery and saving without moving an existing batch",
+      "status": "passed"
+    },
+    {
+      "name": "Publication review protects meeting-link navigation",
+      "status": "passed"
+    },
+    {
+      "name": "Publication stale and interrupted responses keep the confirmation safe",
+      "status": "passed"
+    },
+    {
+      "name": "Meeting validation, stale failure, lost confirmation and reload",
+      "status": "passed"
+    },
+    {
+      "name": "Unsaved navigation cancellation, reload and sign-out",
+      "status": "passed"
+    },
+    {
+      "name": "Template recovery survives navigation and a lost save confirmation after reload",
+      "status": "passed"
+    },
+    {
+      "name": "Batch recovery preserves the reviewed schedule and exact interrupted request",
+      "status": "passed"
+    },
+    {
+      "name": "Meeting recovery preserves private links and interrupted request across reload",
+      "status": "passed"
+    },
+    {
+      "name": "Publication recovery requires another explicit confirmation and retains replay identity",
+      "status": "passed"
+    },
+    {
+      "name": "Recovery isolates users, supports discard and clears on sign-out",
+      "status": "passed"
+    },
+    {
+      "name": "Unavailable tab storage reports recovery loss while server saving remains usable",
+      "status": "passed"
+    },
+    {
+      "name": "Student worksheet edits survive navigation, stay isolated and save after explicit retry",
+      "status": "passed"
+    },
+    {
+      "name": "Student thrown saves become retryable and partial bulk retries touch failed questions only",
+      "status": "passed"
+    },
+    {
+      "name": "Student recovery preserves newer server edits and ignores removed questions",
+      "status": "passed"
+    },
+    {
+      "name": "Recovered stale template cannot overwrite a newer saved revision",
+      "status": "passed"
+    },
+    {
+      "name": "Recovered private links stop when the batch schedule has changed",
+      "status": "passed"
+    },
+    {
+      "name": "Student saving disables overlapping bulk actions and malformed receipts retain edits",
+      "status": "passed"
+    },
+    {
+      "name": "Pending recovery requires an explicit choice before replacing worksheet, meeting or publication work",
+      "status": "passed"
+    },
+    {
+      "name": "Responsive forms and long titles at 320px",
+      "status": "passed"
+    },
+    {
+      "name": "Responsive forms and long titles at 390px",
+      "status": "passed"
+    },
+    {
+      "name": "Responsive forms and long titles at 768px",
+      "status": "passed"
+    },
+    {
+      "name": "Mobile navigation has an accessible name and avoids hidden keyboard targets",
+      "status": "passed"
+    }
+  ],
+  "blockedOrigins": [],
+  "browserErrors": []
+}

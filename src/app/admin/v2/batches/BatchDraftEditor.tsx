@@ -23,7 +23,7 @@ function draftInput(batch: V2BatchDraft | null, templates: V2TemplateDraft[]): V
     : {id:crypto.randomUUID(),templateId:templates[0]?.id??'',templateRevision:templates[0]?.revision??0,expectedRevision:0,requestId:crypto.randomUUID(),title:'',startDate:'',timeZone:V2_BATCH_TIME_ZONE,events:null};
 }
 
-export default function BatchDraftEditor({ drafts, templates, ownerId, setupPending = false, focused = false, initialDraft = null, onSaved }: { focused?: boolean; initialDraft?: V2BatchDraft | null; onSaved?: (batch: V2BatchDraft) => void; drafts: V2BatchDraft[]; templates: V2TemplateDraft[]; ownerId: string; setupPending?: boolean }) {
+export default function BatchDraftEditor({ drafts, templates, ownerId, setupPending = false, focused = false, initialDraft = null, outlineOpen = false, initialSessionKey, onSaved }: { initialSessionKey?: string; outlineOpen?: boolean; focused?: boolean; initialDraft?: V2BatchDraft | null; onSaved?: (batch: V2BatchDraft) => void; drafts: V2BatchDraft[]; templates: V2TemplateDraft[]; ownerId: string; setupPending?: boolean }) {
   const router = useRouter();
   const [input, setInput] = useState<V2BatchInput | null>(()=>focused?draftInput(initialDraft,templates):null);
   const [original, setOriginal] = useState<V2BatchDraft | null>(initialDraft);
@@ -161,11 +161,11 @@ export default function BatchDraftEditor({ drafts, templates, ownerId, setupPend
 
     {input && <form onInvalidCapture={event => { let container = (event.target as HTMLElement).parentElement; while (container && container !== event.currentTarget) { if (container instanceof HTMLDetailsElement) container.open = true; container = container.parentElement; } }} onSubmit={preview} className={styles.card} aria-busy={!!pending}>
       <h2>{original ? 'Edit batch' : 'Create a batch'}</h2>
-      {productCode && <p>{V2_TEMPLATE_PRODUCTS[productCode].label} · template revision {input.templateRevision} · {V2_BATCH_TIME_ZONE}</p>}
+      {productCode && <p>{V2_TEMPLATE_PRODUCTS[productCode].label}{focused?' · All times IST':` · template revision ${input.templateRevision} · ${V2_BATCH_TIME_ZONE}`}</p>}
       <fieldset disabled={!!pending} className={styles.fields}>
         <legend className={styles.legend}>Course and schedule details</legend>
-        <p>Delivery: {v2CourseDeliveryLabel(input.events ?? templates.find((template) => template.id === input.templateId)?.document.events ?? [])}</p>
-        {original && productCode && <details className="workflow-secondary"><summary>Edit this batch’s course sessions</summary><p>Changes apply to this batch draft only. Existing publication stays unchanged until reviewed.</p><CourseSessionsEditor sessions={input.sessions ?? []} sections={V2_TEMPLATE_PRODUCTS[productCode].sections}
+        {!focused&&<p>Delivery: {v2CourseDeliveryLabel(input.events ?? templates.find((template) => template.id === input.templateId)?.document.events ?? [])}</p>}
+        {original && productCode && <details className="workflow-secondary" open={outlineOpen || undefined}><summary>Edit this batch’s course sessions</summary><p>Changes apply to this batch draft only. Existing publication stays unchanged until reviewed.</p><CourseSessionsEditor initialSessionKey={initialSessionKey} sessions={input.sessions ?? []} sections={V2_TEMPLATE_PRODUCTS[productCode].sections}
           onChange={(sessions) => change({...input,sessions})} /></details>}
         {!original && <label htmlFor="v2-batch-template">Template
           <select id="v2-batch-template" className="form-input" disabled={!liveTemplates.length} value={input.templateId} onChange={(event) => {
@@ -184,25 +184,29 @@ export default function BatchDraftEditor({ drafts, templates, ownerId, setupPend
         {!original && templates.find((template) => template.id === input.templateId)?.document.events.some((event) => event.kind !== 'outline') ? <BatchDatePicker id="v2-batch-start" label="Template start date (only needed for live sessions)"
           required={templates.find((template) => template.id === input.templateId)?.document.events.some((event) => event.kind !== 'outline')}
           value={input.startDate} onChange={(startDate) => change({ ...input, startDate })} events={calendarEvents} />
-          : input.startDate ? <p>Original template start date: {input.startDate}. Edit individual live-event dates below to reschedule this batch.</p> : <p>This course has no live schedule.</p>}
-        <p>Review course content before saving. Any live-event dates and times use Asia/Kolkata (IST).</p>
-        {input.events?.map((event, index) => <fieldset key={event.key} className={styles.event}>
+          : input.startDate ? (!focused&&<p>Original template start date: {input.startDate}. Edit individual live-event dates below to reschedule this batch.</p>) : <p>This course has no live schedule.</p>}
+        <p>Every live class needs a date and time. The complete schedule is reviewed before publication; all times use IST.</p>
+        {!original && <p>The first date sets the template schedule. After the private draft is saved, every class date and time can be adjusted below before publishing.</p>}
+        {input.events?.some(event=>event.kind!=='outline')&&<h3>All class dates & times</h3>}
+        {input.events?.filter(event=>!focused||event.kind!=='outline').map((event, index) => <fieldset key={event.key} className={styles.event}>
           <legend>{index + 1}. {original?.events.find((item) => item.key === event.key)?.title}</legend>
           {event.kind === 'outline' && <p>Undated outline item. No attendance or session booking.</p>}
           <div className={styles.grid}>
             {event.kind !== 'outline' && <>
-            <BatchDatePicker id={`${event.key}-date`} label="Date" required value={event.localDate ?? ''}
+            <BatchDatePicker id={`${event.key}-date`} label="Date" required value={event.localDate ?? ''} time={event.localStartTime ?? ''} onDateTimeChange={(localDate,localStartTime)=>changeEvent(event.key,{localDate,localStartTime})}
               onChange={(localDate) => changeEvent(event.key, { localDate })} events={calendarEvents} />
             <label htmlFor={`${event.key}-time`}>Start time (IST)
               <input id={`${event.key}-time`} className="form-input" type="time" required value={event.localStartTime ?? ''} onChange={(e) => changeEvent(event.key, { localStartTime: e.target.value })} />
             </label>
-            <label htmlFor={`${event.key}-duration`}>Duration in minutes
-              <input id={`${event.key}-duration`} className="form-input" type="number" min={15} max={720} step={1} required value={event.durationMinutes || ''} onChange={(e) => changeEvent(event.key, { durationMinutes: Number(e.target.value) })} />
-            </label>
             </>}
+            <details className="workflow-class-options" open={!focused || undefined}><summary>Duration & instructor</summary>
+            {event.kind!=='outline'&&<label htmlFor={`${event.key}-duration`}>Duration in minutes
+              <input id={`${event.key}-duration`} className="form-input" type="number" min={15} max={720} step={1} required value={event.durationMinutes || ''} onChange={(e) => changeEvent(event.key, { durationMinutes: Number(e.target.value) })} />
+            </label>}
             <label htmlFor={`${event.key}-instructor`}>Instructor (optional in a draft)
               <input id={`${event.key}-instructor`} className="form-input" maxLength={120} value={event.instructor} onChange={(e) => changeEvent(event.key, { instructor: e.target.value })} />
             </label>
+            </details>
           </div>
         </fieldset>)}
         <button type="submit" className={review ? "btn btn-secondary" : "btn btn-primary"} disabled={setupPending || !!pending || (!!original && !dirty)}>{pending === 'preview' ? 'Reviewing…' : 'Review course and schedule'}</button>

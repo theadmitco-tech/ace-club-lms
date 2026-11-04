@@ -1,5 +1,5 @@
 import { isV2ContentPublishingEnabled } from '@/lib/server/v2ContentPublishing';
-import WorkflowHome from './WorkflowHome';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { formatDate } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/server';
@@ -20,7 +20,7 @@ type AdminProfile = {
 };
 
 export default async function AdminDashboard() {
-  if (isV2ContentPublishingEnabled()) return <WorkflowHome />;
+  if (isV2ContentPublishingEnabled()) redirect('/admin/v2/content');
   const supabase = await createClient();
   const [sessionsResult, profilesResult, coursesResult, enrollmentsResult] = await Promise.all([
     supabase

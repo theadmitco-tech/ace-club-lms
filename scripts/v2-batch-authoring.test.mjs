@@ -251,13 +251,13 @@ test('the batch page authorizes before loading either templates or batches and h
     '@/lib/server/v2Templates': { listV2TemplateDrafts: async () => { calls.push('templates'); return { status: 'ready',templates: [] }; } },
     '@/lib/server/v2Batches': { listV2BatchDrafts: async () => { calls.push('batches'); return { status: 'ready',drafts: [] }; } },
   }, { process: { env: { VERCEL_ENV: 'development' } } });
-  await assert.rejects(page.default(),/Not found/);
+  await assert.rejects(page.default({searchParams:Promise.resolve({})}),/Not found/);
   assert.equal(calls.length,0);
   enabled=true; deny=true;
-  await assert.rejects(page.default(),/Denied/);
+  await assert.rejects(page.default({searchParams:Promise.resolve({})}),/Denied/);
   assert.deepEqual(calls,['admin']);
   calls.length=0; deny=false;
-  await page.default();
+  await page.default({searchParams:Promise.resolve({})});
   assert.deepEqual(calls,['admin','batches','templates','publications']);
 });
 
