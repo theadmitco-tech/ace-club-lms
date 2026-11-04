@@ -1,0 +1,17 @@
+{
+  "check": "admin_workflow_protected_material",
+  "commit": "35bbdad599711c69a12ba51478d376322f2292a2",
+  "preview": "https://ace-club-ba60p2yk5-theadmitco-techs-projects.vercel.app",
+  "project": "eyphkkginlgoaxflauog",
+  "recordedAt": "2026-11-04T10:46:47.427Z",
+  "status": "passed",
+  "scope": "Read-only protected PDF delivery for a dedicated staging Admin; resource references remain private.",
+  "checks": [
+    {
+      "id": "admin-protected-pdf-delivery",
+      "status": "pass",
+      "httpStatus": 200
+    }
+  ],
+  "scriptSha256": "7d76a4c73363e70a266c5965a407f061569798d0ded35ff41a4a7fd9ae26ad15"
+}

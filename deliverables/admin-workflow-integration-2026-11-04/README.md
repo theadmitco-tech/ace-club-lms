@@ -1,6 +1,6 @@
 # Admin workflow integration
 
-Status: implemented; Preview verification pending.
+Status: implemented, deployed and verified in the staging Preview. Both dedicated QA accounts were removed; four independent checks confirmed Auth and profile absence.
 
 The Admin wireframe is integrated into the existing LMS on `intern/v2-admin-workflow-review`, based on `intern/v2-phase-7-review`. The staging content-publishing gate selects the new dashboard. Production continues to use the existing dashboard and rejects the V2 workspace.
 
@@ -25,10 +25,14 @@ The design uses existing authorization, publication fingerprints and caller-boun
 
 Local verification passed the existing Phase 1, 2, 4, 5 and 6 suites, TypeScript, lint and webpack build. Focused browser coverage includes nine Admin workflow cases and nine resource/Student regression cases. All 43 inherited browser cases passed; the tests retain their assertions while opening the newly collapsed controls explicitly. Phase 7 preflight tests also passed. Dedicated Student access tests check role denial, disabled-workspace denial, identity-scoped queries and explicit database failures.
 
-Browser reports use actual application components with synthetic server adapters. They do not substitute for hosted authorization acceptance. Source hashes identify the tested component versions. Screenshots contain synthetic data only.
+The [tested Admin Preview](https://ace-club-ba60p2yk5-theadmitco-techs-projects.vercel.app/admin) is READY at implementation commit `35bbdad599711c69a12ba51478d376322f2292a2`. Hosted verification passed 19 browser assertions, seven authenticated staging read checks and protected PDF delivery. The original templates, batches and publications remained unchanged. Earlier browser attempts retain their interruption or locator limitations and are not counted as acceptance.
+
+Local browser reports use actual application components with synthetic server adapters. They do not substitute for hosted authorization acceptance. Source hashes identify the tested component versions. Screenshots contain synthetic data only.
 
 ## Deployment controls
 
-Automatic deployment is disabled for this new branch until its scoped Preview configuration is installed. Branch-only staging credentials and private test links were explicitly authorized. The connected Vercel project is `ace-club-lms`; the staging project is `eyphkkginlgoaxflauog`. Production configuration, data, migrations and traffic remain outside this change.
+The branch-only staging configuration is installed. Automatic Preview deployment is enabled for `intern/v2-admin-workflow-review`; the existing Phase 6 and Phase 7 deployment rules remain unchanged. Branch-only staging credentials and private test links were explicitly authorized. The connected Vercel project is `ace-club-lms`; the staging project is `eyphkkginlgoaxflauog`. Production configuration, data, migrations and traffic remain outside this change.
 
-The proposed PR targets `intern/v2-phase-7-review` and remains Draft and unmerged. Release readiness remains conditional on the outstanding payment integration and final combined acceptance.
+PR creation returned GitHub integration HTTP 403; no PR was created. The prepared description targets `intern/v2-phase-7-review` and remains Draft and unmerged. Release readiness remains conditional on the outstanding payment integration and final combined acceptance.
+
+The [review guide](REVIEW-GUIDE.md) describes the primary Admin journeys. Remote GitHub Verify remains a merge requirement; no Verify run was returned for the implementation commit during the recorded check. Local verification and the Vercel build passed.

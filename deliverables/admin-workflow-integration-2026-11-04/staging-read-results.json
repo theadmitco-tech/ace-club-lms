@@ -1,0 +1,41 @@
+{
+  "check": "admin_workflow_staging_read_contracts",
+  "recordedAt": "2026-11-04T10:32:25.187Z",
+  "project": "eyphkkginlgoaxflauog",
+  "scope": "Authenticated staging reads only; dedicated Admin and Student identities.",
+  "checks": [
+    {
+      "id": "list_v2_content_workspace",
+      "status": "pass",
+      "courses": 5,
+      "items": 0
+    },
+    {
+      "id": "list_v2_template_drafts",
+      "status": "pass",
+      "count": 5
+    },
+    {
+      "id": "list_v2_batch_drafts",
+      "status": "pass",
+      "count": 5
+    },
+    {
+      "id": "list_v2_batch_publications",
+      "status": "pass",
+      "count": 5
+    },
+    {
+      "id": "v2_purchases-empty-qa-access",
+      "status": "pass"
+    },
+    {
+      "id": "v2_batch_enrollments-empty-qa-access",
+      "status": "pass"
+    },
+    {
+      "id": "v2_live_registrations-empty-qa-access",
+      "status": "pass"
+    }
+  ]
+}

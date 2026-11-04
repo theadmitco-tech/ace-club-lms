@@ -1,0 +1,88 @@
+{
+  "check": "admin_workflow_hosted_browser",
+  "recordedAt": "2026-11-04T10:43:57.282Z",
+  "commit": "35bbdad599711c69a12ba51478d376322f2292a2",
+  "preview": "https://ace-club-ba60p2yk5-theadmitco-techs-projects.vercel.app",
+  "project": "eyphkkginlgoaxflauog",
+  "status": "passed",
+  "scope": "Read-only application journeys in dedicated synthetic Admin/Student sessions; no purchase, enrollment, publication, schedule or learning writes.",
+  "checks": [
+    {
+      "id": "preview-commit-and-staging-match",
+      "status": "pass"
+    },
+    {
+      "id": "admin-home-loads",
+      "status": "pass"
+    },
+    {
+      "id": "four-primary-destinations",
+      "status": "pass"
+    },
+    {
+      "id": "real-content-workspace-loads",
+      "status": "pass"
+    },
+    {
+      "id": "course-session-outline-loads",
+      "status": "pass"
+    },
+    {
+      "id": "ordered-resource-pre-class-read",
+      "status": "pass"
+    },
+    {
+      "id": "ordered-resource-recording",
+      "status": "pass"
+    },
+    {
+      "id": "ordered-resource-post-class-read",
+      "status": "pass"
+    },
+    {
+      "id": "ordered-resource-worksheet",
+      "status": "pass"
+    },
+    {
+      "id": "student-preview-is-separate-tab",
+      "status": "pass"
+    },
+    {
+      "id": "real-student-preview-renders",
+      "status": "pass"
+    },
+    {
+      "id": "batch-task-workspace-loads",
+      "status": "pass"
+    },
+    {
+      "id": "publication-remains-explicit",
+      "status": "pass"
+    },
+    {
+      "id": "student-search-and-empty-access-load",
+      "status": "pass"
+    },
+    {
+      "id": "mobile-navigation-dismisses",
+      "status": "pass"
+    },
+    {
+      "id": "mobile-has-no-horizontal-overflow",
+      "status": "pass"
+    },
+    {
+      "id": "student-denied-admin-search",
+      "status": "pass"
+    },
+    {
+      "id": "student-denied-content-api",
+      "status": "pass"
+    },
+    {
+      "id": "templates-batches-publications-unchanged",
+      "status": "pass"
+    }
+  ],
+  "scriptSha256": "a5acbd365613a673046eac9d891388b346bdfcada8e9f474b8350ba5da8e9a67"
+}

@@ -1,0 +1,23 @@
+{
+  "check": "admin_workflow_local_verification",
+  "implementationCommit": "35bbdad599711c69a12ba51478d376322f2292a2",
+  "localSuites": [
+    "Phase 1",
+    "Phase 2",
+    "Phase 4",
+    "Phase 5",
+    "Phase 6",
+    "Phase 7",
+    "Admin Student access guards"
+  ],
+  "localSuiteStatus": "passed",
+  "browserCases": {
+    "admin": 9,
+    "resourcesAndStudentRegressions": 9,
+    "inheritedRegressions": 43
+  },
+  "lint": "passed",
+  "typescript": "passed",
+  "webpackBuild": "passed",
+  "scope": "Local execution; GitHub CI status is separate."
+}

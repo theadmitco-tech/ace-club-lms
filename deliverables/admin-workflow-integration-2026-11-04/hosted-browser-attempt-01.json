@@ -1,0 +1,16 @@
+{
+  "check": "admin_workflow_hosted_browser",
+  "recordedAt": "2026-11-04T10:35:29.831Z",
+  "commit": "35bbdad599711c69a12ba51478d376322f2292a2",
+  "preview": "https://ace-club-ba60p2yk5-theadmitco-techs-projects.vercel.app",
+  "project": "eyphkkginlgoaxflauog",
+  "status": "failed",
+  "scope": "Read-only application journeys in dedicated synthetic Admin/Student sessions; no purchase, enrollment, publication, schedule or learning writes.",
+  "checks": [
+    {
+      "id": "preview-commit-and-staging-match",
+      "status": "pass"
+    }
+  ],
+  "scriptSha256": "4ec84da9de435e6b45c611678964672b13bc3b64a5758029b29444ab43746e76"
+}

@@ -1,0 +1,29 @@
+{
+  "check": "admin_workflow_hosted_browser",
+  "recordedAt": "2026-11-04T10:41:58.369Z",
+  "commit": "35bbdad599711c69a12ba51478d376322f2292a2",
+  "preview": "https://ace-club-ba60p2yk5-theadmitco-techs-projects.vercel.app",
+  "project": "eyphkkginlgoaxflauog",
+  "status": "failed",
+  "scope": "Read-only application journeys in dedicated synthetic Admin/Student sessions; no purchase, enrollment, publication, schedule or learning writes.",
+  "checks": [
+    {
+      "id": "preview-commit-and-staging-match",
+      "status": "pass"
+    },
+    {
+      "id": "admin-home-loads",
+      "status": "pass"
+    },
+    {
+      "id": "four-primary-destinations",
+      "status": "pass"
+    },
+    {
+      "id": "real-content-workspace-loads",
+      "status": "pass"
+    }
+  ],
+  "scriptSha256": "d05e21c2bc0bb0ba81636e5d45b5f04b36cbc0fe2c65c295bfbdb63b3a95c357",
+  "limitation": "No application runtime errors were observed. The session selector rendered, but the exact getByLabel locator included option text; the following attempt uses its accessible combobox role."
+}

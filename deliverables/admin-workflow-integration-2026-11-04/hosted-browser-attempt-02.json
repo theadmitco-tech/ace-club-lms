@@ -1,0 +1,29 @@
+{
+  "check": "admin_workflow_hosted_browser",
+  "recordedAt": "2026-11-04T10:37:01.232Z",
+  "commit": "35bbdad599711c69a12ba51478d376322f2292a2",
+  "preview": "https://ace-club-ba60p2yk5-theadmitco-techs-projects.vercel.app",
+  "project": "eyphkkginlgoaxflauog",
+  "status": "failed",
+  "scope": "Read-only application journeys in dedicated synthetic Admin/Student sessions; no purchase, enrollment, publication, schedule or learning writes.",
+  "checks": [
+    {
+      "id": "preview-commit-and-staging-match",
+      "status": "pass"
+    },
+    {
+      "id": "admin-home-loads",
+      "status": "pass"
+    },
+    {
+      "id": "four-primary-destinations",
+      "status": "pass"
+    },
+    {
+      "id": "real-content-workspace-loads",
+      "status": "fail"
+    }
+  ],
+  "scriptSha256": "9fd4f03951a1595ee38e722d77735df82b2f49bababec02efdd0d1b8110c9be4",
+  "limitation": "The content assertion counted every alert, including framework accessibility announcements. The following attempt checks actual published-course controls instead."
+}

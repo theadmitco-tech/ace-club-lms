@@ -1,0 +1,27 @@
+{
+  "check": "admin_workflow_hosted_cleanup",
+  "project": "eyphkkginlgoaxflauog",
+  "runId": "dd5d9300-1216-42ea-8743-1580487b6713",
+  "recordedAt": "2026-11-04T10:47:33.980Z",
+  "status": "passed",
+  "scope": "Dedicated synthetic identities; no purchases, enrollment, course edits or payment provider calls.",
+  "checks": [
+    {
+      "id": "admin-auth-absent",
+      "status": "pass"
+    },
+    {
+      "id": "admin-profile-absent",
+      "status": "pass"
+    },
+    {
+      "id": "student-auth-absent",
+      "status": "pass"
+    },
+    {
+      "id": "student-profile-absent",
+      "status": "pass"
+    }
+  ],
+  "scriptSha256": "a1bf3242c0e97ec15618fde568ee0c4df7c6e8e29cf8078fe0331944cc24280a"
+}
