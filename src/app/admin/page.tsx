@@ -1,3 +1,5 @@
+import { isV2ContentPublishingEnabled } from '@/lib/server/v2ContentPublishing';
+import WorkflowHome from './WorkflowHome';
 import Link from 'next/link';
 import { formatDate } from '@/lib/utils';
 import { createClient } from '@/utils/supabase/server';
@@ -18,6 +20,7 @@ type AdminProfile = {
 };
 
 export default async function AdminDashboard() {
+  if (isV2ContentPublishingEnabled()) return <WorkflowHome />;
   const supabase = await createClient();
   const [sessionsResult, profilesResult, coursesResult, enrollmentsResult] = await Promise.all([
     supabase

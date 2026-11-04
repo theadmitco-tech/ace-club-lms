@@ -53,3 +53,5 @@
   .navigation { gap: 16px; }
   .navigation a { font-size: 13px; }
 }
+
+.navigation {align-items:center}.navigation span {font-size:13px;color:#58685f}

@@ -13,8 +13,9 @@ export default async function V2TemplatesPage() {
   const result = await listV2TemplateDrafts();
   return (
     <div>
-      <h1 className="admin-page-title">V2 course templates</h1>
-      <p className="admin-page-subtitle">Draft teaching plans for Full Course and individual courses. Templates remain private to Admins.</p>
+      <h1 className="admin-page-title">Course templates</h1>
+      <p className="admin-page-subtitle">Arrange reusable course sessions before creating a batch. Changes here affect future batches; published courses are edited in Course content.</p>
+      <div className="workflow-actions"><Link href="/admin/v2/content">Edit a published course</Link></div>
       {(isV2BatchAuthoringEnabled() || previewWorkspace) && <Link href="/admin/v2/batches" prefetch={false}>Manage batch drafts</Link>}
       {result.status === 'ready' || previewWorkspace ? <TemplateEditor key={identity.id} ownerId={identity.id} templates={result.templates} setupPending={result.status !== 'ready'} /> : (
         <div className="admin-card" role="alert">

@@ -21,6 +21,8 @@ export const sources = [
   'src/lib/v2StudentDelivery.ts',
   'src/components/student/v2CourseSession.module.css',
   'src/lib/v2SessionPresentation.ts',
+  'src/lib/v2ContentAssets.ts',
+  'src/lib/v2ContentPublishing.ts',
   'src/lib/youtube.ts',
   'src/lib/v2ReadingPreview.ts',
   'src/app/session/[id]/material/[materialId]/material.css',
@@ -35,6 +37,8 @@ export const sources = [
   'src/app/admin/v2/batches/[batchId]/students/actions.ts',
   'src/app/admin/AdminShell.tsx',
   'src/app/admin/admin.css',
+  'src/app/admin/workflow.css',
+  'src/app/admin/v2/batches/BatchWorkspace.tsx',
   'src/components/AdminDraftNavigation.tsx',
   'src/components/DraftRecovery.tsx',
   'src/components/student/WorksheetLog.tsx',
@@ -71,7 +75,7 @@ export const sources = [
 
 // Copy actual screens into a disposable app. Replace only auth/DAL dependencies.
 // No fixture route or test identity is added to the deployable application.
-export async function createFixtureApp(backendPort) {
+export async function createFixtureApp(backendPort, workflow = false) {
   const root = await mkdtemp(path.join(tmpdir(), 'ace-v2-browser-'));
   const put = async (file, content) => {
     await mkdir(path.dirname(path.join(root, file)), { recursive: true });
@@ -98,7 +102,7 @@ export default function Root({ children }: { children: React.ReactNode }) {
 import Shell from './AdminShell';
 export const dynamic = 'force-dynamic';
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <Shell>{children}</Shell>;
+  return <Shell workflowEnabled={${workflow}} showCoursePublishing>{children}</Shell>;
 }`);
   await put('src/app/admin/page.tsx', `export default function Page() {
   return <h1 className="admin-page-title">Synthetic Admin dashboard</h1>;
@@ -134,6 +138,7 @@ export function isV2TemplateAuthoringEnabled() { return true; }
   await put('src/lib/server/v2BatchFeature.ts', `
 export function isV2BatchAuthoringEnabled() { return true; }
 `);
+  await put('src/lib/server/v2ContentPublishing.ts', 'export function isV2ContentPublishingEnabled() { return '+workflow+'; }');
   await put('src/lib/server/v2LearningFeature.ts', 'export function isV2LearningEnabled() { return false; }');
   await put('src/lib/server/v2Learning.ts', 'export async function getMyV2LearningState(_batchId: string) { return null; }');
   await put('src/lib/server/v2StudentScheduleFeature.ts', 'export function isV2StudentScheduleEnabled() { return true; }');
@@ -149,6 +154,8 @@ export async function call(method: string, ...args: unknown[]) {
   return response.json();
 }`);
   const returnTypes = {
+    listV2TemplateDrafts: "Promise<{ status: 'ready'; templates: import('@/lib/v2Templates').V2TemplateDraft[] } | { status: 'unavailable'; templates: [] }>",
+    listV2BatchPublications: "Promise<{ status: 'ready'; publications: import('@/lib/v2Publications').V2Publication[] } | { status: 'unavailable'; publications: [] }>",
     listV2BatchDrafts: "Promise<{ status: 'ready'; drafts: import('@/lib/v2Batches').V2BatchDraft[] } | { status: 'unavailable'; drafts: [] }>",
     getMyV2BatchSchedules: "Promise<{ status: 'ready'; schedules: import('@/lib/v2Publications').V2Publication[] } | { status: 'unavailable' }>",
     listV2EnrollmentOptions: "Promise<{ status: 'ready'; options: import('@/lib/v2Enrollments').V2EnrollmentOption[] } | { status: 'unavailable' }>",

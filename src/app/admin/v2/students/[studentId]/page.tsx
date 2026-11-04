@@ -1,0 +1,20 @@
+import { notFound } from 'next/navigation';
+import { AdminDraftLink as Link } from '@/components/AdminDraftNavigation';
+import { requirePortalRole } from '@/lib/server/portalAuthorization';
+import { isV2ContentPublishingEnabled } from '@/lib/server/v2ContentPublishing';
+import { readAdminStudentAccess } from '@/lib/server/adminStudentAccess';
+import { isV2MeetingBatchId } from '@/lib/v2Meetings';
+const names:Record<string,string>={full_batch:'Full Course',quant_crash:'Quant',verbal_crash:'Verbal',di_crash:'DI'};
+export default async function StudentAccessPage({params}:{params:Promise<{studentId:string}>}) {
+  if(!isV2ContentPublishingEnabled())notFound();await requirePortalRole('admin');const {studentId}=await params;if(!isV2MeetingBatchId(studentId))notFound();
+  const {profile,purchases,enrollments,registrations,batches,checkedAt}=await readAdminStudentAccess(studentId);
+  if(profile.error)return <p role="alert">The student profile could not be loaded. Reload to retry.</p>;if(!profile.data)notFound();
+  const failed=!!(purchases.error||enrollments.error||registrations.error)||batches.status!=='ready';
+  const date=(value:string)=>new Intl.DateTimeFormat('en-IN',{dateStyle:'medium',timeZone:'Asia/Kolkata'}).format(new Date(value));
+  return <div><Link href="/admin/v2/students">← Students</Link><p className="workflow-kicker" style={{marginTop:24}}>Student access</p><h1 className="admin-page-title">{profile.data.full_name||'Student'}</h1><p className="admin-page-subtitle">{profile.data.is_active?'Active account':'Inactive account · access unavailable'} · course access and live registration are checked separately.</p>
+    {failed&&<p role="alert" className="workflow-error">Some access records could not be loaded. No missing record should be treated as proof of missing access; reload before making changes.</p>}
+    <div className="workflow-grid"><section className="admin-card"><h2>Course access & purchase history</h2>{purchases.error?<p>Purchase records unavailable.</p>:<ul className="workflow-list">{purchases.data?.map(purchase=><li key={purchase.id}><strong>{purchase.v2_product_grants.map(grant=>names[grant.product_code]??'Course').join(' + ')}</strong><p>{purchase.revoked_at?'Revoked':!profile.data!.is_active?'Account inactive':Date.parse(purchase.expires_at)<=checkedAt?'Expired':Date.parse(purchase.confirmed_at)>checkedAt?'Not active yet':'Active access'}</p><small>Confirmed {date(purchase.confirmed_at)} · expires {date(purchase.expires_at)} IST</small></li>)}{!purchases.data?.length&&<li>No V2 purchase is recorded. Existing legacy batch access is separate.</li>}</ul>}<p className="workflow-muted">Enrollment does not renew an expired or revoked purchase. Payment fulfillment remains a separate workflow.</p>{purchases.data?.length===100&&<p>The latest 100 purchases are shown.</p>}</section>
+      <section className="admin-card"><h2>Batch & live access</h2><p className="workflow-muted">Enrollment opens the published course. Live registration additionally controls private meeting access. Both still require active course access.</p>{enrollments.error||registrations.error||batches.status!=='ready'?<p>Registration records unavailable.</p>:<ul className="workflow-list">{batches.drafts.map(batch=>{const enrolled=enrollments.data?.some(item=>item.batch_id===batch.id&&item.active),live=registrations.data?.some(item=>item.batch_id===batch.id&&item.active);return <li key={batch.id}><strong>{batch.title}</strong><small>{enrolled?'Enrolled':'Not enrolled'} · {live?'Live registered':'No live registration'}</small><div className="workflow-actions"><Link href={`/admin/v2/batches/${batch.id}/students`}>Manage enrollment</Link>{batch.events.some(event=>event.kind!=='outline')&&<Link href={`/admin/v2/batches/${batch.id}/live`}>Manage live registration</Link>}</div></li>;})}{!batches.drafts.length&&<li>No V2 batches available.</li>}</ul>}</section></div>
+    <details className="workflow-secondary"><summary>More student tools</summary><div className="workflow-actions"><Link href="/admin/progress">Existing batch progress</Link><Link href="/admin/users">Account management</Link></div></details>
+  </div>;
+}

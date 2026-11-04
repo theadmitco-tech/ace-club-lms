@@ -72,6 +72,7 @@ async function noOverflow(page) {
 async function screenshot(page, name) {
   await page.screenshot({ path: path.join(output, `${name}.png`), fullPage: true });
 }
+async function expand(page,label) { const summary=page.locator('summary').filter({hasText:label}).first(); if(await summary.count() && !await summary.evaluate(el=>el.parentElement.open)) await summary.click(); }
 const button = (page, name) => page.getByRole('button', { name, exact: true });
 async function dialog(page, trigger, accept = false) {
   const seen = page.waitForEvent('dialog', { timeout: 2500 });
@@ -149,6 +150,8 @@ async function runTests() {
     await button(modal, 'Next month').click(); await text(modal, 'December 2026');
     await button(modal, 'Previous month').click();
     await modal.getByRole('button', { name: '2026-11-03', exact: true }).click();
+    assert.equal(await page.getByLabel('Date', { exact: true }).inputValue(), '2026-11-02');
+    await button(modal, 'Use this date').click();
     assert.equal(await page.getByLabel('Date', { exact: true }).inputValue(), '2026-11-03');
     assert.equal(await modal.isVisible(), false);
     assert.equal(await calendar.evaluate((element) => element === document.activeElement), true);
@@ -195,6 +198,7 @@ async function runTests() {
     await button(page, 'Add course session').click();
     await page.getByLabel('Session title', { exact: true }).fill('Quant fundamentals');
     for (const label of ['Pre-class read', 'Post-class read']) {
+      await expand(page, label+' (');
       await button(page, `Add ${label.toLowerCase()} item`).click();
       const group = page.getByRole('group', { name: `${label} (1)`, exact: true });
       await group.getByLabel('Title', { exact: true }).fill(`${label} draft title`);
@@ -313,6 +317,7 @@ async function runTests() {
     await page.getByLabel('Batch title', { exact: true }).fill('Reading batch');
     await button(page, 'Review course and schedule').click(); await button(page, 'Confirm and save draft').click();
     await text(page, 'Draft revision 1 saved.');
+    await expand(page,'Edit this batch');await expand(page,'Pre-class read (');
     await button(page, 'Move pre-class read item 2 up').click();
     await button(page, 'Preview pre-read 1').click();
     let preview = page.getByRole('region', { name: 'Draft reading preview' });
@@ -401,13 +406,14 @@ async function runTests() {
     state.templates = [];
     await page.goto(`${origin}/admin/v2/templates`);
     for (const [code, product] of Object.entries(products)) {
+      await expand(page,'Choose a course template');
       await button(page, product.label).click();
       await button(page, 'Save draft').click();
       assert.equal(await page.locator('#template-title').evaluate((el) => el.validity.valueMissing), true);
       await page.getByLabel('Title', { exact: true }).fill(`Browser ${code}`);
       assert.equal(await page.getByLabel('Live schedule span in days (optional without live classes)').inputValue(), product.days === null ? '' : String(product.days));
       await page.locator('#template-duration').fill('56');
-      await button(page, 'Add live class').click();
+      await expand(page,'Optional live-class plan');await button(page, 'Add live class').click();
       const live = page.getByRole('group', { name: 'Live class 1', exact: true });
       await visible(live.getByRole('combobox'));
       assert.deepEqual(await live.getByRole('combobox').locator('option').evaluateAll((els) => els.map((el) => el.value)), product.sections);
@@ -433,6 +439,7 @@ async function runTests() {
     await session.getByLabel('Session title', { exact: true }).fill('Quant fundamentals');
     assert.equal(await session.getByLabel('Local start time').count(), 0);
     for (const label of ['Pre-class read', 'Recording', 'Post-class read', 'Worksheet']) {
+      await expand(session, label+' (');
       await button(session, `Add ${label.toLowerCase()} item`).click();
       const group = session.getByRole('group', { name: `${label} (1)`, exact: true });
       await group.getByLabel('Title', { exact: true }).fill(`${label} example`);
@@ -476,6 +483,7 @@ async function runTests() {
     await button(page,'Confirm publish').click();
     await text(page,'Publication revision 1 published.');
     assert.doesNotMatch(JSON.stringify(state.publications[0]),/https:|private-|content/);
+    await expand(page,'Edit this batch');
     await page.getByLabel('Session title',{exact:true}).fill('Revised Quant curriculum');
     await button(page,'Review course and schedule').click();
     await button(page,'Confirm and save draft').click();
@@ -483,7 +491,7 @@ async function runTests() {
     assert.equal(state.publications[0].sessions[0].title,'Complete Quant curriculum');
     await button(page,'Preview publication').click();await text(publication,'Revised Quant curriculum');
     await button(page,'Confirm publish').click();await text(page,'Publication revision 2 published.');
-    await button(page,'Review unpublish').click();await button(page,'Confirm unpublish').click();
+    await expand(page,'More actions');await button(page,'Review unpublish').click();await button(page,'Confirm unpublish').click();
     await text(page,'Publication revision 3 unpublished.');
     await button(page,'Preview publication').click();await button(page,'Confirm publish').click();
     await text(page,'Publication revision 4 published.');
@@ -545,6 +553,7 @@ async function runTests() {
     await button(page, 'Confirm publish').click();
     await text(page, 'Publication revision 2 published.');
     assert.equal(state.publications[0].events[0].startsAt, '2026-11-02T13:30:00.000Z');
+    await expand(item,'More actions');
     await item.getByRole('button', { name: 'Review unpublish', exact: true }).click();
     await button(page, 'Confirm unpublish').click();
     await text(page, 'Publication revision 3 unpublished.');
@@ -593,6 +602,7 @@ async function runTests() {
     const initialKeys = state.templates[0].document.events.map(event => event.key);
     await page.goto(`${origin}/admin/v2/templates`);
     await button(page, 'Synthetic Full Course · Full Course · revision 1').click();
+    await expand(page,'Optional live-class plan');
     assert.equal(await button(page, 'Move event 1 up').isDisabled(), true);
     assert.equal(await button(page, 'Move event 2 down').isDisabled(), true);
     await button(page, 'Move event 2 up').focus();
@@ -670,6 +680,7 @@ async function runTests() {
     await page.getByLabel('Batch title', { exact: true }).fill('Keep these edits');
     await dialog(page, () => page.locator('.sidebar-nav-item').filter({ hasText: 'Dashboard' }).click());
     await dialog(page, () => button(page, 'Sign Out').click());
+    await expand(page,'Recovery options');
     await dialog(page, () => button(page, 'Reload latest drafts').click());
     assert.equal(await page.getByLabel('Batch title', { exact: true }).inputValue(), 'Keep these edits');
     await dialog(page, () => page.getByRole('link', { name: 'Manage course templates' }).click());
@@ -906,7 +917,7 @@ async function runTests() {
       await page.goto(`${origin}/admin/v2/templates`);
       await button(page, 'Full Course').click();
       await page.getByLabel('Title', { exact: true }).fill('Synthetic mobile template');
-      await button(page, 'Add live class').click();
+      await expand(page,'Optional live-class plan');await button(page, 'Add live class').click();
       await screenshot(page, `template-${width}`);
       await noOverflow(page);
       await dialog(page, () => page.getByRole('link', { name: 'Manage batch drafts' }).click(), true);

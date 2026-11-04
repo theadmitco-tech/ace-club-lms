@@ -1,3 +1,5 @@
+import { isV2ContentPublishingEnabled } from '@/lib/server/v2ContentPublishing';
+import BatchWorkspace from './BatchWorkspace';
 import { AdminDraftLink as Link } from '@/components/AdminDraftNavigation';
 import { notFound } from 'next/navigation';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
@@ -16,6 +18,7 @@ export default async function V2BatchesPage() {
   if (!isV2BatchAuthoringEnabled() && !previewWorkspace) notFound();
   const identity = await requirePortalRole('admin');
   const [batches, templates, publications] = await Promise.all([listV2BatchDrafts(), listV2TemplateDrafts(), listV2BatchPublications()]);
+  if (isV2ContentPublishingEnabled() && batches.status === 'ready' && templates.status === 'ready' && publications.status === 'ready') return <BatchWorkspace drafts={batches.drafts} templates={templates.templates} publications={publications.publications} ownerId={identity.id}/>;
   return <div>
     <h1 className="admin-page-title">V2 batch drafts</h1>
     <p className="admin-page-subtitle">Review course content and its optional independent live schedule before saving. Draft batches remain private to Admins.</p>

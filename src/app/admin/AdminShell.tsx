@@ -6,14 +6,15 @@ import { BrandLogo } from '@/components/BrandLogo';
 import { AdminDraftNavigationProvider, useAdminDraftNavigation } from '@/components/AdminDraftNavigation';
 import { useAuth } from '@/lib/AuthContext';
 import './admin.css';
+import './workflow.css';
 
-type AdminShellProps = { children: React.ReactNode; showCoursePublishing?: boolean };
+type AdminShellProps = { children: React.ReactNode; showCoursePublishing?: boolean; workflowEnabled?: boolean };
 
-export default function AdminShell({ children, showCoursePublishing = false }: AdminShellProps) {
-  return <AdminDraftNavigationProvider><AdminShellContent showCoursePublishing={showCoursePublishing}>{children}</AdminShellContent></AdminDraftNavigationProvider>;
+export default function AdminShell({ children, showCoursePublishing = false, workflowEnabled = false }: AdminShellProps) {
+  return <AdminDraftNavigationProvider><AdminShellContent workflowEnabled={workflowEnabled} showCoursePublishing={showCoursePublishing}>{children}</AdminShellContent></AdminDraftNavigationProvider>;
 }
 
-function AdminShellContent({ children, showCoursePublishing = false }: AdminShellProps) {
+function AdminShellContent({ children, showCoursePublishing = false, workflowEnabled = false }: AdminShellProps) {
   const { confirmLeave } = useAdminDraftNavigation();
   const { user, isLoading, logout } = useAuth();
   const router = useRouter();
@@ -48,7 +49,25 @@ function AdminShellContent({ children, showCoursePublishing = false }: AdminShel
     );
   }
 
-  const navItems = [
+  const primaryItems = [
+    { href: '/admin', label: 'Home', icon: '⌂' },
+    { href: '/admin/v2/content', label: 'Course content', icon: '▤' },
+    { href: '/admin/v2/batches', label: 'Batches', icon: '▦' },
+    { href: '/admin/v2/students', label: 'Students', icon: '○' },
+  ];
+  const moreItems = [
+    { href: '/admin/v2/templates', label: 'Course templates' },
+    { href: '/admin/v2/imports', label: 'Shared library & imports' },
+    { href: '/admin/v2/access', label: 'Prices & purchase history' },
+    { href: '/admin/users', label: 'Account management' },
+    { href: '/admin/progress', label: 'Student progress' },
+    { href: '/admin/templates', label: 'Existing templates' },
+    { href: '/admin/curriculum', label: 'Master curriculum' },
+    { href: '/admin/resources', label: 'Existing resources' },
+    { href: '/admin/sessions', label: 'Existing sessions' },
+    { href: '/admin/courses', label: 'Existing batches' },
+  ];
+  const navItems = workflowEnabled ? primaryItems : [
     { href: '/admin', label: 'Dashboard', icon: '📊' },
     ...(showCoursePublishing ? [{ href: '/admin/v2', label: 'Course publishing', icon: '📖' }] : []),
     { href: '/admin/templates', label: 'Course templates', icon: '🧩' },
@@ -61,13 +80,14 @@ function AdminShellContent({ children, showCoursePublishing = false }: AdminShel
   ];
 
   return (
-    <div className="admin-layout">
+    <div className={`admin-layout ${workflowEnabled ? 'admin-workflow' : ''}`}>
+      <a className="admin-skip-link" href="#admin-main">Skip to workspace</a>
       {/* Sidebar */}
       <aside id="admin-navigation" className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-brand">
             <BrandLogo
-              variant="light"
+              variant={workflowEnabled ? "dark" : "light"}
               className="sidebar-brand-logo"
               alt="The Ace Club by The Admit Co."
               preload
@@ -76,26 +96,28 @@ function AdminShellContent({ children, showCoursePublishing = false }: AdminShel
           <span className="badge badge-admin">Admin</span>
         </div>
 
-        <nav className="sidebar-nav">
+        <nav className="sidebar-nav" aria-label="Admin navigation">
           {navItems.map((item) => (
             <button
               key={item.href}
-              className={`sidebar-nav-item ${(pathname === item.href || (item.href === '/admin/v2' && pathname.startsWith('/admin/v2/'))) ? 'active' : ''}`}
+              aria-current={pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href + '/')) ? 'page' : undefined}
+              className={`sidebar-nav-item ${(pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href + '/'))) ? 'active' : ''}`}
               onClick={() => {
                 if (!confirmLeave()) return;
                 router.push(item.href);
                 setSidebarOpen(false);
               }}
             >
-              <span className="sidebar-nav-icon">{item.icon}</span>
+              <span className="sidebar-nav-icon" aria-hidden="true">{item.icon}</span>
               <span className="sidebar-nav-label">{item.label}</span>
             </button>
           ))}
         </nav>
+        {workflowEnabled && <details className="admin-more-tools"><summary>More tools</summary><nav aria-label="Additional Admin tools">{moreItems.map(item => <button key={item.href} type="button" aria-current={pathname === item.href ? 'page' : undefined} onClick={() => { if (confirmLeave()) { router.push(item.href); setSidebarOpen(false); } }}>{item.label}</button>)}</nav></details>}
 
         <div className="sidebar-footer">
           <div className="sidebar-user">
-            <div className="sidebar-user-avatar">AA</div>
+            <div className="sidebar-user-avatar" aria-hidden="true">{workflowEnabled ? '○' : 'AA'}</div>
             <div className="sidebar-user-info">
               <span className="sidebar-user-name">{user.full_name}</span>
               <span className="sidebar-user-email">{user.email}</span>
@@ -126,7 +148,7 @@ function AdminShellContent({ children, showCoursePublishing = false }: AdminShel
       )}
 
       {/* Main Content */}
-      <main className="admin-main">
+      <main id="admin-main" className="admin-main" tabIndex={-1}>
         {children}
       </main>
     </div>

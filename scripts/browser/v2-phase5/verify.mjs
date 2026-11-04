@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 
 const repo = fileURLToPath(new URL('../../../', import.meta.url));
-const output = path.resolve(process.env.V2_PHASE4_BROWSER_OUTPUT || path.join(tmpdir(), 'ace-v2-phase5-browser-results'));
+const output = path.resolve(process.env.V2_PHASE5_BROWSER_OUTPUT || path.join(tmpdir(), 'ace-v2-phase5-browser-results'));
 await mkdir(output, { recursive: true });
 const root = await mkdtemp(path.join(tmpdir(), 'ace-v2-phase5-browser-'));
 const id = n => `40000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
@@ -28,7 +28,7 @@ const sourceSessions = [
   { key: di, title: 'DI 1', section: 'di', content: content(7) },
 ];
 function initial() {
-  return { obligations: [], progress: [], lastSessionKey: null, liveRegistered: false, liveEvents: [], calls: [], submissions: [], interruptOnce: false, rejectProgress: false, noRecording: false, externalRecording: false, feedbackAlreadyComplete: false, extraSessions: [], placements: [], preview: false, placedItems: [], editorItems: [], editorCalls: [] };
+  return { obligations: [], progress: [], lastSessionKey: null, liveRegistered: false, liveEvents: [], calls: [], submissions: [], interruptOnce: false, rejectProgress: false, noRecording: false, externalRecording: false, feedbackAlreadyComplete: false, extraSessions: [], placements: [], preview: false, placedItems: [], editorItems: [], editorCalls: [], failSave:false, conflictConfirm:false };
 }
 let state = initial();
 function view() {
@@ -97,6 +97,8 @@ async function test(name, run, mobile = false) {
     if(url.pathname==='/api/admin/v2/content'){
       const {action,input}=request.postDataJSON();state.editorCalls.push({action,input});
       if(action==='workspace')return route.fulfill({json:{items:state.editorItems,courses:[{batchId,title:'Synthetic Full Course',productCode:'full_course',publicationRevision:1,sessions:sourceSessions,anchors:sourceSessions}]}});
+      if(action==='save'&&state.failSave){state.failSave=false;return route.fulfill({status:503,json:{error:'Synthetic save interruption'}});}
+      if(action==='confirm'&&state.conflictConfirm){state.conflictConfirm=false;return route.fulfill({status:409,json:{error:'The content or course scope changed. Reload and review again.'}});}
       if(action==='save'){let item=state.editorItems.find(i=>i.id===input.id);if(!item){item={id:input.id,published_revision:null,visible:false,deleted:false,publication_version:0};state.editorItems.push(item);}Object.assign(item,{document:input.document,draft_revision:input.revision+1});return route.fulfill({json:{id:item.id,revision:item.draft_revision}});}
       if(action==='scope')return route.fulfill({json:{...input,fingerprint:'a'.repeat(64),targets:state.editorItems.find(i=>i.id===input.id).document.targets.map(t=>({...t,courseTitle:'Synthetic Full Course',sessionTitle:sourceSessions.find(s=>s.key===t.sessionKey).title}))}});
       if(action==='confirm'){const item=state.editorItems.find(i=>i.id===input.id);item.visible=input.action==='publish';item.deleted=input.action==='delete';item.published_revision=item.draft_revision;return route.fulfill({json:{confirmed:true}});}
@@ -172,25 +174,33 @@ async function runTests() {
   await page.getByRole('button',{name:'Open Verbal 1',exact:true}).click();await page.getByRole('article',{name:'Session content: Verbal 1'}).waitFor();
  });
  await test('Admin creates universal content and reviews affected sessions before confirmation',async page=>{
-  await page.goto(origin+'/editor');await page.getByLabel('Title',{exact:true}).fill('Universal reading');await page.getByLabel(/^Resource URL/).fill('https://example.test/reading');
-  await page.getByRole('button',{name:'Select all matching sessions',exact:true}).click();
+  await page.goto(origin+'/editor');await page.getByText('Saved resource drafts & publication history',{exact:true}).click();await page.getByRole('button',{name:'Create a resource',exact:true}).click();await page.getByLabel('Title',{exact:true}).fill('Universal reading');await page.getByLabel(/^Resource URL/).fill('https://example.test/reading');
+  await page.getByText('Add another course or session',{exact:true}).click();for(const checkbox of await page.getByRole('checkbox').all())await checkbox.check();
   await page.getByRole('button',{name:'Save draft',exact:true}).click();await page.getByText('Draft saved.',{exact:false}).waitFor();
   assert.equal(state.editorItems[0].visible,false);assert.equal(state.editorItems[0].document.targets.length,4);
-  assert.equal(await page.getByRole('link',{name:'Student preview: Synthetic Full Course'}).getAttribute('target'),'_blank');
-  await page.getByRole('button',{name:'Review publication',exact:true}).click();const scope=page.getByRole('region',{name:'Confirm content scope'});await scope.waitFor();
+  assert.equal(await page.getByRole('link',{name:'Preview as student: Synthetic Full Course ↗'}).getAttribute('target'),'_blank');
+  await page.getByRole('button',{name:'Review changes',exact:true}).click();const scope=page;await page.getByRole('heading',{name:'Check the resource update'}).waitFor();
   assert.equal(await scope.getByRole('listitem').count(),4);assert.equal(state.editorCalls.filter(c=>c.action==='confirm').length,0);
-  await scope.getByRole('button',{name:'Confirm publish now',exact:true}).click();await page.getByText('The reviewed content action is confirmed.').waitFor();assert.equal(state.editorItems[0].visible,true);
+  await scope.getByRole('button',{name:'Publish update',exact:true}).click();await page.getByText('The resource update is published.').waitFor();assert.equal(state.editorItems[0].visible,true);
   await noOverflow(page);
  },true);
  await test('Admin editing an original item preserves its replacement identity and order',async page=>{
-  await page.goto(origin+'/editor');await page.getByText('Manage an existing session or resource',{exact:true}).click();
-  await page.locator('summary').filter({hasText:'Synthetic Full Course'}).click();await page.locator('summary').filter({hasText:'Quant 4'}).click();
-  await page.getByRole('button',{name:/Recordings?: Shared recording/}).first().click();
+  await page.goto(origin+'/editor');await page.getByRole('button',{name:/Synthetic Full Course.*sessions/}).click();await page.getByRole('button',{name:'Edit Shared recording',exact:true}).click();
   await page.getByLabel('Title',{exact:true}).fill('Replaced recording');await page.getByLabel(/^Resource URL/).fill('https://example.test/new.mp4');
-  await page.getByLabel('Item order',{exact:true}).fill('20');await page.getByRole('button',{name:'Save draft',exact:true}).click();await page.getByText('Draft saved.',{exact:false}).waitFor();
-  assert.equal(state.editorItems[0].document.targets[0].replaceKey,id(204));assert.equal(state.editorItems[0].document.targets[0].order,20);
+  await page.getByText('Placement settings',{exact:true}).click();await page.getByLabel('Position in this location',{exact:true}).selectOption('200');await page.getByRole('button',{name:'Save draft',exact:true}).click();await page.getByText('Draft saved.',{exact:false}).waitFor();
+  assert.equal(state.editorItems[0].document.targets[0].replaceKey,id(204));assert.equal(state.editorItems[0].document.targets[0].order,200);
   await noOverflow(page);
  });
+
+ await test('Failed save retains values and never publishes',async page=>{
+  state.failSave=true;await page.goto(origin+'/editor');await page.getByRole('button',{name:/Synthetic Full Course.*sessions/}).click();await page.getByRole('button',{name:'Edit Shared recording',exact:true}).click();await page.getByLabel('Title',{exact:true}).fill('Retained recording');await page.getByRole('button',{name:'Save draft',exact:true}).click();await page.getByRole('heading',{name:'The action could not be completed',exact:true}).waitFor();assert.equal(await page.getByLabel('Title',{exact:true}).inputValue(),'Retained recording');assert.equal(state.editorItems.length,0);await page.getByRole('button',{name:'Save draft',exact:true}).click();await page.getByText('Draft saved.',{exact:false}).waitFor();assert.equal(state.editorItems[0].visible,false);
+ });
+ await test('Conflict removes confirmation and requires latest-version review plus a fresh save',async page=>{
+  await page.goto(origin+'/editor');await page.getByRole('button',{name:/Synthetic Full Course.*sessions/}).click();await page.getByRole('button',{name:'Edit Shared recording',exact:true}).click();await page.getByRole('button',{name:'Save draft',exact:true}).click();await page.getByRole('button',{name:'Review changes',exact:true}).click();state.conflictConfirm=true;await page.getByRole('button',{name:'Publish update',exact:true}).click();await page.getByRole('heading',{name:'A newer version needs review'}).waitFor();assert.equal(await page.getByRole('button',{name:'Publish update',exact:true}).count(),0);assert.equal(state.editorItems[0].visible,false);await page.getByRole('button',{name:'Load latest version',exact:true}).click();await page.getByRole('button',{name:'Keep edits against this version',exact:true}).click();await page.getByRole('button',{name:'Save draft',exact:true}).click();await page.getByRole('button',{name:'Review changes',exact:true}).click();await page.getByRole('button',{name:'Publish update',exact:true}).click();await page.getByText('The resource update is published.').waitFor();assert.equal(state.editorItems[0].visible,true);
+ });
+ await test('Leaving a changed resource can be cancelled without losing edits',async page=>{
+  await page.goto(origin+'/editor');await page.getByRole('button',{name:/Synthetic Full Course.*sessions/}).click();await page.getByRole('button',{name:'Edit Shared recording',exact:true}).click();await page.getByLabel('Title',{exact:true}).fill('Unsaved title');page.once('dialog',dialog=>dialog.dismiss());await page.getByRole('button',{name:'← Course content',exact:true}).click();assert.equal(await page.getByLabel('Title',{exact:true}).inputValue(),'Unsaved title');assert.equal(state.editorCalls.length,0);page.once('dialog',dialog=>dialog.accept());await page.getByRole('button',{name:'← Course content',exact:true}).click();await page.getByRole('heading',{name:'Course content',exact:true}).waitFor();
+ },true);
 }
 
 try {

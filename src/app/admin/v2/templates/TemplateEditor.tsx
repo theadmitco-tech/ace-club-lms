@@ -122,7 +122,7 @@ export default function TemplateEditor({ templates, ownerId, setupPending = fals
     <div className={styles.workspace}>
       <>{setupPending && <section className={styles.notice} role="status"><h2>Explore the course editor</h2><p>You can arrange course sessions, resources and optional live classes here. Saving is unavailable until staging setup is complete. These edits have not been saved to the LMS.</p></section>}</>
       <DraftRecoveryNotice available={!!recovery.recovered} unavailable={recovery.unavailable} onRestore={restore} onDiscard={recovery.forget} />
-      <section className={styles.card} aria-labelledby="template-list-heading">
+      <details className={styles.card} open={!draft}><summary>Choose a course template or create one</summary><section aria-labelledby="template-list-heading">
         <h2 id="template-list-heading">Saved drafts</h2>
         {templates.length === 0 ? <p>{setupPending ? 'Saved templates are not available in this Preview yet. Choose a course below to explore its editor.' : 'No templates have been created.'}</p> : <ul className={styles.list}>
           {templates.map((item) => <li key={item.id}>
@@ -142,9 +142,9 @@ export default function TemplateEditor({ templates, ownerId, setupPending = fals
           ))}
         </div>
         <p>A saved draft does not create a live batch or change student access.</p>
-      </section>
+      </section></details>
 
-      {draft && <form className={styles.card} onSubmit={save} aria-busy={pending}>
+      {draft && <form onInvalidCapture={event => { let container = (event.target as HTMLElement).parentElement; while (container && container !== event.currentTarget) { if (container instanceof HTMLDetailsElement) container.open = true; container = container.parentElement; } }} className={styles.card} onSubmit={save} aria-busy={pending}>
         <div className={styles.sectionHeading}><h2>{draft.revision === 0 ? 'New template' : `Edit draft · revision ${draft.revision}`}</h2><span className={styles.badge}>{dirty ? 'Unsaved changes' : 'Private draft'}</span></div>
         <p><strong>{V2_TEMPLATE_PRODUCTS[draft.productCode].label}</strong> · Included sections: {V2_TEMPLATE_PRODUCTS[draft.productCode].sections.join(', ')}</p>
         <fieldset className={styles.fields} disabled={pending}>
@@ -162,7 +162,7 @@ export default function TemplateEditor({ templates, ownerId, setupPending = fals
           <p>Course duration is configurable; individual offerings retain their complete curriculum. Only actual live classes require dates and times.</p>
           {draft.document.sessions && <CourseSessionsEditor sessions={draft.document.sessions} sections={V2_TEMPLATE_PRODUCTS[draft.productCode].sections}
             onChange={(sessions) => change({...draft,document:{...draft.document,sessions}})} />}
-          <h3 className={styles.sectionTitle}>Optional live-class events</h3>
+          <details className="workflow-secondary"><summary>Optional live-class plan ({draft.document.events.length} events)</summary>
           <p>Each course retains its sessions, materials, recordings, pre-session reads and post-session reads. Sessions can remain unscheduled; only actual live classes need a time. Live-course registration is limited to eight students; no individual session reservations are used.</p>
           {draft.document.events.map((event, index) => <fieldset key={event.key} className={styles.event}>
             <legend>{event.kind === 'outline' ? 'Course session' : 'Live class'} {index + 1}</legend>
@@ -224,7 +224,7 @@ export default function TemplateEditor({ templates, ownerId, setupPending = fals
             </div>
           </fieldset>)}
           <button type="button" className="btn btn-secondary" disabled={draft.document.events.length >= 100} onClick={() => addEvent('live')}>Add live class</button>
-          {draft.document.sessions === undefined && <button type="button" className="btn btn-secondary" disabled={draft.document.events.length >= 100} onClick={() => addEvent('outline')}>Add course session</button>}
+          {draft.document.sessions === undefined && <button type="button" className="btn btn-secondary" disabled={draft.document.events.length >= 100} onClick={() => addEvent('outline')}>Add course session</button>}</details>
         </fieldset>
         <p role="alert" className={styles.error}>{error}</p>
         <p role="status" aria-live="polite">{pending ? 'Saving draft…' : message || (dirty ? 'Unsaved changes' : '')}</p>

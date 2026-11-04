@@ -20,7 +20,7 @@ export default async function LiveOperationsPage({params}:{params:Promise<{batch
   const publication = publications?.publications.find(item => item.batchId === batchId && item.state === 'published');
   return <div><h1 className="admin-page-title">Live class operations</h1><p className="admin-page-subtitle">Registration, private meeting access and class completion.</p>
     <Link href="/admin/v2/batches" prefetch={false}>Back to batches</Link>{' · '}<Link href={`/admin/v2/batches/${batchId}/students`} prefetch={false}>Batch enrollment</Link>{' · '}<Link href={`/admin/v2/batches/${batchId}/meeting`} prefetch={false}>Meeting configuration</Link>
-    {learningEnabled && (publication && mappings ? <LiveSessionMappings publication={publication} mappings={mappings} /> : <section className="admin-card" role="alert"><p>Published session mappings could not be loaded. Completion remains unavailable.</p></section>)}
+    {learningEnabled && (publication && mappings ? <details className="workflow-secondary"><summary>Class-to-session mapping</summary><p>Each completed class must map to its feedback session before completion can be recorded.</p><LiveSessionMappings publication={publication} mappings={mappings} /></details> : <section className="admin-card" role="alert"><p>Published session mappings could not be loaded. Completion remains unavailable.</p></section>)}
     {result ? <LiveOperations key={`${identity.id}:${batchId}`} batchId={batchId} registrations={result.registrations} classes={result.classes} learningEnabled={learningEnabled} mappings={mappings ?? []} />
       : <section className="admin-card" role="alert"><p>Live operations could not be loaded. Check the batch and reload.</p></section>}
   </div>;

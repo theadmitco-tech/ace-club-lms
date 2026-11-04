@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation';
+import { isV2ContentPublishingEnabled } from '@/lib/server/v2ContentPublishing';
 import { notFound } from 'next/navigation';
 import { AdminDraftLink as Link } from '@/components/AdminDraftNavigation';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
@@ -7,6 +9,7 @@ import { isV2BatchAuthoringEnabled } from '@/lib/server/v2BatchFeature';
 export default async function CoursePublishingPage() {
   if (process.env.VERCEL_ENV === 'production') notFound();
   await requirePortalRole('admin');
+  if (isV2ContentPublishingEnabled()) redirect('/admin/v2/content');
   const templatesEnabled = isV2TemplateAuthoringEnabled();
   const batchesEnabled = isV2BatchAuthoringEnabled();
   const previewWorkspace = process.env.VERCEL_ENV === 'preview';

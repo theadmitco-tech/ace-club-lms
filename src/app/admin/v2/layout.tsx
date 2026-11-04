@@ -5,7 +5,7 @@ import styles from './workspace.module.css';
 
 export default function CourseWorkspaceLayout({ children }: { children: ReactNode }) {
   return <div className={styles.shell}>
-    <div className={styles.context}><span>ADMIN / COURSE WORKSPACE</span><span>Content, with room to grow.</span></div>
+
     <WorkspaceNavigation contentEnabled={isV2ContentPublishingEnabled()} />
     {children}
   </div>;

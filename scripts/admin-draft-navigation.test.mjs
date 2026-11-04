@@ -230,7 +230,7 @@ test('links cancel same-tab navigation without attaching a click blocker to new-
 
 function shell(app, showCoursePublishing = false) {
   const { default: Shell } = app.component('src/app/admin/AdminShell.tsx', {
-    '@/components/BrandLogo': { BrandLogo: 'brand-logo' }, './admin.css': {},
+    '@/components/BrandLogo': { BrandLogo: 'brand-logo' }, './admin.css': {}, './workflow.css': {},
     '@/lib/AuthContext': { useAuth: () => ({ user: app.state.user, isLoading: false,
       logout: () => { app.state.logouts++; } }) },
   });
@@ -381,6 +381,7 @@ test('course publishing entry enforces Admin authorization, Production exclusion
   let calls = 0, authorized = true, enabled = false;
   const env = { VERCEL_ENV: 'preview' };
   const page = load('src/app/admin/v2/page.tsx', {
+    '@/lib/server/v2ContentPublishing': { isV2ContentPublishingEnabled: () => false },
     'react/jsx-runtime': { jsx, jsxs: jsx },
     'next/navigation': { notFound: () => { throw Error('Not found'); } },
     '@/components/AdminDraftNavigation': { AdminDraftLink: 'link' },

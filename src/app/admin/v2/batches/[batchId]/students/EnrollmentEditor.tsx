@@ -32,13 +32,13 @@ export default function EnrollmentEditor({ batchId, options }: { batchId: string
     {review && <div className={styles.event}>
       <h3>{review.active ? 'Remove' : 'Enroll'} {review.name}?</h3>
       <p>{review.active ? 'This removes access to this batch schedule.' : 'This allows access to this batch schedule when it is published.'}</p>
-      <p>Student ID: {review.studentId}</p>
+      <details><summary>Account identifier</summary><p>{review.studentId}</p></details>
       <div className={styles.buttons}><button type="button" className="btn btn-primary" disabled={pending || !!error} onClick={confirm}>Confirm {review.active ? 'removal' : 'enrollment'}</button>
         <button type="button" className="btn btn-secondary" disabled={pending || !!error} onClick={() => setReview(null)}>Cancel</button></div>
     </div>}
     {!options.length && <p>No students with active access to this product are available.</p>}
     <ul className={styles.list}>{options.map((student) => <li className={styles.event} key={student.studentId}>
-      <strong>{student.name}</strong><span>Student ID: {student.studentId}</span>
+      <strong>{student.name}</strong><details><summary>Account identifier</summary><span>{student.studentId}</span></details>
       <span>{student.active ? 'Enrolled' : 'Not enrolled'}{!student.eligible ? ' · Product access inactive' : ''}</span>
       <button type="button" className="btn btn-secondary" disabled={pending || !!review || !!error || (!student.active && !student.eligible)}
         onClick={() => { setReview(student); setMessage(''); }}>{student.active ? 'Remove from batch' : 'Enroll in batch'}</button>

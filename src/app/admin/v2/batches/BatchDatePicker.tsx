@@ -13,6 +13,7 @@ export function BatchDatePicker({ id, label, value, onChange, required = false, 
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const heading = useId();
+  const [selection,setSelection]=useState(value);
   const [month, setMonth] = useState('2026-01-01');
   const firstDay = new Date(`${month}T00:00:00Z`);
   const offset = (firstDay.getUTCDay() + 6) % 7;
@@ -24,6 +25,7 @@ export function BatchDatePicker({ id, label, value, onChange, required = false, 
   function open() {
     const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
     setMonth(`${(validDate(value) ? value : today).slice(0, 7)}-01`);
+    setSelection(value);
     dialog.current?.showModal();
   }
   function moveMonth(delta: number) {
@@ -43,8 +45,8 @@ export function BatchDatePicker({ id, label, value, onChange, required = false, 
         <button type="button" aria-label="Next month" disabled={month === '2099-12-01'} onClick={() => moveMonth(1)}>→</button></div>
       <table className={styles.calendar} aria-label={monthName(firstDay)}><thead><tr>{['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => <th scope="col" key={day}>{day}</th>)}</tr></thead>
         <tbody>{Array.from({ length: dates.length / 7 }, (_, week) => <tr key={week}>{dates.slice(week * 7, week * 7 + 7).map((date, day) => <td key={day}>
-          {date && <button type="button" aria-pressed={value === date} aria-label={`${date}${events.some((event) => event.date === date) ? ', live classes scheduled' : ''}`}
-            onClick={() => { onChange(date); dialog.current?.close(); }}>
+          {date && <button type="button" aria-pressed={selection === date} aria-label={`${date}${events.some((event) => event.date === date) ? ', live classes scheduled' : ''}`}
+            onClick={() => setSelection(date)}>
             {Number(date.slice(-2))}{events.some((event) => event.date === date) && <span className={styles.dot} aria-hidden="true" />}
           </button>}
         </td>)}</tr>)}</tbody>
@@ -55,6 +57,7 @@ export function BatchDatePicker({ id, label, value, onChange, required = false, 
           .map((event, index) => <li key={`${event.date}:${index}`}><time dateTime={event.date}>{event.date}{event.time ? ` · ${event.time} IST` : ''}</time><span>{event.title}</span></li>)}</ul>
           : <p>No live classes scheduled in this month.</p>}
       </section>
+      <div className={styles.top}><button type="button" className="btn btn-secondary" onClick={()=>dialog.current?.close()}>Cancel</button><button type="button" className="btn btn-primary" disabled={!validDate(selection)} onClick={()=>{onChange(selection);dialog.current?.close();}}>Use this date</button></div>
     </dialog>
   </div>;
 }

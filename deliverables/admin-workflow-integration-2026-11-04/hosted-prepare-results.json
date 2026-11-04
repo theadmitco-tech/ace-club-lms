@@ -1,0 +1,19 @@
+{
+  "check": "admin_workflow_hosted_prepare",
+  "project": "eyphkkginlgoaxflauog",
+  "runId": "dd5d9300-1216-42ea-8743-1580487b6713",
+  "recordedAt": "2026-11-04T10:28:08.819Z",
+  "status": "passed",
+  "scope": "Dedicated synthetic identities; no purchases, enrollment, course edits or payment provider calls.",
+  "checks": [
+    {
+      "id": "admin-generated-identity-ready",
+      "status": "pass"
+    },
+    {
+      "id": "student-generated-identity-ready",
+      "status": "pass"
+    }
+  ],
+  "scriptSha256": "a1bf3242c0e97ec15618fde568ee0c4df7c6e8e29cf8078fe0331944cc24280a"
+}

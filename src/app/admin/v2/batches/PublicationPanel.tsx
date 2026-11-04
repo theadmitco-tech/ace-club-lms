@@ -73,7 +73,7 @@ export default function PublicationPanel({ drafts, publications, ownerId }: { dr
         <p>Saved draft {batch.revision} · {published ? `${published.state}, source draft ${published.batchRevision}` : 'Never published'}</p>
         <div className={styles.buttons}>
           <button type="button" className="btn btn-secondary" disabled={pending || !!recovery.recovered || !!review} onClick={() => preview(batch, 'publish')}>Preview publication</button>
-          {published?.state === 'published' && <button type="button" className="btn btn-secondary" disabled={pending || !!recovery.recovered || !!review} onClick={() => preview(batch, 'unpublish')}>Review unpublish</button>}
+          {published?.state === 'published' && <details><summary>More actions</summary><button type="button" className="btn btn-secondary" disabled={pending || !!recovery.recovered || !!review} onClick={() => preview(batch, 'unpublish')}>Review unpublish</button></details>}
         </div>
       </li>;
     })}</ul>
