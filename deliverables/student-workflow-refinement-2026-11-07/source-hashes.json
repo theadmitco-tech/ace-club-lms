@@ -1,0 +1,14 @@
+{
+  "scope": "Final working source SHA-256 hashes before the evidence commit; original source-document hashes appear separately in README.md.",
+  "files": {
+    "scripts/browser/v2-phase4/verify.mjs": "fa661b17a937fce09fd18611ec9e7da63b1c79ac3f8cbf04c698a405fec5a68e",
+    "scripts/browser/v2-phase5/verify.mjs": "02d3c612ea1bc1e7fc1af20c8f5827ca945b09fb03ad31661c76dbebe48bd38e",
+    "src/app/schedule/v2/[batchId]/page.tsx": "c0ea7b82136ae531b58acff99ab2b87784f0e774537fb7f3f96d2da6e8ddc021",
+    "src/components/student/StudentHeader.tsx": "035013be495e7423f40850ad46ad9c9fe90fac0fd4d1a0c26b62a4a5b1f034a2",
+    "src/components/student/V2LearningLibrary.tsx": "42fdcddb45ae2560878221352fc1b212596702a840c3d4cbd5b042358c9fe713",
+    "src/components/student/V2LearningWorkspace.tsx": "125e138058c85aa1f1bd5af847701cc2b0b0d188f1a12637ff0427aff5133a7a",
+    "src/components/student/studentPreview.module.css": "d3c1c4731f93d722338b8c6da996b570a558061b4af2723dcd5ae733bbdadc20",
+    "src/components/student/v2CourseSession.module.css": "7351b5b0fb86dabe7b4ac411a460be23b0851767d326d928b695651c109ab63f",
+    "src/components/student/v2Learning.module.css": "d87fcdfabbd43ef36b99f0b99a1f8b7930e57c202acf91ce161d9a38dfb30871"
+  }
+}

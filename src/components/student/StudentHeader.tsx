@@ -27,10 +27,7 @@ export function StudentHeader({ studentName }: { studentName: string }) {
         <nav className="student-navigation" aria-label="Student navigation">
           <Link href={learning ? '/schedule/v2' : '/dashboard'}>{preview ? 'My learning' : 'Home'}</Link>
           {preview && <><Link href="/account/access" prefetch={false}>My access</Link><Link href="/courses/v2" prefetch={false}>Explore courses</Link></>}
-          {learning && <Link href="/dashboard">Dashboard</Link>}
-          <Link href="/schedule">Schedule</Link>
-          <Link href="/resources">Resources</Link>
-          <Link className="student-navigation-secondary" href="/practice">Practice log</Link>
+          {learning ? <details className={previewStyles.moreNavigation}><summary>More</summary><div><Link href="/dashboard">Dashboard & mocks</Link><Link href="/schedule">Schedule</Link><Link href="/resources">Resources</Link><Link href="/practice">Practice log</Link></div></details> : <><Link href="/schedule">Schedule</Link><Link href="/resources">Resources</Link><Link className="student-navigation-secondary" href="/practice">Practice log</Link></>}
         </nav>
         <div className="student-account">
           <span className="student-avatar" aria-hidden="true">{getInitials(studentName)}</span>

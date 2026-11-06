@@ -54,6 +54,7 @@ const copied = new Set();
 async function copySource(file) {
   if (copied.has(file)) return;
   copied.add(file);
+  if(file === 'src/lib/AuthContext.tsx'){await put(file,`'use client';export function useAuth(){return {logout:async()=>{},addToast:(_type:string,_message:string)=>{}};}`);return;}
   const source = await readFile(path.join(repo, file), 'utf8'); await put(file, source);
   for (const match of source.matchAll(/(?:from\s+|import\s*(?:\(\s*)?)['"](@\/[^'"]+|\.[^'"]+)['"]/g)) {
     const target = match[1].startsWith('@/') ? 'src/' + match[1].slice(2) : path.normalize(path.join(path.dirname(file), match[1]));
@@ -66,6 +67,12 @@ async function copySource(file) {
   }
 }
 await copySource('src/components/student/V2LearningWorkspace.tsx');
+await copySource('src/components/student/V2LearningLibrary.tsx');
+await copySource('src/components/student/StudentHeader.tsx');
+await copySource('src/app/dashboard/dashboard.css');
+await copySource('public/5.svg');await copySource('public/6.svg');
+await put('src/lib/server/v2LearningFeature.ts','export function isV2LearningEnabled(){return true;}');
+await put('src/lib/server/v2Phase1Feature.ts','export function isV2Phase1PreviewEnabled(){return true;}');
 await put('src/app/globals.css', (await readFile(path.join(repo, 'src/app/globals.css'), 'utf8')).replace(/^@import url\(.*\);\r?\n/gm, ''));
 await put('package.json', JSON.stringify({ private: true, dependencies: { next: '16.2.4', react: '19.2.4', 'react-dom': '19.2.4' } }));
 await put('tsconfig.json', await readFile(path.join(repo, 'tsconfig.json')));
@@ -75,6 +82,8 @@ await put('src/app/layout.tsx', `import './globals.css'; export default function
 await put('src/app/page.tsx', `import {V2LearningWorkspace} from '@/components/student/V2LearningWorkspace';
 export const dynamic='force-dynamic';
 export default async function Page(){const data=await(await fetch('http://127.0.0.1:${backend.address().port}/state',{cache:'no-store'})).json();return <main style={{maxWidth:1200,margin:'auto',padding:20}}><h1>Synthetic Full Course</h1><V2LearningWorkspace {...data}/></main>}`);
+await put('src/app/library/page.tsx', `import {V2LearningLibrary} from '@/components/student/V2LearningLibrary';export const dynamic='force-dynamic';export default async function Page(){const data=await(await fetch('http://127.0.0.1:${backend.address().port}/state',{cache:'no-store'})).json();return <main style={{maxWidth:1000,margin:'auto',padding:24}}><V2LearningLibrary batches={[{publication:{...data.course,revision:1,state:'published',events:[]},learning:data.learning}]}/></main>}`);
+await put('src/app/header/page.tsx', `import {StudentHeader} from '@/components/student/StudentHeader';import '@/app/dashboard/dashboard.css';export default function Page(){return <div className="student-page"><StudentHeader studentName="Student"/><main className="student-main"><div className="student-container"><h1>Student navigation fixture</h1></div></main></div>}`);
 const reservation = createServer(); await new Promise(resolve => reservation.listen(0, '127.0.0.1', resolve));
 const port = reservation.address().port; await new Promise(resolve => reservation.close(resolve));
 const origin = `http://127.0.0.1:${port}`, next = path.join(repo, 'node_modules/next/dist/bin/next');
@@ -131,6 +140,18 @@ async function rating(page) {
   await page.getByLabel('How clear was this session?').selectOption('4');
 }
 async function runTests() {
+  await test('Student navigation keeps learning prominent and preserves secondary destinations on mobile',async page=>{
+    await page.goto(origin+'/header');const nav=page.getByRole('navigation',{name:'Student navigation'});assert.equal(await nav.getByRole('link').count(),3);await nav.getByRole('link',{name:'My learning',exact:true}).waitFor();await nav.locator('summary').focus();await page.keyboard.press('Enter');for(const label of ['Dashboard & mocks','Schedule','Resources','Practice log']){const link=nav.getByRole('link',{name:label,exact:true});await link.waitFor();assert.equal(await link.evaluate(el=>{const r=el.getBoundingClientRect();const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return el.contains(hit);}),true);}await noOverflow(page);await page.screenshot({path:path.join(output,'student-navigation-mobile.png'),fullPage:true});
+  },true);
+  await test('Library separates recordings from registered live classes without granting access',async page=>{
+    await page.goto(origin+'/library');await page.getByRole('heading',{name:'My learning',exact:true}).waitFor();await page.screenshot({path:path.join(output,'student-library.png'),fullPage:true});
+    await page.getByRole('button',{name:/^Live classes/}).click();await page.getByRole('heading',{name:'No registered live classes',exact:true}).waitFor();assert.equal(await page.getByRole('link',{name:'View live classes',exact:true}).count(),0);
+    state.liveRegistered=true;await page.reload();await page.getByRole('button',{name:/^Live classes/}).click();assert.equal(await page.getByRole('link',{name:'View live classes',exact:true}).getAttribute('href'),`/schedule/v2/${batchId}?view=live`);assert.equal(state.calls.length,0);
+  });
+  await test('Subjects and collapsible outline leave a full-width reading area',async page=>{
+    await page.goto(origin);const outline=page.getByRole('complementary',{name:'Course outline'});assert.equal(await outline.getByRole('button').count(),2);const content=page.getByRole('region',{name:'Selected session'});const a=await outline.boundingBox(),b=await content.boundingBox();assert.ok(Math.abs(a.x-b.x)<2);assert.ok(b.width>900);
+    await outline.locator('summary').click();assert.equal(await page.getByRole('button',{name:'Open Quant 5',exact:true}).count(),0);await page.getByRole('article',{name:'Session content: Quant 4'}).waitFor();assert.equal(state.calls.length,0);await page.screenshot({path:path.join(output,'student-session.png'),fullPage:true});
+  });
   await test('Quant 4 first and pre-read opening create only visual progress', async page => {
     await page.goto(origin); await page.getByRole('button', { name: 'Open Quant 4', exact: true }).click();
     await page.getByRole('button', { name: 'Read here', exact: true }).first().click();
@@ -143,13 +164,13 @@ async function runTests() {
   });
   await test('Quant feedback greys other Quant while current resources and other subjects remain available', async page => {
     state.obligations = [obligation()];
-    await page.goto(origin);
+    await page.goto(origin);await page.screenshot({path:path.join(output,'student-feedback-gate.png'),fullPage:true});
     assert.equal(await page.getByRole('button', { name: 'Open Quant 5', exact: true }).isDisabled(), true);
     assert.equal(await page.getByRole('button', { name: 'Open Quant 4', exact: true }).isEnabled(), true);
     for (const title of ['Pre-class read', 'Recording', 'Post-class read', 'Worksheet']) await page.getByText(title, { exact: true }).first().waitFor();
-    await page.getByRole('button', { name: 'Open Verbal 1', exact: true }).click();
+    await page.getByRole('group',{name:'Course subjects',exact:true}).getByRole('button',{name:'Verbal',exact:true}).click();await page.getByRole('button', { name: 'Open Verbal 1', exact: true }).click();
     await page.getByRole('article', { name: 'Session content: Verbal 1' }).waitFor();
-    await page.getByRole('button', { name: 'Open DI 1', exact: true }).click();
+    await page.getByRole('group',{name:'Course subjects',exact:true}).getByRole('button',{name:'DI',exact:true}).click();await page.getByRole('button', { name: 'Open DI 1', exact: true }).click();
     await page.getByRole('article', { name: 'Session content: DI 1' }).waitFor();
     assert.equal(state.obligations.length, 1); await noOverflow(page);
   }, true);
@@ -242,7 +263,7 @@ async function runTests() {
     assert.equal(await page.getByRole('button',{name:'Open Quant 5',exact:true}).isEnabled(),true);
   });
   await test('Focus mode and larger text preserve keyboard navigation on a narrow screen', async page => {
-    await page.goto(origin); const focus = page.getByRole('button', { name: 'Focus mode', exact: true });
+    await page.goto(origin); await page.getByText('Reading options',{exact:true}).click(); const focus = page.getByRole('button', { name: 'Focus mode', exact: true });
     await focus.focus(); await page.keyboard.press('Enter'); await page.getByRole('button', { name: 'Exit focus', exact: true }).waitFor();
     await page.keyboard.press('Escape'); await focus.waitFor();
     await page.getByRole('button', { name: 'Larger text', exact: true }).click();
@@ -253,20 +274,20 @@ async function runTests() {
     state.extraSessions=Array.from({length:27},(_,index)=>({key:id(1000+index),title:`Additional session ${index+1}`,section:'quant',content:content(2000+index)}));
     await page.goto(origin);
     const outline=page.getByRole('complementary',{name:'Course outline'});
-    assert.equal(await outline.getByRole('button').count(),31);
-    const dimensions=await outline.evaluate(element=>({height:element.getBoundingClientRect().height,scrollHeight:element.scrollHeight,clientHeight:element.clientHeight,viewport:innerHeight}));
+    assert.equal(await outline.getByRole('button').count(),29);
+    const dimensions=await outline.locator('ol').evaluate(element=>({height:element.getBoundingClientRect().height,scrollHeight:element.scrollHeight,clientHeight:element.clientHeight,viewport:innerHeight}));
     assert.ok(dimensions.height<=dimensions.viewport*0.46);assert.ok(dimensions.scrollHeight>dimensions.clientHeight);
     const last=outline.getByRole('button',{name:'Open Additional session 27',exact:true});await last.focus();await page.keyboard.press('Enter');
     const article=page.getByRole('article',{name:'Session content: Additional session 27'});await article.waitFor();
     assert.equal(await last.evaluate(element=>element===document.activeElement),true);
     const geometry=await outline.evaluate(element=>{const focus=document.activeElement.getBoundingClientRect(),box=element.getBoundingClientRect();return {visible:focus.top>=box.top&&focus.bottom<=box.bottom,outlineBottom:box.bottom,viewport:innerHeight};});
-    assert.equal(geometry.visible,true);
+    assert.equal(geometry.visible,true);await page.screenshot({path:path.join(output,'student-mobile-outline.png'),fullPage:true});
     const box=await article.boundingBox();assert.ok(box.y<geometry.viewport*1.5);assert.ok(box.y-geometry.outlineBottom<200);
     await noOverflow(page);
   },true);
   await test('Visual-progress interruption never claims completion or blocks course content', async page => {
     state.rejectProgress = true; await page.goto(origin);
-    await page.getByRole('button', { name: 'Open Verbal 1', exact: true }).click();
+    await page.getByRole('group',{name:'Course subjects',exact:true}).getByRole('button',{name:'Verbal',exact:true}).click();await page.getByRole('button', { name: 'Open Verbal 1', exact: true }).click();
     await page.getByText('The learning reminder could not be saved.', { exact: false }).waitFor();
     await page.getByRole('article', { name: 'Session content: Verbal 1' }).waitFor();
     assert.equal(state.obligations.length, 0); assert.equal(state.submissions.length, 0);

@@ -38,3 +38,8 @@
 .resume small { color: #58685f; }
 .resume a { flex-shrink: 0; background: #205848; color: #fff; padding: 12px 18px; border-radius: 8px; text-decoration: none; font-weight: 600; }
 @media(max-width: 650px) { .resume { align-items: flex-start; flex-direction: column; padding: 20px; } }
+
+.moreNavigation { position:relative; color:#58685f; font-size:14px; }.moreNavigation summary { cursor:pointer; padding:10px 12px; }.moreNavigation>div { display:grid; position:absolute; right:0; min-width:200px; z-index:30; padding:8px; background:white; border:1px solid #dce3dc; border-radius:8px; box-shadow:0 8px 24px #203b3012; }.moreNavigation a { white-space:nowrap; }
+
+.previewHeader :global(.student-navigation) { overflow:visible; }
+@media(max-width:650px) { .moreNavigation>div { left:0; right:auto; } }

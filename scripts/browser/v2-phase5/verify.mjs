@@ -171,15 +171,15 @@ async function runTests() {
  await test('Admin preview navigation and readings make no learning requests',async page=>{
   fivePlacements();state.preview=true;await page.goto(origin);
   await page.getByRole('button',{name:'Read here',exact:true}).first().click();
-  await page.getByRole('button',{name:'Open Verbal 1',exact:true}).click();
-  await page.getByRole('button',{name:'Open Quant 4',exact:true}).click();
+  await page.getByRole('group',{name:'Course subjects',exact:true}).getByRole('button',{name:'Verbal',exact:true}).click();await page.getByRole('button',{name:'Open Verbal 1',exact:true}).click();
+  await page.getByRole('group',{name:'Course subjects',exact:true}).getByRole('button',{name:'Quant',exact:true}).click();await page.getByRole('button',{name:'Open Quant 4',exact:true}).click();
   assert.equal(await page.getByRole('button',{name:'Mark as read',exact:true}).count(),0);
   assert.equal(state.calls.length,0);await noOverflow(page);
  });
  await test('Locked subject resources are absent including all outer reading placements',async page=>{
   fivePlacements();state.obligations=[obligation(quant5)];await page.goto(origin);
   for(const p of state.placements)assert.equal(await page.getByRole('heading',{name:`Reading ${p.placement}`,exact:true}).count(),0);
-  await page.getByRole('button',{name:'Open Verbal 1',exact:true}).click();await page.getByRole('article',{name:'Session content: Verbal 1'}).waitFor();
+  await page.getByRole('group',{name:'Course subjects',exact:true}).getByRole('button',{name:'Verbal',exact:true}).click();await page.getByRole('button',{name:'Open Verbal 1',exact:true}).click();await page.getByRole('article',{name:'Session content: Verbal 1'}).waitFor();
  });
  await test('Admin creates universal content and reviews affected sessions before confirmation',async page=>{
   await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'Shared library',exact:true}).click();await page.getByRole('button',{name:'Create a resource',exact:true}).click();await page.getByLabel('Title',{exact:true}).fill('Universal reading');await page.getByLabel(/^Resource URL/).fill('https://example.test/reading');
