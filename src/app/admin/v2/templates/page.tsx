@@ -1,3 +1,4 @@
+import { isV2ContentPublishingEnabled } from '@/lib/server/v2ContentPublishing';
 import { AdminDraftLink as Link } from '@/components/AdminDraftNavigation';
 import { notFound } from 'next/navigation';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
@@ -17,7 +18,7 @@ export default async function V2TemplatesPage() {
       <p className="admin-page-subtitle">Arrange reusable course sessions before creating a batch. Changes here affect future batches; published courses are edited in Course content.</p>
       <div className="workflow-actions"><Link href="/admin/v2/content">Edit a published course</Link></div>
       {(isV2BatchAuthoringEnabled() || previewWorkspace) && <Link href="/admin/v2/batches" prefetch={false}>Manage batch drafts</Link>}
-      {result.status === 'ready' || previewWorkspace ? <TemplateEditor key={identity.id} ownerId={identity.id} templates={result.templates} setupPending={result.status !== 'ready'} /> : (
+      {result.status === 'ready' || previewWorkspace ? <TemplateEditor subjectsOnly={isV2ContentPublishingEnabled()} key={identity.id} ownerId={identity.id} templates={result.templates} setupPending={result.status !== 'ready'} /> : (
         <div className="admin-card" role="alert">
           <p>Templates could not be loaded. Check staging setup and Admin access before retrying.</p>
           <Link href="/admin/v2/templates" prefetch={false}>Retry loading templates</Link>

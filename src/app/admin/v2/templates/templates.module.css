@@ -18,7 +18,7 @@
 .notice { display: grid; gap: 6px; padding: 16px 20px; background: #f0f4ed; color: #405b50; border: 1px solid #dce6d7; border-radius: 10px; }
 .notice h2 { font-size: 16px; }
 .notice p { font-size: 13px; max-width: 90ch; line-height: 1.7; }
-.offerings { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.offerings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .offering { display: grid; gap: 16px; align-content: start; padding: 20px 16px; border: 1px solid #dce3dc; border-radius: 10px; background: #fafcf8; }
 .offering[data-selected] { background: #eaf2ec; border-color: #8ca493; }
 .offering p { font-size: 12px; }

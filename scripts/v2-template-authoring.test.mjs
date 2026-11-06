@@ -229,6 +229,7 @@ test('the new page hides when disabled and requires Admin authorization before l
   let enabled = false;
   const calls = [];
   const page = load('src/app/admin/v2/templates/page.tsx', {
+    '@/lib/server/v2ContentPublishing': { isV2ContentPublishingEnabled: () => false },
     'react/jsx-runtime': { jsx: () => ({}), jsxs: () => ({}) }, '@/components/AdminDraftNavigation': {}, './TemplateEditor': {},
     'next/navigation': { notFound: () => { throw new Error('Not found'); } },
     '@/lib/server/v2TemplateFeature': { isV2TemplateAuthoringEnabled: () => enabled },

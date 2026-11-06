@@ -1,0 +1,38 @@
+{
+  "status": "passed",
+  "baseCommit": "0b1b57bbc272e42b0bb7801d369ece28d5dd4f26",
+  "localPhase2": {
+    "suites": 28,
+    "checks": 278
+  },
+  "browserJourneys": {
+    "content": 13,
+    "workflow": 11,
+    "inherited": 43
+  },
+  "resourceOrderAndStudentAccessGuards": "passed",
+  "lint": "passed",
+  "typescript": "passed",
+  "webpackBuild": "passed",
+  "hostedVerification": "pending publication",
+  "productionChanges": false,
+  "schemaChanges": false,
+  "sourceHashes": {
+    "scripts/admin-draft-navigation.test.mjs": "0e399102085b4861638838383ff835e4ec7b66994f6b91ef77edcde1733fd6f4",
+    "scripts/browser/admin-workflow/verify.mjs": "2b7c481387b97bf1bc1756a9b6beaca2dcb123029f7e2c3c828df8d1d406287b",
+    "scripts/browser/v2-phase5/verify.mjs": "664774af2b7910cca787dd6834a6360221fd1bc785aeb0b6f397beeeb60e1176",
+    "scripts/v2-template-authoring.test.mjs": "39aa3dc8395263b1eb76fbe7e5af755c29871a8c2cb4c88487c32e76646d4fea",
+    "src/app/admin/AdminShell.tsx": "ed57c1d5d36da13b832f4093f1550b3872e1e1ecb986447da8187c0a33e09f3f",
+    "src/app/admin/v2/WorkspaceNavigation.tsx": "ecf1996322030de058458f814b28fb9287844a254d6ab6b8ff78dd74335f59dc",
+    "src/app/admin/v2/batches/BatchWorkspace.tsx": "3ad0fd273bc30e68e528c656ea18af9ddefee95d3d3ec8ee4135263b36f2bbea",
+    "src/app/admin/v2/batches/PublicationScopePanel.tsx": "63a6ec75d0a07672f4e48f9ea50970ec13e1b53bb292029cb3c8c2c7b0f10679",
+    "src/app/admin/v2/content/ContentEditor.tsx": "06e7a879cc37ecc0437c8e224f3f965a39c5c84bdb0f52a64d118bdabdc49fdd",
+    "src/app/admin/v2/content/CourseResourceBrowser.tsx": "0dc17fd4358ff6fd4381770fbcbd296109a6691aff8a3a424585cc8e228f4947",
+    "src/app/admin/v2/content/PlacementEditor.tsx": "279e33f9cff905484a7fb6a064515f3cbfb9d47a5c228a81a58c114fcddcac6c",
+    "src/app/admin/v2/content/content.module.css": "06d179cc48aaa31c95dc8cd582ec69dba4dbaf250b6597a4da0760ad35415ec8",
+    "src/app/admin/v2/templates/TemplateEditor.tsx": "84c466273a58b44edf6cbd24b8b9a3f3bd7a800cf48ba1b774909dfc0bfe96a2",
+    "src/app/admin/v2/templates/page.tsx": "6421d177c7ac9a380e112691000b530da17b746e39be3b2c60fa4dcd53231737",
+    "src/app/admin/v2/templates/templates.module.css": "dc87ddc5867b00a1c9e65abd707110a35f48e149da328850468fcf23840679f0",
+    "src/app/admin/workflow.css": "236a1904678daa7f6ae40cf24aa183235846153d43bcfed33d28f153cd382979"
+  }
+}

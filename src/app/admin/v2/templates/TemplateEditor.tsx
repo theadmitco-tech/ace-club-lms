@@ -12,7 +12,7 @@ import type { V2Section } from '@/lib/v2Products';
 import { saveTemplateDraftAction } from './actions';
 import styles from './templates.module.css';
 
-export default function TemplateEditor({ templates, ownerId, setupPending = false }: { templates: V2TemplateDraft[]; ownerId: string; setupPending?: boolean }) {
+export default function TemplateEditor({ templates, ownerId, setupPending = false, subjectsOnly = false }: { subjectsOnly?: boolean; templates: V2TemplateDraft[]; ownerId: string; setupPending?: boolean }) {
   const router = useRouter();
   const [draft, setDraft] = useState<V2TemplateDraft | null>(null);
   const [dirty, setDirty] = useState(false);
@@ -124,8 +124,8 @@ export default function TemplateEditor({ templates, ownerId, setupPending = fals
       <DraftRecoveryNotice available={!!recovery.recovered} unavailable={recovery.unavailable} onRestore={restore} onDiscard={recovery.forget} />
       <details className={styles.card} open={!draft}><summary>Choose a course template or create one</summary><section aria-labelledby="template-list-heading">
         <h2 id="template-list-heading">Saved drafts</h2>
-        {templates.length === 0 ? <p>{setupPending ? 'Saved templates are not available in this Preview yet. Choose a course below to explore its editor.' : 'No templates have been created.'}</p> : <ul className={styles.list}>
-          {templates.map((item) => <li key={item.id}>
+        {!templates.some(item => (!subjectsOnly || item.productCode !== 'full_course')) ? <p>{setupPending ? 'Saved templates are not available in this Preview yet. Choose a course below to explore its editor.' : 'No templates have been created.'}</p> : <ul className={styles.list}>
+          {templates.filter(item => (!subjectsOnly || item.productCode !== 'full_course')).map((item) => <li key={item.id}>
             <button type="button" className="btn btn-secondary" disabled={pending} onClick={() => open(item)}>
               {item.document.title} · {V2_TEMPLATE_PRODUCTS[item.productCode].label} · revision {item.revision}
             </button>
@@ -133,11 +133,9 @@ export default function TemplateEditor({ templates, ownerId, setupPending = fals
         </ul>}
         <h3>Create a template</h3>
         <div className={styles.offerings}>
-          {(Object.entries(V2_TEMPLATE_PRODUCTS) as [V2CourseCode, typeof V2_TEMPLATE_PRODUCTS[V2CourseCode]][]).map(([code, product]) => (
+          {(Object.entries(V2_TEMPLATE_PRODUCTS) as [V2CourseCode, typeof V2_TEMPLATE_PRODUCTS[V2CourseCode]][]).filter(([code]) => !subjectsOnly || code !== 'full_course').map(([code, product]) => (
             <div key={code} className={styles.offering} data-selected={draft?.productCode === code || undefined}>
-              <span className={styles.eyebrow}>{product.sections.length === 3 ? 'ALL THREE SUBJECTS' : 'INDIVIDUAL OFFERING'}</span>
               <button type="button" className="btn btn-secondary" disabled={pending} onClick={() => newDraft(code)}>{product.label}</button>
-              <p>{product.sections.length === 3 ? 'Quant + Verbal + DI' : `Complete ${product.label} curriculum`}</p>
             </div>
           ))}
         </div>

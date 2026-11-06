@@ -106,7 +106,7 @@ function AdminShellContent({ children, showCoursePublishing = false, workflowEna
                 setSidebarOpen(false);
               }}
             >
-              <span className="sidebar-nav-icon" aria-hidden="true">{item.icon}</span>
+              <span className="sidebar-nav-icon" aria-hidden="true">{workflowEnabled ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">{item.href === '/admin/v2/content' ? <><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></> : item.href === '/admin/v2/batches' ? <><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18M7 15h3m4 0h3"/></> : <><circle cx="9" cy="8" r="3"/><path d="M3 21v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6m2 4a5 5 0 0 1 3 4v2"/></>}</svg> : item.icon}</span>
               <span className="sidebar-nav-label">{item.label}</span>
             </button>
           ))}

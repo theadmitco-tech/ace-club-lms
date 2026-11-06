@@ -14,7 +14,7 @@ function validReview(value: unknown): value is SavedReview {
   const data = value as SavedReview;
   return isPublicationScopeInput(data.input) && isPublicationScopeReview(data.review,data.input);
 }
-export default function PublicationScopePanel({ ownerId }: { ownerId: string }) {
+export default function PublicationScopePanel({ ownerId, subjectsOnly = false }: { ownerId: string; subjectsOnly?: boolean }) {
   const router = useRouter();
   const [products,setProducts] = useState<V2CourseCode[]>([]);
   const [action,setAction] = useState<'publish' | 'unpublish'>('publish');
@@ -54,7 +54,7 @@ export default function PublicationScopePanel({ ownerId }: { ownerId: string }) 
       onRestore={() => { if (recovery.recovered) { setReview(recovery.recovered); recovery.acknowledge(); } }} onDiscard={recovery.forget} />
     <fieldset className={styles.fields} disabled={pending || !!review || !!recovery.recovered}>
       <legend>Offerings in scope</legend>
-      {(Object.keys(V2_TEMPLATE_PRODUCTS) as V2CourseCode[]).map(code => <label key={code} style={{ display:'block',padding:'0.5rem' }}>
+      {(Object.keys(V2_TEMPLATE_PRODUCTS) as V2CourseCode[]).filter(code => !subjectsOnly || code !== 'full_course').map(code => <label key={code} style={{ display:'block',padding:'0.5rem' }}>
         <input type="checkbox" checked={products.includes(code)} onChange={event => setProducts(current => event.target.checked ? [...current,code] : current.filter(item => item !== code))} /> {V2_TEMPLATE_PRODUCTS[code].label}
       </label>)}
       <label>Publication action <select className="form-input" value={action} onChange={event => setAction(event.target.value as typeof action)}>

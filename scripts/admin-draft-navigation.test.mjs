@@ -420,6 +420,7 @@ test('Preview course editor keeps Admin authorization and Production denial with
   const jsx = (type, props) => ({ type, props });
   let authorized = true; const env = { VERCEL_ENV: 'preview' };
   const page = load('src/app/admin/v2/templates/page.tsx', {
+    '@/lib/server/v2ContentPublishing': { isV2ContentPublishingEnabled: () => false },
     'react/jsx-runtime': { jsx, jsxs: jsx },
     'next/navigation': { notFound: () => { throw Error('Not found'); } },
     '@/components/AdminDraftNavigation': { AdminDraftLink: 'link' },

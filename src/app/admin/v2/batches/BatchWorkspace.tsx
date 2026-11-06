@@ -17,8 +17,8 @@ export default function BatchWorkspace({ drafts, templates, publications, ownerI
   const { confirmLeave } = useAdminDraftNavigation();
   function open(batch: typeof active) { if (confirmLeave()) { setActive(batch); setTab('edit'); } }
   const current = active ? drafts.find(batch => batch.id === active.id && batch.revision > active.revision) ?? active : null;
-  const liveTemplates = templates.filter(template => template.document.events.some(event => event.kind !== 'outline'));
-  const matches = drafts.filter(batch => batch.title.toLowerCase().includes(search.toLowerCase()) &&
+  const liveTemplates = templates.filter(template => template.productCode !== 'full_course' && template.document.events.some(event => event.kind !== 'outline'));
+  const matches = drafts.filter(batch => batch.productCode !== 'full_course' && batch.title.toLowerCase().includes(search.toLowerCase()) &&
     (filter === 'all' || (publications.some(item => item.batchId === batch.id && item.state === 'published') ? filter === 'published' : filter === 'draft')));
   function rows(batches: V2BatchDraft[]) {
     return batches.map(batch => {
@@ -26,7 +26,7 @@ export default function BatchWorkspace({ drafts, templates, publications, ownerI
       return <article key={batch.id} className="workflow-batch-row"><div><h2>{batch.title}</h2><p className="workflow-muted">{V2_TEMPLATE_PRODUCTS[batch.productCode].label} · {batch.events.filter(event => event.kind !== 'outline').length} live classes</p><span className="workflow-pill">{published?.state === 'published' ? (published.batchRevision === batch.revision ? 'Published' : 'Published · draft changes') : published ? 'Unpublished' : 'Draft'}</span></div><button className="btn btn-secondary" onClick={() => open(batch)}>Open batch</button></article>;
     });
   }
-  return <div><p className="workflow-kicker">Live classes</p><div className="admin-page-header"><div><h1 className="admin-page-title">{active === undefined ? 'Batches' : current?.title ?? 'Create a live batch'}</h1><p className="admin-page-subtitle">Schedule every live class, then review the batch before publishing. All times are IST.</p></div>{active === undefined && <button className="btn btn-primary" disabled={!liveTemplates.length} onClick={() => open(null)}>Create batch</button>}</div>
+  return <div><div className="admin-page-header"><div><h1 className="admin-page-title">{active === undefined ? 'Batches' : current?.title ?? 'Create a live batch'}</h1><p className="admin-page-subtitle">Schedule every live class, then review the batch before publishing. All times are IST.</p></div>{active === undefined && <button className="btn btn-primary" disabled={!liveTemplates.length} onClick={() => open(null)}>Create batch</button>}</div>
     {active === undefined ? <>
       <div className="workflow-tabs" role="group" aria-label="Batch status">{(['all', 'draft', 'published'] as const).map(value => <button key={value} aria-pressed={filter === value} onClick={() => setFilter(value)}>{value === 'all' ? 'All' : value === 'draft' ? 'Draft' : 'Published'}</button>)}</div>
       <label className="workflow-search">Find a batch<input type="search" placeholder="Search batch title" value={search} onChange={e => setSearch(e.target.value)} /></label>
@@ -34,7 +34,7 @@ export default function BatchWorkspace({ drafts, templates, publications, ownerI
       {!liveTemplates.length && <p>A course template with live classes is needed to create a batch. <Link href="/admin/v2/templates">Prepare a live schedule →</Link></p>}
       <p className="workflow-muted">Recordings and readings are managed in <Link href="/admin/v2/content">Course content</Link>; an additional live batch is not required.</p>
       <details className="workflow-secondary"><summary>Existing recording libraries</summary><p>Previously published libraries remain available for maintenance. Their content can be edited from Course content.</p>{rows(matches.filter(batch => !batch.events.some(event => event.kind !== 'outline')))}</details>
-      <details className="workflow-secondary"><summary>Other batch tools</summary><div className="workflow-actions"><Link href="/admin/v2/templates">Course templates</Link><Link href="/admin/courses">Legacy batches</Link></div><details><summary>Publish across several offerings</summary><p>The complete impact across named courses is reviewed before confirmation.</p><PublicationScopePanel ownerId={ownerId} /></details></details>
+      <details className="workflow-secondary"><summary>Other batch tools</summary><div className="workflow-actions"><Link href="/admin/v2/templates">Course templates</Link><Link href="/admin/courses">Legacy batches</Link></div><details><summary>Publish across several offerings</summary><p>The complete impact across named courses is reviewed before confirmation.</p><PublicationScopePanel subjectsOnly ownerId={ownerId} /></details></details>
     </> : <>
       <button className="btn btn-secondary" onClick={() => open(undefined)}>← All batches</button>
       {current && <><div className="workflow-tabs" aria-label="Batch task"><button aria-pressed={tab === 'edit'} onClick={() => { if (confirmLeave()) setTab('edit'); }}>Course & schedule</button><button aria-pressed={tab === 'publish'} onClick={() => { if (confirmLeave()) setTab('publish'); }}>Review & publish</button></div>
