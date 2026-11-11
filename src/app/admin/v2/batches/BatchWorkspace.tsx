@@ -8,10 +8,10 @@ import BatchDraftEditor from './BatchDraftEditor';
 import PublicationPanel from './PublicationPanel';
 import PublicationScopePanel from './PublicationScopePanel';
 
-type Props = { drafts: V2BatchDraft[]; templates: V2TemplateDraft[]; publications: V2Publication[]; ownerId: string; initialBatchId?: string; outlineOpen?: boolean; initialSessionKey?: string };
-export default function BatchWorkspace({ drafts, templates, publications, ownerId, initialBatchId, outlineOpen = false, initialSessionKey }: Props) {
+type Props = { drafts: V2BatchDraft[]; templates: V2TemplateDraft[]; publications: V2Publication[]; ownerId: string; initialBatchId?: string; outlineOpen?: boolean; initialSessionKey?: string; reviewOpen?: boolean };
+export default function BatchWorkspace({ drafts, templates, publications, ownerId, initialBatchId, outlineOpen = false, initialSessionKey, reviewOpen = false }: Props) {
   const [active, setActive] = useState<V2BatchDraft | null | undefined>(() => drafts.find(batch => batch.id === initialBatchId));
-  const [tab, setTab] = useState<'edit' | 'publish'>('edit');
+  const [tab, setTab] = useState<'edit' | 'publish'>(reviewOpen ? 'publish' : 'edit');
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'all' | 'draft' | 'published'>('all');
   const { confirmLeave } = useAdminDraftNavigation();

@@ -15,6 +15,7 @@ await mkdir(output, { recursive: true });
 const root = await mkdtemp(path.join(tmpdir(), 'ace-v2-phase5-browser-'));
 const id = n => `40000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
 const batchId = id(1), quant4 = id(4), quant5 = id(5), verbal = id(6), di = id(7);
+const existingEvent = { key: id(80), kind: 'live', localDate: '2026-11-12', localStartTime: '18:00', durationMinutes: 60, instructor: '', capacity: 8 };
 const content = n => ({
   preSessionReads: [{ key: id(n + 100), title: 'Preparation reading', url: 'https://docs.example.test/pre-read' }],
   recordings: [{ key: id(n + 200), title: 'Shared recording', url: 'https://www.youtube.com/watch?v=abcdefghijk' }],
@@ -29,10 +30,10 @@ const sourceSessions = [
 ];
 function editorCourses() {
   return [{batchId:id(999),title:'Synthetic Full Course',productCode:'full_course',publicationRevision:1,sessions:sourceSessions,anchors:sourceSessions},
-    ...['quant','verbal','di'].map((productCode,n)=>({batchId:n===0?batchId:id(10+n),title:`Synthetic ${productCode}`,productCode,publicationRevision:1,sessions:sourceSessions.filter(s=>s.section===productCode),anchors:sourceSessions.filter(s=>s.section===productCode)}))];
+    ...['quant','verbal','di'].map((productCode,n)=>({batchId:n===0?batchId:id(10+n),title:`Synthetic ${productCode}`,productCode,publicationRevision:1,sessions:sourceSessions.filter(s=>s.section===productCode),anchors:sourceSessions.filter(s=>s.section===productCode).map(s=>({...s,title:state.editorItems.find(i=>i.visible&&i.document.kind==='heading'&&i.document.targets.some(t=>t.batchId===(n===0?batchId:id(10+n))&&t.sessionKey===s.key))?.document.title??s.title}))}))];
 }
 function initial() {
-  return { obligations: [], progress: [], lastSessionKey: null, liveRegistered: false, liveEvents: [], calls: [], submissions: [], interruptOnce: false, rejectProgress: false, noRecording: false, externalRecording: false, feedbackAlreadyComplete: false, extraSessions: [], placements: [], preview: false, placedItems: [], editorItems: [], editorCalls: [], failSave:false, conflictConfirm:false };
+  return { obligations: [], progress: [], lastSessionKey: null, liveRegistered: false, liveEvents: [], calls: [], submissions: [], interruptOnce: false, rejectProgress: false, noRecording: false, externalRecording: false, feedbackAlreadyComplete: false, extraSessions: [], placements: [], preview: false, placedItems: [], editorItems: [], editorCalls: [], failSave:false, conflictConfirm:false, sessionCalls:[], pendingSession:false, failSessionSave:false };
 }
 let state = initial();
 function view() {
@@ -60,6 +61,8 @@ const copied = new Set();
 async function copySource(file) {
   if (copied.has(file)) return;
   copied.add(file);
+  if(file==='src/app/admin/v2/content/session-actions.ts') {await put(file,`export async function loadSessionDraftAction(batchId:string){return (await fetch('/api/fixture/sessions',{method:'POST',body:JSON.stringify({action:'load',batchId})})).json()}`);return;}
+  if(file==='src/app/admin/v2/batches/actions.ts') {await put(file,`export async function previewBatchDraftAction(input:unknown){return (await fetch('/api/fixture/sessions',{method:'POST',body:JSON.stringify({action:'preview',input})})).json()} export async function saveBatchDraftAction(input:unknown,fingerprint:string){return (await fetch('/api/fixture/sessions',{method:'POST',body:JSON.stringify({action:'save',input,fingerprint})})).json()}`);return;}
   const source = await readFile(path.join(repo, file), 'utf8'); await put(file, source);
   for (const match of source.matchAll(/(?:from\s+|import\s*(?:\(\s*)?)['"](@\/[^'"]+|\.[^'"]+)['"]/g)) {
     const target = match[1].startsWith('@/') ? 'src/' + match[1].slice(2) : path.normalize(path.join(path.dirname(file), match[1]));
@@ -102,6 +105,13 @@ async function test(name, run, mobile = false) {
   await context.route('**/*', async route => {
     const request = route.request(), url = new URL(request.url());
     if (url.origin !== origin) { blocked.push(url.origin); return route.abort(); }
+    if(url.pathname==='/api/fixture/sessions'){
+      const body=request.postDataJSON();state.sessionCalls.push(body);
+      if(body.action==='load')return route.fulfill({json:state.pendingSession?{status:'pending',message:'Existing draft needs review.'}:{status:'ready',draft:{id:batchId,templateId:id(90),templateRevision:2,revision:3,productCode:'quant',title:'Synthetic quant',startDate:'2026-11-01',timeZone:'Asia/Kolkata',sessions:sourceSessions.filter(s=>s.section==='quant'),events:[existingEvent]}}});
+      if(body.action==='preview')return route.fulfill({json:{status:'ready',proposal:{fingerprint:'a'.repeat(32)}}});
+      if(state.failSessionSave){state.failSessionSave=false;return route.fulfill({json:{status:'error',message:'Synthetic save interruption'}});}
+      return route.fulfill({json:{status:'ready'}});
+    }
     if(url.pathname==='/api/admin/v2/content'){
       const {action,input}=request.postDataJSON();state.editorCalls.push({action,input});
       if(action==='workspace')return route.fulfill({json:{items:state.editorItems,courses:editorCourses()}});
@@ -153,6 +163,28 @@ function fivePlacements(){
  state.placedItems=state.placements.map(p=>({key:p.key,title:`Reading ${p.placement}`,url:'https://example.test/reading'}));
 }
 async function runTests() {
+ await test('Inline rename supports double click, cancellation and reviewed publication',async page=>{
+  await page.goto(origin+'/admin/v2/content');await page.getByRole('heading',{name:'Quant 4',exact:true}).getByRole('button').dblclick();await page.getByLabel('Session name',{exact:true}).fill('Cancelled name');await page.getByRole('button',{name:'Cancel',exact:true}).click();assert.equal(state.editorCalls.length,0);
+  await page.getByRole('button',{name:'Rename session',exact:true}).click();await page.getByLabel('Session name',{exact:true}).fill('Renamed Quant');await page.getByRole('button',{name:'Review name',exact:true}).click();await page.getByRole('button',{name:'Publish name',exact:true}).waitFor();assert.equal(state.editorItems[0].visible,false);assert.equal(state.editorItems[0].document.targets[0].sessionKey,quant4);
+  await page.getByRole('button',{name:'Publish name',exact:true}).click();await page.getByRole('heading',{name:'Renamed Quant',exact:true}).waitFor();assert.equal(state.editorItems[0].visible,true);await page.screenshot({path:path.join(output,'renamed-session.png'),fullPage:true});await noOverflow(page);
+ });
+ await test('Keyboard rename preserves the request on interrupted save and rejects stale publication',async page=>{
+  state.failSave=true;await page.goto(origin+'/admin/v2/content');await page.getByRole('heading',{name:'Quant 4',exact:true}).getByRole('button').press('F2');await page.getByLabel('Session name',{exact:true}).fill('Retry name');await page.getByRole('button',{name:'Review name',exact:true}).click();await page.getByRole('alert').filter({hasText:/interruption|course scope changed|course changed/}).waitFor();await page.getByRole('button',{name:'Retry name review',exact:true}).click();await page.getByRole('button',{name:'Publish name',exact:true}).waitFor();const saves=state.editorCalls.filter(c=>c.action==='save');assert.equal(saves.length,2);assert.deepEqual(saves[0],saves[1]);state.conflictConfirm=true;await page.getByRole('button',{name:'Publish name',exact:true}).click();await page.getByRole('alert').filter({hasText:/interruption|course scope changed|course changed/}).waitFor();assert.equal(state.editorItems[0].visible,false);assert.equal(await page.getByRole('heading',{name:'Retry name',exact:true}).count(),0);
+ });
+ await test('Shared heading edits retain every target for review',async page=>{
+  const targets=[quant4,quant5].map(sessionKey=>({batchId,sessionKey,publicationRevision:1,placement:'session',anchorKey:null,replaceKey:null,order:100}));
+  state.editorItems=[{id:id(81),draft_revision:1,published_revision:1,visible:true,deleted:false,publication_version:1,document:{title:'Shared heading',kind:'heading',url:null,targets}}];
+  await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'Rename session',exact:true}).click();await page.getByLabel('Session name',{exact:true}).fill('Reviewed shared heading');await page.getByRole('button',{name:'Review name',exact:true}).click();await page.getByRole('button',{name:'Publish name',exact:true}).waitFor();assert.equal(await page.getByRole('form',{name:'Rename session',exact:true}).getByRole('listitem').count(),2);assert.deepEqual(state.editorItems[0].document.targets,targets);assert.equal(state.editorCalls.filter(c=>c.action==='confirm').length,0);
+ });
+ await test('Mobile rename rejects empty names and Escape leaves no draft',async page=>{
+  await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'Rename session',exact:true}).click();await page.getByLabel('Session name',{exact:true}).fill('   ');await page.getByRole('button',{name:'Review name',exact:true}).click();await page.getByText('Enter a session name of up to 120 characters.',{exact:true}).waitFor();assert.equal(state.editorCalls.length,0);await noOverflow(page);await page.getByLabel('Session name',{exact:true}).press('Escape');await page.getByRole('heading',{name:'Quant 4',exact:true}).getByRole('button').press('Space');await page.getByLabel('Session name',{exact:true}).waitFor();await page.getByRole('button',{name:'Cancel',exact:true}).click();assert.equal(state.editorCalls.length,0);
+ },true);
+ await test('Adding a session keeps existing content and retries the same private draft',async page=>{
+  state.failSessionSave=true;await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'+ Add session',exact:true}).click();await page.getByLabel('New session name',{exact:true}).fill('Quant follow-up');await page.getByRole('button',{name:'Add session',exact:true}).click();await page.getByRole('alert').filter({hasText:/interruption|course scope changed|course changed/}).waitFor();await page.getByRole('button',{name:'Retry saving session',exact:true}).click();await page.getByRole('heading',{name:'Session draft saved',exact:true}).waitFor();const saves=state.sessionCalls.filter(c=>c.action==='save');assert.equal(saves.length,2);assert.deepEqual(saves[0],saves[1]);assert.deepEqual(saves[0].input.sessions.slice(0,2),sourceSessions.filter(s=>s.section==='quant'));assert.deepEqual(saves[0].input.events,[existingEvent]);assert.equal(saves[0].input.sessions[2].section,'quant');assert.equal(saves[0].input.sessions[2].title,'Quant follow-up');assert.equal(state.editorCalls.length,0);assert.equal(await page.getByRole('link',{name:'Review & publish session',exact:true}).getAttribute('href'),'/admin/v2/batches?batch='+batchId+'&review=1');await page.screenshot({path:path.join(output,'add-session-mobile.png'),fullPage:true});await noOverflow(page);
+ },true);
+ await test('Existing course drafts must be reviewed before another session is added',async page=>{
+  state.pendingSession=true;await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'+ Add session',exact:true}).click();await page.getByLabel('New session name',{exact:true}).fill('Another session');await page.getByRole('button',{name:'Add session',exact:true}).click();await page.getByRole('link',{name:'Review saved draft changes',exact:true}).waitFor();assert.deepEqual(state.sessionCalls.map(c=>c.action),['load']);
+ });
  await test('Five reading placements render once and follow the video order',async page=>{
   fivePlacements();await page.goto(origin);
   for(const placement of state.placements){assert.equal(await page.getByRole('heading',{name:`Reading ${placement.placement}`,exact:true}).count(),1);}
@@ -182,7 +214,7 @@ async function runTests() {
   await page.getByRole('group',{name:'Course subjects',exact:true}).getByRole('button',{name:'Verbal',exact:true}).click();await page.getByRole('button',{name:'Open Verbal 1',exact:true}).click();await page.getByRole('article',{name:'Session content: Verbal 1'}).waitFor();
  });
  await test('Admin creates universal content and reviews affected sessions before confirmation',async page=>{
-  await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'Shared library',exact:true}).click();await page.getByRole('button',{name:'Create a resource',exact:true}).click();await page.getByLabel('Title',{exact:true}).fill('Universal reading');await page.getByLabel(/^Resource URL/).fill('https://example.test/reading');
+  await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'Add pre-class read',exact:true}).click();await page.getByLabel('Title',{exact:true}).fill('Universal reading');await page.getByLabel(/^Resource URL/).fill('https://example.test/reading');
   await page.getByText('Add another course or session',{exact:true}).click();for(const checkbox of await page.getByRole('checkbox').all())await checkbox.check();
   await page.getByRole('button',{name:'Save draft',exact:true}).click();await page.getByText('Draft saved.',{exact:false}).waitFor();
   assert.equal(state.editorItems[0].visible,false);assert.equal(state.editorItems[0].document.targets.length,4);
@@ -201,7 +233,7 @@ async function runTests() {
  });
 
  await test('Subject navigation retains the selected session after editing',async page=>{
-  await page.goto(origin+'/admin/v2/content');await page.screenshot({path:path.join(output,'subject-navigation.png'),fullPage:true});assert.equal(await page.getByText('Synthetic Full Course',{exact:true}).count(),0);await page.getByRole('button',{name:'Quant',exact:true}).click();await page.getByRole('button',{name:'02 Quant 5',exact:true}).click();await page.getByRole('button',{name:'Edit Shared recording',exact:true}).click();page.once('dialog',dialog=>dialog.accept());await page.getByRole('button',{name:'← Course content',exact:true}).click();assert.equal(await page.getByRole('button',{name:'02 Quant 5',exact:true}).getAttribute('aria-current'),'true');await page.getByText('Session options',{exact:true}).click();assert.equal(await page.getByRole('link',{name:'Edit or remove original session content →',exact:true}).getAttribute('href'),'/admin/v2/batches?batch='+batchId+'&outline=1&session='+quant5);assert.equal(state.editorCalls.length,0);
+  await page.goto(origin+'/admin/v2/content');await page.screenshot({path:path.join(output,'subject-navigation.png'),fullPage:true});assert.equal(await page.getByText('Synthetic Full Course',{exact:true}).count(),0);await page.getByRole('button',{name:'Quant',exact:true}).click();await page.getByRole('button',{name:'02 Quant 5',exact:true}).click();await page.getByRole('button',{name:'Edit Shared recording',exact:true}).click();page.once('dialog',dialog=>dialog.accept());await page.getByRole('button',{name:'← Course content',exact:true}).click();assert.equal(await page.getByRole('button',{name:'02 Quant 5',exact:true}).getAttribute('aria-current'),'true');for(const label of ['Shared library','Session options','Course templates'])assert.equal(await page.getByText(label,{exact:true}).count(),0);assert.equal(state.editorCalls.length,0);
  });
  await test('Only three subjects are offered and switching opens the matching library',async page=>{
   await page.goto(origin+'/admin/v2/content');const subjects=page.getByRole('group',{name:'Subjects',exact:true});assert.deepEqual(await subjects.getByRole('button').allTextContents(),['Quant','Verbal','DI']);
@@ -245,7 +277,7 @@ try {
 finally {
   const sourceHashes = {};
   for (const file of [...copied].sort()) sourceHashes[file] = createHash('sha256').update(await readFile(path.join(root, file))).digest('hex');
-  await writeFile(path.join(output, 'results.json'), JSON.stringify({ baseCommit: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: repo, encoding: 'utf8' }).trim(), mode: 'isolated UI fixture; synthetic learning state and mutation responses; not hosted or database authorization evidence', browser: browser?.version(), sourceHashes, results, blockedOrigins: [...new Set(blocked)], browserErrors }, null, 2) + '\n');
+  await writeFile(path.join(output, 'results.json'), JSON.stringify({ baseCommit: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: repo, encoding: 'utf8' }).trim(), mode: 'isolated UI fixture; synthetic learning state and mutation responses; session and batch Server Actions replaced by fixture HTTP adapters; not hosted or database authorization evidence', browser: browser?.version(), sourceHashes, results, blockedOrigins: [...new Set(blocked)], browserErrors }, null, 2) + '\n');
   await browser?.close();
   if (server) { const stopped = new Promise(resolve => server.once('exit', resolve)); server.kill('SIGTERM'); await stopped; }
   backend.closeAllConnections(); await new Promise(resolve => backend.close(resolve)); log.end(); await rm(root, { recursive: true, force: true });

@@ -55,7 +55,6 @@ function AdminShellContent({ children, showCoursePublishing = false, workflowEna
     { href: '/admin/v2/students', label: 'Students', icon: '○' },
   ];
   const moreItems = [
-    { href: '/admin/v2/templates', label: 'Course templates' },
     { href: '/admin/v2/access', label: 'Prices & purchase history' },
     { href: '/admin/users', label: 'Account management' },
     { href: '/admin/progress', label: 'Student progress' },
