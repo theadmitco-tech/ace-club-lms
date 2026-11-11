@@ -1,0 +1,9 @@
+{
+  "scope": "Isolated build from committed source plus the listed Admin changes; unrelated local Student edits excluded.",
+  "baseCommit": "d37520f080f6c43f366c0425d586e83e89f1e559",
+  "sha256": {
+    "src/app/admin/v2/content/ReorderSessions.tsx": "217dae17323c426cc3a2d56a19d2be15d70330391391097e94a84653d934711a",
+    "src/app/admin/v2/content/CourseResourceBrowser.tsx": "e17ac56fca2325c221b63ff66d9777dfeded3328a948d722b4eaf97471cab110",
+    "src/app/admin/v2/content/content.module.css": "b132c1e98a544dc797ce6c12fd13803b69589b00f6fef0470033e58daca380c8"
+  }
+}

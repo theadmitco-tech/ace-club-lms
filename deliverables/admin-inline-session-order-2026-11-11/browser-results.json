@@ -1,0 +1,163 @@
+{
+  "baseCommit": "d37520f080f6c43f366c0425d586e83e89f1e559",
+  "mode": "isolated UI fixture; synthetic learning state and mutation responses; session and batch Server Actions replaced by fixture HTTP adapters; not hosted or database authorization evidence",
+  "browser": "156.0.8078.47",
+  "sourceHashes": {
+    "public/5.svg": "6712128c2ebc5febc738bda30b4eb69d794eaa96f4908ffa14ff213e5ca0f068",
+    "public/6.svg": "81cd3689a08965edb8cbc24aa4abc99887faa9d148e9a96ac99958e7481625b6",
+    "src/app/admin/AdminShell.tsx": "4c921ee11d6beb160a61719f43b34a4f2ecc0969257ce4780edf8aaf42935e77",
+    "src/app/admin/admin.css": "8a536bf66de9d105e8e2aa378eddd6434cfafba01dadfe6677158ccc97b6049e",
+    "src/app/admin/v2/batches/actions.ts": "324e1cd35088d6af76e95703d79b944afd6d995aaa3d9506d43f093c3887db8d",
+    "src/app/admin/v2/content/AddSession.tsx": "7b2ff6db9bee577b0010250d25efc3e7688401d4ced8af123a3316b90b1c8cb4",
+    "src/app/admin/v2/content/ContentEditor.tsx": "c7f7303b69b797bdfafb77670a5f3a107ea27c5b55ddef2ce1a3518c49a187c8",
+    "src/app/admin/v2/content/CourseResourceBrowser.tsx": "e17ac56fca2325c221b63ff66d9777dfeded3328a948d722b4eaf97471cab110",
+    "src/app/admin/v2/content/PlacementEditor.tsx": "279e33f9cff905484a7fb6a064515f3cbfb9d47a5c228a81a58c114fcddcac6c",
+    "src/app/admin/v2/content/ReorderSessions.tsx": "217dae17323c426cc3a2d56a19d2be15d70330391391097e94a84653d934711a",
+    "src/app/admin/v2/content/SessionName.tsx": "6afb6189e58828fe97bbfaeaad1fa7ec452bed28e8f9af932a3e445aca4deb98",
+    "src/app/admin/v2/content/content.module.css": "b132c1e98a544dc797ce6c12fd13803b69589b00f6fef0470033e58daca380c8",
+    "src/app/admin/v2/content/session-actions.ts": "78ee24bac9ef50ccad36ee6451163f70faef6b15a4aeb658dce2be9202fec09f",
+    "src/app/admin/workflow.css": "236a1904678daa7f6ae40cf24aa183235846153d43bcfed33d28f153cd382979",
+    "src/app/session/[id]/material/[materialId]/material.css": "5a84d928a3b5ba8776f44cda141cbf190b5407c3abd358cc32907c3be7f3b30b",
+    "src/components/AdminDraftNavigation.tsx": "66c2cb37d18fc5ef00d42ed852acba3ea8cfcac3e21b823ba611f98ff841d0ea",
+    "src/components/BrandLogo.tsx": "56a57e01003d4195f1ae2a7b771fbd5ab9dccb84fc9765b88445165fcc583a0f",
+    "src/components/student/NotionReader.tsx": "de6aa3c60952d661577547ece27871e60769868328527fc283f1889a96890475",
+    "src/components/student/V2CourseSessionView.tsx": "191e6dc2decdd614b96b5eafacaffcce8999a743c6edfc19dac4a568732c5198",
+    "src/components/student/V2LearningWorkspace.tsx": "125e138058c85aa1f1bd5af847701cc2b0b0d188f1a12637ff0427aff5133a7a",
+    "src/components/student/V2RecordingPlayer.tsx": "a114c4b578521b0f2fe318e138b55b09eaffc0286ae5384cb45996f8f65f732f",
+    "src/components/student/v2CourseSession.module.css": "7351b5b0fb86dabe7b4ac411a460be23b0851767d326d928b695651c109ab63f",
+    "src/components/student/v2Learning.module.css": "d87fcdfabbd43ef36b99f0b99a1f8b7930e57c202acf91ce161d9a38dfb30871",
+    "src/lib/AuthContext.tsx": "a2e0f5d3ff8ccb31147b5be0d3911f772999f8dab49adbbc2edf4ae495888819",
+    "src/lib/adminResourceOrder.ts": "9ce5150c03f5f64064e8a6cb7f9ac2b47c618f26d324431c2e751e56c09a3cce",
+    "src/lib/draftRecovery.ts": "09185b2311f9a5b374d721216097f431a87c0f588847214b6601f8073980c788",
+    "src/lib/types.ts": "628afbf597774d9eafd03b182620a75afcfba44d4972aae4797a23907f955ee6",
+    "src/lib/v2Batches.ts": "cdd283bdff994a4c963cfccc58410dbdf9a31fbae5cd9d6e20cf028ddb4bead6",
+    "src/lib/v2ContentAssets.ts": "60ac8111d22c6ad8df52fb91cf3cac2f24ecc46ba8b9334c7447fa7ca68ae388",
+    "src/lib/v2ContentPublishing.ts": "e2ae6374390e0d998832118559eb812386afedb561f1ca13f6d6a2bb65e45ad4",
+    "src/lib/v2Learning.ts": "bdfccbf8c32059c55a250aeae7a1ca4ae89aa4b7674b2129c079f467e535a5ea",
+    "src/lib/v2Meetings.ts": "714ee6ea4ce540d73b18876d5822ba7df27e26de377f5e79d5f7399d4a345a85",
+    "src/lib/v2Products.ts": "cf0833e5cc92920a48215c06760a69cfc42e7cf37c096bba459ca439268cbd1e",
+    "src/lib/v2ReadingPreview.ts": "c3c914c1437e9971dc94bfb6b4da3c1b5d97d14cdff1739eb0ad253945c33f9f",
+    "src/lib/v2SessionOrder.ts": "70a7783e89f667b45448a6b47dfad4190ec847e33323f1406de105c681a61f9f",
+    "src/lib/v2SessionPresentation.ts": "1b2159e08a40d2c2430f80d62fdb77c961da4debd5e27bc1d5fed5124f92e3b4",
+    "src/lib/v2StudentDelivery.ts": "4607ae93554d432746b7dc27a490a8e95a12581872b14397420fe3ff7ad748c2",
+    "src/lib/v2Templates.ts": "7824905327aa90eaf5cddd94ce2454a3d13a54bc543b582e9b01b22aa22ab114",
+    "src/lib/youtube.ts": "c4154560e720a7cc63d2aaa30ff41944240eab04bd85d7d62980186360f3d62d",
+    "src/utils/supabase/client.ts": "9ebc9963d43aee91d147bb3fa2969bd873389cbbaad13ff3108fee43c1d021da"
+  },
+  "results": [
+    {
+      "name": "Reordering stays in the outline while the selected session content remains visible",
+      "status": "passed"
+    },
+    {
+      "name": "Keyboard reordering announces moves, preserves focus, undoes and saves exact order",
+      "status": "passed"
+    },
+    {
+      "name": "Mouse drag reorders through a visible drop target without saving automatically",
+      "status": "passed"
+    },
+    {
+      "name": "Mobile move buttons and retry preserve the same session request",
+      "status": "passed"
+    },
+    {
+      "name": "A stale session list cannot overwrite the current course order",
+      "status": "passed"
+    },
+    {
+      "name": "Existing unpublished changes block reordering without new writes",
+      "status": "passed"
+    },
+    {
+      "name": "Narrow layouts retain readable titles, touch targets and reduced-motion behavior",
+      "status": "passed"
+    },
+    {
+      "name": "Automated accessibility checks pass for browsing, reordering, adding and renaming",
+      "status": "passed"
+    },
+    {
+      "name": "Name review can return to editing and closing restores focus",
+      "status": "passed"
+    },
+    {
+      "name": "Inline rename supports double click, cancellation and reviewed publication",
+      "status": "passed"
+    },
+    {
+      "name": "Keyboard rename preserves the request on interrupted save and rejects stale publication",
+      "status": "passed"
+    },
+    {
+      "name": "Shared heading edits retain every target for review",
+      "status": "passed"
+    },
+    {
+      "name": "Mobile rename rejects empty names and Escape leaves no draft",
+      "status": "passed"
+    },
+    {
+      "name": "Adding a session keeps existing content and retries the same private draft",
+      "status": "passed"
+    },
+    {
+      "name": "Existing course drafts must be reviewed before another session is added",
+      "status": "passed"
+    },
+    {
+      "name": "Five reading placements render once and follow the video order",
+      "status": "passed"
+    },
+    {
+      "name": "Universal outer readings appear once across authorized session targets",
+      "status": "passed"
+    },
+    {
+      "name": "Admin preview navigation and readings make no learning requests",
+      "status": "passed"
+    },
+    {
+      "name": "Locked subject resources are absent including all outer reading placements",
+      "status": "passed"
+    },
+    {
+      "name": "Admin creates universal content and reviews affected sessions before confirmation",
+      "status": "passed"
+    },
+    {
+      "name": "Admin editing an original item preserves its replacement identity and order",
+      "status": "passed"
+    },
+    {
+      "name": "Subject navigation retains the selected session after editing",
+      "status": "passed"
+    },
+    {
+      "name": "Only three subjects are offered and switching opens the matching library",
+      "status": "passed"
+    },
+    {
+      "name": "Mobile subject and session selection stays compact and editable",
+      "status": "passed"
+    },
+    {
+      "name": "Multiple readings offer named ordering without immediate publication",
+      "status": "passed"
+    },
+    {
+      "name": "Failed save retains values and never publishes",
+      "status": "passed"
+    },
+    {
+      "name": "Conflict removes confirmation and requires latest-version review plus a fresh save",
+      "status": "passed"
+    },
+    {
+      "name": "Leaving a changed resource can be cancelled without losing edits",
+      "status": "passed"
+    }
+  ],
+  "blockedOrigins": [],
+  "browserErrors": []
+}

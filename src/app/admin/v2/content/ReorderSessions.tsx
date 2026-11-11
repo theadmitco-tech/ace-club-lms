@@ -9,8 +9,8 @@ import { previewBatchDraftAction, saveBatchDraftAction } from '../batches/action
 import styles from './content.module.css';
 
 type Session = { key: string; title: string };
-export default function ReorderSessions({ batchId, sessions, onClose, onSaved }: {
-  batchId: string; sessions: Session[]; onClose: () => void; onSaved: () => void;
+export default function ReorderSessions({ batchId, sessions, selectedKey, onSelect, onClose, onSaved }: {
+  batchId: string; sessions: Session[]; selectedKey?: string; onSelect: (key: string) => void; onClose: () => void; onSaved: () => void;
 }) {
   const [original] = useState(() => sessions.map(session => session.key));
   const [order, setOrder] = useState(original), [history, setHistory] = useState<string[][]>([]);
@@ -79,29 +79,27 @@ export default function ReorderSessions({ batchId, sessions, onClose, onSaved }:
     } catch (error) { setError(error instanceof Error ? error.message : 'Confirmation was interrupted. Retry to recover the same saved order.'); }
     finally { busy.current = false; setPending(false); }
   }
-  return <section className={styles.reorderEditor} aria-labelledby={titleId} aria-busy={pending}>
-    <header className={styles.taskHeading}><span className={styles.sessionCount}>Session order</span><h2 id={titleId} ref={heading} tabIndex={-1}>{saved ? 'Session order saved' : 'Reorder sessions'}</h2>
-      <p id={helpId}>{saved ? 'The new order is saved as a draft. Review and publish it when ready.' : 'Drag the handle or use the arrows to move a session. Nothing changes for students until published.'}</p>
-    </header>
-    {!saved && <><p className={styles.keyboardHint}>Keyboard: focus a handle, then use ↑ / ↓. Home and End move to the first or last position.</p>
-      <ol className={styles.reorderList} ref={list} aria-label="Session order">
+  return <section className={styles.outlineReorder} aria-labelledby={titleId} aria-busy={pending}>
+    <h3 id={titleId} ref={heading} tabIndex={-1} className={styles.visuallyHidden}>{saved ? 'Session order saved' : 'Reorder sessions'}</h3>
+    <p id={helpId} className={styles.outlineOrderHelp}>{saved ? 'Draft order · not yet published' : 'Drag a handle or use the arrows.'}<span className={styles.visuallyHidden}> Keyboard: focus a handle and use the arrow keys, Home or End.</span></p>
+      <ol className={`${styles.reorderList} ${styles.outlineOrderList}`} ref={list} aria-label="Session order">
         {order.map((key, index) => {
           const title = sessions.find(session => session.key === key)!.title;
-          return <li key={key} data-session-key={key} data-dragging={dragging === key || undefined} data-drop={over?.key === key ? over.edge : undefined}
+          return <li key={key} data-session-key={key} data-selected={key === selectedKey || undefined} data-dragging={dragging === key || undefined} data-drop={over?.key === key ? over.edge : undefined}
             onDragOver={event => { if (!dragging || locked) return; event.preventDefault(); event.dataTransfer.dropEffect = 'move'; const rect = event.currentTarget.getBoundingClientRect(); setOver({ key, edge: event.clientY < rect.top + rect.height / 2 ? 'before' : 'after' }); }}
             onDrop={event => { event.preventDefault(); if (!dragging || locked) return; const from = order.indexOf(dragging); const slot = index + (over?.edge === 'after' ? 1 : 0); move(dragging, Math.max(0, Math.min(order.length - 1, slot - (from < slot ? 1 : 0)))); setDragging(null); setOver(null); }}>
             <button type="button" className={styles.dragHandle} data-handle-key={key} disabled={locked} draggable={!locked} aria-label={`Move ${title}`} aria-describedby={helpId}
               onDragStart={event => { setDragging(key); event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', key); if (event.currentTarget.parentElement) event.dataTransfer.setDragImage(event.currentTarget.parentElement, 24, 24); }}
               onDragEnd={() => { setDragging(null); setOver(null); }}
               onKeyDown={event => { const target = event.key === 'ArrowUp' ? index - 1 : event.key === 'ArrowDown' ? index + 1 : event.key === 'Home' ? 0 : event.key === 'End' ? order.length - 1 : null; if (target !== null) { event.preventDefault(); move(key, target); } }}><span aria-hidden="true">⠿</span></button>
-            <span className={styles.orderNumber} aria-hidden="true">{String(index + 1).padStart(2, '0')}</span><span className={styles.orderTitle}>{title}</span>
+            <button type="button" className={styles.outlineSessionTitle} aria-current={key === selectedKey ? 'true' : undefined} aria-label={`Open ${title}`} disabled={pending} onClick={() => onSelect(key)}><span className={styles.orderNumber} aria-hidden="true">{String(index + 1).padStart(2, '0')}</span><span className={styles.orderTitle}>{title}</span></button>
             <div className={styles.moveButtons}><button type="button" disabled={locked || index === 0} aria-label={`Move ${title} up`} onClick={() => move(key, index - 1)}>↑</button><button type="button" disabled={locked || index === order.length - 1} aria-label={`Move ${title} down`} onClick={() => move(key, index + 1)}>↓</button></div>
           </li>;
         })}
-      </ol></>}
-    <p role="status" aria-live="polite" aria-atomic="true" className={styles.orderStatus}>{saved ? 'Saved draft · awaiting publication' : announcement || 'Current published order'}</p>
+      </ol>
+    <p role="status" aria-live="polite" aria-atomic="true" className={styles.visuallyHidden}>{saved ? 'Saved draft · awaiting publication' : announcement || 'Current published order'}</p>
     {error && <p role="alert" className={styles.inlineError}>{error}</p>}
-    <footer className={styles.taskActions}>{saved ? <><Link className={styles.primary} href={`/admin/v2/batches?batch=${batchId}&review=1`}>Review & publish order</Link><button onClick={onClose}>Done</button></> : <>
+    <footer className={`${styles.taskActions} ${styles.outlineOrderActions}`}>{saved ? <><Link className={styles.primary} href={`/admin/v2/batches?batch=${batchId}&review=1`}>Review & publish order</Link><button onClick={onClose}>Done</button></> : <>
       {existingDraft ? <Link href={`/admin/v2/batches?batch=${batchId}&review=1`}>Review saved draft changes</Link> : <button className={styles.primary} disabled={pending || !dirty} onClick={() => void save()}>{pending ? 'Saving…' : submitted ? 'Retry saving order' : 'Save order'}</button>}
       <button disabled={locked || !history.length} onClick={undo}>Undo move</button><button disabled={pending} onClick={onClose}>{submitted ? 'Close editor' : 'Cancel'}</button>
     </>}</footer>
