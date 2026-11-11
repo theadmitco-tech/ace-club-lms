@@ -15,14 +15,21 @@ const backend=createServer(async(req,res)=>{try{let body='';for await(const part
 await new Promise(resolve=>backend.listen(0,'127.0.0.1',resolve));
 const root=await createFixtureApp(backend.address().port,true);
 const put=async(file,body)=>{await mkdir(path.dirname(path.join(root,file)),{recursive:true});await writeFile(path.join(root,file),body);};
-const extra=['src/app/admin/page.tsx','src/app/admin/v2/students/[studentId]/page.tsx'];
+const extra=['src/app/admin/page.tsx','src/app/admin/v2/students/[studentId]/page.tsx','src/app/admin/v2/students/[studentId]/studentAccess.module.css'];
 for(const file of extra){await mkdir(path.dirname(path.join(root,file)),{recursive:true});await copyFile(path.join(repo,file),path.join(root,file));}
 await put('src/app/admin/page.tsx',`import {redirect} from 'next/navigation';export default function Page(){redirect('/admin/v2/content');}`);
 await put('src/app/admin/v2/content/page.tsx',`export default function Page(){return <h1>Course content</h1>}`);
 await put('src/lib/server/v2ContentPublishing.ts',`export function isV2ContentPublishingEnabled(){return true;}export async function readContentWorkspace():Promise<{items:{id:string;deleted:boolean;draft_revision:number;published_revision:number|null;document:{title:string}}[]}>{return {items:[]};}`);
-await put('src/lib/server/adminStudentAccess.ts',`export async function readAdminStudentAccess(studentId:string){const expired=studentId.endsWith('602'),failed=studentId.endsWith('603');return {
+await put('src/lib/server/adminStudentAccess.ts',`export async function readAdminStudentAccess(studentId:string){const expired=studentId.endsWith('602'),failed=studentId.endsWith('603'),empty=studentId.endsWith('604'),batchFailed=studentId.endsWith('605');return {
 profile:{error:null,data:{full_name:'Synthetic Student',is_active:true}},purchases:{error:failed?'Unavailable':null,data:[{id:'purchase',confirmed_at:'2026-01-01T00:00:00Z',expires_at:expired?'2026-02-01T00:00:00Z':'2027-01-01T00:00:00Z',revoked_at:null,v2_product_grants:[{product_code:'full_batch'}]}]},
-enrollments:{error:null,data:[{batch_id:'${id(10)}',active:true}]},registrations:{error:null,data:[{batch_id:'${id(10)}',active:false}]},batches:{status:'ready',drafts:[{id:'${id(10)}',title:'Synthetic batch',events:[{kind:'live'}]}]},checkedAt:Date.parse('2026-11-04T00:00:00Z')};}`);
+enrollments:{error:batchFailed?'Unavailable':null,data:[{batch_id:'${id(10)}',active:true}]},registrations:{error:null,data:[{batch_id:'${id(10)}',active:false}]},batches:{status:'ready',drafts:(empty?[]:[
+{id:'${id(10)}',productCode:'full_course',title:'Synthetic live batch',events:[{kind:'live'}]},
+{id:'${id(11)}',productCode:'full_course',title:'Full Course · Learning library',events:[]},
+{id:'${id(12)}',productCode:'di',title:'DI · Learning library',events:[{kind:'outline'}]},
+{id:'${id(13)}',productCode:'verbal',title:'Verbal · Learning library',events:[]},
+{id:'${id(14)}',productCode:'quant',title:'Quant · Learning library',events:[]},
+{id:'${id(15)}',productCode:'quant',title:'Quant live batch',events:[{kind:'live'}]}
+]) as import('@/lib/v2Batches').V2BatchDraft[]},checkedAt:Date.parse('2026-11-04T00:00:00Z')};}`);
 const reservation=createServer();await new Promise(resolve=>reservation.listen(0,'127.0.0.1',resolve));const port=reservation.address().port;await new Promise(resolve=>reservation.close(resolve));
 const origin=`http://127.0.0.1:${port}`,next=path.join(repo,'node_modules/next/dist/bin/next'),env={PATH:process.env.PATH,NODE_ENV:'production',NEXT_TELEMETRY_DISABLED:'1'};
 const log=createWriteStream(path.join(output,'fixture-server.log'));const results=[],errors=[],blocked=[];let browser,server;
@@ -44,7 +51,27 @@ try{
  await test('Batch publication requires explicit review then confirmation',async page=>{await page.goto(origin+'/admin/v2/batches');await button(page,'Open batch').click();await button(page,'Review & publish').click();assert.equal(state.publications.length,0);await button(page,'Preview publication').click();await button(page,'Confirm publish').waitFor();assert.equal(state.publications.length,0);await button(page,'Cancel review').click();assert.equal(state.publications.length,0);await button(page,'Preview publication').click();await button(page,'Confirm publish').click();await until(()=>assert.equal(state.publications.length,1));});
  await test('Recording-only templates do not create unnecessary live batches',async page=>{for(const template of state.templates){template.document.events=[];template.document.durationDays=null;}await page.goto(origin+'/admin/v2/batches');assert.equal(await button(page,'Create batch').isDisabled(),true);assert.equal(await button(page,'Calendar').count(),0);assert.equal(state.drafts.length,1);assert.equal(state.publications.length,0);});
  await test('Every saved live class has independent date and time controls',async page=>{const extra=structuredClone(state.drafts[0].events[0]);extra.key=id(998);extra.title='Second synthetic class';extra.localDate='2026-11-04';state.drafts[0].events.push(extra);await page.goto(origin+'/admin/v2/batches');await button(page,'Open batch').click();assert.equal(await page.getByLabel('Date',{exact:true}).count(),2);assert.equal(await page.locator('input[type=time]:visible').count(),2);});
- await test('Student access distinguishes enrollment and live registration',async page=>{await page.goto(origin+'/admin/v2/students/'+id(601));await page.getByText('Active access',{exact:true}).waitFor();await page.getByText('Enrolled · No live registration',{exact:true}).waitFor();assert.equal(await page.getByRole('link',{name:'Manage enrollment',exact:true}).getAttribute('href'),'/admin/v2/batches/'+id(10)+'/students');});
+ await test('Subject libraries replace the combined library while live batches retain separate controls',async page=>{
+  await page.goto(origin+'/admin/v2/students/'+id(601));await page.getByText('Active access',{exact:true}).waitFor();
+  const panel=page.getByRole('region',{name:'Libraries & live batches',exact:true});
+  const libraries=panel.getByRole('region',{name:'Subject libraries',exact:true}), live=panel.getByRole('region',{name:'Live batches',exact:true});
+  assert.deepEqual(await libraries.getByRole('heading',{level:4}).allTextContents(),['Quant · Learning library','Verbal · Learning library','DI · Learning library']);
+  assert.equal(await panel.getByText('Full Course · Learning library',{exact:true}).count(),0);
+  await page.getByText('Full Course',{exact:true}).waitFor();
+  assert.equal(await libraries.getByRole('link',{name:/live registration/i}).count(),0);
+  await live.getByText('Enrolled',{exact:true}).waitFor();assert.equal(await live.getByText('Not registered for live classes',{exact:true}).count(),2);
+  assert.equal(await live.getByRole('link',{name:'Manage enrollment: Synthetic live batch',exact:true}).getAttribute('href'),'/admin/v2/batches/'+id(10)+'/students');
+  assert.equal(await live.getByRole('link',{name:'Manage live registration: Synthetic live batch',exact:true}).getAttribute('href'),'/admin/v2/batches/'+id(10)+'/live');
+ });
+ await test('Mobile batch access has accessible actions and no horizontal overflow',async page=>{
+  await page.goto(origin+'/admin/v2/students/'+id(601));const panel=page.getByRole('region',{name:'Libraries & live batches',exact:true});
+  await panel.waitFor();await page.addScriptTag({path:path.join(repo,'node_modules/axe-core/axe.min.js')});
+  const violations=await page.evaluate(async()=>{const result=await window.axe.run(document.querySelector('[aria-labelledby="batch-access-heading"]'),{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}});return result.violations.map(v=>v.id);});assert.deepEqual(violations,[]);
+  for(const link of await panel.getByRole('link').all()){const size=await link.boundingBox();assert.ok(size.height>=44);}
+  const first=panel.getByRole('link').first();await first.focus();await page.keyboard.press('Tab');assert.equal(await panel.getByRole('link').nth(1).evaluate(el=>el===document.activeElement),true);
+ },390);
+ await test('Empty batches show honest group empty states',async page=>{await page.goto(origin+'/admin/v2/students/'+id(604));await page.getByText('No live batches are available yet.',{exact:true}).waitFor();await page.getByText('No subject libraries are available yet.',{exact:true}).waitFor();assert.equal(await page.getByRole('region',{name:'Libraries & live batches',exact:true}).getByRole('link').count(),0);});
+ await test('Unavailable enrollment records never display missing-access statuses',async page=>{await page.goto(origin+'/admin/v2/students/'+id(605));await page.getByText('Batch access could not be loaded. Reload before making changes.',{exact:true}).waitFor();const panel=page.getByRole('region',{name:'Libraries & live batches',exact:true});assert.equal(await panel.getByText('Not enrolled',{exact:true}).count(),0);assert.equal(await panel.getByRole('link').count(),0);});
  await test('Expired purchases do not imply renewed course access',async page=>{await page.goto(origin+'/admin/v2/students/'+id(602));await page.getByText('Expired',{exact:true}).waitFor();assert.equal(await page.getByText('Active access',{exact:true}).count(),0);await page.getByText('Enrollment does not renew an expired or revoked purchase.',{exact:false}).waitFor();},390);
  await test('Access load failure is shown instead of an empty entitlement state',async page=>{await page.goto(origin+'/admin/v2/students/'+id(603));await page.getByRole('alert').filter({hasText:'Some access records'}).waitFor();assert.equal(await page.getByText('No V2 purchase is recorded.',{exact:false}).count(),0);});
  assert.deepEqual(errors,[]);assert.deepEqual(blocked,[]);
