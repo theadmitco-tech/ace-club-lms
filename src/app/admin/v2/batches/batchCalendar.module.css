@@ -1,25 +1,62 @@
-.field { display: grid; gap: 8px; min-width: 0; }
-.inputRow { display: flex; gap: 8px; align-items: center; }
-.inputRow input { flex: 1; width: 100%; }
-.dialog { width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; overflow: auto; border: 1px solid #d6dfd5; border-radius: 16px; padding: 24px; color: #293e35; background: #fff; box-shadow: 0 24px 80px #152d2740; }
-.dialog::backdrop { background: #172b2766; }
-.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
-.top h3 { font-size: 1.15rem; }
-.top p { font-size: .8rem; margin-top: .4rem; color: #607466; }
-.month { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; }
-.month button { min-height: 40px; min-width: 40px; border: 1px solid #d6dfd5; border-radius: 8px; background: white; cursor: pointer; }
-.calendar { width: 100%; table-layout: fixed; border-spacing: 4px; }
-.calendar th { font-size: .7rem; font-weight: 600; color: #607466; text-align: center; padding-bottom: 10px; }
-.calendar td { text-align: center; }
-.calendar td button { display: grid; place-items: center; position: relative; width: 100%; min-height: 42px; border: 1px solid transparent; border-radius: 8px; background: #f6f8f3; color: #293e35; cursor: pointer; }
-.calendar td button:hover { border-color: #7b9980; }
-.calendar td button[aria-pressed=true] { background: #2c654b; color: white; }
-.dot { position: absolute; width: 4px; height: 4px; background: currentColor; border-radius: 50%; bottom: 4px; }
-.agenda { border-top: 1px solid #d6dfd5; margin-top: 20px; padding-top: 16px; }
-.agenda h4 { font-size: .9rem; }
-.agenda p, .agenda ul { margin-top: .6rem; font-size: .85rem; }
-.agenda ul { padding: 0; list-style: none; display: grid; gap: .75rem; }
-.agenda li { display: grid; gap: .25rem; }
-.agenda time { color: #607466; }
-.dialog :where(button, input):focus-visible { outline: 3px solid #376cac; outline-offset: 2px; }
-@media (max-width: 480px) { .dialog { padding: 16px; } .calendar { border-spacing: 2px; } .calendar td button { min-height: 38px; } }
+.field { display:grid; gap:8px; min-width:0; }
+.field .inputRow { display:flex; align-items:center; gap:0; border:1px solid #bdcdbf; border-radius:7px; background:#fff; overflow:hidden; }
+.field .inputRow:focus-within { outline:3px solid #397c60; outline-offset:2px; }
+.field .inputRow input { min-width:0; width:100%; flex:1; border:0; border-radius:0; outline:0; background:transparent; padding:10px 12px; min-height:46px; font:inherit; color:#293f36; }
+.inputRow input::-webkit-calendar-picker-indicator { display:none; }
+.field .inputRow button { display:grid; place-items:center; flex:none; width:46px; min-height:46px; padding:0; border:0; border-left:1px solid #e3e9e5; background:#f5f8f6; color:#285e4c; cursor:pointer; }
+.field .inputRow button:hover { background:#e8f0eb; }
+.dialog { box-sizing:border-box; width:min(740px,calc(100vw - 32px)); max-height:calc(100dvh - 32px); margin:auto; padding:0; overflow:auto; overscroll-behavior:contain; border:1px solid #d6e0d9; border-radius:14px; color:#293f36; background:white; box-shadow:0 24px 80px #152d2733; font-family:inherit; }
+.dialog::backdrop { background:#172b2766; }
+.header { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; padding:22px 24px 18px; border-bottom:1px solid #e3e9e5; }
+.header h3 { font-size:20px; margin:0 0 6px; font-weight:650; }
+.header p { color:#52665a; font-size:12px; line-height:1.6; margin:0; }
+.dialog button,.dialog input,.dialog select { font:inherit; }
+.dialog button { cursor:pointer; }
+.dialog button:disabled { cursor:default; opacity:.45; }
+.close { display:grid; place-items:center; width:40px; height:40px; flex:none; border:0; border-radius:7px; background:#f2f6f3; color:#285e4c; font-size:25px!important; }
+.body { display:grid; grid-template-columns:minmax(340px,1.4fr) minmax(220px,1fr); }
+.calendarPane { min-width:0; padding:20px 20px 16px; }
+.calendar { --rdp-accent-color:#285e4c; --rdp-accent-background-color:#eaf2ec; --rdp-day-height:44px; --rdp-day-width:44px; --rdp-day_button-height:42px; --rdp-day_button-width:42px; --rdp-day_button-border-radius:8px; --rdp-selected-border:0; --rdp-animation_duration:.16s; font-size:14px; }
+.calendar :global(.rdp-months),.calendar :global(.rdp-month) { width:100%; max-width:none; }
+.calendar :global(.rdp-month_grid) { width:100%; table-layout:fixed; }
+.calendar :global(.rdp-day_button) { width:100%; height:42px; min-height:42px; font-weight:500; color:#293f36; }
+.calendar :global(.rdp-day_button):hover { background:#edf3ef; }
+.calendar :global(.rdp-selected) :global(.rdp-day_button) { background:#285e4c; color:white; font-weight:650; }
+.calendar :global(.rdp-today):not(:global(.rdp-selected)) :global(.rdp-day_button) { box-shadow:inset 0 0 0 1px #547763; color:#285e4c; }
+.calendar :global(.rdp-weekday) { font-size:11px; color:#52665a; font-weight:500; padding:12px 0; opacity:1; }
+.calendar :global(.rdp-dropdowns) { gap:6px; font-weight:600; font-size:14px; }
+.calendar :global(.rdp-dropdown_root) { padding:5px 3px; border-radius:5px; }
+.calendar :global(.rdp-dropdown_root):hover { background:#edf3ef; }
+.calendar :global(.rdp-button_previous),.calendar :global(.rdp-button_next) { width:36px; height:36px; border:1px solid #dce5df; border-radius:7px; }
+.calendar :global(.rdp-chevron) { width:18px; height:18px; }
+.calendar :global(.rdp-outside) { opacity:1; }
+.calendar :global(.rdp-outside) :global(.rdp-day_button) { color:#647269; }
+.scheduled { position:relative; }
+.scheduled:after { content:''; position:absolute; width:4px; height:4px; background:#285e4c; border-radius:50%; bottom:5px; left:calc(50% - 2px); pointer-events:none; }
+.scheduled:global(.rdp-selected):after { background:white; }
+.shortcuts { display:flex; align-items:center; flex-wrap:wrap; gap:8px; border-top:1px solid #e3e9e5; margin-top:14px; padding-top:12px; }
+.shortcuts button { background:white; color:#285e4c; border:1px solid #d3dfd6; border-radius:6px; padding:7px 10px; min-height:36px; font-size:12px; }
+.shortcuts span { font-size:11px; color:#52665a; display:flex; align-items:center; gap:6px; margin-left:auto; }
+.shortcuts i { width:5px; height:5px; border-radius:50%; background:#285e4c; }
+.details { background:#f6f8f6; border-left:1px solid #e3e9e5; padding:24px 20px; min-width:0; }
+.caption { font-size:11px; color:#52665a; margin:0 0 8px; }
+.selectedDate { font-size:16px; font-weight:600; line-height:1.5; margin:0 0 24px; min-height:24px; }
+.timeField label { display:block; font-size:12px; font-weight:600; margin-bottom:8px; }
+.timeField input { box-sizing:border-box; width:100%; padding:10px 12px; min-height:44px; background:white; color:#293f36; border:1px solid #bdcdbf; border-radius:6px; }
+.times { display:grid; grid-template-columns:repeat(4,1fr); gap:5px; margin-top:8px; }
+.times button { border:1px solid #d5dfd7; border-radius:5px; background:#fff; color:#285e4c; font-size:11px; padding:7px 2px; min-height:34px; }
+.times button[aria-pressed=true] { background:#e3eee6; border-color:#547763; font-weight:650; }
+.agenda { border-top:1px solid #dce5df; margin-top:24px; padding-top:18px; }
+.agenda h4 { font-size:13px; margin:0 0 12px; }
+.agenda p { color:#52665a; font-size:12px; line-height:1.6; margin:0; }
+.agenda ul { list-style:none; padding:0; margin:0; display:grid; gap:12px; max-height:160px; overflow:auto; }
+.agenda li { display:grid; gap:4px; border-left:2px solid #a6c3af; padding-left:10px; font-size:12px; overflow-wrap:anywhere; }
+.agenda time { color:#52665a; font-size:11px; }
+.footer { position:sticky; bottom:0; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 24px; border-top:1px solid #e3e9e5; background:#fff; }
+.footer>span { color:#52665a; font-size:11px; line-height:1.5; }
+.footer>div { display:flex; gap:8px; flex-shrink:0; }
+.footer button { padding:10px 14px; min-height:44px; border:1px solid #cbd9cf; border-radius:6px; background:white; color:#285e4c; font-size:13px; font-weight:600; }
+.footer .apply { background:#285e4c; color:white; border-color:#285e4c; }
+.dialog :where(button,input,select):focus-visible { outline:3px solid #397c60; outline-offset:2px; }
+@media(max-width:650px) { .dialog { width:min(420px,calc(100vw - 20px)); max-height:calc(100dvh - 20px); } .header { padding:18px 16px 14px; } .header h3 { font-size:18px; } .body { grid-template-columns:1fr; } .calendarPane { padding:12px 14px; } .details { border-left:0; border-top:1px solid #e3e9e5; padding:16px; } .selectedDate { margin-bottom:14px; } .agenda { margin-top:16px; padding-top:12px; } .agenda ul { max-height:110px; } .footer { padding:12px 16px; } .footer>span { display:none; } .footer>div { width:100%; } .footer button { flex:1; } }
+@media(prefers-reduced-motion:reduce) { .calendar { --rdp-animation_duration:0s; } .dialog * { animation:none!important; transition:none!important; scroll-behavior:auto!important; } }
