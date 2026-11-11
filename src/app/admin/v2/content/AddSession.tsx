@@ -1,15 +1,19 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { AdminDraftLink as Link, useAdminDraftGuard } from '@/components/AdminDraftNavigation';
 import { editableV2BatchEvents, type V2BatchInput } from '@/lib/v2Batches';
 import { loadSessionDraftAction } from './session-actions';
 import { previewBatchDraftAction, saveBatchDraftAction } from '../batches/actions';
 import styles from './content.module.css';
 
-export default function AddSession({ batchId, onClose }: { batchId: string; onClose: () => void }) {
+export default function AddSession({ batchId, onClose, onSaved }: { batchId: string; onClose: () => void; onSaved: () => void }) {
   const [title, setTitle] = useState('');
+  const fieldId = useId(), errorId = useId();
+  const input = useRef<HTMLInputElement>(null), heading = useRef<HTMLHeadingElement>(null);
+  const [invalid, setInvalid] = useState(false);
   const [pending, setPending] = useState(false), [saved, setSaved] = useState(false), [error, setError] = useState(''), [existingDraft, setExistingDraft] = useState(false);
+  useEffect(() => { if (saved) heading.current?.focus(); }, [saved]);
   const request = useRef<{ input: V2BatchInput; fingerprint?: string } | null>(null);
   const busy = useRef(false);
   const [submitted, setSubmitted] = useState(false);
@@ -17,8 +21,8 @@ export default function AddSession({ batchId, onClose }: { batchId: string; onCl
   async function add() {
     if (busy.current) return;
     const name = title.trim();
-    if (!name || name.length > 120) { setError('Enter a session name of up to 120 characters.'); return; }
-    busy.current = true; setPending(true); setError('');
+    if (!name || name.length > 120) { setInvalid(true); setError('Enter a session name of up to 120 characters.'); input.current?.focus(); return; }
+    busy.current = true; setPending(true); setError(''); setInvalid(false);
     try {
       if (!request.current) {
         const result = await loadSessionDraftAction(batchId);
@@ -40,15 +44,15 @@ export default function AddSession({ batchId, onClose }: { batchId: string; onCl
       if (!request.current.fingerprint) throw new Error('The session could not be reviewed. Retry shortly.');
       const result = await saveBatchDraftAction(request.current.input, request.current.fingerprint);
       if (result.status === 'error') throw new Error(result.message);
-      setSaved(true);
+      setSaved(true); onSaved();
     } catch (error) { setError(error instanceof Error ? error.message : 'Save confirmation was interrupted. Retry to recover the same session.'); }
     finally { busy.current = false; setPending(false); }
   }
-  return <section className={styles.inlineEditor} aria-label="Add session">
-    {saved ? <><h3>Session draft saved</h3><p>“{title.trim()}” is ready for publication. Existing student content stays available.</p><Link className={styles.primary} href={`/admin/v2/batches?batch=${batchId}&review=1`}>Review & publish session</Link><button onClick={onClose}>Done</button></> : <form onSubmit={event => { event.preventDefault(); void add(); }}>
-      <label>New session name<input autoFocus required maxLength={120} value={title} disabled={pending || submitted} onChange={event => setTitle(event.target.value)} /></label>
+  return <section className={styles.inlineEditor} aria-label="Add session" aria-busy={pending}>
+    {saved ? <><h3 ref={heading} tabIndex={-1}>Session draft saved</h3><p>“{title.trim()}” is ready for publication. Existing student content stays available.</p><Link className={styles.primary} href={`/admin/v2/batches?batch=${batchId}&review=1`}>Review & publish session</Link><button onClick={onClose}>Done</button></> : <form noValidate onSubmit={event => { event.preventDefault(); void add(); }}>
+      <h2 className={styles.taskTitle}>Add a session</h2><label htmlFor={fieldId}>New session name<input id={fieldId} ref={input} aria-invalid={invalid || undefined} aria-describedby={error ? errorId : undefined} placeholder="e.g. Ratios and proportions" autoFocus required maxLength={120} value={title} disabled={pending || submitted} onChange={event => { setTitle(event.target.value); setInvalid(false); }} /></label>
       <p className={styles.muted}>The session starts with empty readings, recording and worksheet sections. It stays private until published.</p>
-      {error && <p role="alert">{error}</p>}
+      {error && <p id={errorId} role="alert">{error}</p>}
       {existingDraft ? <Link href={`/admin/v2/batches?batch=${batchId}&review=1`}>Review saved draft changes</Link> : <button className={styles.primary} disabled={pending} type="submit">{pending ? 'Saving…' : submitted ? 'Retry saving session' : 'Add session'}</button>}
       <button type="button" disabled={pending} onClick={onClose}>Cancel</button>
     </form>}

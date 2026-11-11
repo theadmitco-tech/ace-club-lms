@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import AddSession from './AddSession';
 import SessionName from './SessionName';
+import ReorderSessions from './ReorderSessions';
+import { AdminDraftLink as Link } from '@/components/AdminDraftNavigation';
 import { V2_SESSION_STAGES } from '@/lib/v2SessionPresentation';
 import type { ContentDocument, ContentItem, ContentWorkspace } from '@/lib/v2ContentPublishing';
 import styles from './content.module.css';
@@ -19,7 +21,13 @@ const subjects = [{ key: 'quant', title: 'Quant' }, { key: 'verbal', title: 'Ver
 
 export default function CourseResourceBrowser({ workspace, busy, location, onLocation, onChoose, onResource, onAdd, onUpdated }: Props) {
   const [renaming, setRenaming] = useState<string | null>(null), [adding, setAdding] = useState(false);
-  const locked = busy || renaming !== null || adding;
+  const [reordering, setReordering] = useState(false), [savedDrafts, setSavedDrafts] = useState<string[]>([]);
+  const addButton = useRef<HTMLButtonElement>(null), reorderButton = useRef<HTMLButtonElement>(null), renameButton = useRef<HTMLButtonElement>(null);
+  const locked = busy || renaming !== null || adding || reordering;
+  function closeTask(task: 'add' | 'rename' | 'reorder') {
+    if (task === 'add') setAdding(false); else if (task === 'rename') setRenaming(null); else setReordering(false);
+    requestAnimationFrame(() => (task === 'add' ? addButton : task === 'rename' ? renameButton : reorderButton).current?.focus({ preventScroll: true }));
+  }
   const subject = subjects.find(item => item.key === location.subject) ?? subjects[0];
   const courses = workspace.courses.filter(item => item.productCode === subject.key);
   const course = courses.find(item => item.batchId === location.courseId) ?? courses[0];
@@ -40,13 +48,13 @@ export default function CourseResourceBrowser({ workspace, busy, location, onLoc
       {courses.length > 1 && <label className={styles.coursePicker}>Published library<select disabled={locked} value={course.batchId} onChange={e => { onLocation({ subject: subject.key, courseId: e.target.value, sessionId: '' }); setSessionSearch(''); }}>{courses.map(item => <option key={item.batchId} value={item.batchId}>{item.title}</option>)}</select></label>}
       {course ? <div className={styles.sessionLayout}><aside className={styles.outline} aria-label="Session outline">
         <div className={styles.outlineTitle}><h2>{subject.title}</h2><span>{sessions.length} sessions</span></div>
-        <button className={styles.addSession} disabled={locked} onClick={() => setAdding(true)}>+ Add session</button>
+        <div className={styles.outlineActions}><button ref={addButton} className={styles.addSession} disabled={locked} onClick={() => setAdding(true)}>+ Add session</button><button ref={reorderButton} className={styles.reorderTrigger} disabled={locked || sessions.length < 2} onClick={() => setReordering(true)} aria-label="Reorder sessions">↕ Reorder</button></div>
         <label className={styles.sessionSearch}><span className={styles.visuallyHidden}>Find a session</span><input type="search" disabled={locked} value={sessionSearch} onChange={e => setSessionSearch(e.target.value)} placeholder="Find a session" /></label>
         <label className={styles.mobileSession}>Choose a session<select disabled={locked} aria-label="Choose a session" value={session?.key ?? ''} onChange={e => onLocation({ subject: subject.key, courseId: course.batchId, sessionId: e.target.value })}>{sessions.map(item => <option key={item.key} value={item.key}>{sessionTitle(item.key, item.title)}</option>)}</select></label>
         <div className={styles.sessionButtons}>{matchingSessions.map(item => <button key={item.key} disabled={locked} onDoubleClick={() => setRenaming(item.key)} aria-current={item.key === session?.key ? 'true' : undefined} onClick={() => onLocation({ subject: subject.key, courseId: course.batchId, sessionId: item.key })}><span className={styles.sessionIndex}>{String(sessions.indexOf(item) + 1).padStart(2, '0')}</span><span>{sessionTitle(item.key, item.title)}</span></button>)}{!matchingSessions.length && <p className={styles.muted}>No sessions match.</p>}</div>
-      </aside><section className={styles.sessionContent} aria-label={session ? `Session resources: ${session.title}` : 'Session resources'}>{adding && <AddSession batchId={course.batchId} onClose={() => setAdding(false)} />}
-      {session ? <>
-        <header className={styles.sessionHeading}><span className={styles.sessionCount}>Session {sessions.indexOf(session) + 1} of {sessions.length}</span>{renaming === session.key ? <SessionName key={session.key} batchId={course.batchId} sessionKey={session.key} title={sessionTitle(session.key, session.title)} workspace={workspace} onClose={() => setRenaming(null)} onUpdated={onUpdated} /> : <><div className={styles.nameRow}><h2><button type="button" className={styles.sessionName} disabled={locked} title="Double-click to rename; keyboard: Enter or F2" onDoubleClick={() => setRenaming(session.key)} onKeyDown={event => { if (event.key === 'Enter' || event.key === 'F2' || event.key === ' ') { event.preventDefault(); setRenaming(session.key); } }}>{sessionTitle(session.key, session.title)}</button></h2><button type="button" className={styles.renameButton} disabled={locked} aria-label="Rename session" onClick={() => setRenaming(session.key)}><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="m4 16 12-12 4 4-12 12H4zM14 6l4 4"/></svg></button></div><small>Double-click the name to rename.</small>{workspace.items.some(item => !item.deleted && item.document.kind === 'heading' && item.draft_revision !== item.published_revision && item.document.targets.some(target => target.batchId === course.batchId && target.sessionKey === session.key)) && <small>Name draft awaiting review</small>}</>}</header>
+      </aside><section className={styles.sessionContent} aria-label={session ? `Session resources: ${session.title}` : 'Session resources'}>{!adding && !reordering && savedDrafts.includes(course.batchId) && <div className={styles.draftNotice} role="status"><span>Session changes saved as a draft</span><Link href={`/admin/v2/batches?batch=${course.batchId}&review=1`}>Review & publish →</Link></div>}{adding && <AddSession batchId={course.batchId} onSaved={() => setSavedDrafts(previous => [...new Set([...previous, course.batchId])])} onClose={() => closeTask('add')} />}
+      {reordering ? <ReorderSessions key={course.batchId} batchId={course.batchId} sessions={course.sessions.map(item => ({ key: item.key, title: sessionTitle(item.key, item.title) }))} onSaved={() => setSavedDrafts(previous => [...new Set([...previous, course.batchId])])} onClose={() => closeTask('reorder')} /> : !adding && (session ? <>
+        <header className={styles.sessionHeading}><span className={styles.sessionCount}>Session {sessions.indexOf(session) + 1} of {sessions.length}</span>{renaming === session.key ? <SessionName key={session.key} batchId={course.batchId} sessionKey={session.key} title={sessionTitle(session.key, session.title)} workspace={workspace} onClose={() => closeTask('rename')} onUpdated={onUpdated} /> : <><div className={styles.nameRow}><h2><button type="button" className={styles.sessionName} disabled={locked} title="Double-click to rename; keyboard: Enter or F2" onDoubleClick={() => setRenaming(session.key)} onKeyDown={event => { if (event.key === 'Enter' || event.key === 'F2' || event.key === ' ') { event.preventDefault(); setRenaming(session.key); } }}>{sessionTitle(session.key, session.title)}</button></h2><button type="button" ref={renameButton} className={styles.renameButton} disabled={locked} aria-label="Rename session" onClick={() => setRenaming(session.key)}><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="m4 16 12-12 4 4-12 12H4zM14 6l4 4"/></svg></button></div><small>Double-click the name to rename.</small>{workspace.items.some(item => !item.deleted && item.document.kind === 'heading' && item.draft_revision !== item.published_revision && item.document.targets.some(target => target.batchId === course.batchId && target.sessionKey === session.key)) && <button className={styles.draftChip} disabled={locked} onClick={() => setRenaming(session.key)}>Name draft · Continue editing →</button>}</>}</header>
         {V2_SESSION_STAGES.map(({ kind, title }, index) => <section key={kind} className={styles.resourceGroup}>
           <div className={styles.row}><h3><span className={styles.number}>{index + 1}</span>{title}</h3><button className={styles.textButton} disabled={locked} onClick={() => onAdd(course.batchId, session.key, kind)} aria-label={`Add ${title.toLowerCase()}`}>+ Add</button></div>
           {session.content[kind].map(item => {
@@ -57,6 +65,6 @@ export default function CourseResourceBrowser({ workspace, busy, location, onLoc
           {!session.content[kind].length && !workspace.items.some(item => !item.deleted && item.document.kind === kind && item.document.targets.some(target => target.batchId === course.batchId && target.sessionKey === session.key)) && <p className={styles.muted}>No {title.toLowerCase()} added yet.</p>}
         </section>)}
 
-      </> : <p className={styles.empty}>No sessions are available for this subject.</p>}</section></div> : <div className={styles.empty}><h2>No published {subject.title} sessions yet</h2><p>The programme team must publish this subject course before sessions can be added here.</p></div>}
+      </> : <p className={styles.empty}>No sessions are available for this subject.</p>)}</section></div> : <div className={styles.empty}><h2>No published {subject.title} sessions yet</h2><p>The programme team must publish this subject course before sessions can be added here.</p></div>}
   </section>;
 }

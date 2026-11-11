@@ -1,0 +1,13 @@
+{
+  "scope": "Isolated build from committed source plus only the listed Admin changes; unrelated Student landing edits excluded.",
+  "baseCommit": "a8cba8112f6e93a720d71920b59677609cf2bc4f",
+  "sourceSha256": {
+    "src/lib/v2SessionOrder.ts": "70a7783e89f667b45448a6b47dfad4190ec847e33323f1406de105c681a61f9f",
+    "src/app/admin/v2/content/ReorderSessions.tsx": "76c42be0473f774deaa75531c96ea983961205d34c8706d1473ea95131c5ab11",
+    "src/app/admin/v2/content/AddSession.tsx": "7b2ff6db9bee577b0010250d25efc3e7688401d4ced8af123a3316b90b1c8cb4",
+    "src/app/admin/v2/content/SessionName.tsx": "6afb6189e58828fe97bbfaeaad1fa7ec452bed28e8f9af932a3e445aca4deb98",
+    "src/app/admin/v2/content/CourseResourceBrowser.tsx": "0a7eb9ef3be178c87fbe0b810325fe0f52bbe1b00aa1ce3153ea7d180a65772d",
+    "src/app/admin/v2/content/content.module.css": "f36ce33fc38bac9fad5eb0ac03b888a58b466cba88c29bc8751fc326b172d609",
+    "src/app/admin/v2/content/session-actions.ts": "94b7f8120249b6bff1b34d3bac4f590516ff15e02b7606f930f548d394006858"
+  }
+}

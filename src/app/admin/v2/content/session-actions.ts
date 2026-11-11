@@ -15,6 +15,6 @@ export async function loadSessionDraftAction(batchId: string): Promise<
   const draft = drafts.drafts.find(item => item.id === batchId);
   const published = publications.publications.find(item => item.batchId === batchId);
   if (!draft?.sessions || !['quant', 'verbal', 'di'].includes(draft.productCode) || published?.state !== 'published') return { status: 'error', message: 'A published subject course is required.' };
-  if (draft.revision !== published.batchRevision) return { status: 'pending', message: 'This course already has saved draft changes. Review and publish them before adding another session.' };
+  if (draft.revision !== published.batchRevision) return { status: 'pending', message: 'This course already has saved draft changes. Review and publish them before editing sessions.' };
   return { status: 'ready', draft };
 }
