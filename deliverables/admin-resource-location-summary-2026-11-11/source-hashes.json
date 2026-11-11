@@ -1,0 +1,7 @@
+{
+  "baseCommit": "88f4263fbb5da09fa8463cb66258ca62db946a8c",
+  "sha256": {
+    "src/app/admin/v2/content/PlacementEditor.tsx": "160dbc3bcdfc6a6fcea280437c3129a19e2f42b2400763c67a19cd515f5f14fc",
+    "src/app/admin/v2/content/content.module.css": "69d25d7a663d8695514afb67f5e4d0838fc14008afc13cfaace8d48f4b5750a4"
+  }
+}
