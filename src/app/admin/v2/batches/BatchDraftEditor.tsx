@@ -23,9 +23,9 @@ function draftInput(batch: V2BatchDraft | null, templates: V2TemplateDraft[]): V
     : {id:crypto.randomUUID(),templateId:templates[0]?.id??'',templateRevision:templates[0]?.revision??0,expectedRevision:0,requestId:crypto.randomUUID(),title:'',startDate:'',timeZone:V2_BATCH_TIME_ZONE,events:null};
 }
 
-export default function BatchDraftEditor({ drafts, templates, ownerId, setupPending = false, focused = false, initialDraft = null, outlineOpen = false, initialSessionKey, onSaved }: { initialSessionKey?: string; outlineOpen?: boolean; focused?: boolean; initialDraft?: V2BatchDraft | null; onSaved?: (batch: V2BatchDraft) => void; drafts: V2BatchDraft[]; templates: V2TemplateDraft[]; ownerId: string; setupPending?: boolean }) {
+export default function BatchDraftEditor({ drafts, templates, ownerId, setupPending = false, focused = false, initialDraft = null, outlineOpen = false, initialSessionKey, onSaved, initialTitle = '', initialStartDate = '' }: { initialTitle?: string; initialStartDate?: string; initialSessionKey?: string; outlineOpen?: boolean; focused?: boolean; initialDraft?: V2BatchDraft | null; onSaved?: (batch: V2BatchDraft) => void; drafts: V2BatchDraft[]; templates: V2TemplateDraft[]; ownerId: string; setupPending?: boolean }) {
   const router = useRouter();
-  const [input, setInput] = useState<V2BatchInput | null>(()=>focused?draftInput(initialDraft,templates):null);
+  const [input, setInput] = useState<V2BatchInput | null>(()=>focused?{...draftInput(initialDraft,templates),...(!initialDraft?{title:initialTitle,startDate:initialStartDate}:{})}:null);
   const [original, setOriginal] = useState<V2BatchDraft | null>(initialDraft);
   const [review, setReview] = useState<{ input: V2BatchInput; proposal: V2BatchProposal } | null>(null);
   const [pending, setPending] = useState<'preview' | 'save' | null>(null);
@@ -136,6 +136,7 @@ export default function BatchDraftEditor({ drafts, templates, ownerId, setupPend
     }
   }
 
+  const guidedCreation = focused && !original && !!initialTitle;
   const productCode = original?.productCode ?? templates.find((template) => template.id === input?.templateId)?.productCode;
   const calendarEvents = input?.events?.filter((event) => event.kind !== 'outline' && event.localDate).map((event) => ({
     date: event.localDate!, time: event.localStartTime,
@@ -160,14 +161,14 @@ export default function BatchDraftEditor({ drafts, templates, ownerId, setupPend
     </section>}
 
     {input && <form onInvalidCapture={event => { let container = (event.target as HTMLElement).parentElement; while (container && container !== event.currentTarget) { if (container instanceof HTMLDetailsElement) container.open = true; container = container.parentElement; } }} onSubmit={preview} className={styles.card} aria-busy={!!pending}>
-      <h2>{original ? 'Edit batch' : 'Create a batch'}</h2>
+      <h2>{original ? 'Edit batch' : guidedCreation ? 'Review batch details' : 'Create a batch'}</h2>
       {productCode && <p>{V2_TEMPLATE_PRODUCTS[productCode].label}{focused?' · All times IST':` · template revision ${input.templateRevision} · ${V2_BATCH_TIME_ZONE}`}</p>}
       <fieldset disabled={!!pending} className={styles.fields}>
         <legend className={styles.legend}>Course and schedule details</legend>
         {!focused&&<p>Delivery: {v2CourseDeliveryLabel(input.events ?? templates.find((template) => template.id === input.templateId)?.document.events ?? [])}</p>}
         {original && productCode && <details className="workflow-secondary" open={outlineOpen || undefined}><summary>Edit this batch’s course sessions</summary><p>Changes apply to this batch draft only. Existing publication stays unchanged until reviewed.</p><CourseSessionsEditor initialSessionKey={initialSessionKey} sessions={input.sessions ?? []} sections={V2_TEMPLATE_PRODUCTS[productCode].sections}
           onChange={(sessions) => change({...input,sessions})} /></details>}
-        {!original && <label htmlFor="v2-batch-template">Template
+        {!original && !guidedCreation && <label htmlFor="v2-batch-template">Template
           <select id="v2-batch-template" className="form-input" disabled={!liveTemplates.length} value={input.templateId} onChange={(event) => {
             const selected = liveTemplates.find((template) => template.id === event.target.value);
             if (selected) change({ ...input, templateId: selected.id, templateRevision: selected.revision });
@@ -181,12 +182,12 @@ export default function BatchDraftEditor({ drafts, templates, ownerId, setupPend
         <label htmlFor="v2-batch-title">Batch title
           <input id="v2-batch-title" className="form-input" required maxLength={120} value={input.title} onChange={(event) => change({ ...input, title: event.target.value })} />
         </label>
-        {!original && templates.find((template) => template.id === input.templateId)?.document.events.some((event) => event.kind !== 'outline') ? <BatchDatePicker id="v2-batch-start" label="Template start date (only needed for live sessions)"
+        {guidedCreation ? <p>First class: {input.startDate} · {templates[0]?.document.events.length ?? 0} live classes. Dates can be adjusted after the private batch is saved.</p> : !original && templates.find((template) => template.id === input.templateId)?.document.events.some((event) => event.kind !== 'outline') ? <BatchDatePicker id="v2-batch-start" label="Template start date (only needed for live sessions)"
           required={templates.find((template) => template.id === input.templateId)?.document.events.some((event) => event.kind !== 'outline')}
           value={input.startDate} onChange={(startDate) => change({ ...input, startDate })} events={calendarEvents} />
           : input.startDate ? (!focused&&<p>Original template start date: {input.startDate}. Edit individual live-event dates below to reschedule this batch.</p>) : <p>This course has no live schedule.</p>}
         <p>Every live class needs a date and time. The complete schedule is reviewed before publication; all times use IST.</p>
-        {!original && <p>The first date sets the template schedule. After the private draft is saved, every class date and time can be adjusted below before publishing.</p>}
+        {!original && !guidedCreation && <p>The first date sets the template schedule. After the private draft is saved, every class date and time can be adjusted below before publishing.</p>}
         {input.events?.some(event=>event.kind!=='outline')&&<h3>All class dates & times</h3>}
         {input.events?.filter(event=>!focused||event.kind!=='outline').map((event, index) => <fieldset key={event.key} className={styles.event}>
           <legend>{index + 1}. {original?.events.find((item) => item.key === event.key)?.title}</legend>
