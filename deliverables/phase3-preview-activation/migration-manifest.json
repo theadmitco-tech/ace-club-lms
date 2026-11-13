@@ -1,0 +1,335 @@
+{
+  "check": "phase3_expected_migration_metadata",
+  "scope": "Disposable local PostgreSQL; no hosted execution.",
+  "migrations": [
+    {
+      "file": "20261113090000_add_v2_sales_catalogue.sql",
+      "sha256": "21b5d7ba9c0b0697a4acef72e533bb3947791f1b098a35e55366927252f4f54f"
+    },
+    {
+      "file": "20261113100000_add_v2_checkout_ledger.sql",
+      "sha256": "555b7e49be59842a425b40188ebb1b9b457c6ba4df93f0ce208ecf19233f6b4b"
+    },
+    {
+      "file": "20261113110000_add_v2_payment_fulfillment.sql",
+      "sha256": "da996f6d8f059a2a1677bb0b573bff3d9322bc3505282bd0fa20af204735ee58"
+    }
+  ],
+  "replacementNames": [
+    "can_access_v2_product",
+    "get_my_v2_access",
+    "v2_student_has_product"
+  ],
+  "newFunctionNames": [
+    "list_v2_sales_catalogue",
+    "v2_mark_signup_candidate",
+    "v2_invalidate_signup_candidate",
+    "v2_effective_purchase_products",
+    "get_my_v2_purchase_packages",
+    "v2_checkout_buyer_eligible",
+    "v2_live_occupied",
+    "list_v2_live_availability",
+    "prepare_v2_checkout",
+    "get_my_v2_checkouts",
+    "read_v2_checkout_service",
+    "find_v2_checkout_order",
+    "claim_v2_checkout_order",
+    "attach_v2_checkout_order",
+    "record_v2_payment_event",
+    "v2_enforce_live_capacity",
+    "fulfill_v2_checkout",
+    "list_v2_checkout_exceptions"
+  ],
+  "tables": [
+    "v2_signup_candidates",
+    "v2_checkout_intents",
+    "v2_purchase_upgrades",
+    "v2_payment_events"
+  ],
+  "functions": [
+    {
+      "roles": [
+        "service_role"
+      ],
+      "language": "plpgsql",
+      "signature": "attach_v2_checkout_order(uuid,text)",
+      "sourceMd5": "08a6e0aca021c1af164d2d50a4ed82e9",
+      "volatility": "v",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [
+        "authenticated",
+        "service_role"
+      ],
+      "language": "sql",
+      "signature": "can_access_v2_product(text,text)",
+      "sourceMd5": "3b1bd0ab7afd2c020813cc39488e3840",
+      "volatility": "s",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [
+        "service_role"
+      ],
+      "language": "plpgsql",
+      "signature": "claim_v2_checkout_order(uuid)",
+      "sourceMd5": "33b97e5e88c30b608a5d9c6cfed2869f",
+      "volatility": "v",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [
+        "service_role"
+      ],
+      "language": "sql",
+      "signature": "find_v2_checkout_order(text)",
+      "sourceMd5": "22bb161752d739c17f864d1db501fb7f",
+      "volatility": "s",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [
+        "service_role"
+      ],
+      "language": "plpgsql",
+      "signature": "fulfill_v2_checkout(uuid,text,text,integer,text)",
+      "sourceMd5": "3858386043217ade64d2d3d5c613aae3",
+      "volatility": "v",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [
+        "authenticated",
+        "service_role"
+      ],
+      "language": "sql",
+      "signature": "get_my_v2_access()",
+      "sourceMd5": "958cde8346c0bed1ef59b8c14efb1c74",
+      "volatility": "s",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [
+        "authenticated"
+      ],
+      "language": "sql",
+      "signature": "get_my_v2_checkouts()",
+      "sourceMd5": "593554054ca3161b02933d1b7031b968",
+      "volatility": "s",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [
+        "authenticated"
+      ],
+      "language": "sql",
+      "signature": "get_my_v2_purchase_packages()",
+      "sourceMd5": "edebfa4557a52a5ca84da68f8bd96953",
+      "volatility": "s",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [
+        "authenticated"
+      ],
+      "language": "plpgsql",
+      "signature": "list_v2_checkout_exceptions()",
+      "sourceMd5": "ae561a3f1fd04dce80229eae2b73c8f9",
+      "volatility": "s",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "language": "sql",
+      "signature": "list_v2_live_availability()",
+      "sourceMd5": "e7d8cef0b93057376e3aee73b219a49c",
+      "volatility": "s",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "language": "sql",
+      "signature": "list_v2_sales_catalogue()",
+      "sourceMd5": "9050282f753d41fb701cb8642d50c464",
+      "volatility": "s",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [
+        "authenticated"
+      ],
+      "language": "plpgsql",
+      "signature": "prepare_v2_checkout(uuid,text[],uuid[],uuid[],text,text,boolean)",
+      "sourceMd5": "98810316eac29fc9dea36f7a38836d3a",
+      "volatility": "v",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [
+        "service_role"
+      ],
+      "language": "sql",
+      "signature": "read_v2_checkout_service(uuid)",
+      "sourceMd5": "121b26265b25fbc4dfdb344c353bba43",
+      "volatility": "s",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [
+        "service_role"
+      ],
+      "language": "plpgsql",
+      "signature": "record_v2_payment_event(text,text,uuid)",
+      "sourceMd5": "d900baa4b9d0d9aaece813969dffb8f8",
+      "volatility": "v",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [],
+      "language": "sql",
+      "signature": "v2_checkout_buyer_eligible(uuid)",
+      "sourceMd5": "954c7327c80c409c922a479315ba926f",
+      "volatility": "s",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [],
+      "language": "sql",
+      "signature": "v2_effective_purchase_products(uuid)",
+      "sourceMd5": "f96f50764243e419bf86973c18a29ac7",
+      "volatility": "s",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [],
+      "language": "plpgsql",
+      "signature": "v2_enforce_live_capacity()",
+      "sourceMd5": "0c901a6b5dc527194551e5a948c1e6cf",
+      "volatility": "v",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [],
+      "language": "plpgsql",
+      "signature": "v2_invalidate_signup_candidate()",
+      "sourceMd5": "52492d552a6b1c5de019713ebb0bdda4",
+      "volatility": "v",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [],
+      "language": "sql",
+      "signature": "v2_live_occupied(uuid,uuid)",
+      "sourceMd5": "2364a6b4c77e28c843e2c67b756265b7",
+      "volatility": "s",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [],
+      "language": "plpgsql",
+      "signature": "v2_mark_signup_candidate()",
+      "sourceMd5": "374ff17d3c8a65485eb19af6587f96ed",
+      "volatility": "v",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    },
+    {
+      "roles": [],
+      "language": "sql",
+      "signature": "v2_student_has_product(uuid,text)",
+      "sourceMd5": "bd2866f0e4ce799017e345e8f6041d9a",
+      "volatility": "s",
+      "configuration": [
+        "search_path=\"\""
+      ],
+      "publicExecute": false,
+      "securityDefiner": true
+    }
+  ]
+}

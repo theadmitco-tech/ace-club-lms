@@ -2,7 +2,7 @@
 
 Status: local integration checkpoint on `intern/v2-phase-3-integration-review`,
 based on the current Admin and Student implementation at `fafe8ec`.
-Razorpay Test Mode is selected. Provider test keys and hosted acceptance remain pending.
+Razorpay Test Mode is selected. Provider Test Mode authentication passed a read-only API check. Hosted payment acceptance remains pending.
 Production remains excluded. The older Phase 3 draft remains preserved in its original worktree.
 
 ## Acceptance scope

@@ -30,7 +30,7 @@ Verification passed 17 payment/server/database tests, 10 browser journeys, 18 Ph
 
 ## Remaining work
 
-1. The payment account owner supplies the Test Mode key ID and secret through the Git-ignored private configuration. No credential belongs in chat or Git.
+1. Test Mode key authentication passed a read-only Razorpay API request. No provider order or payment was created by that check. The webhook secret and hosted configuration remain pending; credentials remain outside Git.
 2. Staging schema and recovery evidence are refreshed; the reconciled migration set is rehearsed and applied through the SQL Editor.
 3. The project owner configures the dedicated staging environment, deploys the reviewed candidate and enables the Google callback URL. The signed webhook endpoint must be reachable by Razorpay without an LMS session or a Vercel login challenge. Any deployment-protection change requires its own review; protection is not disabled by this implementation.
 4. A dedicated Test Mode webhook secret is configured for `payment.captured`, `order.paid` and `payment.failed` at `/api/v2/checkout/webhook` on the reviewed staging origin.
