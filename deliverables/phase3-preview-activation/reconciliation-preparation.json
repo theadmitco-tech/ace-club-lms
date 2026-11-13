@@ -1,0 +1,40 @@
+{
+  "check": "phase3_reconciliation_preparation",
+  "recordedAt": "2026-11-13T17:52:06.584618+00:00",
+  "remoteVerifiedCommit": "317791456c682dac5cbcb093301fd4617219c5a0",
+  "hostedSqlReconciliation": "pending",
+  "stagingReadOnlyRpcChecks": [
+    {
+      "routine": "list_v2_sales_catalogue",
+      "httpStatus": 200,
+      "count": 5
+    },
+    {
+      "routine": "list_v2_live_availability",
+      "httpStatus": 200,
+      "count": 1
+    },
+    {
+      "routine": "get_my_v2_checkouts",
+      "httpStatus": 401,
+      "errorCode": "42501",
+      "caller": "anon"
+    }
+  ],
+  "localReconciliationCases": [
+    "absent migrations",
+    "installed migrations",
+    "changed original rows",
+    "unexpected execution grant",
+    "changed ledger source",
+    "old draft version"
+  ],
+  "salesOutlineRenderCases": 3,
+  "providerPaymentsCreated": 0,
+  "productionChanged": false,
+  "sources": {
+    "scripts/phase3/prepare-reconciliation.py": "f15abde6ad69e8fa1cc7214d87f26ed84968a549be116f1131a2416fd5f67be8",
+    "deliverables/phase3-preview-activation/RECONCILE-ACTIVATION.sql": "7d51eacf3908546123b8948df9934b433a7fd2cf022d70d4fef8ae12480bf9b5",
+    "src/components/courses/SalesOutlines.tsx": "98643e3bd2c431edccc374ce550d9390b1ffc3d628c2bf97092e947c4baeec3c"
+  }
+}

@@ -1,6 +1,6 @@
 # Phase 3 staging activation
 
-Status: the fresh recovery and activation rehearsals passed; SQL Editor execution is pending. Hosted payment acceptance remains incomplete.
+Status: the fresh recovery and activation rehearsals passed. A subsequent SQL Editor activation attempt stopped because a Phase 3 migration was already recorded. Read-only reconciliation is pending; hosted payment acceptance remains incomplete.
 
 The checksummed export captured 88 application tables and 3,939 rows. The local restore reproduced every exported row and the migration ledger. The snapshot contains the Phase 6 conflict repair and no recorded Phase 3 migration. Private source records remain outside version control; the report contains sanitized counts, fingerprints and schema metadata.
 
@@ -10,8 +10,8 @@ The packet rejects changed application rows, changed ledger contents, unexpected
 
 ## Operator sequence
 
-1. The staging operator verifies project `eyphkkginlgoaxflauog`, keeps staging playback paused, and executes the entire activation packet in a new SQL Editor query.
-2. The final result must identify `phase3_activation`, the three expected migration versions, four new private tables, 21 verified functions, and preservation flags set to `true`.
+1. The staging operator verifies project `eyphkkginlgoaxflauog`, keeps staging playback paused, and executes `RECONCILE-ACTIVATION.sql` in a new SQL Editor query. Activation is not repeated.
+2. The read-only result identifies installed migration versions, exact source matches, routine and trigger guards, private-table permissions, and preservation of the original 88 tables. Any discrepancy requires a specifically reconciled plan.
 3. Hosted schema checks precede dedicated QA fixtures. Provider-backed acceptance uses the reviewed Preview and the Test Mode webhook described in `DEPLOYMENT-HANDOFF.md`.
 4. Exact fixture cleanup and independent absence checks precede acceptance sign-off.
 
@@ -27,3 +27,11 @@ An error aborts the atomic packet. An already-recorded migration requires reconc
 The restore is an application-data rehearsal, not a complete Supabase platform restore. Auth identities are placeholders, Storage objects and platform configuration are excluded, and full relation grants and policies are not reconstructed. The three replaced entitlement routines have their exported execution grants restored for the rehearsal. The hosted packet independently captures and preserves the original security metadata in its own transaction.
 
 The packet does not enable checkout, take payments or publish courses. Test Mode key authentication passed a read-only provider API request; actual payment, capture, webhook and OAuth acceptance remain separate. Production is unchanged.
+
+## Reconciliation checkpoint
+
+The remote integration branch was verified at `317791456c682dac5cbcb093301fd4617219c5a0`. Read-only staging HTTP checks returned the public catalogue and live availability successfully; anonymous checkout-history access returned permission denial. These checks establish API availability, not complete migration or payment acceptance.
+
+The reconciliation query passed local cases for absent and fully installed migrations, altered rows, unexpected execution permissions, changed ledger source and an old draft version. Its transaction is read-only. No hosted repair or additional activation has been performed.
+
+The integration branch is added to GitHub Verify with payment and activation tests. The public outline now uses the server-render timestamp, matching checkout, so completed live schedules do not advertise available places. Three synthetic React rendering cases, TypeScript and lint validate that display change; provider-backed evidence remains pending.
