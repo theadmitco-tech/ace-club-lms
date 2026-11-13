@@ -4,7 +4,8 @@
     "deploymentEnabled": {
       "intern/v2-phase-6-review": false,
       "intern/v2-phase-7-review": false,
-      "intern/v2-admin-workflow-review": true
+      "intern/v2-admin-workflow-review": true,
+      "intern/v2-phase-3-integration-review": false
     }
   }
 }

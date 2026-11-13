@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "scope": "Local synthetic provider responses and disposable PostgreSQL only; no hosted acceptance.",
+  "paymentTests": 17,
+  "browserJourneys": 10,
+  "priorPhaseSuites": {
+    "1": 18,
+    "2": 28,
+    "4": 5,
+    "5": 7
+  },
+  "providerTestPayments": 0,
+  "hostedMigrationsApplied": 0,
+  "productionChanges": false,
+  "focusedLint": "passed",
+  "webpackBuildIncludingTypeScript": "passed",
+  "visualReview": "Desktop and mobile synthetic screenshots inspected; no embedded text or EXIF metadata."
+}

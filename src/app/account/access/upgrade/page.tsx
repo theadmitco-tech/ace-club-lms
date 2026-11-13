@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { isV2CheckoutEnabled } from '@/lib/server/v2Checkout';
+import { notFound, redirect } from 'next/navigation';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
 import { loadIndividualUpgrade } from '@/lib/server/v2UpgradeQuotes';
@@ -11,6 +12,7 @@ export const dynamic = 'force-dynamic';
 export default async function UpgradePage({ searchParams }: { searchParams: Promise<{ course?: string | string[] }> }) {
   if (!isV2Phase1PreviewEnabled()) notFound();
   await requirePortalRole('student');
+  if (isV2CheckoutEnabled()) redirect('/courses/v2/checkout?upgrade=1');
   const { course } = await searchParams;
   const target = course === undefined ? undefined : parseCourseSelection(course);
   const review = await loadIndividualUpgrade(target);

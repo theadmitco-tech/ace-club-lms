@@ -8,13 +8,13 @@ import { useAuth } from '@/lib/AuthContext';
 import './admin.css';
 import './workflow.css';
 
-type AdminShellProps = { children: React.ReactNode; showCoursePublishing?: boolean; workflowEnabled?: boolean };
+type AdminShellProps = { children: React.ReactNode; showCoursePublishing?: boolean; workflowEnabled?: boolean; paymentsEnabled?: boolean };
 
-export default function AdminShell({ children, showCoursePublishing = false, workflowEnabled = false }: AdminShellProps) {
-  return <AdminDraftNavigationProvider><AdminShellContent workflowEnabled={workflowEnabled} showCoursePublishing={showCoursePublishing}>{children}</AdminShellContent></AdminDraftNavigationProvider>;
+export default function AdminShell({ children, showCoursePublishing = false, workflowEnabled = false, paymentsEnabled = false }: AdminShellProps) {
+  return <AdminDraftNavigationProvider><AdminShellContent paymentsEnabled={paymentsEnabled} workflowEnabled={workflowEnabled} showCoursePublishing={showCoursePublishing}>{children}</AdminShellContent></AdminDraftNavigationProvider>;
 }
 
-function AdminShellContent({ children, showCoursePublishing = false, workflowEnabled = false }: AdminShellProps) {
+function AdminShellContent({ children, showCoursePublishing = false, workflowEnabled = false, paymentsEnabled = false }: AdminShellProps) {
   const { confirmLeave } = useAdminDraftNavigation();
   const { user, isLoading, logout } = useAuth();
   const router = useRouter();
@@ -55,6 +55,7 @@ function AdminShellContent({ children, showCoursePublishing = false, workflowEna
     { href: '/admin/v2/students', label: 'Students', icon: '○' },
   ];
   const moreItems = [
+    ...(paymentsEnabled ? [{ href: '/admin/v2/payments', label: 'Payment review' }] : []),
     { href: '/admin/v2/access', label: 'Prices & purchase history' },
     { href: '/admin/users', label: 'Account management' },
     { href: '/admin/progress', label: 'Student progress' },

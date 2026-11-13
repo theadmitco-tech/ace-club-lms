@@ -1,0 +1,9 @@
+.grid { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); gap:24px; align-items:start; }
+.field,.batch { display:grid; gap:8px; }
+.field input,.batch select { box-sizing:border-box; min-height:46px; border:1px solid #bccabe; border-radius:8px; background:white; padding:10px 12px; color:#24352f; font:inherit; width:100%; }
+.field small { color:#58685f; }
+.check { display:flex; align-items:flex-start; gap:12px; line-height:1.6; }
+.check input { margin-top:5px; width:18px; height:18px; flex-shrink:0; accent-color:#205848; }
+.batch { border-top:1px solid #dce3dc; padding-top:18px; }
+.grid :where(input,select,button):focus-visible { outline:3px solid #366fb1; outline-offset:3px; }
+@media(max-width:850px) { .grid { grid-template-columns:minmax(0,1fr); gap:0; } }
