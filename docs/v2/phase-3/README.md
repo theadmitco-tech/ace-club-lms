@@ -54,7 +54,7 @@ credentials. A dedicated V2 test configuration is required before payment calls.
 No real charge, refund, Production configuration change or shared-key replacement
 is authorized by the staging implementation.
 
-The unapplied payment drafts now use versions `20261113090000`, `20261113100000` and
+The reconciled payment migrations use versions `20261113090000`, `20261113100000` and
 `20261113110000`, after the installed Phase 6 repair. No applied migration was renamed or edited.
 
 Fresh staging metadata and a recoverable application-data snapshot precede SQL

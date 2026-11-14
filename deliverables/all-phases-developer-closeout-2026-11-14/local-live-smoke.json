@@ -1,0 +1,30 @@
+{
+  "scope": "Actual local Next.js application with verified staging configuration; unsigned browser only. No authenticated acceptance, checkout creation or provider payment. No persistent application records changed.",
+  "earlierAttempt": "An initial harness request used a loopback IP origin instead of the configured localhost origin and received same-site denial. This final attempt uses the documented localhost origin and a valid request shape.",
+  "checks": [
+    {
+      "check": "Actual login renders with Google sign-in",
+      "pass": true
+    },
+    {
+      "check": "Unauthenticated Admin access redirects to sign-in",
+      "pass": true
+    },
+    {
+      "check": "Public course page renders against staging",
+      "pass": true
+    },
+    {
+      "check": "Actual checkout requires Google sign-in before purchase",
+      "pass": true
+    },
+    {
+      "check": "Unsigned checkout API denied before mutation",
+      "pass": true
+    },
+    {
+      "check": "Unsigned webhook rejected before provider or ledger calls",
+      "pass": true
+    }
+  ]
+}

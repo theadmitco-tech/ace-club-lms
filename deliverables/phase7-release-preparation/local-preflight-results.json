@@ -1,6 +1,6 @@
 {
   "check": "phase7_preflight_local_rehearsal",
-  "recordedAt": "2026-11-03T14:26:50.632Z",
+  "recordedAt": "2026-11-14T14:07:08.402Z",
   "scope": "Disposable local PostgreSQL only; no Production query, backup restore, release or rollback rehearsal.",
   "status": "passed",
   "checks": [
@@ -25,6 +25,18 @@
       "status": "pass"
     },
     {
+      "id": "phase3-private-tables-have-no-direct-client-grants",
+      "status": "pass"
+    },
+    {
+      "id": "payment-fulfillment-is-service-only-with-no-public-grant",
+      "status": "pass"
+    },
+    {
+      "id": "payment-capacity-and-signup-triggers-are-inventoried",
+      "status": "pass"
+    },
+    {
       "id": "private-bucket-metadata-is-reported",
       "status": "pass"
     },
@@ -37,5 +49,5 @@
       "status": "pass"
     }
   ],
-  "sqlSha256": "177fd13f9e395f2869c476b805b3f52fde761521eee6cb1403b6d04b6608f5dd"
+  "sqlSha256": "bae4de65a8ef164387713a885bae5af34bd54b6f6f555f5d14f6b0ca317c3233"
 }

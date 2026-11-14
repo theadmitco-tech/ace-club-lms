@@ -59,7 +59,7 @@ jobs:
       - run: npm run test:v2:phase1
       - run: npm run test:v2:phase2
       - run: npm run test:v2:phase3
-      - run: node --test scripts/phase3/recovery.test.mjs scripts/phase3/activation.test.mjs
+      - run: node --test scripts/phase3/recovery.test.mjs scripts/phase3/activation.test.mjs scripts/phase3/local-review.test.mjs
       - run: npm run test:v2:phase4
       - run: npm run test:v2:phase5
       - run: npm run test:v2:phase6

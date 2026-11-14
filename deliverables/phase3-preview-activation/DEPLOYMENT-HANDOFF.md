@@ -4,6 +4,18 @@ Status: staging schema reconciliation passed. Preview deployment and provider-ba
 
 The deployment owner targets Vercel project `ace-club-lms`, environment **Preview**, branch `intern/v2-phase-3-integration-review`. Automatic deployment is disabled for this branch. A Git push alone does not publish checkout. The release remains separate from Production and from changes to shared payment credentials.
 
+## Single owner working session
+
+| Step | Owner action | Completion evidence |
+| --- | --- | --- |
+| 1. Deploy Preview | The deployment owner selects `intern/v2-phase-3-integration-review`, verifies the final pushed SHA, sets only the branch overrides below and creates a Preview deployment. | Exact Preview URL, commit and READY result; Production remains on its existing deployment. |
+| 2. Connect sign-in and payment delivery | The Auth operator adds the exact Preview callback; the Razorpay operator configures the dedicated signed Test Mode webhook. | Google returns to the same Preview; provider delivery reaches the webhook rather than a hosting login screen. |
+| 3. Run acceptance with Engineering | QA executes the isolated success/failure/retry/upgrade/capacity matrix, then removes only tracked fixtures. | Provider-backed result, exact cleanup receipt and independent absence checks, followed by Product Owner review. |
+
+The staging schema is already installed and reconciled. `RUN-ACTIVATION.sql` is not rerun. Preview sharing is a viewing permission; it does not grant deployment or environment-variable access. A working private review link can support browser review, but does not by itself make the webhook reachable by Razorpay. Existing libraries and the account-specific walkthrough are excluded from test mutation.
+
+The review baseline is `c593d2de13c563b72adbaf216cf37ed30a038cc7`; subsequent reviewed fixes must be identified by the final pushed commit before deployment. A final candidate is accepted only after its own checks; a successful earlier build is not transferred to changed source.
+
 ## Branch configuration
 
 The owner sets each override for the Phase 3 Preview branch only. Existing values for other branches remain unchanged.
@@ -45,3 +57,7 @@ The acceptance run verifies a captured payment and a paid order through the prov
 The acceptance run uses designated synthetic staging accounts and course fixtures. It records real Test Mode order/payment identifiers privately, tests successful and failed checkout, duplicate and delayed delivery, upgrade pricing and capacity contention, and checks exact cleanup. The existing walkthrough is excluded from fixture mutation. No real payment, refund or Production action belongs to this staging run.
 
 Local payment tests and recovery rehearsals do not substitute for this provider-backed acceptance. A successful key-authentication check alone does not establish checkout, capture or webhook delivery.
+
+## Production remains a separate engineering task
+
+Completion of this Preview session does not make the current Test Mode runtime Production-capable. The [Production enablement specification](../phase7-release-preparation/RELEASE-ENABLEMENT-SPEC.md) identifies the separately reviewed source changes, Live Mode configuration, environment-isolation tests, schema reconciliation and rollback evidence still required. The deployment owner cannot complete that implementation by changing flags or clicking deploy.

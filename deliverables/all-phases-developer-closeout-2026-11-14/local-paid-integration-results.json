@@ -1,0 +1,243 @@
+{
+  "check": "phase6_local_paid_integration",
+  "candidate": "c593d2de13c563b72adbaf216cf37ed30a038cc7",
+  "recordedAt": "2026-11-14T14:08:44.022Z",
+  "scope": "Disposable local PostgreSQL with synthetic Google identities and trusted-service fulfillment inputs. No provider requests, hosted database writes, browser OAuth, or actual payment acceptance.",
+  "status": "passed",
+  "checks": [
+    {
+      "id": "full_course:unpaid-course-denied",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:service-order-claim",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:fulfillment-activates-and-enrolls",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:fulfillment-replay-single-purchase",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:exact-subject-entitlement",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:no-live-registration-invented",
+      "status": "pass"
+    },
+    {
+      "id": "quant:unpaid-course-denied",
+      "status": "pass"
+    },
+    {
+      "id": "quant:service-order-claim",
+      "status": "pass"
+    },
+    {
+      "id": "quant:fulfillment-activates-and-enrolls",
+      "status": "pass"
+    },
+    {
+      "id": "quant:fulfillment-replay-single-purchase",
+      "status": "pass"
+    },
+    {
+      "id": "quant:exact-subject-entitlement",
+      "status": "pass"
+    },
+    {
+      "id": "quant:no-live-registration-invented",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:unpaid-course-denied",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:service-order-claim",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:fulfillment-activates-and-enrolls",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:fulfillment-replay-single-purchase",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:exact-subject-entitlement",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:no-live-registration-invented",
+      "status": "pass"
+    },
+    {
+      "id": "di:unpaid-course-denied",
+      "status": "pass"
+    },
+    {
+      "id": "di:service-order-claim",
+      "status": "pass"
+    },
+    {
+      "id": "di:fulfillment-activates-and-enrolls",
+      "status": "pass"
+    },
+    {
+      "id": "di:fulfillment-replay-single-purchase",
+      "status": "pass"
+    },
+    {
+      "id": "di:exact-subject-entitlement",
+      "status": "pass"
+    },
+    {
+      "id": "di:no-live-registration-invented",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:foreign-purchase-history-hidden",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:other-course-enrollment-denied",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:independent-reading-delivered",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:pending-feedback-hides-sibling-session",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:other-paid-subjects-remain-accessible",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:confirmed-feedback-restores-reading",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:expired-purchase-denies-course-and-resource-placement",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:expiry-retains-purchase-history",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:admin-preview-does-not-change-progress",
+      "status": "pass"
+    },
+    {
+      "id": "quant:foreign-purchase-history-hidden",
+      "status": "pass"
+    },
+    {
+      "id": "quant:other-course-enrollment-denied",
+      "status": "pass"
+    },
+    {
+      "id": "quant:independent-reading-delivered",
+      "status": "pass"
+    },
+    {
+      "id": "quant:pending-feedback-hides-sibling-session",
+      "status": "pass"
+    },
+    {
+      "id": "quant:confirmed-feedback-restores-reading",
+      "status": "pass"
+    },
+    {
+      "id": "quant:expired-purchase-denies-course-and-resource-placement",
+      "status": "pass"
+    },
+    {
+      "id": "quant:expiry-retains-purchase-history",
+      "status": "pass"
+    },
+    {
+      "id": "quant:admin-preview-does-not-change-progress",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:foreign-purchase-history-hidden",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:other-course-enrollment-denied",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:independent-reading-delivered",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:pending-feedback-hides-sibling-session",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:confirmed-feedback-restores-reading",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:expired-purchase-denies-course-and-resource-placement",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:expiry-retains-purchase-history",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:admin-preview-does-not-change-progress",
+      "status": "pass"
+    },
+    {
+      "id": "di:foreign-purchase-history-hidden",
+      "status": "pass"
+    },
+    {
+      "id": "di:other-course-enrollment-denied",
+      "status": "pass"
+    },
+    {
+      "id": "di:independent-reading-delivered",
+      "status": "pass"
+    },
+    {
+      "id": "di:pending-feedback-hides-sibling-session",
+      "status": "pass"
+    },
+    {
+      "id": "di:confirmed-feedback-restores-reading",
+      "status": "pass"
+    },
+    {
+      "id": "di:expired-purchase-denies-course-and-resource-placement",
+      "status": "pass"
+    },
+    {
+      "id": "di:expiry-retains-purchase-history",
+      "status": "pass"
+    },
+    {
+      "id": "di:admin-preview-does-not-change-progress",
+      "status": "pass"
+    }
+  ],
+  "testSourceSha256": "b10cdc22406b55f3a13374cbdcd7875aab7626d4ac4f1846d55d9cf8c9dac22b",
+  "paymentMigrationSha256": {
+    "20261113090000_add_v2_sales_catalogue.sql": "21b5d7ba9c0b0697a4acef72e533bb3947791f1b098a35e55366927252f4f54f",
+    "20261113100000_add_v2_checkout_ledger.sql": "555b7e49be59842a425b40188ebb1b9b457c6ba4df93f0ce208ecf19233f6b4b",
+    "20261113110000_add_v2_payment_fulfillment.sql": "da996f6d8f059a2a1677bb0b573bff3d9322bc3505282bd0fa20af204735ee58"
+  }
+}

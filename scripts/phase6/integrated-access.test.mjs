@@ -3,18 +3,20 @@ import assert from 'node:assert/strict';
 import {randomUUID,createHash} from 'node:crypto';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {withDisposablePostgres} from '../helpers/disposable-postgres.mjs';
-import {bootstrapCandidate} from './helpers.mjs';
+import {preparePhase3Database} from '../helpers/v2-phase3-fixture.mjs';
+import {execFileSync} from 'node:child_process';
+import {join} from 'node:path';
 import {literal} from '../phase1-hosted-closeout-config.mjs';
 
-const report={check:'phase6_local_integrated_access',candidate:'879be1fcf2b32f6a4ef42ae431ca3ac6521fa06d',repairMigration:'20261103120000',recordedAt:new Date().toISOString(),scope:'Disposable PostgreSQL, synthetic Auth and Storage catalogues, fixture-granted access; no provider payment or hosted acceptance.',status:'running',checks:[]};
+const report={check:'phase6_local_integrated_access',candidate:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),paymentMigrations:['20261113090000','20261113100000','20261113110000'],repairMigration:'20261103120000',recordedAt:new Date().toISOString(),scope:'Disposable PostgreSQL, synthetic Auth and Storage catalogues, fixture-granted access; no provider payment or hosted acceptance.',status:'running',checks:[]};
 const record=(id,pass)=>{report.checks.push({id,status:pass?'pass':'fail'});assert(pass,id);};
 const j=value=>literal(JSON.stringify(value))+'::jsonb';
 const subjects=['quant','verbal','di'];
 const products=[['full_course','full_batch',subjects],['quant','quant_crash',['quant']],['verbal','verbal_crash',['verbal']],['di','di_crash',['di']]];
-test('all four offerings retain entitlement, publication and feedback boundaries across Phases 1, 2, 4 and 5',{timeout:120000},async()=>{
+test('all four offerings retain entitlement, publication and feedback boundaries across Phases 1, 2, 3, 4 and 5',{timeout:120000},async()=>{
  try{await withDisposablePostgres(async db=>{
-  const {query,apply,rejects}=db;bootstrapCandidate(db);
-  apply('20261103120000_fix_v2_integration_conflicts.sql');
+  const {query,apply,rejects}=db;preparePhase3Database(db);
+  for(const migration of ['20261113090000_add_v2_sales_catalogue.sql','20261113100000_add_v2_checkout_ledger.sql','20261113110000_add_v2_payment_fulfillment.sql'])apply(migration);
   const as=(id,sql,readonly=false)=>`begin${readonly?' read only':''};set local role authenticated;set local request.jwt.claim.sub='${id}';${sql};commit;`;
   const rpc=(id,name,args,readonly=false)=>JSON.parse(query(as(id,`select public.${name}(${args})`,readonly))||'null');
   const identity=(role)=>{const id=randomUUID();query(`insert into auth.users(id,email) values('${id}','phase6-${id}@example.invalid');update public.profiles set role='${role}',is_active=true where id='${id}'`);return id;};
@@ -70,6 +72,6 @@ test('all four offerings retain entitlement, publication and feedback boundaries
   record('stale-independent-publication-returns-nonretryable-conflict',true);
  });report.status='passed';}catch(error){report.status='failed';throw error;}finally{
   report.testSourceSha256=createHash('sha256').update(readFileSync(new URL(import.meta.url))).digest('hex');
-  writeFileSync('deliverables/phase6-staging-acceptance/local-integrated-results.json',JSON.stringify(report,null,2)+'\n');
+  writeFileSync(join(process.env.PHASE6_REPORT_DIRECTORY??'deliverables/phase6-staging-acceptance','local-integrated-results.json'),JSON.stringify(report,null,2)+'\n');
  }
 });

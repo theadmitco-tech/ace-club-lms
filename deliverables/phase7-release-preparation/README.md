@@ -1,40 +1,40 @@
 # Phase 7 — Production release preparation
 
-Date: 2026-11-03 (Asia/Kolkata).
+Updated: 2026-11-14 (Asia/Kolkata).
 
-**Status: preparation recorded; Production release blocked and not executed.** Phase 7 is the V2 launch phase, not another Student feature phase. Phase 3 provider selection/test access and implementation remain pending; Phase 6 has scoped passing checks but no full integrated acceptance or Product Owner sign-off. Those gates cannot be skipped by starting Phase 7.
+**Status: combined-candidate preparation updated; Production release remains unapproved and unexecuted.** Razorpay Test Mode is selected, Phase 3 implementation is integrated with the current Admin/Student workflows, and staging reconciliation confirms its three migrations. Provider-backed checkout, Google sign-in, webhook delivery and exact hosted cleanup remain separate acceptance requirements. Phase 6 final acceptance and Product Owner sign-off remain pending those results.
 
-The preparation branch is `intern/v2-phase-7-review`, based on `298000058e862bb3b0a11525c40cd45cc0e0a039`. The tested application remains `bcc0231e51ae93e266a3232aa316ef934b0e825b` on the [Phase 6 Preview](https://ace-club-dmc32ekp8-theadmitco-techs-projects.vercel.app). The evidence-only baseline has identical application source. The platform inventory observed the remote Phase 6 branch still at `bcc0231`; the evidence commit therefore still requires publication. No commit is designated as a Production release candidate.
+The source inventory is pinned to `c593d2de13c563b72adbaf216cf37ed30a038cc7` on `intern/v2-phase-3-integration-review`. It includes the Admin workflow baseline and the installed Phase 6 conflict repair. Later application fixes require their own final acceptance attribution; this source baseline is not an approved Production release candidate.
 
 ## Prepared work
 
-- [Release plan and prerequisites](RELEASE-PLAN.md), including the existing Production-disabled V2 guards and the order of migration, content, deployment and domain assignment.
-- [Source migration inventory](migration-inventory.json): 17 added files, exact SHA-256 hashes and version order against the observed `main` commit. This is not a Production ledger diff; Phase 3 is absent.
-- [Metadata-only SQL preflight](READ-ONLY-PREFLIGHT.sql), rehearsed against both absent and installed V2 schemas in disposable local PostgreSQL. [Eight checks passed](local-preflight-results.json). No hosted database was contacted.
-- [Recovery and rollback procedure](RECOVERY-AND-ROLLBACK.md), with separate application, database, Storage and payment boundaries. A usable Production restore and old-application compatibility rehearsal remain required.
-- [Post-release smoke and monitoring checklist](SMOKE-AND-HANDOFF.md), with role ownership and explicit payment/data-operation limits.
-- [Unapproved authorization record](authorization.json), with no release SHA or permitted actions filled in.
-- [Read-only platform inventory](platform-inventory.json): current Production deployment metadata and environment-variable names/scopes, without values. Metadata alone does not prove secret/project separation.
+- [Release plan](RELEASE-PLAN.md) covers the remaining environment, database, content and release decisions.
+- [Production enablement specification](RELEASE-ENABLEMENT-SPEC.md) identifies the remaining source modules, proposed flags, Live Mode adapter, environment matrix and rollback compatibility work. It is not implemented by this preparation update.
+- [Ordered source inventory](migration-inventory.json) records 20 exact migration hashes against the previously observed `main` commit. [The staging sequence](STAGING-MIGRATION-SEQUENCE.md) includes Phase 3 after the Phase 6 repair. Neither file authorizes replay or establishes the current Production missing set.
+- [Metadata preflight](READ-ONLY-PREFLIGHT.sql) includes payment tables, callable permissions, PUBLIC execution and payment/sign-up triggers. [Local evidence](local-preflight-results.json) records disposable PostgreSQL checks for absent and combined installed schemas, preserving ledger/product/bucket metadata.
+- [Recovery and rollback](RECOVERY-AND-ROLLBACK.md) distinguishes application rollback, database/Storage recovery and payment reconciliation. Production restore and old-application compatibility still require rehearsal.
+- [Smoke checklist](SMOKE-AND-HANDOFF.md) and [unapproved authorization template](authorization.json) remain ready for a separately reviewed release.
+- [Owner staging handoff](../phase3-preview-activation/DEPLOYMENT-HANDOFF.md) consolidates the next deployment, Auth and webhook actions. No repeated staging activation is required.
 
-No application behavior, applied migration, Production variable, domain, deployment or hosted data changed. Phase 7 automatic branch deployment is disabled in `vercel.json`; Phase 6's existing branch rule is preserved. The preparation branch needs no deployment and no staging service-key copy.
+The 2026-11-03 `platform-inventory.json` and `publication-review.json` remain historical observations. They do not attest current hosting access, Production state or the final publication review. Current connected Vercel access is blocked; owner-managed staging deployment is required unless access is restored.
 
 ## Exit gates
 
 | Required gate | Evidence / status |
 | --- | --- |
-| Exact release commit and migrations named | Baseline and 17 current source files inventoried. Final integrated candidate and Production missing set **not available**. |
-| Product Owner authorizes merge, migrations, deployment and data operations | **Not authorized**; authorization record remains empty. |
-| Production/staging separation verified without exposing values | Metadata inspected. Actual Production key/project matching, provider mode and webhook isolation **not verified**. |
-| Read-only Production database preflight passes | SQL prepared and locally tested; **not run on Production**. |
-| Recovery/rollback documented and usable | Procedure prepared; Production backup/restore and application compatibility rehearsal **not completed**. |
-| Post-release smoke prepared | Checklist prepared; no execution or passing release claim. |
-| Release separately approved and executed | **Blocked / not executed**. |
-| Post-release evidence and limitations documented | Recording template prepared; **no post-release evidence exists**. |
+| Exact release commit and migrations named | Combined source inventory covers 20 files; final approved SHA and Production missing set remain pending. |
+| Product Owner authorizes merge, migrations, deployment and data operations | Not authorized; authorization fields remain empty. |
+| Production/staging separation verified | Staging payment schema matches. Effective Production configuration/provider mode is not verified. |
+| Read-only Production preflight passes | Updated SQL is prepared and locally exercised; no Production query has run. |
+| Recovery and rollback usable | Procedure prepared; Production restore and rollback compatibility not demonstrated. |
+| Post-release smoke prepared | Checklist prepared; no Production smoke executed. |
+| Release approved and executed | Not approved and not executed. |
+| Post-release evidence recorded | No post-release evidence exists. |
 
-The authoritative requirements are [the V2 roadmap](../../docs/v2/review/product-roadmap.md) and [the supplied exit gates](../phase1-exit-gate-audit-2026-11-01/source-exit-gates.txt). Historical MVP and pilot phases with the same numbers are separate releases.
+## Remaining sequence
 
-## Next action
+The deployment owner configures and deploys the dedicated Phase 3 Preview; the Auth/payment operators complete the callback and signed Test Mode webhook setup. Engineering and QA then execute provider-backed and combined-candidate acceptance with isolated fixtures and exact cleanup. The Product Owner reviews that evidence. Only afterward can a separately approved Production enablement change, fresh Production preflight, missing-set reconciliation, recovery rehearsal and final release decision be completed.
 
-The payment account owner selects the provider and arranges test access. Engineering then integrates Phase 3 with the current learning/content functions and conflict repairs. QA completes the Phase 6 paid journeys; the Product Owner records an explicit decision for that exact candidate. Engineering can then refresh this plan, run the Production metadata preflight through an authorized operator, reconcile the exact missing migrations, rehearse recovery and present one concrete release for separate authorization. No Production action is requested by this preparation packet.
+The current checkout is deliberately Test Mode only, and V2 runtime guards reject Production. Production launch cannot be achieved by setting the current Preview flags. This is an explicit remaining implementation/release boundary, not a hidden completed gate.
 
-Local reproduction: `node scripts/phase7/prepare-release.mjs`, followed by `npm run test:v2:phase7`. The inventory generator is deliberately pinned to this preparation baseline; a future candidate requires a reviewed update. Test execution uses disposable Unix-socket databases and accepts no hosted connection string.
+Local reproduction: `node scripts/phase7/prepare-release.mjs`, then `npm run test:v2:phase7`. The generator refuses migration source drift. Local tests accept no hosted connection string. Applied migrations and historical evidence are not rewritten.

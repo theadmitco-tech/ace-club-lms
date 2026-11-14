@@ -1,11 +1,11 @@
 {
   "check": "phase7_source_migration_inventory",
-  "sourceBaseline": "298000058e862bb3b0a11525c40cd45cc0e0a039",
+  "sourceBaseline": "c593d2de13c563b72adbaf216cf37ed30a038cc7",
   "observedMain": "940ea7835734a8fb22a6451a30b31084b11d5c97",
   "releaseCandidate": null,
   "approvedForExecution": false,
-  "phase3Included": false,
-  "scope": "Added repository migrations against the observed main commit; not a Production ledger diff or complete future release set.",
+  "phase3Included": true,
+  "scope": "Added repository migrations against the observed main commit; not a Production ledger diff. Source includes Phase 3 and the current Admin workflow; the final release candidate remains unapproved.",
   "migrations": [
     {
       "version": "20261018090000",
@@ -123,6 +123,27 @@
       "version": "20261103120000",
       "path": "supabase/migrations/20261103120000_fix_v2_integration_conflicts.sql",
       "sourceSha256": "c921797533b1761a634729e6997712dc7b8389cbf5a50996280a323b813a9eb4",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261113090000",
+      "path": "supabase/migrations/20261113090000_add_v2_sales_catalogue.sql",
+      "sourceSha256": "21b5d7ba9c0b0697a4acef72e533bb3947791f1b098a35e55366927252f4f54f",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261113100000",
+      "path": "supabase/migrations/20261113100000_add_v2_checkout_ledger.sql",
+      "sourceSha256": "555b7e49be59842a425b40188ebb1b9b457c6ba4df93f0ce208ecf19233f6b4b",
+      "productionLedgerState": "not inspected",
+      "operation": "unapproved; reconcile before applying"
+    },
+    {
+      "version": "20261113110000",
+      "path": "supabase/migrations/20261113110000_add_v2_payment_fulfillment.sql",
+      "sourceSha256": "da996f6d8f059a2a1677bb0b573bff3d9322bc3505282bd0fa20af204735ee58",
       "productionLedgerState": "not inspected",
       "operation": "unapproved; reconcile before applying"
     }

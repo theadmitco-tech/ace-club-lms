@@ -23,7 +23,10 @@ with expected(version) as (values
   ('20261103091000'),
   ('20261103100000'),
   ('20261103110000'),
-  ('20261103120000')
+  ('20261103120000'),
+  ('20261113090000'),
+  ('20261113100000'),
+  ('20261113110000')
 ), roles as (
  select oid,rolname from pg_roles where rolname in ('anon','authenticated','service_role')
 ), relations as (
@@ -39,7 +42,7 @@ select jsonb_build_object(
  'transactionReadOnly',current_setting('transaction_read_only'),
  'projectIdentityVerifiedBySql',false,
  'releaseApproved',false,
- 'sourceBaseline','298000058e862bb3b0a11525c40cd45cc0e0a039',
+ 'sourceBaseline','c593d2de13c563b72adbaf216cf37ed30a038cc7',
  'scope','Metadata only; no backup, ledger equivalence, application compatibility or release acceptance is asserted.',
  'ledger',(select coalesce(jsonb_agg(jsonb_build_object(
    'version',e.version,'present',m.version is not null,'name',m.name,
@@ -56,8 +59,13 @@ select jsonb_build_object(
  'routines',(select coalesce(jsonb_agg(jsonb_build_object(
    'signature',p.oid::regprocedure::text,'bodyMd5',md5(p.prosrc),'securityDefiner',p.prosecdef,
    'configuration',p.proconfig,'volatility',p.provolatile,
+   'publicExecute',exists(select 1 from aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a where a.grantee=0 and a.privilege_type='EXECUTE'),
    'executeRoles',(select coalesce(jsonb_agg(r.rolname order by r.rolname),'[]'::jsonb) from roles r where has_function_privilege(r.oid,p.oid,'EXECUTE'))
  ) order by p.oid::regprocedure::text),'[]'::jsonb) from routines p),
+ 'paymentTriggers',(select coalesce(jsonb_agg(jsonb_build_object(
+   'name',t.tgname,'schema',n.nspname,'table',c.relname,'enabled',t.tgenabled,'definitionMd5',md5(pg_get_triggerdef(t.oid))
+ ) order by t.tgname),'[]'::jsonb) from pg_trigger t join pg_class c on c.oid=t.tgrelid join pg_namespace n on n.oid=c.relnamespace
+ where not t.tgisinternal and t.tgname in ('v2_live_capacity','v2_signup_activation_guard','z_v2_signup_candidate')),
  'policyMetadata',(select coalesce(jsonb_agg(jsonb_build_object(
    'schema',schemaname,'table',tablename,'name',policyname,'mode',permissive,'roles',roles,'command',cmd,
    'usingMd5',md5(qual),'checkMd5',md5(with_check)

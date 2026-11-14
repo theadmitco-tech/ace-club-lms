@@ -3,7 +3,7 @@ import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 
 // This inventory identifies source differences only; it never applies migrations.
-const source='298000058e862bb3b0a11525c40cd45cc0e0a039';
+const source='c593d2de13c563b72adbaf216cf37ed30a038cc7';
 const main='940ea7835734a8fb22a6451a30b31084b11d5c97';
 const directory='deliverables/phase7-release-preparation';
 mkdirSync(directory,{recursive:true});
@@ -16,7 +16,7 @@ const migrations=changes.map(line=>{
  const version=path.split('/').at(-1).slice(0,14);
  return {version,path,sourceSha256:createHash('sha256').update(original).digest('hex'),productionLedgerState:'not inspected',operation:'unapproved; reconcile before applying'};
 });
-const inventory={check:'phase7_source_migration_inventory',sourceBaseline:source,observedMain:main,releaseCandidate:null,approvedForExecution:false,phase3Included:false,scope:'Added repository migrations against the observed main commit; not a Production ledger diff or complete future release set.',migrations};
+const inventory={check:'phase7_source_migration_inventory',sourceBaseline:source,observedMain:main,releaseCandidate:null,approvedForExecution:false,phase3Included:true,scope:'Added repository migrations against the observed main commit; not a Production ledger diff. Source includes Phase 3 and the current Admin workflow; the final release candidate remains unapproved.',migrations};
 writeFileSync(`${directory}/migration-inventory.json`,JSON.stringify(inventory,null,2)+'\n');
 const versions=migrations.map(m=>`('${m.version}')`).join(',\n  ');
 const sql=`-- Metadata-only preflight; no migration, application row read or persistent write.
@@ -61,8 +61,13 @@ select jsonb_build_object(
  'routines',(select coalesce(jsonb_agg(jsonb_build_object(
    'signature',p.oid::regprocedure::text,'bodyMd5',md5(p.prosrc),'securityDefiner',p.prosecdef,
    'configuration',p.proconfig,'volatility',p.provolatile,
+   'publicExecute',exists(select 1 from aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a where a.grantee=0 and a.privilege_type='EXECUTE'),
    'executeRoles',(select coalesce(jsonb_agg(r.rolname order by r.rolname),'[]'::jsonb) from roles r where has_function_privilege(r.oid,p.oid,'EXECUTE'))
  ) order by p.oid::regprocedure::text),'[]'::jsonb) from routines p),
+ 'paymentTriggers',(select coalesce(jsonb_agg(jsonb_build_object(
+   'name',t.tgname,'schema',n.nspname,'table',c.relname,'enabled',t.tgenabled,'definitionMd5',md5(pg_get_triggerdef(t.oid))
+ ) order by t.tgname),'[]'::jsonb) from pg_trigger t join pg_class c on c.oid=t.tgrelid join pg_namespace n on n.oid=c.relnamespace
+ where not t.tgisinternal and t.tgname in ('v2_live_capacity','v2_signup_activation_guard','z_v2_signup_candidate')),
  'policyMetadata',(select coalesce(jsonb_agg(jsonb_build_object(
    'schema',schemaname,'table',tablename,'name',policyname,'mode',permissive,'roles',roles,'command',cmd,
    'usingMd5',md5(qual),'checkMd5',md5(with_check)
@@ -74,4 +79,4 @@ select jsonb_build_object(
 rollback;
 `;
 writeFileSync(`${directory}/READ-ONLY-PREFLIGHT.sql`,sql);
-console.info(JSON.stringify({migrations:migrations.length,approvedForExecution:false,phase3Included:false}));
+console.info(JSON.stringify({migrations:migrations.length,approvedForExecution:false,phase3Included:true}));

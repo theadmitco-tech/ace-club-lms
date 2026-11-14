@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "review:local": "node scripts/phase3/local-review.mjs",
     "prebuild": "node scripts/validate-deployment-env.mjs",
     "build": "next build",
     "start": "next start",

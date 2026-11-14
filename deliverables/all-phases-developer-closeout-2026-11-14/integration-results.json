@@ -1,0 +1,196 @@
+{
+  "check": "all_phases_local_integration_closeout",
+  "recordedAt": "2026-11-14T14:09:52.449267+00:00",
+  "baseCommit": "c593d2de13c563b72adbaf216cf37ed30a038cc7",
+  "scope": "Current working-tree local tests; synthetic identities, disposable PostgreSQL and trusted-service fulfillment. Provider, hosted OAuth, current Preview and Production acceptance are excluded.",
+  "status": "passed",
+  "results": [
+    {
+      "phase": 1,
+      "exitCode": 0,
+      "seconds": 12.2,
+      "suiteRuns": 18,
+      "tests": 173,
+      "passed": 173,
+      "failed": 0,
+      "command": "npm run test:v2:phase1",
+      "status": "passed"
+    },
+    {
+      "phase": 2,
+      "exitCode": 0,
+      "seconds": 38.14,
+      "suiteRuns": 28,
+      "tests": 278,
+      "passed": 278,
+      "failed": 0,
+      "command": "npm run test:v2:phase2",
+      "status": "passed"
+    },
+    {
+      "phase": 4,
+      "exitCode": 0,
+      "seconds": 10.91,
+      "suiteRuns": 5,
+      "tests": 20,
+      "passed": 20,
+      "failed": 0,
+      "command": "npm run test:v2:phase4",
+      "status": "passed"
+    },
+    {
+      "phase": 5,
+      "exitCode": 0,
+      "seconds": 11.1,
+      "suiteRuns": 7,
+      "tests": 12,
+      "passed": 12,
+      "failed": 0,
+      "command": "npm run test:v2:phase5",
+      "status": "passed"
+    },
+    {
+      "phase": 6,
+      "command": "PHASE6_REPORT_DIRECTORY=deliverables/all-phases-developer-closeout-2026-11-14 npm run test:v2:phase6",
+      "status": "passed",
+      "exitCode": 0,
+      "suiteRuns": 4,
+      "tests": 12,
+      "passed": 12,
+      "failed": 0
+    }
+  ],
+  "totalSuiteRuns": 62,
+  "totalTests": 495,
+  "distinctDatabaseAssertionReports": [
+    {
+      "path": "deliverables/all-phases-developer-closeout-2026-11-14/local-integrated-results.json",
+      "sha256": "4485eda46ece53b7f636a352336a37c9555d2f1309a7c2e3f51027761cba8ee8",
+      "status": "passed",
+      "assertions": 56
+    },
+    {
+      "path": "deliverables/all-phases-developer-closeout-2026-11-14/local-paid-integration-results.json",
+      "sha256": "72ce99a84d6982c506410c4b00bd051cba628b505f8f5d14a889d50f8c4753ad",
+      "status": "passed",
+      "assertions": 57
+    },
+    {
+      "path": "deliverables/all-phases-developer-closeout-2026-11-14/local-conflict-repair-results.json",
+      "sha256": "444ff5359d94c73e64294b7fbcc308b0981fae74085786d4c3589ab62c4a0b44",
+      "status": "passed",
+      "assertions": 9
+    }
+  ],
+  "inheritedEvidence": [
+    {
+      "path": "deliverables/phase1-closeout-2026-11-01/passwordless-qa/hosted-results.json",
+      "sourceHashMatches": true,
+      "reportedCommit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+      "scope": "Historical hosted or local evidence; no new hosted run."
+    },
+    {
+      "path": "deliverables/phase1-closeout-2026-11-01/passwordless-qa/student-legacy-results.json",
+      "sourceHashMatches": true,
+      "reportedCommit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+      "scope": "Historical hosted or local evidence; no new hosted run."
+    },
+    {
+      "path": "deliverables/phase1-closeout-2026-11-01/passwordless-qa/admin-legacy-results.json",
+      "sourceHashMatches": true,
+      "reportedCommit": "155b3fbffc46db94be0fbee70b7b6fd9465a74b4",
+      "scope": "Historical hosted or local evidence; no new hosted run."
+    },
+    {
+      "path": "deliverables/phase2-hosted-acceptance/authoring-results.json",
+      "sourceHashMatches": true,
+      "reportedCommit": "aee96df42dffb80948021d6d22392fb059189ee8",
+      "scope": "Historical hosted or local evidence; no new hosted run."
+    },
+    {
+      "path": "deliverables/phase2-hosted-acceptance/ist-schedule.json",
+      "sourceHashMatches": true,
+      "reportedCommit": null,
+      "scope": "Historical hosted or local evidence; no new hosted run."
+    },
+    {
+      "path": "deliverables/phase4-hosted-acceptance/hosted-results.json",
+      "sourceHashMatches": true,
+      "reportedCommit": "9f865dfe83bda1b121493ed186899ae6c9532684",
+      "scope": "Historical hosted or local evidence; no new hosted run."
+    },
+    {
+      "path": "deliverables/phase4-hosted-acceptance/provider-results.json",
+      "sourceHashMatches": true,
+      "reportedCommit": "c0c4e3e65129bd24e7c46de57a82f29916f2a74f",
+      "scope": "Historical hosted or local evidence; no new hosted run."
+    },
+    {
+      "path": "deliverables/phase5-hosted-acceptance/hosted-results.json",
+      "sourceHashMatches": true,
+      "reportedCommit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6",
+      "scope": "Historical hosted or local evidence; no new hosted run."
+    },
+    {
+      "path": "deliverables/phase5-hosted-acceptance/preview-matrix-results.json",
+      "sourceHashMatches": true,
+      "reportedCommit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6",
+      "scope": "Historical hosted or local evidence; no new hosted run."
+    },
+    {
+      "path": "deliverables/phase5-hosted-acceptance/reorder-preview-results.json",
+      "sourceHashMatches": true,
+      "reportedCommit": "a999e2a1a642edbe5e31e256bd2920ea34a0f1e6",
+      "scope": "Historical hosted or local evidence; no new hosted run."
+    },
+    {
+      "path": "deliverables/phase5-hosted-acceptance/direct-storage-check.json",
+      "sourceHashMatches": true,
+      "reportedCommit": "b181d91635248c196313c421cd1b1b5b545e5a90",
+      "scope": "Historical hosted or local evidence; no new hosted run."
+    },
+    {
+      "path": "deliverables/phase5-hosted-acceptance/cleanup-verification.json",
+      "sourceHashMatches": true,
+      "reportedCommit": null,
+      "scope": "Historical hosted or local evidence; no new hosted run."
+    },
+    {
+      "path": "deliverables/phase5-preview-activation/activation-receipt.json",
+      "sourceHashMatches": true,
+      "reportedCommit": null,
+      "scope": "Historical hosted or local evidence; no new hosted run."
+    },
+    {
+      "path": "deliverables/phase5-preview-activation/readonly-repair-receipt.json",
+      "sourceHashMatches": true,
+      "reportedCommit": null,
+      "scope": "Historical hosted or local evidence; no new hosted run."
+    },
+    {
+      "path": "deliverables/phase5-preview-activation/conflict-repair-receipt.json",
+      "sourceHashMatches": true,
+      "reportedCommit": null,
+      "scope": "Historical hosted or local evidence; no new hosted run."
+    }
+  ],
+  "allInheritedHashesMatch": true,
+  "sourceFingerprint": {
+    "algorithm": "SHA-256 of ordered path + NUL + file SHA-256 + newline records",
+    "fileCount": 465,
+    "sha256": "15e87d1e7c12ecc144d895d8cdcde28566f24becd9bbc1e305b138f77ac08a42",
+    "limitation": "Snapshot of tracked src, scripts and migrations plus the new paid integration test at execution recording; parallel work may change unrelated sources afterward. Each database report additionally identifies its test source."
+  },
+  "executionNotes": [
+    "Initial sandbox attempts could not start PostgreSQL because pg_ctl returned EPERM; complete permitted local reruns passed.",
+    "The new paid harness initially attempted to JSON-decode a PostgreSQL boolean; the corrected harness checks the native boolean text and the complete Phase 6 rerun passed.",
+    "Historical Phase 6 reports were not overwritten. Current reports use PHASE6_REPORT_DIRECTORY."
+  ],
+  "remainingAcceptance": [
+    "Dedicated combined-candidate Preview deployment and environment verification.",
+    "Google OAuth and actual Razorpay Test Mode purchase, capture, signed webhook and retry acceptance.",
+    "Hosted payment-issued entitlement, capacity, upgrade, protected-resource and legacy smoke checks.",
+    "Exact QA cleanup and independent absence verification.",
+    "Explicit Product Owner acceptance; Production release remains separately authorized."
+  ]
+}

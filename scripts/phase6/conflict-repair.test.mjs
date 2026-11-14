@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {withDisposablePostgres} from '../helpers/disposable-postgres.mjs';
 import {bootstrapCandidate} from './helpers.mjs';
+import {join} from 'node:path';
 import {literal} from '../phase1-hosted-closeout-config.mjs';
 const packet='\\i deliverables/phase6-staging-acceptance/REPAIR-INTEGRATION-CONFLICTS.sql';
 const manifest=JSON.parse(readFileSync('deliverables/phase6-staging-acceptance/conflict-routines.json','utf8'));
@@ -28,5 +29,5 @@ test('additive conflict repair preserves rows, ledger, identities and security m
   assert.equal(query("select count(*) from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname like '%v2%' and p.prosrc like '%''40001''%'"),'0');record('no-explicit-serialization-conflict-remains-in-v2-routines');
   rejects(packet,/already recorded/);record('repeated-activation-rejected-without-reapplication');
   assert.equal(query("select count(*) from supabase_migrations.schema_migrations where version in ('20261102140000','20261102150000','20261102160000')"),'0');record('phase3-not-activated');
- });report.status='passed';}catch(error){report.status='failed';throw error;}finally{writeFileSync('deliverables/phase6-staging-acceptance/local-conflict-repair-results.json',JSON.stringify(report,null,2)+'\n');}
+ });report.status='passed';}catch(error){report.status='failed';throw error;}finally{writeFileSync(join(process.env.PHASE6_REPORT_DIRECTORY??'deliverables/phase6-staging-acceptance','local-conflict-repair-results.json'),JSON.stringify(report,null,2)+'\n');}
 });

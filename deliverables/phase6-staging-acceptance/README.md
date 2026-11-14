@@ -1,6 +1,14 @@
 # Phase 6 — integrated staging acceptance
 
-Status: **in progress; full acceptance blocked by Phase 3 payment integration and Product Owner sign-off**. Provider selection and test access remain pending as confirmed on 2026-11-03. Fixture-granted access does not establish successful payment fulfillment or the atomic eight-place limit.
+Status: **current combined-candidate local verification passed; hosted payment acceptance and Product Owner sign-off remain pending**. Razorpay Test Mode is selected, provider authentication passed, and Phase 3 staging schema reconciliation is confirmed. The current [acceptance matrix](ACCEPTANCE-MATRIX.md) and [developer closeout](../all-phases-developer-closeout-2026-11-14/integration-results.json) supersede the earlier provider-selection and absent-schema blockers.
+
+## Current combined-candidate checkpoint
+
+The current integration branch is `intern/v2-phase-3-integration-review`, based on `c593d2de13c563b72adbaf216cf37ed30a038cc7`. The migrated 56-assertion four-offering regression now runs after all three Phase 3 migrations. A separate paid integration suite exercises synthetic trusted-service fulfillment for Full Course, Quant, Verbal and DI, automatic activation/enrollment, replay idempotency, subject boundaries, independent readings, feedback gates, expiry, retained history and read-only Admin preview. The result directory keeps these current runs separate from historical hosted evidence.
+
+The provider-backed transaction flow, Google callback, staging resource smoke and exact QA cleanup still require the dedicated Preview and owner configuration. The implementation of those flows is distinct from evidence that they have run successfully on the final hosted candidate. No Production action or sign-off is implied.
+
+## Historical Phase 6 implementation checkpoint
 
 The branch is `intern/v2-phase-6-review`, based on Phase 5 candidate `879be1fcf2b32f6a4ef42ae431ca3ac6521fa06d`. PR #26 remains Draft and unmerged against `intern/v2-phase-4-review`. The reviewed baseline Preview is https://ace-club-k3rulap2r-theadmitco-techs-projects.vercel.app and uses staging project `eyphkkginlgoaxflauog`. The implementation candidate is `bcc0231e51ae93e266a3232aa316ef934b0e825b`; its [Phase 6 Preview](https://ace-club-dmc32ekp8-theadmitco-techs-projects.vercel.app) is READY and [GitHub Verify](https://github.com/theadmitco-tech/ace-club-lms/actions/runs/41642502494) passed. Hosted repair checks are recorded separately below. Production remains excluded.
 
@@ -20,7 +28,7 @@ Supabase documents why custom `40001` errors can trigger transaction retries: [o
 
 ## Remaining acceptance
 
-1. Provider selection, authorized test credentials and completion of Phase 3 on an integrated candidate. The unpublished Phase 3 work must be reconciled with current Phase 4 learning gates, Phase 5 delivery and the Phase 6 conflict repair before its migrations are activated; the older branch must not overwrite these later functions.
+1. Owner deployment and configuration of the combined Phase 3 candidate. Provider selection, local test credentials, source integration and operator-supplied schema reconciliation are complete; the three installed Phase 3 migrations must not be reapplied.
 2. Provider-backed Full Course/Quant/Verbal/DI purchase, retry/webhook, upgrade and eight-place concurrency checks, followed by affected integrated regressions.
 3. Explicit Product Owner acceptance or rejection of that exact candidate. No acceptance is inferred from a successful walkthrough, PR creation or CI.
 
@@ -28,7 +36,7 @@ The temporary LMS feedback form remains the approved Phase 4 substitute. Tally r
 
 ## Reproduction and evidence
 
-`npm run test:v2:phase6` uses disposable Unix-socket PostgreSQL and synthetic Auth/Storage catalogues. It accepts no hosted database connection. `node scripts/phase6/index-evidence.mjs` refreshes the inherited report index.
+`npm run test:v2:phase6` uses disposable Unix-socket PostgreSQL and synthetic Auth/Storage catalogues. It accepts no hosted database connection. Setting `PHASE6_REPORT_DIRECTORY` to an existing result directory keeps current local runs separate from historical reports; the current closeout uses `deliverables/all-phases-developer-closeout-2026-11-14`. `node scripts/phase6/index-evidence.mjs` refreshes the inherited report index.
 
 - [Acceptance matrix](ACCEPTANCE-MATRIX.md)
 - [Inherited report index](evidence-index.json)

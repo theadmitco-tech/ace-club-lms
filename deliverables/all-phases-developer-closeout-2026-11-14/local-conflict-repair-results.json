@@ -1,0 +1,44 @@
+{
+  "check": "phase6_local_conflict_repair",
+  "recordedAt": "2026-11-14T14:08:40.028Z",
+  "scope": "Disposable PostgreSQL rehearsal; no hosted migration or HTTP assertion.",
+  "status": "passed",
+  "checks": [
+    {
+      "id": "definition-drift-rejects-entire-packet",
+      "status": "pass"
+    },
+    {
+      "id": "rejected-packet-adds-no-ledger-entry",
+      "status": "pass"
+    },
+    {
+      "id": "current-application-rows-preserved",
+      "status": "pass"
+    },
+    {
+      "id": "routine-oids-acls-owners-and-security-metadata-preserved",
+      "status": "pass"
+    },
+    {
+      "id": "prior-ledger-and-phase1-entry-preserved",
+      "status": "pass"
+    },
+    {
+      "id": "all-18-exact-repaired-bodies-match",
+      "status": "pass"
+    },
+    {
+      "id": "no-explicit-serialization-conflict-remains-in-v2-routines",
+      "status": "pass"
+    },
+    {
+      "id": "repeated-activation-rejected-without-reapplication",
+      "status": "pass"
+    },
+    {
+      "id": "phase3-not-activated",
+      "status": "pass"
+    }
+  ]
+}

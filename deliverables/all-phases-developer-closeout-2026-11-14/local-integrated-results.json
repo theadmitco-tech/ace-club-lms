@@ -1,0 +1,240 @@
+{
+  "check": "phase6_local_integrated_access",
+  "candidate": "c593d2de13c563b72adbaf216cf37ed30a038cc7",
+  "paymentMigrations": [
+    "20261113090000",
+    "20261113100000",
+    "20261113110000"
+  ],
+  "repairMigration": "20261103120000",
+  "recordedAt": "2026-11-14T14:08:41.435Z",
+  "scope": "Disposable PostgreSQL, synthetic Auth and Storage catalogues, fixture-granted access; no provider payment or hosted acceptance.",
+  "status": "passed",
+  "checks": [
+    {
+      "id": "full_course:stale-template-bounded-conflict",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:stale-enrollment-bounded-conflict",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:recording-only-authorized",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:exact-subject-scope",
+      "status": "pass"
+    },
+    {
+      "id": "quant:stale-template-bounded-conflict",
+      "status": "pass"
+    },
+    {
+      "id": "quant:stale-enrollment-bounded-conflict",
+      "status": "pass"
+    },
+    {
+      "id": "quant:recording-only-authorized",
+      "status": "pass"
+    },
+    {
+      "id": "quant:exact-subject-scope",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:stale-template-bounded-conflict",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:stale-enrollment-bounded-conflict",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:recording-only-authorized",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:exact-subject-scope",
+      "status": "pass"
+    },
+    {
+      "id": "di:stale-template-bounded-conflict",
+      "status": "pass"
+    },
+    {
+      "id": "di:stale-enrollment-bounded-conflict",
+      "status": "pass"
+    },
+    {
+      "id": "di:recording-only-authorized",
+      "status": "pass"
+    },
+    {
+      "id": "di:exact-subject-scope",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:other-offering-quant-denied",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:other-offering-verbal-denied",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:other-offering-di-denied",
+      "status": "pass"
+    },
+    {
+      "id": "quant:other-offering-full_course-denied",
+      "status": "pass"
+    },
+    {
+      "id": "quant:other-offering-verbal-denied",
+      "status": "pass"
+    },
+    {
+      "id": "quant:other-offering-di-denied",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:other-offering-full_course-denied",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:other-offering-quant-denied",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:other-offering-di-denied",
+      "status": "pass"
+    },
+    {
+      "id": "di:other-offering-full_course-denied",
+      "status": "pass"
+    },
+    {
+      "id": "di:other-offering-quant-denied",
+      "status": "pass"
+    },
+    {
+      "id": "di:other-offering-verbal-denied",
+      "status": "pass"
+    },
+    {
+      "id": "universal-review-names-four-targets",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:independent-reading-delivered",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:same-subject-feedback-gate",
+      "status": "pass"
+    },
+    {
+      "id": "full-course:other-subjects-remain-accessible",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:foreign-feedback-denied",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:conflicting-feedback-bounded-conflict",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:feedback-restores-independent-reading",
+      "status": "pass"
+    },
+    {
+      "id": "full_course:revocation-denies-course-and-placements",
+      "status": "pass"
+    },
+    {
+      "id": "quant:independent-reading-delivered",
+      "status": "pass"
+    },
+    {
+      "id": "quant:same-subject-feedback-gate",
+      "status": "pass"
+    },
+    {
+      "id": "quant:foreign-feedback-denied",
+      "status": "pass"
+    },
+    {
+      "id": "quant:conflicting-feedback-bounded-conflict",
+      "status": "pass"
+    },
+    {
+      "id": "quant:feedback-restores-independent-reading",
+      "status": "pass"
+    },
+    {
+      "id": "quant:revocation-denies-course-and-placements",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:independent-reading-delivered",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:same-subject-feedback-gate",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:foreign-feedback-denied",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:conflicting-feedback-bounded-conflict",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:feedback-restores-independent-reading",
+      "status": "pass"
+    },
+    {
+      "id": "verbal:revocation-denies-course-and-placements",
+      "status": "pass"
+    },
+    {
+      "id": "di:independent-reading-delivered",
+      "status": "pass"
+    },
+    {
+      "id": "di:same-subject-feedback-gate",
+      "status": "pass"
+    },
+    {
+      "id": "di:foreign-feedback-denied",
+      "status": "pass"
+    },
+    {
+      "id": "di:conflicting-feedback-bounded-conflict",
+      "status": "pass"
+    },
+    {
+      "id": "di:feedback-restores-independent-reading",
+      "status": "pass"
+    },
+    {
+      "id": "di:revocation-denies-course-and-placements",
+      "status": "pass"
+    },
+    {
+      "id": "admin-preview-survives-student-revocation-without-progress-writes",
+      "status": "pass"
+    },
+    {
+      "id": "stale-independent-publication-returns-nonretryable-conflict",
+      "status": "pass"
+    }
+  ],
+  "testSourceSha256": "ed4a7c9b4363a43280175d2c7ecfc0ec31457a55a1235f5ae2703a251e26ee83"
+}
