@@ -1,0 +1,43 @@
+{
+  "check": "phase3_hosted_preparation_local_verification",
+  "recordedAt": "2026-11-14T14:55:41.658984+00:00",
+  "applicationBaselineCommit": "de2b11af701753a095377c2e760ba2f9579de4d4",
+  "scope": "New acceptance tooling only; application runtime and applied migrations unchanged.",
+  "results": [
+    {
+      "test": "hosted-fixtures.test.mjs",
+      "passed": 4,
+      "environment": "Disposable local PostgreSQL; generated setup and cleanup SQL exercised"
+    },
+    {
+      "test": "hosted-qa.test.mjs",
+      "passed": 6,
+      "environment": "Offline temporary Git repository and private state"
+    },
+    {
+      "test": "verify-hosted-payments.test.mjs",
+      "passed": 14,
+      "environment": "Synthetic GET transport and provider snapshots; no provider requests"
+    }
+  ],
+  "totalPassed": 24,
+  "hostedDeploymentConfirmed": false,
+  "hostedAcceptanceComplete": false,
+  "hostedMutationsPerformed": false,
+  "phase3Complete": false,
+  "sourceSha256": {
+    "scripts/phase3/hosted-fixtures.mjs": "0e0724c993731f13d4413c851364f12e3d9717c24f2485697a344ec489cde000",
+    "scripts/phase3/hosted-fixtures.test.mjs": "1196e6504db1f2a47e764b536574ad05f995df964172f5302b8e4fc12085dfcd",
+    "scripts/phase3/hosted-qa.mjs": "81659274e7ff761cda318dec9b29c60adf11a9bfa5db00345644b49e3c71ba9d",
+    "scripts/phase3/hosted-qa.test.mjs": "62b81b9f5a40dd8ccabe03736fb8ec8d634ee4fc22cffea346226e72e8e01c43",
+    "scripts/phase3/verify-hosted-payments.mjs": "8dfabf2552d3fb3c4c5ba49880eed96c3635c0d25b480e3971cfae86a2c81710",
+    "scripts/phase3/verify-hosted-payments.test.mjs": "c42b72b9fe87dd87dae554349b2fa2cb6a3d5ef64f13c2b9402531e853ee96b1"
+  },
+  "remaining": [
+    "Owner-managed Preview deployment and exact source verification",
+    "Genuine designated Google OAuth journey",
+    "Actual Razorpay Test Mode checkout, capture, signed webhook, retry, duplicate and delayed delivery",
+    "Hosted upgrade, capacity contention and integrated resource checks",
+    "Exact hosted cleanup, independent account absence and acceptance review"
+  ]
+}

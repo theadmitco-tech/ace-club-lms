@@ -29,7 +29,7 @@ The uppercase placeholder is replaced by the actual lowercase Preview hostname. 
 
 ## Fixture preparation before payments
 
-Engineering and the staging operator record a unique run ID and an owner-only, Git-ignored manifest. No ready-to-run hosted fixture or cleanup SQL packet is claimed by this document. Those packets must be generated and rehearsed against the fresh staging baseline and exact designated identities before hosted mutation. Earlier Phase 1/2/4/5 cleanup packets must not be reused for payment records.
+Engineering and the staging operator record a unique run ID and an owner-only, Git-ignored manifest. The [private fixture workflow](HOSTED-QA-PREPARATION.md) describes the setup/cleanup generator and offline receipt tracker. No ready-to-run hosted packet is claimed before the actual Preview and generated identities have been verified. Packets must be generated and rehearsed against the fresh staging baseline and exact designated identities before hosted mutation. Earlier Phase 1/2/4/5 cleanup packets must not be reused for payment records.
 
 The manifest records:
 
@@ -71,9 +71,11 @@ The delay, duplicate and capacity cases require a coordinated Engineering/operat
 
 Each result records case ID, exact commit/origin, timestamp, expected result, observed result and provenance (actual OAuth/provider/browser/database, fixture-authenticated request, or deliberate fault injection). Sanitized reports contain no names, email addresses, credentials, private resource URLs, session cookies or provider payloads. Actual receipt/order/payment identifiers remain in the private manifest for reconciliation.
 
+The [read-only payment verifier](READONLY-PAYMENT-VERIFICATION.md) independently fetches exact Test Mode order/payment snapshots and caller-bound access. Its passing observations do not establish the OAuth redirect, webhook delivery or concurrent execution cases.
+
 Before deletion, the provider operator restores the dedicated webhook to its intended configuration and Engineering reconciles every tracked checkout, including interrupted and review cases. The private evidence records unresolved states explicitly. Test Mode provider orders and payments may remain in Razorpay history; application cleanup does not claim to erase provider records or perform refunds.
 
-The exact reviewed cleanup packet removes only manifest-owned payment events, upgrades, checkout intents, purchase/grant records, registrations/audits, enrollments, learning/feedback records, content fixtures and generated profiles in foreign-key-safe order. The packet asserts every target's run ownership and expected relations, rolls back on mismatch, and restores the original application-row/ledger baseline. No wildcard account/email deletion is permitted. Existing libraries and the walkthrough remain unchanged. Unrelated activity detected by a baseline comparison requires inspection; it is not overwritten to force a match.
+The exact reviewed cleanup packet removes only manifest-owned payment events, upgrades, checkout intents, purchase/grant records, registrations/audits, enrollments, learning/feedback records and content fixtures in foreign-key-safe order. It removes generated signup-candidate rows and deactivates generated profiles; Auth identity and profile removal remain a subsequent exact-account step. The packet asserts every target's run ownership and expected relations, rolls back on mismatch, and restores the original application-row/ledger baseline with the recorded generated-identity exclusions. No wildcard account/email deletion is permitted. Existing libraries and the walkthrough remain unchanged. Unrelated activity detected by a baseline comparison requires inspection; it is not overwritten to force a match.
 
 Only after application cleanup succeeds are newly generated Auth identities removed by exact ID and independently checked absent. Pre-existing Google/Admin identities retain their original profile/role/active state. Storage cleanup applies only to exact newly uploaded fixture object paths, with independent absence checks. Final verification records the restored baseline, zero remaining manifest-owned data, original migration hashes, unchanged Production deployment and no unintended retained access.
 

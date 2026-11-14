@@ -40,6 +40,8 @@ The existing staging Notion configuration remains necessary for the original rea
 
 Razorpay values are held in the private `.env.phase3-private/razorpay-test.env` file at the primary checkout. The staging Supabase values remain in the existing private staging configuration. No credential values appear in this handoff.
 
+An owner-only, Git-ignored `.env.phase3-private/preview-import.env` has also been prepared at the primary checkout. It combines the verified staging and Test Mode values with the required feature flags. Its `NEXT_PUBLIC_SITE_URL` remains a placeholder until the deployment owner selects the actual HTTPS Preview origin. The file is private local preparation, not an uploaded Vercel configuration. The owner scopes every imported value to **Preview / `intern/v2-phase-3-integration-review` only**, retains existing reading-provider configuration, and stores server credentials as secrets. The file is excluded from chat, pull requests and repository uploads.
+
 ## Deployment and sign-in
 
 After activation and publication of the reviewed commit, the owner creates a **Preview** deployment from this branch and supplies its exact URL and commit identifier. A new deployment is required after environment changes. The owner adds the selected staging origin's `/auth/v2/callback` path to the staging Supabase Auth redirect allowlist. Existing redirect URLs remain intact. Google OAuth still returns through Supabase's provider callback; the new application callback does not replace that provider configuration.
