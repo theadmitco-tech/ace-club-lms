@@ -1,7 +1,10 @@
 # Phase 3 — Self-registration and verified payment
 
-Status: local integration checkpoint on `intern/v2-phase-3-integration-review`,
-based on the current Admin and Student implementation at `fafe8ec`.
+Status: local integration and staging schema reconciliation passed on
+`intern/v2-phase-3-integration-review`, based on the Admin and Student implementation
+at `fafe8ec`. The operator result confirms all three migration sources and preserves
+the original 88 application tables. Preview deployment and hosted payment acceptance
+remain pending.
 Razorpay Test Mode is selected. Provider Test Mode authentication passed a read-only API check. Hosted payment acceptance remains pending.
 Production remains excluded. The older Phase 3 draft remains preserved in its original worktree.
 

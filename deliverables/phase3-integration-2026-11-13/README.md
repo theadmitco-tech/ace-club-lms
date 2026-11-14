@@ -31,7 +31,7 @@ Verification passed 17 payment/server/database tests, 10 browser journeys, 18 Ph
 ## Remaining work
 
 1. Test Mode key authentication passed a read-only Razorpay API request. No provider order or payment was created by that check. The webhook secret and hosted configuration remain pending; credentials remain outside Git.
-2. Staging schema and recovery evidence are refreshed; the reconciled migration set is rehearsed and applied through the SQL Editor.
+2. Completed: staging reconciliation confirms the three payment migrations, 21 routines, three triggers and preserved original rows/ledger. Evidence is recorded in `../phase3-preview-activation/hosted-reconciliation.json`; activation must not repeat.
 3. The project owner configures the dedicated staging environment, deploys the reviewed candidate and enables the Google callback URL. The signed webhook endpoint must be reachable by Razorpay without an LMS session or a Vercel login challenge. Any deployment-protection change requires its own review; protection is not disabled by this implementation.
 4. A dedicated Test Mode webhook secret is configured for `payment.captured`, `order.paid` and `payment.failed` at `/api/v2/checkout/webhook` on the reviewed staging origin.
 5. Actual provider-backed purchase, retry, callback/webhook, upgrade and capacity acceptance runs against designated fixtures, followed by exact cleanup and combined Phase 6 acceptance.

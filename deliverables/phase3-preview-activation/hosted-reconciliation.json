@@ -1,0 +1,898 @@
+{
+  "check": "phase3_activation_reconciliation",
+  "scope": "Installed schema and preservation checks; separate from provider, OAuth and website acceptance.",
+  "tables": [
+    {
+      "name": "v2_checkout_intents",
+      "present": true,
+      "rls_enabled": true,
+      "direct_privilege_roles": []
+    },
+    {
+      "name": "v2_payment_events",
+      "present": true,
+      "rls_enabled": true,
+      "direct_privilege_roles": []
+    },
+    {
+      "name": "v2_purchase_upgrades",
+      "present": true,
+      "rls_enabled": true,
+      "direct_privilege_roles": []
+    },
+    {
+      "name": "v2_signup_candidates",
+      "present": true,
+      "rls_enabled": true,
+      "direct_privilege_roles": []
+    }
+  ],
+  "routines": [
+    {
+      "present": true,
+      "signature": "attach_v2_checkout_order(uuid,text)",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "can_access_v2_product(text,text)",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "claim_v2_checkout_order(uuid)",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "find_v2_checkout_order(text)",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "fulfill_v2_checkout(uuid,text,text,integer,text)",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "get_my_v2_access()",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "get_my_v2_checkouts()",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "get_my_v2_purchase_packages()",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "list_v2_checkout_exceptions()",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "list_v2_live_availability()",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "list_v2_sales_catalogue()",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "prepare_v2_checkout(uuid,text[],uuid[],uuid[],text,text,boolean)",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "read_v2_checkout_service(uuid)",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "record_v2_payment_event(text,text,uuid)",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "v2_checkout_buyer_eligible(uuid)",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "v2_effective_purchase_products(uuid)",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "v2_enforce_live_capacity()",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "v2_invalidate_signup_candidate()",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "v2_live_occupied(uuid,uuid)",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "v2_mark_signup_candidate()",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    },
+    {
+      "present": true,
+      "signature": "v2_student_has_product(uuid,text)",
+      "grants_match": true,
+      "source_matches": true,
+      "public_execute_denied": true,
+      "no_unexpected_overloads": true,
+      "security_metadata_matches": true
+    }
+  ],
+  "triggers": [
+    {
+      "present": true,
+      "trigger_name": "v2_live_capacity",
+      "definition_matches": true
+    },
+    {
+      "present": true,
+      "trigger_name": "v2_signup_activation_guard",
+      "definition_matches": true
+    },
+    {
+      "present": true,
+      "trigger_name": "z_v2_signup_candidate",
+      "definition_matches": true
+    }
+  ],
+  "versions": [
+    {
+      "present": true,
+      "version": "20261113090000",
+      "name_matches": true,
+      "source_matches": true
+    },
+    {
+      "present": true,
+      "version": "20261113100000",
+      "name_matches": true,
+      "source_matches": true
+    },
+    {
+      "present": true,
+      "version": "20261113110000",
+      "name_matches": true,
+      "source_matches": true
+    }
+  ],
+  "read_only": "on",
+  "hosted_acceptance": "separate",
+  "baseline_captured_at": "2026-11-13T17:38:30.082943+00:00",
+  "present_version_count": 3,
+  "expected_version_count": 3,
+  "all_routine_guards_match": true,
+  "all_trigger_guards_match": true,
+  "original_ledger_preserved": true,
+  "live_provenance_constraint": "CHECK ((provenance = ANY (ARRAY['admin_manual'::text, 'verified_payment'::text])))",
+  "old_draft_versions_present": [],
+  "all_migration_sources_match": true,
+  "original_application_tables": [
+    {
+      "name": "course_template_events",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 211,
+      "expected_count": 211
+    },
+    {
+      "name": "course_template_resources",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 70,
+      "expected_count": 70
+    },
+    {
+      "name": "course_template_revisions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 19,
+      "expected_count": 19
+    },
+    {
+      "name": "course_template_sections",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 31,
+      "expected_count": 31
+    },
+    {
+      "name": "course_templates",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 4,
+      "expected_count": 4
+    },
+    {
+      "name": "courses",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 13,
+      "expected_count": 13
+    },
+    {
+      "name": "enrollments",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 4,
+      "expected_count": 4
+    },
+    {
+      "name": "master_materials",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 13,
+      "expected_count": 13
+    },
+    {
+      "name": "master_practice_attempts",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    },
+    {
+      "name": "master_practice_questions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    },
+    {
+      "name": "master_practice_sets",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    },
+    {
+      "name": "master_sessions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 31,
+      "expected_count": 31
+    },
+    {
+      "name": "master_worksheet_plans",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    },
+    {
+      "name": "master_worksheet_questions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 150,
+      "expected_count": 150
+    },
+    {
+      "name": "master_worksheet_session_rules",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    },
+    {
+      "name": "material_worksheet_questions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    },
+    {
+      "name": "materials",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 74,
+      "expected_count": 74
+    },
+    {
+      "name": "mock_assessment_assignments",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 7,
+      "expected_count": 7
+    },
+    {
+      "name": "mock_assessment_audit",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 39,
+      "expected_count": 39
+    },
+    {
+      "name": "mock_assessment_items",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 196,
+      "expected_count": 196
+    },
+    {
+      "name": "mock_assessment_sections",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 13,
+      "expected_count": 13
+    },
+    {
+      "name": "mock_assessment_versions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 6,
+      "expected_count": 6
+    },
+    {
+      "name": "mock_assessments",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 5,
+      "expected_count": 5
+    },
+    {
+      "name": "mock_assignment_testers",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 2,
+      "expected_count": 2
+    },
+    {
+      "name": "mock_attempt_item_notes",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 1,
+      "expected_count": 1
+    },
+    {
+      "name": "mock_attempt_items",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 132,
+      "expected_count": 132
+    },
+    {
+      "name": "mock_attempt_sections",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 10,
+      "expected_count": 10
+    },
+    {
+      "name": "mock_attempts",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 4,
+      "expected_count": 4
+    },
+    {
+      "name": "mock_import_items",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 200,
+      "expected_count": 200
+    },
+    {
+      "name": "mock_imports",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 8,
+      "expected_count": 8
+    },
+    {
+      "name": "mock_media",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 10,
+      "expected_count": 10
+    },
+    {
+      "name": "mock_operation_receipts",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 135,
+      "expected_count": 135
+    },
+    {
+      "name": "mock_question_media",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    },
+    {
+      "name": "mock_question_options",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 909,
+      "expected_count": 909
+    },
+    {
+      "name": "mock_question_revisions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 168,
+      "expected_count": 168
+    },
+    {
+      "name": "mock_questions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 164,
+      "expected_count": 164
+    },
+    {
+      "name": "mock_responses",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 132,
+      "expected_count": 132
+    },
+    {
+      "name": "mock_review_edits",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 1,
+      "expected_count": 1
+    },
+    {
+      "name": "mock_source_namespace_members",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 1,
+      "expected_count": 1
+    },
+    {
+      "name": "mock_source_namespaces",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 3,
+      "expected_count": 3
+    },
+    {
+      "name": "mock_stimuli",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 26,
+      "expected_count": 26
+    },
+    {
+      "name": "mock_stimulus_media",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 10,
+      "expected_count": 10
+    },
+    {
+      "name": "mock_stimulus_revisions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 26,
+      "expected_count": 26
+    },
+    {
+      "name": "mock_topics",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 84,
+      "expected_count": 84
+    },
+    {
+      "name": "payments",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    },
+    {
+      "name": "practice_attempts",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    },
+    {
+      "name": "practice_questions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    },
+    {
+      "name": "practice_sets",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    },
+    {
+      "name": "profiles",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 11,
+      "expected_count": 11
+    },
+    {
+      "name": "registrations",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    },
+    {
+      "name": "sessions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 251,
+      "expected_count": 251
+    },
+    {
+      "name": "student_course_preferences",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 1,
+      "expected_count": 1
+    },
+    {
+      "name": "student_material_question_logs",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    },
+    {
+      "name": "student_question_logs",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 600,
+      "expected_count": 600
+    },
+    {
+      "name": "student_worksheet_logs",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    },
+    {
+      "name": "v2_batch_enrollments",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 4,
+      "expected_count": 4
+    },
+    {
+      "name": "v2_batch_meeting_revisions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    },
+    {
+      "name": "v2_batch_publication_revisions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 5,
+      "expected_count": 5
+    },
+    {
+      "name": "v2_content_asset_placements",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 33,
+      "expected_count": 33
+    },
+    {
+      "name": "v2_content_asset_replacements",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    },
+    {
+      "name": "v2_content_imports",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 1,
+      "expected_count": 1
+    },
+    {
+      "name": "v2_content_item_revisions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 1,
+      "expected_count": 1
+    },
+    {
+      "name": "v2_content_items",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 1,
+      "expected_count": 1
+    },
+    {
+      "name": "v2_content_publication_audit",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    },
+    {
+      "name": "v2_course_batch_revisions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 5,
+      "expected_count": 5
+    },
+    {
+      "name": "v2_course_batches",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 5,
+      "expected_count": 5
+    },
+    {
+      "name": "v2_course_offerings",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 4,
+      "expected_count": 4
+    },
+    {
+      "name": "v2_course_template_revisions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 9,
+      "expected_count": 9
+    },
+    {
+      "name": "v2_course_templates",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 5,
+      "expected_count": 5
+    },
+    {
+      "name": "v2_feedback_obligations",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 2,
+      "expected_count": 2
+    },
+    {
+      "name": "v2_learning_progress",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 25,
+      "expected_count": 25
+    },
+    {
+      "name": "v2_live_class_completions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 1,
+      "expected_count": 1
+    },
+    {
+      "name": "v2_live_registration_audit",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 2,
+      "expected_count": 2
+    },
+    {
+      "name": "v2_live_registrations",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 2,
+      "expected_count": 2
+    },
+    {
+      "name": "v2_live_session_mapping_audit",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 2,
+      "expected_count": 2
+    },
+    {
+      "name": "v2_live_session_mappings",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 2,
+      "expected_count": 2
+    },
+    {
+      "name": "v2_price_versions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 4,
+      "expected_count": 4
+    },
+    {
+      "name": "v2_product_grants",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 2,
+      "expected_count": 2
+    },
+    {
+      "name": "v2_products",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 4,
+      "expected_count": 4
+    },
+    {
+      "name": "v2_publication_scope_requests",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 1,
+      "expected_count": 1
+    },
+    {
+      "name": "v2_published_meetings",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    },
+    {
+      "name": "v2_purchases",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 2,
+      "expected_count": 2
+    },
+    {
+      "name": "v2_recording_watch_samples",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 1,
+      "expected_count": 1
+    },
+    {
+      "name": "v2_recording_watch_sessions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 2,
+      "expected_count": 2
+    },
+    {
+      "name": "v2_session_feedback",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 1,
+      "expected_count": 1
+    },
+    {
+      "name": "v2_shared_content_asset_revisions",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 19,
+      "expected_count": 19
+    },
+    {
+      "name": "v2_shared_content_assets",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 19,
+      "expected_count": 19
+    },
+    {
+      "name": "worksheet_daily_targets",
+      "present": true,
+      "rows_match": true,
+      "actual_count": 0,
+      "expected_count": 0
+    }
+  ],
+  "all_private_table_guards_match": true,
+  "current_application_table_count": 92,
+  "original_application_table_count": 88,
+  "existing_application_data_preserved": true,
+  "_evidence": {
+    "source": "Operator-supplied staging SQL Editor result",
+    "sourceAttachmentSha256": "4534a9697af58ee4cf5cf9a83cb347a6aaa5d6b43bf3a70267ab6958409b269e",
+    "recordedDate": "2026-11-14",
+    "reportPreserved": true,
+    "independentHostedSqlExecution": false
+  }
+}

@@ -1,6 +1,6 @@
 # Phase 3 staging deployment handoff
 
-Status: preparation only. Hosted activation and payment acceptance are tracked separately.
+Status: staging schema reconciliation passed. Preview deployment and provider-backed payment acceptance remain pending.
 
 The deployment owner targets Vercel project `ace-club-lms`, environment **Preview**, branch `intern/v2-phase-3-integration-review`. Automatic deployment is disabled for this branch. A Git push alone does not publish checkout. The release remains separate from Production and from changes to shared payment credentials.
 
@@ -12,6 +12,7 @@ The owner sets each override for the Phase 3 Preview branch only. Existing value
 | --- | --- |
 | `NEXT_PUBLIC_SUPABASE_URL` | `https://eyphkkginlgoaxflauog.supabase.co` |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Matching staging public client key |
+| `NEXT_PUBLIC_SITE_URL` | Selected HTTPS staging Preview origin; required by the deployment build guard |
 | `SUPABASE_SERVICE_ROLE_KEY` | Matching staging server key, stored as a secret |
 | `V2_RAZORPAY_TEST_KEY_ID` | Verified Test Mode key beginning `rzp_test_` |
 | `V2_RAZORPAY_TEST_KEY_SECRET` | Matching Test Mode secret, stored as a secret |

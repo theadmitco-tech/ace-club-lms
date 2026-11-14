@@ -1,0 +1,23 @@
+{
+  "check": "phase3_deployment_readiness",
+  "recordedDate": "2026-11-14",
+  "applicationSourceCommit": "e5159e642240a5dc50ed70e651edfa47c6ade0d6",
+  "localWebpackBuildIncludingTypeScript": "passed",
+  "buildConfiguration": "Placeholder database configuration; payment feature disabled for local compilation. No deployment or provider transaction.",
+  "hostedSchemaReconciliation": "passed_operator_result",
+  "originalTablesPreserved": 88,
+  "originalRowsPreserved": 3939,
+  "currentTables": 92,
+  "providerAcceptance": "pending",
+  "previewDeployment": "pending_owner",
+  "vercelLookupHttpStatus": 403,
+  "remoteBranchObservedAt": "317791456c682dac5cbcb093301fd4617219c5a0",
+  "productionChanged": false,
+  "sourceSha256": {
+    "src/components/courses/SalesOutlines.tsx": "98643e3bd2c431edccc374ce550d9390b1ffc3d628c2bf97092e947c4baeec3c",
+    "src/app/api/v2/checkout/route.ts": "0be188d4799c4d1095e5bd01fa46f2741905680cd56037658e08060365d950fc",
+    "src/app/api/v2/checkout/webhook/route.ts": "de603349709fb7124846b647513a44319c576f507c8e147c67dc48ccf5e91fcd",
+    "src/lib/server/v2Checkout.ts": "f49dbfcdb215101045df9926b30f62e614fdf02544a08d7fbbeda2f614738b1e",
+    "src/lib/server/v2Razorpay.ts": "cef979c81ed317b39dd3453fc250453561c6d363fbd3fe68c22c499ec779b47f"
+  }
+}
