@@ -67,6 +67,11 @@ test('private state writes are owner-only, atomic and refuse implicit replacemen
   chmodSync(dir, 0o700);
   try {
     const target = path.join(dir, 'state.json');
+    execFileSync('git', ['init', '--quiet', dir]);
+    writeFileSync(path.join(dir, '.gitignore'), '/state.json\n/.state.json.pending.tmp\n');
+    assert.throws(() => atomicPrivateWrite(dir, 'state.json', JSON.stringify(prepared())));
+    assert.throws(() => lstatSync(target));
+    writeFileSync(path.join(dir, '.gitignore'), '/state.json\n/.state.json.*.tmp\n/linked.json\n/.linked.json.*.tmp\n');
     atomicPrivateWrite(dir, 'state.json', JSON.stringify(prepared()));
     assert.equal(lstatSync(target).mode & 0o777, 0o600);
     assert.equal(readPrivateJson(target).stage, 'prepared');
@@ -119,6 +124,9 @@ test('actual CLI generates matching fixture packets and retains incomplete Auth 
     assert.equal(run('status').acceptanceEstablished, false);
     for (const file of ['hosted-qa-state.json','01-SETUP-FIXTURES.sql','02-CLEANUP-FIXTURES.sql']) assert.equal(lstatSync(path.join(dir, file)).mode & 0o777, 0o600);
     assert.throws(() => run('record-checkout', '--record', path.join(dir, 'checkout.json')));
+    writeFileSync(path.join(repo, '.gitignore'), '.qa-private/hosted-qa-state.json\n');
+    assert.throws(() => run('status'));
+    writeFileSync(path.join(repo, '.gitignore'), '.qa-private/\n');
     const unsafe = path.join(repo, 'not-ignored');mkdirSync(unsafe, { mode: 0o700 });
     assert.throws(() => execFileSync(process.execPath, [script, 'prepare', '--directory', unsafe, '--manifest', source, '--owner-verified-preview', actual.preview, '--commit', actual.commit], { stdio: 'pipe' }));
   } finally { rmSync(repo, { recursive: true, force: true }); }

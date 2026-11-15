@@ -141,15 +141,16 @@ async function runTests() {
   }, { width: 390, height: 844 });
   await test('Batch calendar selects an IST date without saving and restores keyboard focus', async (page) => {
     await openBatch(page);
-    const calendar = button(page, 'Calendar');
+    const calendar = button(page, 'Open calendar for Date');
     await calendar.focus(); await page.keyboard.press('Enter');
     const modal = page.getByRole('dialog');
     await visible(modal);
-    await text(modal, 'November 2026');
+    await visible(modal.getByRole('grid', { name: 'November 2026', exact: true }));
     await text(modal, 'Synthetic live lesson');
-    await button(modal, 'Next month').click(); await text(modal, 'December 2026');
-    await button(modal, 'Previous month').click();
-    await modal.getByRole('button', { name: '2026-11-03', exact: true }).click();
+    await button(modal, 'Go to the Next Month').click();
+    await visible(modal.getByRole('grid', { name: 'December 2026', exact: true }));
+    await button(modal, 'Go to the Previous Month').click();
+    await modal.getByRole('button', { name: 'Tuesday, 3 November 2026', exact: true }).click();
     assert.equal(await page.getByLabel('Date', { exact: true }).inputValue(), '2026-11-02');
     await button(modal, 'Use date & time').click();
     assert.equal(await page.getByLabel('Date', { exact: true }).inputValue(), '2026-11-03');
@@ -524,7 +525,7 @@ async function runTests() {
     await page.goto(`${origin}/admin/v2/batches`);
     await button(page, 'New batch draft').click();
     await page.getByLabel('Batch title', { exact: true }).fill('Browser lifecycle batch');
-    await page.getByLabel('Template start date', { exact: false }).fill('2026-11-02');
+    await page.getByLabel('Template start date (only needed for live sessions)', { exact: true }).fill('2026-11-02');
     await button(page, 'Review course and schedule').click();
     await text(page, 'Review: Browser lifecycle batch');
     await page.getByLabel('Batch title', { exact: true }).fill('Browser revised batch');

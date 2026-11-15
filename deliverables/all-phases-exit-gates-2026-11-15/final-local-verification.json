@@ -1,0 +1,112 @@
+{
+  "check": "combined_final_local_verification",
+  "recordedAt": "2026-11-15T17:28:15.458310+00:00",
+  "baseCommit": "17945d4bafa9af92e9635ac16b0f99da0ed6e2ca",
+  "scope": "Current working-tree source and synthetic local browser/server/database fixtures; no genuine OAuth, payment, webhook, hosted or Production acceptance is inferred.",
+  "applicationSourceChanged": false,
+  "staticChecks": [
+    {
+      "command": "npm run lint -- --max-warnings=0",
+      "status": "passed"
+    },
+    {
+      "command": "npx tsc --noEmit --incremental false",
+      "status": "passed"
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "bundler": "Turbopack",
+      "note": "Local build without VERCEL_ENV; deployment-environment guard behavior is tested separately. Workspace multiple-lockfile warning is retained; no deployment is claimed."
+    }
+  ],
+  "supportTests": {
+    "passed": 25,
+    "failed": 0,
+    "groups": {
+      "deploymentEnvironment": 9,
+      "adminResourceOrder": 4,
+      "adminStudentAccess": 4,
+      "phase3ActivationRehearsal": 1,
+      "phase3Recovery": 1,
+      "phase3LocalReview": 2,
+      "hostedReadinessSynthetic": 4
+    }
+  },
+  "browsers": [
+    {
+      "suite": "phase1",
+      "passed": 20,
+      "failed": 0,
+      "report": "phase1-browser-results.json"
+    },
+    {
+      "suite": "phase2",
+      "passed": 43,
+      "failed": 0,
+      "report": "phase2-browser-results.json"
+    },
+    {
+      "suite": "phase3",
+      "passed": 10,
+      "failed": 0,
+      "report": "phase3-browser-results.json"
+    },
+    {
+      "suite": "phase4",
+      "passed": 16,
+      "failed": 0,
+      "report": "phase4-browser-results.json"
+    },
+    {
+      "suite": "phase5",
+      "passed": 31,
+      "failed": 0,
+      "report": "phase5-browser-results.json"
+    },
+    {
+      "suite": "admin",
+      "passed": 21,
+      "failed": 0,
+      "report": "admin-browser-results.json"
+    }
+  ],
+  "totalBrowserCases": 141,
+  "attemptNotes": [
+    "Phase 1 initial fixture build lacked Phase 3 catalogue imports. The fixture was corrected without changing runtime source; final 20 cases passed.",
+    "Initial Phase 2 launch lacked the configured browser executable; sandbox loopback restrictions required local execution permissions. No hosted traffic resulted.",
+    "Phase 2 initial functional run had 41 passes and 2 stale selector failures. Selector corrections and final 43 passes are retained in phase2-browser-selector-review.json.",
+    "Initial support-test attempt could not create local database sockets under the sandbox. Authorized local rerun passed all 21 support cases; four additional readiness cases then passed."
+  ],
+  "visualReview": {
+    "status": "reviewed",
+    "scope": "Synthetic screenshots only: mobile checkout, Student course outline/resource groups and Admin mobile access controls. Navigation-only fixture screenshots are not full course-content rendering proof.",
+    "screenshotsPublished": false
+  },
+  "platformRead": {
+    "operation": "Vercel deployment listing for the Phase 3 branch",
+    "status": 403,
+    "result": "forbidden",
+    "previewVerified": false,
+    "cliAvailableOnPath": false
+  },
+  "sourceSha256": {
+    ".github/workflows/verify.yml": "3ef363ed8c26ebdd6e94197b9a7c16effc8ed0646dd0761e93d8e6ab3737c960",
+    "scripts/validate-deployment-env.mjs": "fc7fab5f168b2f3d37d934de04c97ce107d035fe7e6801a10b2ee3d15a4b2388",
+    "scripts/deployment-environment.test.mjs": "e80c00e30378885c88830f12248635e8be06669da3c39a67b79b669c02055cb6",
+    "scripts/phase3/check-hosted-readiness.test.mjs": "e2e1f2109e2234a0b2d164b4d7755c2f8abf8c3ee77361b3a026f43f7f4aaf5d",
+    "scripts/phase3/recovery.test.mjs": "c9a85b993618e92111a99048ae006742218ce7f05a19ee38bc5ad58d103adfa4",
+    "scripts/phase3/activation.test.mjs": "06f056e021be17d238cb233b7edf69c0a0275548cf19d693fe782367a57be68e",
+    "scripts/phase3/local-review.test.mjs": "53c895845d8571f480e2a264f01916d37d25052c51904d38ba14c70ac3875483",
+    "scripts/admin-resource-order.test.mjs": "553d15cc5a2953d34801875da4010de43f862537c0f57bdd72ccc61f9ddacee6",
+    "scripts/admin-student-access.test.mjs": "79b15c2c82b1722ac3a5d05a7caf8c5886f564eb5aba7182ea88e46673d50bc3",
+    "scripts/browser/v2-phase1/verify.mjs": "292728afde9a9f7c80201f82aa1e6d52440168765d8ddf620a58acb2e6d77cac",
+    "scripts/browser/v2-phase2/verify.mjs": "5a3619963b62336422068403b0b76813482541c7f94bc358fcf7ea9f5595a4aa",
+    "scripts/browser/v2-phase3/verify.mjs": "3affa2ca0417aa697de139c364ab32f74de37f811f2171592d40c72688df1403",
+    "scripts/browser/v2-phase4/verify.mjs": "fa661b17a937fce09fd18611ec9e7da63b1c79ac3f8cbf04c698a405fec5a68e",
+    "scripts/browser/v2-phase5/verify.mjs": "b4e3bc282b8ec2313ab76d30bf8736f473be0418a192e19a16132ba2839234b7",
+    "scripts/browser/admin-workflow/verify.mjs": "dc9608eacf0deb18540e76dbd8de9568fe7486b79f88f72088f544dd2fa81e17"
+  },
+  "hostedAcceptanceEstablished": false,
+  "productionChanged": false
+}

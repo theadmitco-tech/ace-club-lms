@@ -1,0 +1,86 @@
+{
+  "mode": "Actual UI and readers with local synthetic session/database adapters; not hosted authentication evidence",
+  "results": [
+    {
+      "name": "Public catalogue shows approved course names and live configured quotes",
+      "status": "passed"
+    },
+    {
+      "name": "Subject packages quote all combinations with keyboard submission",
+      "status": "passed"
+    },
+    {
+      "name": "Mixed, duplicate and legacy product identities cannot produce a quote",
+      "status": "passed"
+    },
+    {
+      "name": "Price lookup failure never displays a stale or fallback amount",
+      "status": "passed"
+    },
+    {
+      "name": "Signed-out private access redirects to login",
+      "status": "passed"
+    },
+    {
+      "name": "Student sees scoped active access, expired and revoked history",
+      "status": "passed"
+    },
+    {
+      "name": "Student cannot open Admin access records",
+      "status": "passed"
+    },
+    {
+      "name": "Empty access is distinct from an unavailable database",
+      "status": "passed"
+    },
+    {
+      "name": "Database failure retains explicit retry states",
+      "status": "passed"
+    },
+    {
+      "name": "Expired purchase shows a calm notice without invented renewal action",
+      "status": "passed"
+    },
+    {
+      "name": "Package tier prevents accidental extra subjects and resets for the next tier",
+      "status": "passed"
+    },
+    {
+      "name": "Real Student dashboard exposes supported learning shortcuts",
+      "status": "passed"
+    },
+    {
+      "name": "Resume remembers a real visit and ignores another user, stale IDs and cleared storage",
+      "status": "passed"
+    },
+    {
+      "name": "Disabled browser storage does not break session or dashboard",
+      "status": "passed"
+    },
+    {
+      "name": "Session resources follow four groups while dates and unavailable worksheets remain honest",
+      "status": "passed"
+    },
+    {
+      "name": "Admin has readable purchase records and no manual grant action",
+      "status": "passed"
+    },
+    {
+      "name": "Catalogue and access fit 390px",
+      "status": "passed"
+    },
+    {
+      "name": "Catalogue and access fit 768px",
+      "status": "passed"
+    },
+    {
+      "name": "Production runtime retains the original Student navigation and five-step session",
+      "status": "passed"
+    },
+    {
+      "name": "Production runtime denies the new catalogue and access routes",
+      "status": "passed"
+    }
+  ],
+  "errors": []
+}

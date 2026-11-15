@@ -60,11 +60,16 @@ jobs:
       - run: npm run test:v2:phase2
       - run: npm run test:v2:phase3
       - run: node --test scripts/phase3/recovery.test.mjs scripts/phase3/activation.test.mjs scripts/phase3/local-review.test.mjs
+      - name: Verify isolated payment acceptance tools
+        run: node --test scripts/phase3/hosted-fixtures.test.mjs scripts/phase3/hosted-qa.test.mjs scripts/phase3/hosted-accounts.test.mjs scripts/phase3/verify-hosted-payments.test.mjs scripts/phase3/check-hosted-readiness.test.mjs
       - run: npm run test:v2:phase4
       - run: npm run test:v2:phase5
       - run: npm run test:v2:phase6
       - run: node --test scripts/admin-student-access.test.mjs scripts/admin-resource-order.test.mjs
       - run: npm run test:v2:phase7
+      - name: Rehearse synthetic database recovery
+        run: node --test scripts/phase7/recovery-rehearsal.test.mjs
+      - run: node --test scripts/deployment-environment.test.mjs
       - run: ./node_modules/.bin/tsc --noEmit --incremental false
       - run: npm run build
       - name: Verify the locked installation leaves manifests unchanged

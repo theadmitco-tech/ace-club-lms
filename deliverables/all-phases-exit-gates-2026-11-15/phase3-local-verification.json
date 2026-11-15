@@ -1,0 +1,72 @@
+{
+  "check": "phase3_local_gate_preparation_verification",
+  "recordedAt": "2026-11-15T17:37:29.696051+00:00",
+  "baseCommit": "17945d4bafa9af92e9635ac16b0f99da0ed6e2ca",
+  "scope": "Final working-tree tool sources; local disposable PostgreSQL, offline temporary Git and synthetic API transports. No hosted mutation or genuine provider result is claimed.",
+  "results": [
+    {
+      "test": "scripts/v2-sales-catalogue-database.test.mjs",
+      "passed": 1
+    },
+    {
+      "test": "scripts/v2-checkout-database.test.mjs",
+      "passed": 6
+    },
+    {
+      "test": "scripts/v2-checkout-server.test.mjs",
+      "passed": 18
+    },
+    {
+      "test": "scripts/phase3/hosted-fixtures.test.mjs",
+      "passed": 6
+    },
+    {
+      "test": "scripts/phase3/hosted-qa.test.mjs",
+      "passed": 6
+    },
+    {
+      "test": "scripts/phase3/verify-hosted-payments.test.mjs",
+      "passed": 14
+    },
+    {
+      "test": "scripts/phase3/hosted-accounts.test.mjs",
+      "passed": 11
+    }
+  ],
+  "totalDistinctPassed": 62,
+  "invocationAttribution": [
+    "Initial combined invocation passed 57 cases: 25 core, 4 fixture, 6 offline lifecycle, 14 provider verifier and 8 account lifecycle.",
+    "Final changed fixture suite passed 6 cases, including faithful email-provider Auth INSERT followed by synthetic metadata UPDATE and the exact documented partial-abort SQL.",
+    "Final changed offline lifecycle and account suites passed 17 cases: 6 and 11 respectively.",
+    "Unchanged core and provider-verifier sources retain the initial passing execution; repeated cases are not added to the distinct total.",
+    "Final reviewer corrections passed one combined 23-case invocation: 6 fixture, 6 offline lifecycle and 11 account cases. The partial abort proves candidate count 1 to 0; actual random temporary paths are Git-checked before private bytes are written."
+  ],
+  "focusedEslint": "passed",
+  "whitespaceCheck": "passed",
+  "hostedMutationsPerformed": false,
+  "googleOauthVerified": false,
+  "razorpayPaymentVerified": false,
+  "hostedAcceptanceComplete": false,
+  "phase3Complete": false,
+  "sourceSha256": {
+    "scripts/v2-sales-catalogue-database.test.mjs": "d46916d3ab236b437d4f35820bf36d1db382679ab338902404aaa5ad2a5fe51c",
+    "scripts/v2-checkout-database.test.mjs": "7f24482c2b48ec96443cc721e66c428b0aee547fd373ad94ba5884d8e7412f74",
+    "scripts/v2-checkout-server.test.mjs": "2e0cb8864060dddee6f3168498c6080b2a846fc4af32f89913b5478973fc0c7a",
+    "scripts/phase3/hosted-fixtures.mjs": "2831b89d33a2322c2fa4c6002d76a6210c69e139603eb64296c2d9addf44c302",
+    "scripts/phase3/hosted-fixtures.test.mjs": "ecebb13213b49f8186896c59ad09fa3ddd3b2fabbd598a344c0b88c29ce0e731",
+    "scripts/phase3/hosted-qa.mjs": "ada7373e10eb2028a984ba25f45837084e7e17a16774c0381979f6c67847638b",
+    "scripts/phase3/hosted-qa.test.mjs": "c4d6917a4a99e24ba78bf288bf209e3c198f85e2ac13b06d301cc91da0eb3602",
+    "scripts/phase3/verify-hosted-payments.mjs": "8dfabf2552d3fb3c4c5ba49880eed96c3635c0d25b480e3971cfae86a2c81710",
+    "scripts/phase3/verify-hosted-payments.test.mjs": "c42b72b9fe87dd87dae554349b2fa2cb6a3d5ef64f13c2b9402531e853ee96b1",
+    "scripts/phase3/hosted-accounts.mjs": "2cca86bc0f9819f704fc450dc8970103bd6f95b870dde05b83c1d9347c61b79a",
+    "scripts/phase3/hosted-accounts.test.mjs": "e276fc5f0583f08a70160d9c76823d59d7367caaef7d45c57ded8a59402123e0",
+    "deliverables/phase3-preview-activation/HOSTED-ACCOUNT-LIFECYCLE.md": "6aa8f3998896d33217dd701f7cc8c1708ed4f4d37c8769112a0b781c08ddcd04"
+  },
+  "remaining": [
+    "Owner-managed Preview and source/environment verification",
+    "Genuine designated Google OAuth journey",
+    "Actual Razorpay Test Mode payment, capture, signed webhook, retry and delayed delivery",
+    "Hosted upgrade/capacity contention and protected resource checks",
+    "Exact hosted cleanup, independently verified identity absence and Product Owner acceptance"
+  ]
+}

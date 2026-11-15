@@ -132,6 +132,8 @@ export function atomicPrivateWrite(directory, filename, contents, { replace = fa
     const st = lstatSync(target);
     assert(st.isFile() && !st.isSymbolicLink() && st.nlink === 1 && st.uid === process.getuid() && (st.mode & 0o077) === 0, 'Existing output is not an owner-only regular file.');
   }
+  // Both exact paths must be excluded before private bytes reach disk.
+  for (const output of [target, temporary]) execFileSync('git', ['-C', dir, 'check-ignore', '--quiet', '--', output], { stdio: 'ignore' });
   const fd = openSync(temporary, 'wx', 0o600);
   try { writeFileSync(fd, contents); fsyncSync(fd); } finally { closeSync(fd); }
   try { renameSync(temporary, target); } finally { if (existsSync(temporary)) unlinkSync(temporary); }
@@ -160,7 +162,7 @@ export async function main(argv = process.argv.slice(2)) {
   const allowed = { prepare: ['--directory', '--manifest', '--owner-verified-preview', '--commit'], setup: ['--directory'], 'accept-setup': ['--directory', '--receipt'], 'record-checkout': ['--directory', '--record'], 'record-content': ['--directory', '--record'], cleanup: ['--directory'], 'accept-cleanup': ['--directory', '--receipt'], status: ['--directory'] };
   assert(Object.hasOwn(allowed, command) && Object.keys(opts).length === allowed[command].length && allowed[command].every(key => opts[key]), 'Required command options are missing or unexpected.');
   const dir = privateDirectory(opts['--directory']);
-  execFileSync('git', ['-C', dir, 'check-ignore', '--quiet', '--', path.join(dir, stateName)], { stdio: 'ignore' });
+  for (const output of [stateName, '01-SETUP-FIXTURES.sql', '02-CLEANUP-FIXTURES.sql', '.hosted-qa.lock', `.${stateName}.pending.tmp`]) execFileSync('git', ['-C', dir, 'check-ignore', '--quiet', '--', path.join(dir, output)], { stdio: 'ignore' });
   const { validateManifest, setupSql, cleanupSql } = await import('./hosted-fixtures.mjs');
   locked(dir, () => {
     let state;

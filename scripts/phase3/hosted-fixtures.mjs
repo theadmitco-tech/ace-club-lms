@@ -58,7 +58,7 @@ insert into p3_users values ${fixtureLabels.map(label=>`(${sql(label)},${sql(m.u
 create temporary table p3_courses(label text primary key,batch_id uuid unique,template_id uuid unique,product text) on commit drop;
 insert into p3_courses values ${Object.entries(m.courses).map(([label,c])=>`(${sql(label)},${sql(c.batchId)},${sql(c.templateId)},${sql(c.product)})`).join(',')};
 do $$begin
- if (select count(*) from p3_users q join auth.users u on u.id=q.id and u.email=q.email and u.raw_user_meta_data->>'phase3_qa_run'=${sql(m.runId)} and u.created_at>=${sql(m.createdAt)}::timestamptz join public.profiles p on p.id=u.id and p.email=q.email)<>${fixtureLabels.length} then raise exception 'Generated QA identity ownership mismatch'; end if;
+ if (select count(*) from p3_users q join auth.users u on u.id=q.id and u.email=q.email and u.raw_user_meta_data->>'phase3_qa_run'=${sql(m.runId)} and u.created_at>=${sql(m.createdAt)}::timestamptz and u.raw_app_meta_data->>'phase3_fixture_authentication'='true' join public.profiles p on p.id=u.id and p.email=q.email)<>${fixtureLabels.length} then raise exception 'Generated QA identity ownership mismatch'; end if;
  if (select count(*) from pg_tables where schemaname='public')<>${m.expectedTableCount} then raise exception 'Application table inventory changed';end if;
  if to_regprocedure('public.fulfill_v2_checkout(uuid,text,text,integer,text)') is null then raise exception 'Installed Phase 3 schema required';end if;
  if to_regclass('supabase_migrations.schema_migrations') is null then raise exception 'Migration ledger required';end if;
@@ -87,7 +87,8 @@ export function setupSql(m) {
 create temporary table p3_original_rows(table_name text,row_hash text,row_count bigint) on commit drop;
 do $$declare t record;found boolean;begin
  if ${sql(m.startDate)}::date<=(statement_timestamp() at time zone 'Asia/Kolkata')::date then raise exception 'Fixture start date must remain in the future';end if;
- if (select count(*) from public.v2_signup_candidates where student_id in ${userIds})<>${fixtureLabels.length} or exists(select 1 from public.profiles where id in ${userIds} and (role<>'student' or is_active)) then raise exception 'Fresh inactive signup candidates required; setup must not repeat';end if;
+ if exists(select 1 from public.profiles where id in ${userIds} and (role<>'student' or is_active)) then raise exception 'Fresh inactive generated Students required; setup must not repeat';end if;
+ if exists(select 1 from auth.users where id in ${userIds} and (raw_app_meta_data->>'provider' is distinct from 'google' or email_confirmed_at is null)) then raise exception 'Confirmed synthetic provider metadata required';end if;
  if exists(select 1 from public.v2_course_batches where id in ${courseIds}) or exists(select 1 from public.v2_course_templates where id in(select template_id from p3_courses)) then raise exception 'Fixture setup must not repeat';end if;
  for t in select tablename from pg_tables where schemaname='public' and tablename not in('profiles','v2_signup_candidates') loop
   execute format('select exists(select 1 from public.%I r where to_jsonb(r)->>''student_id'' in(select id::text from p3_users) or to_jsonb(r)->>''actor_id'' in(select id::text from p3_users))',t.tablename) into found;
@@ -97,6 +98,8 @@ do $$declare t record;found boolean;begin
  insert into p3_original_rows select 'profiles',md5(to_jsonb(r)::text),count(*) from public.profiles r where id not in ${userIds} group by md5(to_jsonb(r)::text);
  insert into p3_original_rows select 'v2_signup_candidates',md5(to_jsonb(r)::text),count(*) from public.v2_signup_candidates r where student_id not in ${userIds} group by md5(to_jsonb(r)::text);
 end $$;
+-- Admin Auth creation applies synthetic metadata after insertion; this explicit fixture seed is not OAuth evidence.
+insert into public.v2_signup_candidates(student_id) select id from p3_users on conflict(student_id) do nothing;
 update public.profiles p set role=case when q.label='admin' then 'admin' else 'student' end,is_active=true from p3_users q where p.id=q.id and q.label in('admin','expired','revoked','inactive','wrong_subject','multiple','capacity_1','capacity_2','capacity_3','capacity_4','capacity_5','capacity_6','capacity_7');
 do $$declare request jsonb;preview jsonb;begin
  perform set_config('request.jwt.claim.sub',${sql(m.users.admin.id)},true);

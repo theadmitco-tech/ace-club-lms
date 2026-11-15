@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { withDisposablePostgres } from '../helpers/disposable-postgres.mjs';
 import { preparePhase3Database, as, literal, json } from '../helpers/v2-phase3-fixture.mjs';
 import { fixtureLabels, fixtureEmail, createManifest, validateManifest, setupSql, cleanupSql } from './hosted-fixtures.mjs';
@@ -9,12 +10,13 @@ function makeManifest(expectedTableCount=92){
  const runId=randomUUID(),users=Object.fromEntries(fixtureLabels.map(label=>[label,{id:randomUUID(),email:fixtureEmail(runId,label)}]));
  return createManifest({runId,users,createdAt:new Date(Date.now()-10000).toISOString(),startDate:'2030-01-10',preview:'https://ace-club-qa-fixture.vercel.app',commit:'a'.repeat(40),expectedTableCount});
 }
-function bootstrap(db){
+function bootstrap(db,{adminInsertOrder=false}={}){
  const f=preparePhase3Database(db);migrations.forEach(db.apply);
  db.query("create schema if not exists supabase_migrations;create table if not exists supabase_migrations.schema_migrations(version text primary key,name text,statements text[]);insert into supabase_migrations.schema_migrations values('20261018090000','original_phase1',array['preserved source'])");
  const existing=f.batch('quant');f.publish(existing);
  const m=makeManifest(Number(db.query("select count(*) from pg_tables where schemaname='public'")));
- for(const u of Object.values(m.users))db.query(`insert into auth.users(id,email,raw_user_meta_data,raw_app_meta_data,email_confirmed_at) values(${literal(u.id)},${literal(u.email)},${json({phase3_qa_run:m.runId})},'{"provider":"google"}',now())`);
+ for(const u of Object.values(m.users))db.query(`insert into auth.users(id,email,raw_user_meta_data,raw_app_meta_data,email_confirmed_at) values(${literal(u.id)},${literal(u.email)},${json({phase3_qa_run:m.runId})},${json(adminInsertOrder ? {provider:'email'} : {provider:'google',phase3_fixture_authentication:true})},now())`);
+ if(adminInsertOrder)for(const u of Object.values(m.users))db.query(`update auth.users set raw_app_meta_data='{"provider":"google","phase3_fixture_authentication":true}' where id=${literal(u.id)}`);
  return {m,f,existing};
 }
 function paid(db,m,label,products,batches,upgrade=false,live=false){
@@ -52,7 +54,7 @@ test('setup and exact payment/upgrade cleanup preserve baseline and original led
  assert.equal(db.query('select count(*) from public.v2_checkout_intents'),'0');assert.equal(db.query('select count(*) from public.v2_purchases'),'0');assert.equal(db.query('select count(*) from public.v2_purchase_upgrades'),'0');
  assert.equal(db.query(`select count(*) from public.v2_course_batches where id='${existing.id}'`),'1');
  assert.equal(db.query(`select count(*) from public.profiles where id in(${Object.values(m.users).map(u=>literal(u.id))}) and is_active`),'0');
- db.rejects(setupSql(m),/Fresh inactive signup candidates required/);
+ db.rejects(setupSql(m),/Fresh inactive generated Students required/);
 }));
 test('cleanup rejects foreign batch activity, unknown purchases and ledger changes atomically',{timeout:120000},()=>withDisposablePostgres(async db=>{
  const {m,f,existing}=bootstrap(db),receipt=JSON.parse(db.query(setupSql(m))),cleanup=()=>cleanupSql(m,{baseline:receipt.baseline,checkouts:[]});
@@ -86,4 +88,37 @@ test('setup rejects identity ownership, pre-existing activity and inventory mism
  db.query(`delete from public.v2_batch_enrollments where student_id='${m.users.unpaid.id}'`);
  db.rejects(setupSql({...m,expectedTableCount:m.expectedTableCount+1}),/inventory changed/);
  assert.equal(db.query(`select count(*) from public.v2_course_batches where id='${m.courses.quant.batchId}'`),'0');
+}));
+
+test('Admin Auth insert-then-metadata update is seeded explicitly without claiming OAuth',{timeout:120000},()=>withDisposablePostgres(async db=>{
+ const {m}=bootstrap(db,{adminInsertOrder:true}),full=m.users.full;
+ assert.equal(db.query(`select count(*) from public.v2_signup_candidates where student_id='${full.id}'`),'0');
+ db.query(`update auth.users set raw_app_meta_data='{"provider":"google"}' where id='${full.id}'`);db.rejects(setupSql(m),/identity ownership mismatch/);
+ db.query(`update auth.users set raw_app_meta_data='{"provider":"google","phase3_fixture_authentication":true}' where id='${full.id}'`);
+ const receipt=JSON.parse(db.query(setupSql(m)));assert.equal(receipt.google_oauth_verified,false);
+ assert.equal(db.query(`select count(*) from public.v2_signup_candidates where student_id='${full.id}'`),'1');
+ assert.equal(db.query(`select is_active from public.profiles where id='${full.id}'`),'f');
+ assert.equal(JSON.parse(db.query(cleanupSql(m,{baseline:receipt.baseline,checkouts:[]}))).baseline_restored,true);
+}));
+
+
+test('documented partial preparation abort rejects activity and removes only exact generated candidates',{timeout:120000},()=>withDisposablePostgres(async db=>{
+ const {m,existing}=bootstrap(db),u=m.users.full;
+ const document=readFileSync(new URL('../../deliverables/phase3-preview-activation/HOSTED-ACCOUNT-LIFECYCLE.md',import.meta.url),'utf8');
+ const packets=[...document.matchAll(/```sql\n([\s\S]*?)```/g)].map(match=>match[1]);assert.equal(packets.length,2);
+ const cleanup=packets[0].replace('<PRIVATE_RECORDED_IDENTITY_VALUES>',`('${u.id}','${u.email}','${m.runId}','${m.createdAt}')`);
+ const verify=packets[1].replace('<PRIVATE_RECORDED_UUID_VALUES>',`('${u.id}'::uuid)`);
+ const before=db.query('select count(*) from public.v2_signup_candidates');
+ db.query(`update public.profiles set is_active=true where id='${u.id}'`);db.rejects(cleanup,/inactive state changed/);
+ db.query(`update public.profiles set is_active=false where id='${u.id}';insert into public.v2_signup_candidates(student_id) values('${u.id}')`);
+ assert.equal(db.query(`select count(*) from public.v2_signup_candidates where student_id='${u.id}'`),'1');
+ db.query(`insert into public.v2_batch_enrollments(batch_id,student_id,active,revision,actor_id) values('${existing.id}','${u.id}',false,1,'${m.users.admin.id}')`);db.rejects(cleanup,/Application activity prevents/);
+ db.query(`delete from public.v2_batch_enrollments where student_id='${u.id}'`);
+ assert.equal(db.query(`select count(*) from public.v2_signup_candidates where student_id='${u.id}'`),'1');
+ const receipt=JSON.parse(db.query(cleanup));assert.equal(receipt.recorded_accounts,1);assert.equal(receipt.auth_removed,false);
+ assert.equal(db.query(`select count(*) from public.v2_signup_candidates where student_id='${u.id}'`),'0');
+ assert.equal(Number(db.query('select count(*) from public.v2_signup_candidates')),Number(before)-1);
+ assert.equal(db.query(verify),'1|1|0');
+ db.query(`delete from auth.users where id='${u.id}'`);assert.equal(db.query(verify),'0|0|0');
+ assert.equal(db.query(`select count(*) from auth.users where id='${m.users.individual.id}'`),'1');
 }));

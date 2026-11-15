@@ -1,0 +1,56 @@
+{
+  "scope": "Local actual React components with synthetic provider script and API responses; no provider payment, OAuth session or hosted acceptance.",
+  "results": [
+    {
+      "name": "Registration requires sign-in and launches only the configured Google callback",
+      "status": "passed"
+    },
+    {
+      "name": "Checkout uses explicit selection and consent without sending browser prices",
+      "status": "passed"
+    },
+    {
+      "name": "A provider callback cannot show success when server verification fails",
+      "status": "passed"
+    },
+    {
+      "name": "Captured payment conflicts show review guidance without requesting another payment",
+      "status": "passed"
+    },
+    {
+      "name": "Interrupted checkout preparation reuses the same request identity",
+      "status": "passed"
+    },
+    {
+      "name": "Sold-out live places leave recording checkout available",
+      "status": "passed"
+    },
+    {
+      "name": "Mobile checkout exposes accessible labels and readable controls",
+      "status": "passed"
+    },
+    {
+      "name": "Dismissed and failed provider attempts show status without fulfillment",
+      "status": "passed"
+    },
+    {
+      "name": "Server-confirmed fulfillment returns to checkout history",
+      "status": "passed"
+    },
+    {
+      "name": "Admin recovery requires an existing order and retains pending status",
+      "status": "passed"
+    }
+  ],
+  "errors": [],
+  "sourceHashes": {
+    "src/app/courses/v2/checkout/CheckoutForm.tsx": "3ae364bda533ed13f6f7866472636f309f020f1b46fc19d31847004618b262f6",
+    "src/app/courses/v2/checkout/checkout.module.css": "b9d2cd9ab3da130ddd92f55b101c18cf7706612e21ab3ce2a9babd1b0afee47e",
+    "src/components/courses/courses.module.css": "75808a50a27b9cc2c04bb248a4cbab8b86dc88c02bf7b077cdb981ed23c61a93",
+    "src/lib/v2CoursePresentation.ts": "4ced32aafc9656b59405dacfb760cf3353b94daba3a171637f16b94ce68c02aa",
+    "src/lib/v2Products.ts": "cf0833e5cc92920a48215c06760a69cfc42e7cf37c096bba459ca439268cbd1e",
+    "src/lib/v2Checkout.ts": "a0ab74f2f0867c12e687381007b88eb96106a44a6ad378585736889f305e3fcf",
+    "src/lib/razorpayCheckout.ts": "cb9d1b38424557889ef1fe098576ad9829b58f646becfb8e826b8f334afc62b8",
+    "src/app/admin/v2/payments/PaymentRecovery.tsx": "12b4ca208531ac63984628629d5972d6e4fe3a6cc5d9675c265371f259ee7519"
+  }
+}

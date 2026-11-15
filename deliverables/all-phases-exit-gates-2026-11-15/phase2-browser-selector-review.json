@@ -1,0 +1,30 @@
+{
+  "check": "phase2_browser_selector_reconciliation",
+  "recordedAt": "2026-11-15T17:27:09.349300+00:00",
+  "scope": "Harness-only update for approved date-picker interface; no application source or assertion removal.",
+  "originalAttempt": {
+    "resultSha256": "d2bcf477819d8bd9d97eaec408bf409ddf9b33cb01fcf833bb80f96e18cd3759",
+    "passed": 41,
+    "failed": 2,
+    "failedCases": [
+      "Batch calendar selects an IST date without saving and restores keyboard focus",
+      "Batch review, publish, independent edits, unpublish and republish"
+    ]
+  },
+  "changes": [
+    "Calendar trigger uses its current explicit accessible name.",
+    "Month navigation targets current DayPicker labels and accessible grid names.",
+    "Day selection uses its complete accessible date.",
+    "Template start-date input uses its exact label to exclude the separate calendar button."
+  ],
+  "finalAttempt": {
+    "passed": 43,
+    "failed": 0,
+    "browserErrors": 0,
+    "externalRequests": 0,
+    "report": "phase2-browser-results.json",
+    "harnessSha256": "5a3619963b62336422068403b0b76813482541c7f94bc358fcf7ea9f5595a4aa"
+  },
+  "hostedAcceptanceEstablished": false,
+  "targetedLint": "passed"
+}

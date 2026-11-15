@@ -47,5 +47,5 @@ test('metadata preflight handles absent and installed V2 schema without persiste
   });
   report.status='passed';
  }catch(error){report.status='failed';throw error;}
- finally{report.sqlSha256=createHash('sha256').update(readFileSync(folder+'/READ-ONLY-PREFLIGHT.sql')).digest('hex');writeFileSync(folder+'/local-preflight-results.json',JSON.stringify(report,null,2)+'\n');}
+ finally{report.sqlSha256=createHash('sha256').update(readFileSync(folder+'/READ-ONLY-PREFLIGHT.sql')).digest('hex');writeFileSync((process.env.PHASE7_REPORT_DIRECTORY??folder)+'/local-preflight-results.json',JSON.stringify(report,null,2)+'\n');}
 });

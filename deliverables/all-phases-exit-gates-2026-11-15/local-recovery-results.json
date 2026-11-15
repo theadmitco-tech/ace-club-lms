@@ -1,0 +1,67 @@
+{
+  "check": "phase7_synthetic_database_recovery_rehearsal",
+  "recordedAt": "2026-11-15T17:18:10.008Z",
+  "scope": "Disposable Unix-socket PostgreSQL only. Synthetic public/Auth/Storage metadata and migration ledger are dumped and restored into another database in the same isolated cluster. Existing cluster roles are reused. No hosted database, Production backup, object bytes, provider event, deployed artifact or real Supabase Auth service is involved.",
+  "status": "passed",
+  "checks": [
+    {
+      "id": "custom-format-archive-created",
+      "status": "pass"
+    },
+    {
+      "id": "all-synthetic-application-auth-storage-and-ledger-rows-restored",
+      "status": "pass"
+    },
+    {
+      "id": "functions-permissions-policies-and-triggers-restored",
+      "status": "pass"
+    },
+    {
+      "id": "twenty-source-ledger-rows-retained",
+      "status": "pass"
+    },
+    {
+      "id": "purchase-upgrade-and-event-history-retained",
+      "status": "pass"
+    },
+    {
+      "id": "paid-subjects-and-original-expiry-restored",
+      "status": "pass"
+    },
+    {
+      "id": "live-registration-and-completed-feedback-restored",
+      "status": "pass"
+    },
+    {
+      "id": "independently-published-reading-restored",
+      "status": "pass"
+    },
+    {
+      "id": "foreign-student-remains-denied",
+      "status": "pass"
+    },
+    {
+      "id": "service-only-payments-and-private-storage-remain-enforced",
+      "status": "pass"
+    },
+    {
+      "id": "captured-fulfillment-replay-remains-idempotent",
+      "status": "pass"
+    },
+    {
+      "id": "replayed-payment-does-not-change-restored-rows",
+      "status": "pass"
+    },
+    {
+      "id": "backup-point-does-not-include-later-source-write",
+      "status": "pass"
+    }
+  ],
+  "productionRecoveryVerified": false,
+  "previousDeploymentCompatibilityVerified": false,
+  "archiveSha256": "32049fd4fe69a16440b3f448d8d718702409a28c720243352f841cb1f7de1721",
+  "syntheticRestoreDurationMs": 302,
+  "restoredRelationCount": 59,
+  "oldRuntimeCompatibility": "Not established: the actual previous Production artifact and its complete database are unavailable; restored database invariants are not application rollback evidence.",
+  "testSourceSha256": "4fbc9e5c76c5a393eb962b5be447eedec2c923d2a672c8f9ea7b10e9011cb6ca"
+}

@@ -7,6 +7,11 @@ const requiredVariables = [
 
 const deploymentEnvironment = process.env.VERCEL_ENV;
 
+if (deploymentEnvironment && !['preview', 'production', 'development'].includes(deploymentEnvironment)) {
+  console.error('Unknown Vercel environment; deployment refused.');
+  process.exit(1);
+}
+
 if (!deploymentEnvironment) {
   console.log('Deployment environment validation skipped outside Vercel.');
   process.exit(0);
@@ -25,6 +30,9 @@ if (missingVariables.length > 0) {
 
 const expectedProjects = {
   preview: {
+    supabaseHost: 'eyphkkginlgoaxflauog.supabase.co',
+  },
+  development: {
     supabaseHost: 'eyphkkginlgoaxflauog.supabase.co',
   },
   production: {
@@ -49,6 +57,14 @@ if (expected) {
     process.exit(1);
   }
 
+  const hasOriginOnly = (url) => !url.username && !url.password && url.pathname === '/' && !url.search && !url.hash;
+  const localSite = deploymentEnvironment === 'development' && ['localhost', '127.0.0.1', '[::1]'].includes(siteUrl.hostname);
+  if (supabaseUrl.protocol !== 'https:' || supabaseUrl.port || !hasOriginOnly(supabaseUrl)
+    || !hasOriginOnly(siteUrl) || (siteUrl.protocol !== 'https:' && !(localSite && siteUrl.protocol === 'http:'))) {
+    console.error('Deployment URLs must be valid environment origins without credentials, paths, queries or fragments.');
+    process.exit(1);
+  }
+
   if (supabaseUrl.hostname !== expected.supabaseHost) {
     console.error(
       `Refusing ${deploymentEnvironment} build: NEXT_PUBLIC_SUPABASE_URL targets the wrong Supabase project.`,
@@ -62,6 +78,32 @@ if (expected) {
     );
     process.exit(1);
   }
+}
+
+const productionSite = expectedProjects.production.siteOrigin;
+if (deploymentEnvironment !== 'production') {
+  if (new URL(process.env.NEXT_PUBLIC_SITE_URL).origin === productionSite
+    || process.env.V2_CHECKOUT_LIVE_ENABLED === 'true' || process.env.V2_PRODUCTION_RELEASE_ENABLED === 'true'
+    || Object.entries(process.env).some(([key, value]) => key.startsWith('V2_RAZORPAY_LIVE_') && value?.trim())) {
+    console.error('Production origins, release flags and V2 Live Mode credentials are excluded from Preview and development.');
+    process.exit(1);
+  }
+  if (process.env.V2_RAZORPAY_TEST_KEY_ID?.trim() && !/^rzp_test_[A-Za-z0-9]+$/.test(process.env.V2_RAZORPAY_TEST_KEY_ID)) {
+    console.error('The V2 Test Mode key identifier is invalid.');
+    process.exit(1);
+  }
+  if (process.env.V2_CHECKOUT_TEST_ENABLED === 'true'
+    && (!/^rzp_test_[A-Za-z0-9]+$/.test(process.env.V2_RAZORPAY_TEST_KEY_ID ?? '')
+      || (process.env.V2_RAZORPAY_TEST_KEY_SECRET?.trim().length ?? 0) < 16
+      || (process.env.V2_RAZORPAY_TEST_WEBHOOK_SECRET?.trim().length ?? 0) < 32)) {
+    console.error('Enabled V2 Test Mode checkout requires its dedicated API and webhook configuration.');
+    process.exit(1);
+  }
+} else if (['V2_PRODUCTION_RELEASE_ENABLED', 'V2_CHECKOUT_LIVE_ENABLED', 'V2_CHECKOUT_TEST_ENABLED',
+  'V2_TEMPLATE_AUTHORING_ENABLED', 'V2_BATCH_AUTHORING_ENABLED', 'V2_STUDENT_SCHEDULE_ENABLED',
+  'V2_LEARNING_DELIVERY_ENABLED', 'V2_CONTENT_PUBLISHING_ENABLED'].some(key => process.env[key] === 'true')) {
+  console.error('V2 Production enablement is not implemented or accepted; Preview flags cannot authorize a release.');
+  process.exit(1);
 }
 
 console.log(

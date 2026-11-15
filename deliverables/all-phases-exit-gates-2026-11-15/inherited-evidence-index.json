@@ -1,0 +1,57 @@
+{
+  "check": "historical_phase_evidence_attribution",
+  "recordedAt": "2026-11-15T17:18:51.024052+00:00",
+  "scope": "Hash index of inherited evidence; original execution scope and candidate attribution retained. No fresh hosted checks implied.",
+  "sources": [
+    {
+      "phase": 1,
+      "path": "deliverables/phase1-exit-gate-audit-2026-11-01/README.md",
+      "sha256": "2402367945e90fd206bf4001dc187ef5acd5741b6afad4bbf2b30bdc84de1648"
+    },
+    {
+      "phase": 1,
+      "path": "deliverables/phase1-closeout-2026-11-01/passwordless-qa/README.md",
+      "sha256": "a44b06d986d247f1c40b077d90ee3ab4e65db07899f1d625220c6a74e78b7ca4"
+    },
+    {
+      "phase": 2,
+      "path": "deliverables/phase2-hosted-acceptance/EXIT-GATES.md",
+      "sha256": "d348a1fac0600fd9b79da191797d08777ff810192e77d13973244f75890dc2de"
+    },
+    {
+      "phase": 2,
+      "path": "deliverables/phase2-hosted-acceptance/acceptance-review.json",
+      "sha256": "15fce2954be4193850cca2df3989801aa41f665cc76295a6d1a2fa8376cea670"
+    },
+    {
+      "phase": 4,
+      "path": "deliverables/phase4-hosted-acceptance/EXIT-GATES.md",
+      "sha256": "fd3dd223a01d550450e6aa2e4161f32b1c8deda6764be76f6d5ee75b84e2c4af"
+    },
+    {
+      "phase": 4,
+      "path": "deliverables/phase4-hosted-acceptance/README.md",
+      "sha256": "d9b654418e7e64f0d0aabae5d8b2e34ffa5ca592c3bde7712b61a378db76d743"
+    },
+    {
+      "phase": 5,
+      "path": "deliverables/phase5-hosted-acceptance/EXIT-GATES.md",
+      "sha256": "12cceddcb54c5a6eb2980933e09cfe7c132f2eaa61f3be8a11e49413ef088d0e"
+    },
+    {
+      "phase": 5,
+      "path": "deliverables/phase5-hosted-acceptance/cleanup-verification.json",
+      "sha256": "050f85a26e3e56618ac90f223ae2e258b0cec386a5f8f4c4d3c7dfe76c6c6663"
+    },
+    {
+      "phase": 6,
+      "path": "deliverables/phase6-staging-acceptance/ACCEPTANCE-MATRIX.md",
+      "sha256": "9fd2e624f1902da21c86ab3a2c24446b80c8ba6ad904d023c5e6a087a643641c"
+    },
+    {
+      "phase": 6,
+      "path": "deliverables/phase3-preview-activation/hosted-reconciliation.json",
+      "sha256": "db38610277ef9aa4b82ea7d5e73625fa6f1e38c92451b630755d0130b159b329"
+    }
+  ]
+}

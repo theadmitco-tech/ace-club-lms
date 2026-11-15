@@ -8,7 +8,7 @@ Status: offline preparation only. Preview deployment, actual identity preparatio
 
 The generator accepts a manifest built by `createManifest({runId, createdAt, users, preview, commit, startDate})`. `fixtureLabels` supplies the required labels; `fixtureEmail(runId, label)` supplies their exact synthetic addresses. Each `users[label]` contains the independently verified Auth `id` and `email`. The exact owner-confirmed Preview origin and forty-character commit identify the intended candidate. The default application inventory is 92 tables.
 
-Account preparation remains a separate Engineering action. Each generated Auth account must carry `raw_user_meta_data.phase3_qa_run` equal to the run ID, have a creation timestamp no earlier than the recorded run start, and match its profile. Before setup, all twenty profiles must be inactive Students with signup-candidate records. Setup rejects mismatches or a past class start date and activates only the generated Admin and seeded-access cases. Purchase-only candidates remain inactive until verified fulfillment. Existing Student/Admin accounts cannot be substituted. Account creation must retain exact identities in private state as each account is created, including partially completed attempts.
+Account preparation remains a separate Engineering action, now supported by the [generated account lifecycle](HOSTED-ACCOUNT-LIFECYCLE.md). Its local verification does not claim hosted execution. Each generated Auth account must carry `raw_user_meta_data.phase3_qa_run` equal to the run ID, have a creation timestamp no earlier than the recorded run start, and match its profile. Before setup, all twenty profiles must be inactive Students with the explicit synthetic-auth marker. Setup seeds missing signup-candidate rows only for those exact generated identities; this fixture preparation is not Google OAuth evidence. Setup rejects mismatches or a past class start date and activates only the generated Admin and seeded-access cases. Purchase-only candidates remain inactive until verified fulfillment. Existing Student/Admin accounts cannot be substituted. Account creation must retain exact identities in private state as each account is created, including partially completed attempts.
 
 Fixture authentication does not prove Google OAuth. Synthetic provider metadata, if used for isolated requests, must be identified as synthetic. A fresh designated real Google sign-in remains a separate acceptance case and requires a separately reviewed preservation/cleanup plan. Its account must never be included in the generated-account deletion list.
 
@@ -47,7 +47,7 @@ The [hosted acceptance procedure](HOSTED-ACCEPTANCE.md) defines the complete tes
 
 ## Local verification
 
-The [verification record](hosted-preparation-verification.json) contains exact tool-source hashes and 24 passing tests: four disposable PostgreSQL cases, six offline lifecycle cases and fourteen synthetic payment-verifier cases. PostgreSQL coverage includes actual local fulfillment/upgrade, inactive-candidate activation, event tracking, foreign-actor rejection, repeated-setup denial, expiry and rollback on changed application/ledger state. Targeted ESLint and whitespace checks passed. These results validate the preparation tools; they are not hosted payment evidence.
+The historical [verification record](hosted-preparation-verification.json), retained in the pre-audit `17945d4` tree with application baseline `de2b11a`, contains its then-current tool-source hashes and 24 passing tests: four disposable PostgreSQL cases, six offline lifecycle cases and fourteen synthetic payment-verifier cases. PostgreSQL coverage includes actual local fulfillment/upgrade, inactive-candidate activation, event tracking, foreign-actor rejection, repeated-setup denial, expiry and rollback on changed application/ledger state. Targeted ESLint and whitespace checks passed. These results validate the preparation tools; they are not hosted payment evidence.
 
 The three suites run independently:
 
@@ -58,3 +58,5 @@ node scripts/phase3/verify-hosted-payments.test.mjs
 ```
 
 The PostgreSQL suite requires the local PostgreSQL tools and subprocess permissions. The offline lifecycle suite creates only a temporary Git repository. The payment verifier suite substitutes synthetic responses and does not access Razorpay.
+
+The refreshed [local verification record](../all-phases-exit-gates-2026-11-15/phase3-local-verification.json) identifies the current tool hashes and 62 passing local cases, including account preparation, exact candidate seeding, partial-preparation abort and private-output guards. Historical hashes do not attest the updated sources.
