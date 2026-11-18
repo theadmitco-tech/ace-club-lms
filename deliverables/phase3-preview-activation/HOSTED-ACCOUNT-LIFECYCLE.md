@@ -2,6 +2,8 @@
 
 Status: locally verified automation; no hosted account action has been performed by this implementation. The workflow complements the [private SQL fixture lifecycle](HOSTED-QA-PREPARATION.md). It creates no Razorpay orders, payments, refunds or real Google identities.
 
+Hosted account creation, recovery and cleanup are executed by the deployment owner or designated staging operator. Engineering maintains and tests the tooling locally; its availability does not authorize Engineering to change hosted accounts. Genuine Google signup and resource checks follow the separate [preservation plan](OWNER-GOOGLE-RESOURCE-ACCEPTANCE.md).
+
 The commands use only staging project `eyphkkginlgoaxflauog`. The operator supplies an owner-confirmed Phase 3 Preview and exact candidate commit. Account state, passwords, manifests and receipts remain in an owner-only, Git-ignored directory. Only counts and fixed status labels appear in command output.
 
 ## Sequence

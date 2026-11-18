@@ -37,5 +37,5 @@
 .review span { font-size: 13px; color: #52645b; }
 .notice { border-left: 3px solid #397c60; background: #edf3ef; padding: 16px; font-size: 14px; line-height: 1.7; margin-top: 24px; }
 @media(max-width:1100px) { .classFields { grid-template-columns: 1fr 1fr; } .classFields > div:first-child { grid-column: 1/-1; } }
-@media(max-width:600px) { .fields,.classFields { grid-template-columns: 1fr; } .footer { align-items: stretch; flex-direction: column; } .classCard { padding: 14px; } .toolbar { align-items: stretch; } .toolbar > label,.toolbar input { width: 100%; } .actions > button { flex: 1; } }
+@media(max-width:600px) { .fields,.classFields { grid-template-columns: 1fr; } .footer { align-items: stretch; flex-direction: column; } .classCard { padding: 14px; } .toolbar { align-items: stretch; } .toolbar > label,.toolbar input { width: 100%; } .actions > button { flex: 1 1 100%; white-space: normal; overflow-wrap: anywhere; } }
 @media(prefers-reduced-motion:reduce) { .workspace * { scroll-behavior: auto; } }

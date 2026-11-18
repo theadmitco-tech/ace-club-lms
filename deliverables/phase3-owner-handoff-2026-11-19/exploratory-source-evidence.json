@@ -1,0 +1,59 @@
+{
+  "scope": "Local synthetic Admin exploratory review; agent visual inspection; no hosted or human usability acceptance",
+  "baseCommit": "12fc8d17690d46145573c3ffb79c06a2e48f7527",
+  "sourceHashes": {
+    "src/app/admin/v2/content/ContentEditor.tsx": "cd542dd994a0190618fdf8a75d22c0b08283281b7f0010e0c4eaad09bd40fc9d",
+    "src/app/admin/v2/content/AddSession.tsx": "7b2ff6db9bee577b0010250d25efc3e7688401d4ced8af123a3316b90b1c8cb4",
+    "src/app/admin/v2/content/SessionName.tsx": "6afb6189e58828fe97bbfaeaad1fa7ec452bed28e8f9af932a3e445aca4deb98",
+    "src/app/admin/v2/content/ReorderSessions.tsx": "217dae17323c426cc3a2d56a19d2be15d70330391391097e94a84653d934711a",
+    "src/app/admin/v2/content/PlacementEditor.tsx": "160dbc3bcdfc6a6fcea280437c3129a19e2f42b2400763c67a19cd515f5f14fc",
+    "src/app/admin/v2/batches/NewLiveBatch.tsx": "c568b1c9c2cf09e575bebc4d43a4442b845f45a3b2a732617014dbad406203a1",
+    "src/app/admin/v2/batches/BatchDatePicker.tsx": "14657448ff8e2888e1d4a71ab7ca7c7594910f8f52b02e22d2f59c5f5e8adb79",
+    "src/app/admin/v2/batches/batchWorkspace.module.css": "2aac34a5297c198126071fd42c0d364deb7d6b6f74d347a645c5dc2a35848223",
+    "src/app/admin/v2/students/[studentId]/page.tsx": "5f0789a9f15f7d67971af606229e44cc0c13a0cff7bc50da6a6e1c1345b75469",
+    "scripts/browser/v2-phase5/verify.mjs": "db94497efaf77c218a84a03e2c1d4012be30eaf3e0919172a2c87789faeb96fa",
+    "scripts/browser/admin-workflow/verify.mjs": "60fb1c42dd00c0e93cdd6b1c822085768a0dd473f2a1b1f476f696b668a9e3f8"
+  },
+  "screenshotsInspected": [
+    "initial-desktop.png",
+    "add-session-desktop.png",
+    "mobile-browse.png",
+    "mobile-reorder.png",
+    "batches-initial.png",
+    "create-batch-calendar.png",
+    "calendar-mobile.png",
+    "create-batch-mobile-review.png",
+    "student-access-mobile.png",
+    "batch-review-390.png",
+    "batch-review-320.png"
+  ],
+  "privateScreenshotHashes": {
+    "mobile-invalid-resource.png": "dad703f5f35712aab8246ec83e3e4a0bc3a7f801025af82d5e16ddb257b85241",
+    "mobile-rename-review.png": "97a442221a4731516af71368c01cbc3ff356d6b0529209920a5a678a63ce7503",
+    "mobile-reorder-retry.png": "9ad76c9ff8213717709348c358d2642b01c5c1af6135d0af9b10f4162735bb3c",
+    "mobile-reorder.png": "d43db92831b1ed40dcf7ece0eb1f4e87b139c5a7ae29175ef1c365428fb90fb0",
+    "mobile-browse.png": "edaa585fc2cc4a00763615fe42b7274f9bb46bd2e989e4459255c346e3b60092",
+    "added-session.png": "124efb8750ab48351f0cc87825c5d2d844c6b12770f3d28bc7e64f2f1f41786d",
+    "add-session-desktop.png": "04e69f1d4b72bd4522b0de6e3fb3ed64336f0e1cf8625e2f66030f00c5a9e57b",
+    "initial-desktop.png": "448b79e0b228d5ba7e090a1d76da0d7ffd3a339e9bf2fca273950ca4486b7988",
+    "student-access-unavailable-mobile.png": "6fe8ee49f4422d22cc4433ae7b28176c21ff1c43658293411325a89fed72f345",
+    "student-access-mobile.png": "2111fc8b0ccff8826b490598a0bf984c4f4a02346a2f371ace3558a8ee31ec63",
+    "create-batch-mobile-review.png": "12b0f3bf2bcb9fc6a462dfdf31e54e440b871cd8d776a34a7dd770275c247b97",
+    "calendar-mobile.png": "c465230b0ba1a9336039113656909f7288cf73a6348d5465324c558f5387e06a",
+    "create-batch-calendar.png": "85f9fbb4ee8d05df28940665b98abb3dee0a31678976e6962460a2ab0f3ee5d1",
+    "batches-initial.png": "7be3ffdf73df03d70466a3c4d2368c0c2b468d85de0362aa3a7d15125e9b62a1",
+    "batch-review-320.png": "6e7caf5765ceb4d4fbb321185652c2b05d02d3e4660b1a6efda751fdac1880e9",
+    "batch-review-390.png": "3c207d67f188482a9fb7d15de73d9604f412797a4856baeaae1eb9e9bed744f0"
+  },
+  "verification": {
+    "phase5Browser": {
+      "passed": 33,
+      "failed": 0
+    },
+    "adminBrowser": {
+      "passed": 21,
+      "failed": 0
+    },
+    "gitDiffCheck": "passed"
+  }
+}

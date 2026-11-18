@@ -1,0 +1,60 @@
+{
+  "check": "phase3_local_review",
+  "recordedAt": "2026-11-18T19:14:38.362578+00:00",
+  "startingCommit": "12fc8d17690d46145573c3ffb79c06a2e48f7527",
+  "scope": "Synthetic local database, API and browser fixtures; no real Google, provider payment, webhook or hosted acceptance inferred.",
+  "freshResults": {
+    "paymentEnvironmentPreparation": 58,
+    "disposableDatabase": 7,
+    "contentBrowser": 33,
+    "adminBrowser": 21,
+    "failed": 0
+  },
+  "staticChecks": [
+    {
+      "command": "npm run lint -- --max-warnings=0",
+      "result": "passed"
+    },
+    {
+      "command": "npx tsc --noEmit --incremental false",
+      "result": "passed"
+    },
+    {
+      "command": "npm run build",
+      "result": "passed",
+      "bundler": "Turbopack",
+      "environment": "local without deployment variables; deployment guards tested separately"
+    }
+  ],
+  "attempts": [
+    "Initial sandbox attempts blocked temporary Git subprocesses; rerun with local subprocess permissions passed all 58 cases.",
+    "Full lint and standalone TypeScript passed after editor changes. Focused lint and final build passed after mobile CSS/browser assertions; final build includes TypeScript."
+  ],
+  "nonBlockingBuildNotice": "Multiple workspace lockfiles; no local environment or provider/database credentials loaded by this build.",
+  "privateConfiguration": {
+    "filesOwnerOnlyAndIgnored": true,
+    "testKeyIdentifierPresent": true,
+    "apiSecretPresent": true,
+    "distinctWebhookSecretPresent": true,
+    "bundleMatchesPrivateStagingAndPaymentFiles": true,
+    "siteOriginStillPlaceholder": true,
+    "providerAuthentication": "not checked in this review",
+    "webhookRegistrationAndDelivery": "unverified; owner-managed"
+  },
+  "sourceSha256": {
+    "src/app/admin/v2/content/ContentEditor.tsx": "cd542dd994a0190618fdf8a75d22c0b08283281b7f0010e0c4eaad09bd40fc9d",
+    "src/app/admin/v2/batches/batchWorkspace.module.css": "2aac34a5297c198126071fd42c0d364deb7d6b6f74d347a645c5dc2a35848223",
+    "scripts/browser/v2-phase5/verify.mjs": "db94497efaf77c218a84a03e2c1d4012be30eaf3e0919172a2c87789faeb96fa",
+    "scripts/browser/admin-workflow/verify.mjs": "60fb1c42dd00c0e93cdd6b1c822085768a0dd473f2a1b1f476f696b668a9e3f8",
+    "scripts/v2-checkout-server.test.mjs": "2e0cb8864060dddee6f3168498c6080b2a846fc4af32f89913b5478973fc0c7a",
+    "scripts/v2-checkout-database.test.mjs": "7f24482c2b48ec96443cc721e66c428b0aee547fd373ad94ba5884d8e7412f74",
+    "scripts/v2-sales-catalogue-database.test.mjs": "d46916d3ab236b437d4f35820bf36d1db382679ab338902404aaa5ad2a5fe51c",
+    "scripts/deployment-environment.test.mjs": "e80c00e30378885c88830f12248635e8be06669da3c39a67b79b669c02055cb6",
+    "scripts/phase3/hosted-accounts.test.mjs": "e276fc5f0583f08a70160d9c76823d59d7367caaef7d45c57ded8a59402123e0",
+    "scripts/phase3/hosted-qa.test.mjs": "c4d6917a4a99e24ba78bf288bf209e3c198f85e2ac13b06d301cc91da0eb3602",
+    "scripts/phase3/verify-hosted-payments.test.mjs": "c42b72b9fe87dd87dae554349b2fa2cb6a3d5ef64f13c2b9402531e853ee96b1"
+  },
+  "hostedActionsPerformed": false,
+  "productionChanged": false,
+  "phase3Accepted": false
+}

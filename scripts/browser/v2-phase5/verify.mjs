@@ -163,6 +163,21 @@ function fivePlacements(){
  state.placedItems=state.placements.map(p=>({key:p.key,title:`Reading ${p.placement}`,url:'https://example.test/reading'}));
 }
 async function runTests() {
+ await test('Resource validation identifies the field without reporting a connection failure',async page=>{
+  await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'Add pre-class read',exact:true}).click();
+  const title=page.getByLabel('Title',{exact:true}),url=page.getByLabel('Resource URL',{exact:false}),save=page.getByRole('button',{name:'Save draft',exact:true});
+  await title.fill(' Reading ');await url.fill('not a url');await save.click();assert.equal(await title.getAttribute('aria-invalid'),'true');assert.equal(await title.evaluate(el=>el===document.activeElement),true);assert.equal(state.editorCalls.length,0);
+  await title.fill('Practice reading');await save.click();assert.equal(await url.getAttribute('aria-invalid'),'true');assert.equal(await url.evaluate(el=>el===document.activeElement),true);
+  const errorId=await url.getAttribute('aria-describedby');assert.match(await page.locator(`[id="${errorId}"]`).innerText(),/valid web address/);assert.equal(await page.getByRole('alert').getByText(/checking the connection/).count(),0);assert.equal(state.editorCalls.length,0);
+  await url.fill('https://example.test/reading');assert.equal(await url.getAttribute('aria-invalid'),null);state.failSave=true;await save.click();await page.getByText('Synthetic save interruption',{exact:true}).waitFor();assert.equal(await url.inputValue(),'https://example.test/reading');await save.click();await page.getByText('Draft saved.',{exact:false}).waitFor();const saves=state.editorCalls.filter(call=>call.action==='save');assert.equal(saves.length,2);assert.equal(saves[0].input.requestId,saves[1].input.requestId);
+ },true);
+ await test('Upload validation focuses the file field and preserves a protected existing source',async page=>{
+  await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'Edit Practice worksheet',exact:true}).click();await page.getByRole('button',{name:'Upload a file',exact:true}).click();
+  const file=page.getByLabel('Private file',{exact:false});await file.setInputFiles({name:'invalid.txt',mimeType:'text/plain',buffer:Buffer.from('Synthetic unsupported file')});
+  assert.equal(await file.getAttribute('aria-invalid'),'true');assert.equal(await file.evaluate(el=>el===document.activeElement),true);assert.equal(state.editorCalls.length,0);
+  const errorId=await file.getAttribute('aria-describedby');assert.match(await page.locator(`[id="${errorId}"]`).innerText(),/matching MP4\/WebM recording or PDF/);
+  await page.getByRole('button',{name:'Save draft',exact:true}).click();await page.getByText('Draft saved.',{exact:false}).waitFor();assert.equal(state.editorItems[0].document.url,sourceSessions[0].content.materials[0].url);assert.equal(state.editorCalls.some(call=>call.action==='upload'),false);
+ });
  await test('Resource locations stay compact and cancel preserves the original placement',async page=>{
   await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'Edit Shared recording',exact:true}).click();const summary=page.getByRole('group',{name:'Resource location',exact:true});await summary.getByText('Quant 4',{exact:true}).waitFor();assert.equal(await page.getByRole('heading',{name:'Where this appears',exact:true}).count(),0);assert.equal(await page.getByLabel('Position in this location',{exact:true}).isVisible(),false);await page.screenshot({path:path.join(output,'compact-resource-location.png'),fullPage:true});await page.getByRole('button',{name:'Change resource locations',exact:true}).click();await page.getByLabel('Position in this location',{exact:true}).selectOption('0');await page.getByRole('button',{name:'Cancel',exact:true}).click();await until(async()=>assert.equal(await page.getByRole('button',{name:'Change resource locations',exact:true}).evaluate(el=>el===document.activeElement),true));assert.equal(state.editorCalls.length,0);await page.getByRole('button',{name:'Save draft',exact:true}).click();await page.getByText('Draft saved.',{exact:false}).waitFor();assert.equal(state.editorItems[0].document.targets[0].order,100);assert.equal(state.editorItems[0].document.targets[0].replaceKey,id(204));
  });

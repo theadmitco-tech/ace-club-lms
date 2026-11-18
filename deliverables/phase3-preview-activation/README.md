@@ -11,9 +11,9 @@ The packet rejects changed application rows, changed ledger contents, unexpected
 ## Operator sequence
 
 1. The accepted `hosted-reconciliation.json` establishes that the three Phase 3 migrations are already installed. Activation is not repeated.
-2. The deployment owner publishes the reviewed integration candidate to its dedicated Preview with the branch-scoped configuration in `DEPLOYMENT-HANDOFF.md`.
-3. Dedicated QA fixtures and provider-backed acceptance follow deployment verification and Test Mode webhook setup.
-4. Exact fixture cleanup and independent absence checks precede acceptance sign-off.
+2. After the [current owner handoff](../phase3-owner-handoff-2026-11-19/README.md) has a verified final remote SHA and Draft PR, the deployment owner publishes that candidate to its dedicated Preview with the recorded branch-scoped configuration.
+3. The deployment owner or designated staging operator creates dedicated QA fixtures and performs provider-backed acceptance after deployment verification and Test Mode webhook setup. Engineering supplies locally verified tooling and reviews sanitized evidence.
+4. The staging operator performs exact fixture cleanup and independent absence checks before acceptance sign-off. Genuine Google signup and actual resource delivery require the separate [preservation plan](OWNER-GOOGLE-RESOURCE-ACCEPTANCE.md); the synthetic account inventory is not expanded to include existing accounts.
 
 An error aborts the atomic packet. An already-recorded migration requires reconciliation rather than another activation attempt. A changed snapshot baseline requires a fresh export and rehearsal rather than bypassing preservation checks.
 

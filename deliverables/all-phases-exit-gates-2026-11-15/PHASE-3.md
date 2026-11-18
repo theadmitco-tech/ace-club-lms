@@ -39,7 +39,7 @@ The distinct local test total for this audit is 62: 25 payment/catalogue cases, 
 
 The Phase 3 candidate has not yet been confirmed deployed. The next external dependency is an owner-managed Preview with the branch-scoped staging/Test Mode configuration, Google callback and reachable signed webhook. The [deployment handoff](../phase3-preview-activation/DEPLOYMENT-HANDOFF.md) remains authoritative; its existing operator edits are preserved.
 
-Once that Preview exists, Engineering can use the [generated account lifecycle](../phase3-preview-activation/HOSTED-ACCOUNT-LIFECYCLE.md), [fixture setup/cleanup workflow](../phase3-preview-activation/HOSTED-QA-PREPARATION.md), [hosted acceptance matrix](../phase3-preview-activation/HOSTED-ACCEPTANCE.md) and [read-only payment verifier](../phase3-preview-activation/READONLY-PAYMENT-VERIFICATION.md). Final Phase 3 acceptance cannot be closed by a local build or a Git push alone.
+Once that Preview exists, the deployment owner or designated staging operator executes the [generated account lifecycle](../phase3-preview-activation/HOSTED-ACCOUNT-LIFECYCLE.md), [fixture setup/cleanup workflow](../phase3-preview-activation/HOSTED-QA-PREPARATION.md), [hosted acceptance matrix](../phase3-preview-activation/HOSTED-ACCEPTANCE.md) and [read-only payment verifier](../phase3-preview-activation/READONLY-PAYMENT-VERIFICATION.md). Engineering maintains and tests these tools locally and reviews sanitized results. Genuine Google signup and resource delivery follow the separate [preservation plan](../phase3-preview-activation/OWNER-GOOGLE-RESOURCE-ACCEPTANCE.md). Final Phase 3 acceptance cannot be closed by a local build or a Git push alone.
 
 ## Fresh browser regression
 
