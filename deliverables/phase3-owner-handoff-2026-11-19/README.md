@@ -2,7 +2,9 @@
 
 Review date: 19 November 2026. Phase: registration, Test Mode payments, upgrades and live capacity.
 
-**Owner handoff remains incomplete until the final candidate is pushed and a Draft PR is recorded.** The configuration and acceptance procedure are prepared in [OWNER-HANDOFF.md](OWNER-HANDOFF.md). Local testing, Preview readiness and staging acceptance remain separate decisions.
+**The application candidate is pushed; Phase 3 acceptance remains incomplete.** Commit `cada411efd0f12fd99eb555e8beda05bc776bcda` was independently matched to the remote integration branch. Draft PR creation was retried and returned GitHub integration HTTP 403; no PR was created. The configuration and acceptance procedure are prepared in [OWNER-HANDOFF.md](OWNER-HANDOFF.md). Local testing, Preview readiness and staging acceptance remain separate decisions.
+
+The [Student and Admin walkthrough](SELF-VERIFICATION.md) separates the currently available localhost inspection from the actual payment acceptance sequence. A fresh rerun passed 65 local payment/environment/fixture/database checks and 10 synthetic browser journeys; the [current verification record](current-verification.json) attributes their sources. The working local review is on port 3000 with checkout disabled and staging data. No Phase 3 Preview or genuine provider delivery has been verified.
 
 ## Current checklist
 
@@ -13,13 +15,14 @@ Review date: 19 November 2026. Phase: registration, Test Mode payments, upgrades
 - [x] Exploratory Admin review reproduced and repaired misleading resource-validation guidance and clipped mobile batch-review buttons.
 - [x] Content and Admin browser regressions passed: 33 and 21 cases. Lint, TypeScript and the final application build passed.
 - [x] Owner-operated staging fixtures, genuine Google signup, isolated resource acceptance and exact cleanup responsibilities are documented.
-- [ ] Final publication receipt: exact commit, remote match, Draft PR URL and current CI result.
+- [x] Application candidate `cada411efd0f12fd99eb555e8beda05bc776bcda` matched to the remote branch.
+- [ ] Draft PR URL and current CI result recorded. The integration denied PR creation; an empty combined-status result is not a CI pass.
 - [ ] Owner-managed Preview deployment and effective staging-only configuration verification.
 - [ ] Actual Google return, captured Test Mode payments and signed webhook delivery.
 - [ ] Hosted retry, upgrades, eight-place contention, combined learning checks and exact cleanup.
 - [ ] Product Owner acceptance of the tested candidate.
 
-The local candidate includes the earlier Admin and Student workflow changes. The [exploratory review](exploratory-review.md) records observed task steps, two repairs and the remaining publish-before-populating session workflow concern. The [local verification record](local-verification.json), [content browser report](content-browser-results.json) and [Admin browser report](admin-browser-results.json) identify current evidence. Synthetic automation is not described as human usability sign-off.
+The local candidate includes the earlier Admin and Student workflow changes. The [exploratory review](exploratory-review.md) retains the initial findings. Subsequent repairs include preparing session resources before publication, batch draft recovery and live mapping guidance; [the repair record](../admin-integrated-review-2026-11-19/REPAIRS.md) attributes their validation. The earlier [local verification record](local-verification.json), [content browser report](content-browser-results.json) and [Admin browser report](admin-browser-results.json) retain their original scope. Synthetic automation is not described as human usability sign-off.
 
 ## Operating agreement
 

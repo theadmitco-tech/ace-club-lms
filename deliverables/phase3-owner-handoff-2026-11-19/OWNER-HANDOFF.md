@@ -9,8 +9,8 @@
 | Phase | 3 — registration, payments, upgrades and live capacity |
 | Branch | `intern/v2-phase-3-integration-review` |
 | Initial reviewed local SHA | `12fc8d17690d46145573c3ffb79c06a2e48f7527`; subsequent review fixes require the final publication receipt |
-| Final SHA to deploy | Pending final commit and remote verification; the initial SHA is not a substitute |
-| PR URL/status | No matching Phase 3 integration PR found in the repository search; a Draft PR is required |
+| Application SHA to deploy | `cada411efd0f12fd99eb555e8beda05bc776bcda`, independently matched to the remote branch; later documentation-only commits are not silently substituted for this tested application candidate |
+| PR URL/status | No matching Phase 3 integration PR found; Draft creation retried and denied with GitHub integration HTTP 403. A Draft PR remains required |
 | Proposed PR base | `intern/v2-admin-workflow-review`, the inherited Admin implementation branch |
 | Vercel project | `ace-club-lms` (`prj_2lW0zANcAnI81eURRZrJTMSCxuLr`) |
 | Environment | Preview, scoped only to the named integration branch |
@@ -63,7 +63,7 @@ The restricted, Git-ignored private payment file and deployment bundle were insp
 
 After the owner records the exact origin as `PREVIEW`:
 
-- Application callback: `PREVIEW/auth/v2/callback`. The owner adds this to the staging Supabase redirect allowlist without replacing existing entries. The Google provider's Supabase callback remains separate from the application callback.
+- Application callbacks: `PREVIEW/auth/v2/callback` for checkout signup and `PREVIEW/auth/callback` for ordinary login. The owner adds these to the staging Supabase redirect allowlist without replacing existing entries. The Google provider's Supabase callback remains separate from the application callbacks.
 - Webhook: `PREVIEW/api/v2/checkout/webhook`, with events `payment.captured`, `order.paid` and `payment.failed`, on the dedicated Razorpay **Test Mode** webhook.
 - LMS checkout: `PREVIEW/courses/v2/checkout`; Admin login: `PREVIEW/login`; payment review: `PREVIEW/admin/v2/payments`.
 
@@ -80,7 +80,9 @@ node --test --test-reporter=tap scripts/v2-sales-catalogue-database.test.mjs scr
 
 Results: 58 and seven passing cases respectively, zero failures after local subprocess permissions were available. Initial sandbox attempts blocked temporary Git subprocesses; those attempts are not passes. Coverage includes signatures, exact captured payment matching, failure/retry/replay, guarded account cleanup, staging/Test Mode isolation, atomic fulfillment, upgrades, eight-place contention and paid access through earlier phase controls. Provider responses and identities are synthetic.
 
-The [current review record](local-verification.json) also records 33 content browser cases, 21 Admin browser cases, lint, TypeScript and the final application build passing. The [exploratory review](exploratory-review.md) describes the repaired resource-validation and mobile-button issues. One workflow observation remains: new session resources cannot yet be prepared in the published-content browser before the session is published; that interaction requires owner review. The local build retained a non-blocking multiple-workspace-lockfile warning.
+The [earlier review record](local-verification.json) records 33 content browser cases, 21 Admin browser cases, lint, TypeScript and an application build passing. The [exploratory review](exploratory-review.md) retains its initial resource-validation and mobile-button findings. The later [Admin repair record](../admin-integrated-review-2026-11-19/REPAIRS.md) covers session resources prepared before publication, batch draft recovery, mapping guidance and final static validation. The local build retained a non-blocking multiple-workspace-lockfile warning. A [fresh verification record](current-verification.json) reports 65 passing local payment/environment/fixture/database cases and 10 synthetic payment browser journeys at the application candidate above. No fresh full build was required for the subsequent documentation-only update.
+
+The [manual Student and Admin checklist](SELF-VERIFICATION.md) gives exact pages and expected outcomes. The current local review runs on port 3000 with checkout disabled; localhost access does not establish external webhook readiness. The owner's Phase 3 Preview remains unconfirmed, and the latest combined-status response contained no statuses rather than a passing CI receipt.
 
 The [15 November full local record](../all-phases-exit-gates-2026-11-15/final-local-verification.json) retains the earlier 141 synthetic browser cases for its attributed sources. Historical counts do not prove an untested revision. Automated visual exploration does not establish usability approval by a human Admin.
 

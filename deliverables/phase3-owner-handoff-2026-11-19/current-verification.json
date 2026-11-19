@@ -1,0 +1,160 @@
+{
+  "applicationCommit": "cada411efd0f12fd99eb555e8beda05bc776bcda",
+  "remoteBranchMatched": true,
+  "branch": "intern/v2-phase-3-integration-review",
+  "scope": "Fresh synthetic local verification; no hosted OAuth, provider delivery or staging mutation.",
+  "localTests": {
+    "passed": 65,
+    "failed": 0,
+    "command": "node --test --test-reporter=tap scripts/v2-checkout-server.test.mjs scripts/deployment-environment.test.mjs scripts/phase3/hosted-accounts.test.mjs scripts/phase3/hosted-qa.test.mjs scripts/phase3/verify-hosted-payments.test.mjs scripts/v2-sales-catalogue-database.test.mjs scripts/v2-checkout-database.test.mjs",
+    "cases": [
+      "Preview and existing legacy Production configuration remain separated",
+      "unknown deployment contexts and missing configuration fail closed",
+      "same-host HTTP, credentials, ports, paths and query fragments are rejected",
+      "site origins reject invalid values and cross-environment routing",
+      "local development permits loopback HTTP without weakening hosted origins",
+      "Preview refuses Live Mode credentials and misleading release flags",
+      "checkout requires dedicated complete Test Mode configuration",
+      "Production flags cannot silently enable the staging-only implementation",
+      "diagnostics do not expose configured credentials or rejected URL values",
+      "account preparation records pending creation first and verifies all exact inactive synthetic identities",
+      "ambiguous creation never retries or deletes and exact recovery uses reads only",
+      "foreign ownership and provider-normalized metadata stop without profile rewrites or cleanup",
+      "unresolved recovery cannot invent an account or retry its creation",
+      "cleanup refuses absent receipt, wrong run, active profiles, purchases and tracked checkout remnants before deletion",
+      "a remaining exact tracked checkout blocks every account deletion",
+      "exact account cleanup verifies absence and resumes an interrupted delete without a second delete",
+      "cleanup rejects unexpected missing identities rather than attesting deletion",
+      "transport fixes staging origin, denies unrelated endpoints and recognizes only explicit Auth not-found",
+      "planning rejects stale IST dates and invalid calendar dates before any account creation",
+      "offline account CLI requires every private output ignored and persists owner-only state without network",
+      "private lifecycle requires explicit matching owner Preview and candidate",
+      "setup receipt cannot replace baseline, accept an unrelated run or ignore schema drift",
+      "tracked checkouts reject unknown identities and preserve attached provider references",
+      "cleanup includes only explicit tracking and requires matching exact receipt",
+      "private state writes are owner-only, atomic and refuse implicit replacement or linked input",
+      "actual CLI generates matching fixture packets and retains incomplete Auth status across restarts",
+      "fresh independent provider and caller snapshots pass without exposing private values",
+      "manifest rejects foreign projects, malformed IDs, duplicates and inconsistent expectations",
+      "provider snapshots override claimed fulfillment and reject mismatched amounts or refunds",
+      "checkout ownership, exact product/batch scope and provider references are independently checked",
+      "missing caller sessions remain incomplete and wrong-user sessions never read caller history",
+      "exact caller entitlements and enrollment are checked beyond provider success",
+      "six-month expiry clamps calendar end dates and upgrades require the pinned original expiry",
+      "confirmed Google metadata and matching profile email do not substitute for profile activation",
+      "request errors are incomplete with no reflected credentials or private response text",
+      "read-only transport fixes origins, methods, redirects and credential boundaries",
+      "configuration rejects live keys, foreign staging credentials and unexpected secrets",
+      "transport rejects non-success and oversized provider responses",
+      "authorized payment snapshots remain unfulfilled with no entitlement claim",
+      "known foreign fixture checkout cannot appear in another caller history",
+      "verified fulfillment activates only eligible new Students and preserves idempotency",
+      "upgrades extend effective subjects without rewriting purchase history or expiry",
+      "eight batch places remain atomic across parallel checkout and Admin registration",
+      "late captured payments and changed publications enter review without partial access",
+      "paid access retains Phase 4 gates, Phase 5 content and Phase 6 conflict responses",
+      "event receipts are idempotent and reject payload or checkout substitution",
+      "checkout environment fails closed in Production and on any non-staging project",
+      "callback and webhook signatures require exact content and valid hexadecimal encoding",
+      "captured payment validation rejects wrong order, amount, receipt, currency, refund and incomplete capture",
+      "checkout route enforces feature, origin and authenticated ownership before verification",
+      "forged callback, foreign checkout and non-Admin recovery never reach fulfillment",
+      "valid caller signature only triggers server reconciliation using the stored order",
+      "webhooks reject forged signatures and missing event IDs before database transitions",
+      "webhooks reconcile provider state on every duplicate and out-of-order delivery",
+      "webhook provider failure is retryable and unknown or unsupported events grant no access",
+      "ambiguous provider order creation cannot issue a second order on retry",
+      "checkout rejects malformed JSON and oversized streamed requests before database work",
+      "request limits count bytes, stop the stream early, and preserve signed UTF-8 text",
+      "signed malformed webhook JSON is rejected without provider retries or ledger writes",
+      "server reconciliation fetches authoritative provider state before forwarding an exact capture",
+      "pending, failed and delayed provider states never call fulfillment",
+      "mismatched, refunded or ambiguous provider captures never grant access",
+      "provider failure can be retried without assuming access or creating another provider order",
+      "unknown actions and non-Admin recovery stop before privileged checkout lookup",
+      "public V2 catalogue exposes published sales metadata only"
+    ]
+  },
+  "browser": {
+    "scope": "Local actual React components with synthetic provider script and API responses; no provider payment, OAuth session or hosted acceptance.",
+    "results": [
+      {
+        "name": "Registration requires sign-in and launches only the configured Google callback",
+        "status": "passed"
+      },
+      {
+        "name": "Checkout uses explicit selection and consent without sending browser prices",
+        "status": "passed"
+      },
+      {
+        "name": "A provider callback cannot show success when server verification fails",
+        "status": "passed"
+      },
+      {
+        "name": "Captured payment conflicts show review guidance without requesting another payment",
+        "status": "passed"
+      },
+      {
+        "name": "Interrupted checkout preparation reuses the same request identity",
+        "status": "passed"
+      },
+      {
+        "name": "Sold-out live places leave recording checkout available",
+        "status": "passed"
+      },
+      {
+        "name": "Mobile checkout exposes accessible labels and readable controls",
+        "status": "passed"
+      },
+      {
+        "name": "Dismissed and failed provider attempts show status without fulfillment",
+        "status": "passed"
+      },
+      {
+        "name": "Server-confirmed fulfillment returns to checkout history",
+        "status": "passed"
+      },
+      {
+        "name": "Admin recovery requires an existing order and retains pending status",
+        "status": "passed"
+      }
+    ],
+    "errors": [],
+    "sourceHashes": {
+      "src/app/courses/v2/checkout/CheckoutForm.tsx": "3ae364bda533ed13f6f7866472636f309f020f1b46fc19d31847004618b262f6",
+      "src/app/courses/v2/checkout/checkout.module.css": "b9d2cd9ab3da130ddd92f55b101c18cf7706612e21ab3ce2a9babd1b0afee47e",
+      "src/components/courses/courses.module.css": "75808a50a27b9cc2c04bb248a4cbab8b86dc88c02bf7b077cdb981ed23c61a93",
+      "src/lib/v2CoursePresentation.ts": "4ced32aafc9656b59405dacfb760cf3353b94daba3a171637f16b94ce68c02aa",
+      "src/lib/v2Products.ts": "cf0833e5cc92920a48215c06760a69cfc42e7cf37c096bba459ca439268cbd1e",
+      "src/lib/v2Checkout.ts": "a0ab74f2f0867c12e687381007b88eb96106a44a6ad378585736889f305e3fcf",
+      "src/lib/razorpayCheckout.ts": "cb9d1b38424557889ef1fe098576ad9829b58f646becfb8e826b8f334afc62b8",
+      "src/app/admin/v2/payments/PaymentRecovery.tsx": "12b4ca208531ac63984628629d5972d6e4fe3a6cc5d9675c265371f259ee7519"
+    }
+  },
+  "testSourceSha256": {
+    "scripts/v2-checkout-server.test.mjs": "2e0cb8864060dddee6f3168498c6080b2a846fc4af32f89913b5478973fc0c7a",
+    "scripts/deployment-environment.test.mjs": "e80c00e30378885c88830f12248635e8be06669da3c39a67b79b669c02055cb6",
+    "scripts/phase3/hosted-accounts.test.mjs": "e276fc5f0583f08a70160d9c76823d59d7367caaef7d45c57ded8a59402123e0",
+    "scripts/phase3/hosted-qa.test.mjs": "c4d6917a4a99e24ba78bf288bf209e3c198f85e2ac13b06d301cc91da0eb3602",
+    "scripts/phase3/verify-hosted-payments.test.mjs": "c42b72b9fe87dd87dae554349b2fa2cb6a3d5ef64f13c2b9402531e853ee96b1",
+    "scripts/v2-sales-catalogue-database.test.mjs": "d46916d3ab236b437d4f35820bf36d1db382679ab338902404aaa5ad2a5fe51c",
+    "scripts/v2-checkout-database.test.mjs": "7f24482c2b48ec96443cc721e66c428b0aee547fd373ad94ba5884d8e7412f74",
+    "scripts/browser/v2-phase3/verify.mjs": "3affa2ca0417aa697de139c364ab32f74de37f811f2171592d40c72688df1403"
+  },
+  "attempts": "Initial sandbox attempts did not complete successfully. The recorded passing tests ran with local subprocess/server permissions.",
+  "publication": {
+    "draftPrCreated": false,
+    "reason": "GitHub integration returned HTTP 403: Resource not accessible by integration."
+  },
+  "acceptance": {
+    "localImplementationVerified": true,
+    "hostedPaymentAcceptance": false,
+    "ownerSignoff": false
+  },
+  "manualReview": {
+    "origin": "http://localhost:3000",
+    "checkoutEnabled": false,
+    "data": "Existing staging data; no payment writes performed by this review.",
+    "googleReturn": "The reviewer reported that the local changes are visible after switching to the allowed ordinary-login port. Fresh checkout signup and callback-independent payment delivery remain unverified."
+  }
+}
