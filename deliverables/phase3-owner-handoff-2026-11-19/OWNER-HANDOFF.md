@@ -9,7 +9,7 @@
 | Phase | 3 — registration, payments, upgrades and live capacity |
 | Branch | `intern/v2-phase-3-integration-review` |
 | Initial reviewed local SHA | `12fc8d17690d46145573c3ffb79c06a2e48f7527`; subsequent review fixes require the final publication receipt |
-| Application SHA to deploy | `cada411efd0f12fd99eb555e8beda05bc776bcda`, independently matched to the remote branch; later documentation-only commits are not silently substituted for this tested application candidate |
+| Application SHA to deploy | `0841e70b848cae43a75b4f28f83808c6587790ef`, locally verified including checkout sign-in recovery and session deletion; remote publication of this new candidate remains required. Later documentation-only commits are not silently substituted for this application candidate |
 | PR URL/status | No matching Phase 3 integration PR found; Draft creation retried and denied with GitHub integration HTTP 403. A Draft PR remains required |
 | Proposed PR base | `intern/v2-admin-workflow-review`, the inherited Admin implementation branch |
 | Vercel project | `ace-club-lms` (`prj_2lW0zANcAnI81eURRZrJTMSCxuLr`) |
@@ -117,3 +117,7 @@ A build failure stops deployment. Uncertain project identity stops SQL. Migratio
 Disabling `V2_CHECKOUT_TEST_ENABLED` disables **both checkout and its webhook**, not only new orders. If containment requires disabling the feature, the owner retains provider receipts/delivery history and reconciles in-flight captured Test payments after restoring a verified candidate. No automatic refund or deletion of provider history is implied. Any rollback artifact must first be checked against the installed additive schema; an arbitrary older Preview is not assumed compatible. Database restoration is separately approved and rehearsed in isolation.
 
 No Production credential, data, migration, deployment, domain or real payment is used by this review. The current V2 runtime rejects Production. The branch and PR stay in review until Preview verification and the required owner decision.
+
+## Latest application continuation
+
+Candidate `0841e70b848cae43a75b4f28f83808c6587790ef` includes the tested checkout callback recovery (`a151b59`) and reviewed session deletion. The [signup recovery record](signup-recovery-verification.json) reports 23 local checks and 11 synthetic browser journeys. The [session deletion record](../admin-integrated-review-2026-11-19/SESSION-DELETION.md) reports 12 focused local checks, 39 content browser journeys, lint, standalone TypeScript and the final webpack build. These are separate reports with their own scope; totals are not combined into a unique-test claim. The earlier 65-case report remains attributed to its earlier candidate. Local review defaults to the already allowed port 3000. Genuine provider-backed acceptance, owner fixture execution and cleanup remain outstanding.

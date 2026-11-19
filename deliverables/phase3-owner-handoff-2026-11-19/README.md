@@ -2,7 +2,7 @@
 
 Review date: 19 November 2026. Phase: registration, Test Mode payments, upgrades and live capacity.
 
-**The application candidate is pushed; Phase 3 acceptance remains incomplete.** Commit `cada411efd0f12fd99eb555e8beda05bc776bcda` was independently matched to the remote integration branch. Draft PR creation was retried and returned GitHub integration HTTP 403; no PR was created. The configuration and acceptance procedure are prepared in [OWNER-HANDOFF.md](OWNER-HANDOFF.md). Local testing, Preview readiness and staging acceptance remain separate decisions.
+**The earlier candidate is pushed; the latest locally verified candidate requires publication. Phase 3 acceptance remains incomplete.** Commit `cada411efd0f12fd99eb555e8beda05bc776bcda` was independently matched to the remote integration branch. Draft PR creation was retried and returned GitHub integration HTTP 403; no PR was created. The configuration and acceptance procedure are prepared in [OWNER-HANDOFF.md](OWNER-HANDOFF.md). Local testing, Preview readiness and staging acceptance remain separate decisions.
 
 The [Student and Admin walkthrough](SELF-VERIFICATION.md) separates the currently available localhost inspection from the actual payment acceptance sequence. A fresh rerun passed 65 local payment/environment/fixture/database checks and 10 synthetic browser journeys; the [current verification record](current-verification.json) attributes their sources. The working local review is on port 3000 with checkout disabled and staging data. No Phase 3 Preview or genuine provider delivery has been verified.
 
@@ -31,3 +31,7 @@ Engineering implements, reviews and tests locally with synthetic data. The deplo
 This is a paraphrase of the supplied local-to-staging SOP. The unmodified source has SHA-256 `a8b5a85fc8d7d11ce598d2bcb67d53a5e52d84be71316c74d2f3e95321a443e6`; this document is not a verbatim copy. Historical reports retain their original scope and attribution.
 
 The [phase checklists](../all-phases-exit-gates-2026-11-15/README.md) remain the phase-by-phase record. Phases 1, 2, 4 and 5 have historical staging acceptance; Phase 3 hosted payment acceptance, Phase 6 combined acceptance and Phase 7 release authorization remain open. Production remains excluded.
+
+## Latest local candidate
+
+Application commit `0841e70b848cae43a75b4f28f83808c6587790ef` adds checkout sign-in failure recovery and reviewed session deletion. The [owner handoff](OWNER-HANDOFF.md) identifies this exact candidate and the separate fresh verification reports. The earlier remote receipt for `cada411` does not establish publication of these later fixes.
