@@ -1,0 +1,332 @@
+{
+  "check": "admin_delivery_repairs",
+  "recordedAt": "2026-11-19T06:57:29.768242+00:00",
+  "baseCommit": "9f8890e882a3b8ae221b11a65636bbe3b9cb5bf2",
+  "status": "local_checks_passed",
+  "sourceHashes": {
+    "src/app/admin/v2/batches/PublicationPanel.tsx": "2438983824ffd157d0acf4ba683807becba4032e449497916c65ac648992dd46",
+    "src/app/admin/v2/batches/[batchId]/live/page.tsx": "d0f2d7f87b357a762427961dddcb4f61fdba7b2faa2f403fde0ef96e8f16a99a",
+    "src/app/admin/v2/batches/[batchId]/live/LiveSessionMappings.tsx": "b1a15410b2946ede07da3be17f7990343f9317cb1ab681e5514a1e94485add95",
+    "scripts/v2-live-mapping-guidance.test.mjs": "ff093a143e8addb1db738ed62f74ceaf3019291ff5d57a411b7b212015d1a8a2",
+    "scripts/browser/v2-phase2/verify.mjs": "14c6f555718fe5bebc4f26509b2cb0b6bd60e1d97c50f7945a23f7ca7d01fce7",
+    "scripts/verify-v2-phase4.mjs": "429c0b9687de440399d3049f8c3bbafe48d5cfb9bb85e5556c0791457709423a"
+  },
+  "database": {
+    "scope": "Actual browser-generated template request replayed through actual database routines in disposable PostgreSQL; synthetic Auth/Storage and fixture grant. Browser server I/O remained mocked.",
+    "checks": [
+      {
+        "id": "browser-generated-class-and-session-identities-are-distinct",
+        "status": "pass"
+      },
+      {
+        "id": "actual-browser-template-saves-and-replays-without-duplicate",
+        "status": "pass"
+      },
+      {
+        "id": "generated-course-draft-stays-private-and-unmapped",
+        "status": "pass"
+      },
+      {
+        "id": "four-resource-types-save-in-private-draft-before-publication",
+        "status": "pass"
+      },
+      {
+        "id": "single-publication-delivers-prepared-sessions-and-resources",
+        "status": "pass"
+      },
+      {
+        "id": "completion-still-requires-explicit-mapping",
+        "status": "pass"
+      },
+      {
+        "id": "same-title-classes-retain-two-explicit-session-mappings",
+        "status": "pass"
+      },
+      {
+        "id": "both-classes-complete-with-distinct-feedback-obligations",
+        "status": "pass"
+      },
+      {
+        "id": "first-feedback-resolves-only-its-session",
+        "status": "pass"
+      },
+      {
+        "id": "full-live-class-lifecycle-finishes-without-invented-attendance",
+        "status": "pass"
+      }
+    ],
+    "capturedRequest": {
+      "id": "4a202e3d-a5a0-49ae-ab6b-d5bc2fd1d713",
+      "requestId": "610686e9-3295-4408-bdab-b9e9ec78fce9",
+      "expectedRevision": 0,
+      "productCode": "quant",
+      "document": {
+        "title": "Complete live setup",
+        "summary": "",
+        "durationDays": 3,
+        "sessions": [
+          {
+            "key": "bac6f1be-53dd-44a3-912d-9a5effb11754",
+            "title": "Same class title",
+            "section": "quant",
+            "content": {
+              "preSessionReads": [],
+              "recordings": [],
+              "postSessionReads": [],
+              "materials": []
+            }
+          },
+          {
+            "key": "30532277-d771-4d9c-9fba-e3d21a6830dd",
+            "title": "Same class title",
+            "section": "quant",
+            "content": {
+              "preSessionReads": [],
+              "recordings": [],
+              "postSessionReads": [],
+              "materials": []
+            }
+          }
+        ],
+        "events": [
+          {
+            "key": "fbb50ed1-890f-4b59-a583-0e932ce31a40",
+            "title": "Same class title",
+            "section": "quant",
+            "kind": "live",
+            "dayOffset": 0,
+            "localStartTime": "19:00",
+            "durationMinutes": 60,
+            "instructor": "",
+            "capacity": 8
+          },
+          {
+            "key": "aab85981-c20d-4993-8e35-50d7527ae786",
+            "title": "Same class title",
+            "section": "quant",
+            "kind": "live",
+            "dayOffset": 2,
+            "localStartTime": "19:00",
+            "durationMinutes": 60,
+            "instructor": "",
+            "capacity": 8
+          }
+        ]
+      }
+    },
+    "capturedRequestSha256": "b831fba23e364b8c598c85243cb0d98826adf846005cb68984c11d9b37b9318c",
+    "status": "passed",
+    "runnerSource": "import assert from 'node:assert/strict';\nimport {randomUUID,createHash} from 'node:crypto';\nimport {readFileSync,writeFileSync} from 'node:fs';\nimport {pathToFileURL} from 'node:url';\nconst root=process.cwd(),inputPath=process.argv[2];\nconst captured=JSON.parse(readFileSync(inputPath,'utf8'));\nconst {withDisposablePostgres}=await import(pathToFileURL(root+'/scripts/helpers/disposable-postgres.mjs'));\nconst {preparePhase3Database,as,json,literal}=await import(pathToFileURL(root+'/scripts/helpers/v2-phase3-fixture.mjs'));\nconst report={scope:'Actual browser-generated template request replayed through actual database routines in disposable PostgreSQL; synthetic Auth/Storage and fixture grant. Browser server I/O remained mocked.',checks:[],capturedRequest:captured,capturedRequestSha256:createHash('sha256').update(readFileSync(inputPath)).digest('hex'),status:'running'};\nconst check=(id,fn)=>{fn();report.checks.push({id,status:'pass'});console.log('PASS '+id)};\ntry{await withDisposablePostgres(async db=>{\n const f=preparePhase3Database(db),{query,rejects}=db;\n for(const m of ['20261113090000_add_v2_sales_catalogue.sql','20261113100000_add_v2_checkout_ledger.sql','20261113110000_add_v2_payment_fulfillment.sql'])db.apply(m);\n const rpc=(id,name,args='')=>JSON.parse(query(as(id,`select public.${name}(${args})`))||'null');\n const s=randomUUID(),batch=randomUUID();query(`insert into auth.users(id,email) values('${s}','synthetic-student@example.invalid');update public.profiles set role='student',is_active=true where id='${s}'`);\n const quote=JSON.parse(query(\"select public.quote_v2_products(array['quant_crash'])\"));query(`select public.grant_v2_purchase('${s}',array['quant_crash'],'synthetic-access',now()-interval '1 second','${quote.price_version_id}',${quote.amount_paise},'INR')`);\n check('browser-generated-class-and-session-identities-are-distinct',()=>{assert.equal(captured.document.sessions.length,2);assert.equal(new Set([...captured.document.sessions,...captured.document.events].map(x=>x.key)).size,4);assert.equal(captured.document.events[0].title,captured.document.events[1].title)});\n const saveArgs=`'${captured.id}','${captured.productCode}',${captured.expectedRevision},'${captured.requestId}',${json(captured.document)}`;\n check('actual-browser-template-saves-and-replays-without-duplicate',()=>{rpc(f.admin,'save_v2_template_draft',saveArgs);rpc(f.admin,'save_v2_template_draft',saveArgs);assert.equal(query(`select count(*) from public.v2_course_template_revisions where template_id='${captured.id}'`),'1')});\n const input={id:batch,templateId:captured.id,templateRevision:1,expectedRevision:0,requestId:randomUUID(),title:captured.document.title,startDate:'2026-12-10',timeZone:'Asia/Kolkata',events:null};\n let preview=rpc(f.admin,'preview_v2_batch_draft',json(input));const saved=rpc(f.admin,'save_v2_batch_draft',`${json(input)},${literal(preview.fingerprint)}`);\n rpc(f.admin,'set_v2_batch_enrollment',`'${batch}','${s}',true,0`);\n const course=()=>rpc(s,'get_my_v2_published_course',`'${batch}'`),state=()=>rpc(s,'get_my_v2_learning_state',`'${batch}'`);\n check('generated-course-draft-stays-private-and-unmapped',()=>{assert.equal(course(),null);assert.equal(query(`select count(*) from public.v2_live_session_mappings where batch_id='${batch}'`),'0')});\n const kinds=['preSessionReads','recordings','postSessionReads','materials'];\n const sessions=captured.document.sessions.map((session,index)=>({...session,content:index?session.content:Object.fromEntries(kinds.map(kind=>[kind,[{key:randomUUID(),title:`Synthetic ${kind}`,url:`https://example.test/${kind}`}]]))}));\n const edited={...input,expectedRevision:1,requestId:randomUUID(),sessions,events:saved.draft.events.map(({key,kind,localDate,localStartTime,durationMinutes,instructor,capacity})=>({key,kind,localDate,localStartTime,durationMinutes,instructor,capacity}))};\n preview=rpc(f.admin,'preview_v2_batch_draft',json(edited));rpc(f.admin,'save_v2_batch_draft',`${json(edited)},${literal(preview.fingerprint)}`);\n check('four-resource-types-save-in-private-draft-before-publication',()=>assert.equal(course(),null));\n const publication={batchId:batch,batchRevision:2,expectedRevision:0,requestId:randomUUID(),action:'publish'};\n preview=rpc(f.admin,'preview_v2_batch_publication',json(publication));rpc(f.admin,'save_v2_batch_publication',`${json(publication)},${literal(preview.fingerprint)}`);\n check('single-publication-delivers-prepared-sessions-and-resources',()=>{assert.equal(course().sessions.length,2);for(const kind of kinds)assert.equal(course().sessions[0].content[kind][0].url,`https://example.test/${kind}`)});\n rpc(f.admin,'set_v2_live_registration',`'${batch}','${s}',true,0`);\n check('completion-still-requires-explicit-mapping',()=>rejects(as(f.admin,`select public.complete_v2_learning_live_class('${batch}','${captured.document.events[0].key}',1)`),/mapping is required/));\n for(let i=0;i<2;i++)rpc(f.admin,'set_v2_live_session_mapping',`'${batch}','${captured.document.events[i].key}','${sessions[i].key}',1`);\n check('same-title-classes-retain-two-explicit-session-mappings',()=>{const rows=rpc(f.admin,'list_v2_live_session_mappings',`'${batch}'`);assert.equal(rows.length,2);assert.equal(new Set(rows.map(x=>x.sessionKey)).size,2)});\n for(const event of captured.document.events)rpc(f.admin,'complete_v2_learning_live_class',`'${batch}','${event.key}',1`);\n check('both-classes-complete-with-distinct-feedback-obligations',()=>{assert.equal(query(`select count(*) from public.v2_live_class_completions where batch_id='${batch}'`),'2');assert.equal(state().obligations.length,2)});\n const obligations=state().obligations;\n rpc(s,'submit_v2_session_feedback',`'${obligations[0].id}','${randomUUID()}',${json({attendance:'missed',usefulness:null,clarity:null,comment:''})}`);\n check('first-feedback-resolves-only-its-session',()=>assert.equal(state().obligations.length,1));\n rpc(s,'submit_v2_session_feedback',`'${obligations[1].id}','${randomUUID()}',${json({attendance:'missed',usefulness:null,clarity:null,comment:''})}`);\n check('full-live-class-lifecycle-finishes-without-invented-attendance',()=>{assert.equal(state().obligations.length,0);assert.equal(course().sessions.length,2);assert.equal(query(`select count(*) from public.v2_session_feedback where student_id='${s}' and response->>'attendance'='missed'`),'2')});\n});report.status='passed'}catch(e){report.status='failed';report.error=e.message;console.error(e);process.exitCode=1}finally{report.runnerSource=readFileSync(new URL(import.meta.url),'utf8');report.runnerSha256=createHash('sha256').update(report.runnerSource).digest('hex');writeFileSync('/tmp/ace-delivery-repair-database.json',JSON.stringify(report,null,2)+'\\n')}\n",
+    "runnerSha256": "77aa53773d603ecec07402713712a63503b12c3c86cccb86932ea675eadcc705"
+  },
+  "appliedMigrations": [
+    {
+      "path": "supabase/migrations/20260731051000_production_baseline.sql",
+      "sha256": "05f9ebbf522a797148fa72f8df73bb01494b920a1a15c204e40d602514de96d9"
+    },
+    {
+      "path": "supabase/migrations/20260731062700_enforce_material_release.sql",
+      "sha256": "aa0c4df5f7d10455c7d88d1049b2977d35967060046262272cb21b55d19e3e98"
+    },
+    {
+      "path": "supabase/migrations/20260731110000_require_provisioned_portal_access.sql",
+      "sha256": "d28e1d4d113f473e954b9d20b32749cfdc6c1cd30083d4eb26b881b9d108a200"
+    },
+    {
+      "path": "supabase/migrations/20261018090000_add_v2_product_entitlements.sql",
+      "sha256": "ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7"
+    },
+    {
+      "path": "supabase/migrations/20261019090000_add_v2_template_drafts.sql",
+      "sha256": "ac8ffd1121f548764b053a1913c726193c115bd1de38a5309e795c9d93940526"
+    },
+    {
+      "path": "supabase/migrations/20261019100000_add_v2_batch_drafts.sql",
+      "sha256": "56dc2a297441ecfa9a685a3d470789045b46e2ba7b92fe4c80c4ce000fcd20a9"
+    },
+    {
+      "path": "supabase/migrations/20261019110000_add_v2_private_meeting_drafts.sql",
+      "sha256": "ebbed93aad1b6fb7b5264848689c594b7856a8c3ad2346fa112a242bb01b0c9f"
+    },
+    {
+      "path": "supabase/migrations/20261020090000_add_v2_outline_schedules.sql",
+      "sha256": "60ad573ecb52e3f52d3e9bbf4e74e04d8cdd52a8a82bde1694be37eb8b075c7b"
+    },
+    {
+      "path": "supabase/migrations/20261020100000_add_v2_batch_publication.sql",
+      "sha256": "67dfa87d955b7cbf27dee0e45fe6b6ed469d0dd51c9d3df2c7466a67f2ee7b6e"
+    },
+    {
+      "path": "supabase/migrations/20261025100000_add_v2_enrolled_schedules.sql",
+      "sha256": "73949fb28c3e9692406efd509a83974806a588fac5e81f898e9ddc6e30b73a0a"
+    },
+    {
+      "path": "supabase/migrations/20261102100000_add_v2_programme_content.sql",
+      "sha256": "5b911ea86793d5dbf65f90c7932ed2c2d7570852174f3ddfa8febd558d913ed4"
+    },
+    {
+      "path": "supabase/migrations/20261102110000_add_v2_student_delivery.sql",
+      "sha256": "47a460e04fdc7aebdb0b0d5c1ad967f31c38c4da2827776c9bbc287511b59702"
+    },
+    {
+      "path": "supabase/migrations/20261102120000_add_v2_content_imports.sql",
+      "sha256": "9b5090efa2c6ea565ac6a3188bc148af0539c62715b50544eeede94aadfd88e9"
+    },
+    {
+      "path": "supabase/migrations/20261102130000_add_v2_publication_scopes.sql",
+      "sha256": "0a1ea7fb252ca4f3f3370e60fe8001e895029d26ad3aae57b3e69bb3af77f88a"
+    },
+    {
+      "path": "supabase/migrations/20261102170000_add_v2_learning_feedback.sql",
+      "sha256": "edaa5148af61d151ea4d59436929db652fbb5fc6c3bdeba0d7c2711b0af4f958"
+    },
+    {
+      "path": "supabase/migrations/20261103090000_add_v2_content_publishing.sql",
+      "sha256": "b4ccac5d81fa4e55cb5bf0a5dd7a84de81f135fc514a1d51206977793435edb4"
+    },
+    {
+      "path": "supabase/migrations/20261103091000_add_v2_private_content_storage.sql",
+      "sha256": "14ce35774ae0d305145b1bf16feb6d4aa2732d4d57049450f109331654e13f24"
+    },
+    {
+      "path": "supabase/migrations/20261103100000_fix_v2_content_readonly_previews.sql",
+      "sha256": "3e1b752f96cfda032a951f4ac305d671dfb7bddff7cd881f01aa3579851384cd"
+    },
+    {
+      "path": "supabase/migrations/20261103110000_fix_v2_content_conflict_responses.sql",
+      "sha256": "8c245203566f84ba7a82ebcf5f194b9a4af2bbc36acde5b68d3255468ddf8e62"
+    },
+    {
+      "path": "supabase/migrations/20261103120000_fix_v2_integration_conflicts.sql",
+      "sha256": "c921797533b1761a634729e6997712dc7b8389cbf5a50996280a323b813a9eb4"
+    },
+    {
+      "path": "supabase/migrations/20261113090000_add_v2_sales_catalogue.sql",
+      "sha256": "21b5d7ba9c0b0697a4acef72e533bb3947791f1b098a35e55366927252f4f54f"
+    },
+    {
+      "path": "supabase/migrations/20261113100000_add_v2_checkout_ledger.sql",
+      "sha256": "555b7e49be59842a425b40188ebb1b9b457c6ba4df93f0ce208ecf19233f6b4b"
+    },
+    {
+      "path": "supabase/migrations/20261113110000_add_v2_payment_fulfillment.sql",
+      "sha256": "da996f6d8f059a2a1677bb0b573bff3d9322bc3505282bd0fa20af204735ee58"
+    }
+  ],
+  "browser": {
+    "baseCommit": "9f8890e882a3b8ae221b11a65636bbe3b9cb5bf2",
+    "mode": "isolated UI fixture; synthetic auth and DAL; not staging or authorization evidence",
+    "stylesheetAdjustment": "Remove external font imports from fixture globals.css; other copied screen files remain exact.",
+    "browser": "156.0.8078.47",
+    "hashes": {
+      "src/lib/server/v2Phase1Feature.ts": "fa2b89f8464c3505e503c73fd7536a2a31fa7723ebdfb2cb1cd03612a64fa352",
+      "src/app/admin/v2/layout.tsx": "a00fdb4b80da25a0c329a9787fc539bf505b7d98ed3fe5e6b51990e1ec2005a9",
+      "src/app/admin/v2/WorkspaceNavigation.tsx": "9c9d68330a0c25b566d0a8bc498c0416173e7e79cc900e844213591f0a87ca4e",
+      "src/app/admin/v2/workspace.module.css": "881d9d63b26d4aefd49b7efb912bcdc4c132a38843b6d1185df915d0cf6abcea",
+      "src/app/admin/v2/page.tsx": "b9a8846183ce57f81962e8ef195d3fea186f096090cd7bcc07071dee99cb195b",
+      "src/app/admin/v2/templates/ReadingPreview.tsx": "ea08797ef2cf11a1dfa29e512ef44b1bcfd2d21722313c8ff5a51f626eef3d5d",
+      "src/components/student/NotionReader.tsx": "de6aa3c60952d661577547ece27871e60769868328527fc283f1889a96890475",
+      "src/components/student/V2CourseSessionView.tsx": "191e6dc2decdd614b96b5eafacaffcce8999a743c6edfc19dac4a568732c5198",
+      "src/components/student/V2LearningWorkspace.tsx": "125e138058c85aa1f1bd5af847701cc2b0b0d188f1a12637ff0427aff5133a7a",
+      "src/components/student/V2LearningLibrary.tsx": "42fdcddb45ae2560878221352fc1b212596702a840c3d4cbd5b042358c9fe713",
+      "src/components/student/V2RecordingPlayer.tsx": "a114c4b578521b0f2fe318e138b55b09eaffc0286ae5384cb45996f8f65f732f",
+      "src/components/student/v2Learning.module.css": "d87fcdfabbd43ef36b99f0b99a1f8b7930e57c202acf91ce161d9a38dfb30871",
+      "src/lib/v2Learning.ts": "bdfccbf8c32059c55a250aeae7a1ca4ae89aa4b7674b2129c079f467e535a5ea",
+      "src/lib/v2StudentDelivery.ts": "4607ae93554d432746b7dc27a490a8e95a12581872b14397420fe3ff7ad748c2",
+      "src/components/student/v2CourseSession.module.css": "7351b5b0fb86dabe7b4ac411a460be23b0851767d326d928b695651c109ab63f",
+      "src/lib/v2SessionPresentation.ts": "1b2159e08a40d2c2430f80d62fdb77c961da4debd5e27bc1d5fed5124f92e3b4",
+      "src/lib/v2ContentAssets.ts": "60ac8111d22c6ad8df52fb91cf3cac2f24ecc46ba8b9334c7447fa7ca68ae388",
+      "src/lib/v2ContentPublishing.ts": "e2ae6374390e0d998832118559eb812386afedb561f1ca13f6d6a2bb65e45ad4",
+      "src/lib/youtube.ts": "c4154560e720a7cc63d2aaa30ff41944240eab04bd85d7d62980186360f3d62d",
+      "src/lib/v2ReadingPreview.ts": "c3c914c1437e9971dc94bfb6b4da3c1b5d97d14cdff1739eb0ad253945c33f9f",
+      "src/app/session/[id]/material/[materialId]/material.css": "5a84d928a3b5ba8776f44cda141cbf190b5407c3abd358cc32907c3be7f3b30b",
+      "src/app/schedule/v2/page.tsx": "2fe3c926ca8a2ba2251969fc0d245ad032a00a3798ab48dbd35914f55efd58c3",
+      "src/app/dashboard/dashboard.css": "1263275a91e701b9b7682669c62f0daac7e3845719df4c33feacf0cfcf9d5aac",
+      "src/components/student/StudentHeader.tsx": "035013be495e7423f40850ad46ad9c9fe90fac0fd4d1a0c26b62a4a5b1f034a2",
+      "src/components/student/studentPreview.module.css": "d3c1c4731f93d722338b8c6da996b570a558061b4af2723dcd5ae733bbdadc20",
+      "src/components/student/SignOutButton.tsx": "9ada77d4cecad38d2d9729d8d20d975a919a6fa6b95fdc70516f009dc819622b",
+      "src/lib/v2Enrollments.ts": "ec5ceec1a5f25267e14072c7317af4027c19e9cb8d897f38716ba67ece44471b",
+      "src/app/admin/v2/batches/[batchId]/students/page.tsx": "ca94fcd16f0c70f5bb6a74d95a8211bf4531ee4c9b9128e631873b991aea37d6",
+      "src/app/admin/v2/batches/[batchId]/students/EnrollmentEditor.tsx": "ab0a845a0dcb3f5c04e741bfa41487d240d17d7d415c42365d93b808d313a74b",
+      "src/app/admin/v2/batches/[batchId]/students/actions.ts": "75e9e9f19e935d0f3ed5f434995c4dff1641df53d263835e14797ed41c224d1e",
+      "src/app/admin/AdminShell.tsx": "0af58ee9edecd9885e98616e894b82e2361254999213bd801869d04b523e6821",
+      "src/app/admin/admin.css": "8a536bf66de9d105e8e2aa378eddd6434cfafba01dadfe6677158ccc97b6049e",
+      "src/app/admin/workflow.css": "236a1904678daa7f6ae40cf24aa183235846153d43bcfed33d28f153cd382979",
+      "src/app/admin/v2/batches/BatchWorkspace.tsx": "2d50c8ef03f2f600e2541aafd4455b8dbd3ed4beb4f0d9ebeea5b5d9ecd4199f",
+      "src/app/admin/v2/batches/NewLiveBatch.tsx": "7be04e4a3bfe5ebbf4da12c811956bc2e2ae06dcb9733b66f3672a05c0905f9d",
+      "src/app/admin/v2/batches/batchWorkspace.module.css": "3fba39ad1024e7c5ecdfab4d4e97cb454775aef7c401d75a180cada1e85c1ddf",
+      "src/components/AdminDraftNavigation.tsx": "66c2cb37d18fc5ef00d42ed852acba3ea8cfcac3e21b823ba611f98ff841d0ea",
+      "src/components/DraftRecovery.tsx": "f1a2f1d6113a849692b3642b2a07fcf6aa13d2846c11126b92ba7eeb487b7d33",
+      "src/components/student/WorksheetLog.tsx": "01bf0138827455325a31a54b096dfddc3c047d052d38639d8e505533f4e2aafa",
+      "src/lib/studentPractice.ts": "0518a13a95f4d1d7e23cc9f007d0d27ef3fa041111cf31623cc3a21bb07db007",
+      "src/lib/worksheetRecovery.ts": "207ff4f92b52bd45c9da5e0088538ce4ebdfb26b24cbd3dd0b52497a05997861",
+      "src/lib/draftRecovery.ts": "09185b2311f9a5b374d721216097f431a87c0f588847214b6601f8073980c788",
+      "src/lib/v2WorkspaceRecovery.ts": "a8bbb559c6ae95e30da63ec93ed5d4439cc52c57333526aeb8cbace6e1b7392f",
+      "src/lib/v2LiveBatchSetup.ts": "bb7ddea080d376d8c786bc4bbded23296faddf427a9ce56ad28eeaea36c83a35",
+      "src/components/BrandLogo.tsx": "56a57e01003d4195f1ae2a7b771fbd5ab9dccb84fc9765b88445165fcc583a0f",
+      "src/app/admin/v2/templates/page.tsx": "6421d177c7ac9a380e112691000b530da17b746e39be3b2c60fa4dcd53231737",
+      "src/app/admin/v2/templates/TemplateEditor.tsx": "84c466273a58b44edf6cbd24b8b9a3f3bd7a800cf48ba1b774909dfc0bfe96a2",
+      "src/app/admin/v2/templates/CourseSessions.tsx": "d1e14632c841821b03eb8701f1ca6e2e0bb32c6af7be0163eb89e4bbf2072647",
+      "src/app/admin/v2/templates/actions.ts": "649e9f6e158f0ca8b46c1ee85e2b224bdb9519deb123dbb795f30338f35894ad",
+      "src/app/admin/v2/templates/templates.module.css": "dc87ddc5867b00a1c9e65abd707110a35f48e149da328850468fcf23840679f0",
+      "src/app/admin/v2/batches/page.tsx": "00b1eb397dec966013cae5dc22caaaf5a7dc1ca43d7c81c1d2135735b94944bb",
+      "src/app/admin/v2/batches/BatchDraftEditor.tsx": "9013ebd86c376fb094b46edcd093aab568efe7e4365a1bba1fa80112a6635cb1",
+      "src/app/admin/v2/batches/BatchDatePicker.tsx": "14657448ff8e2888e1d4a71ab7ca7c7594910f8f52b02e22d2f59c5f5e8adb79",
+      "src/app/admin/v2/batches/batchCalendar.module.css": "c628fdf5bc3ad15a7f985e81c8083d663a7130c17aef2c24474fb46db6e1a189",
+      "src/app/admin/v2/batches/PublicationPanel.tsx": "2438983824ffd157d0acf4ba683807becba4032e449497916c65ac648992dd46",
+      "src/app/admin/v2/batches/PublicationScopePanel.tsx": "63a6ec75d0a07672f4e48f9ea50970ec13e1b53bb292029cb3c8c2c7b0f10679",
+      "src/app/admin/v2/batches/scopeActions.ts": "87a21823b3bc35720683bc0204f20c1a5d728b0ebe03e17ea33b0a3510bab1d7",
+      "src/lib/v2PublicationScopes.ts": "b2cf7b3df5b22e50b3330062f15319bd3c958e51245eed0ab5f10ffc85b0f5f4",
+      "src/app/admin/v2/batches/actions.ts": "2b315677034de2e5e02ee4946d2a9b1cfac7638243598e9496df94e438be40f4",
+      "src/app/admin/v2/batches/[batchId]/meeting/page.tsx": "f1841d99691e6ccbfb98ba581ec71716cc5f2a3dd2fdb89e17f81699eb385a39",
+      "src/app/admin/v2/batches/[batchId]/meeting/MeetingDraftEditor.tsx": "8c154456a3748a56e64368b87a732212df436d40c691b1ffc4b891778ace43c4",
+      "src/app/admin/v2/batches/[batchId]/meeting/actions.ts": "00a333d7415d92e22c747c1977980e33e95d6aafb1d170b3fb51e8d79e063297",
+      "src/lib/v2Products.ts": "cf0833e5cc92920a48215c06760a69cfc42e7cf37c096bba459ca439268cbd1e",
+      "src/lib/v2Templates.ts": "7824905327aa90eaf5cddd94ce2454a3d13a54bc543b582e9b01b22aa22ab114",
+      "src/lib/v2Batches.ts": "cdd283bdff994a4c963cfccc58410dbdf9a31fbae5cd9d6e20cf028ddb4bead6",
+      "src/lib/v2Meetings.ts": "714ee6ea4ce540d73b18876d5822ba7df27e26de377f5e79d5f7399d4a345a85",
+      "src/lib/v2Publications.ts": "f714f6a5caba0a7f8b3bba87a228d528042a289be55668e808807d706e968c55",
+      "public/5.svg": "6712128c2ebc5febc738bda30b4eb69d794eaa96f4908ffa14ff213e5ca0f068",
+      "public/6.svg": "81cd3689a08965edb8cbc24aa4abc99887faa9d148e9a96ac99958e7481625b6",
+      "src/app/globals.css": "690066d83344100d091d06483c787145cb63558dbbe1d9d2494e73faf96545bd"
+    },
+    "results": [
+      {
+        "name": "Batch review, publish, independent edits, unpublish and republish",
+        "status": "passed"
+      }
+    ],
+    "blockedOrigins": [],
+    "browserErrors": []
+  },
+  "renderTests": {
+    "command": "node scripts/v2-live-mapping-guidance.test.mjs",
+    "passed": 3,
+    "failed": 0,
+    "scope": "Actual component/page execution with synthetic React and server dependencies; no browser or database connection."
+  },
+  "commands": [
+    {
+      "command": "CHROMIUM_EXECUTABLE=/usr/bin/chromium V2_BROWSER_CASE='Batch review, publish, independent edits, unpublish and republish' V2_BROWSER_OUTPUT=/tmp/ace-delivery-publication-repair node scripts/browser/v2-phase2/verify.mjs",
+      "exitCode": 0
+    },
+    {
+      "command": "node /tmp/ace-delivery-repair-database.mjs /tmp/ace-admin-batch-confirm-2026-11-19/generated-feedback-template-request.json",
+      "exitCode": 0
+    }
+  ],
+  "attempts": [
+    "Initial browser fixture build exposed an implicitly typed callback because the synthetic server adapter returns untyped values; callback now explicitly uses the shared publication event type.",
+    "Default Playwright browser was unavailable; installed /usr/bin/chromium used.",
+    "Initial render-test CSS dependency stub omitted default export; corrected before passing.",
+    "Initial DB audit edit reused events:null, which is invalid for an existing batch revision; harness now sends exact saved event fields. No application behavior was changed for that correction."
+  ],
+  "limitations": [
+    "Browser requests use synthetic server adapters. The captured template request was independently replayed into actual local PostgreSQL; this is not one browser-to-database session.",
+    "The publication browser fixture uses earlier workspace navigation; only the shared publication panel behavior is claimed.",
+    "Mapping destination opening and legacy recovery were tested through actual component/page render execution, not a browser visit.",
+    "No hosted data, payment provider, live credentials or Production configuration used.",
+    "Human usability and hosted acceptance remain separate."
+  ],
+  "visualReview": "Publication review screenshot inspected: next-step guidance and recovery link visible, text wraps within the review column. Screenshot remains private."
+}

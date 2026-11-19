@@ -21,13 +21,14 @@ export default function PublicationPanel({ drafts, publications, ownerId }: { dr
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [completionBatchId, setCompletionBatchId] = useState<string | null>(null);
   const busy = useRef(false);
   const recovery = useDraftRecovery<PublicationWorkspace>(ownerId, 'v2-publication', isPublicationWorkspace);
   useAdminDraftGuard(pending || review !== null);
 
   async function preview(batch: V2BatchDraft, action: V2PublicationInput['action']) {
     if (busy.current || review || recovery.recovered) return;
-    busy.current = true; setPending(true); setReview(null); setError(''); setMessage('');
+    busy.current = true; setPending(true); setReview(null); setError(''); setMessage(''); setCompletionBatchId(null);
     const input: V2PublicationInput = { batchId: batch.id, batchRevision: batch.revision,
       expectedRevision: publications.find((item) => item.batchId === batch.id)?.revision ?? 0,
       requestId: crypto.randomUUID(), action };
@@ -52,6 +53,7 @@ export default function PublicationPanel({ drafts, publications, ownerId }: { dr
       recovery.forget();
       setReview(null);
       setMessage(`Publication revision ${result.document.revision} ${result.document.state}${result.replayed ? ' (previous confirmation recovered)' : ''}.`);
+      setCompletionBatchId(result.document.state === 'published' && result.document.events.some((event: V2Publication['events'][number]) => event.kind === 'live') ? result.document.batchId : null);
       router.refresh();
     } catch { setError('Confirmation was interrupted. Retry this same review to recover the submission.'); }
     finally { busy.current = false; setPending(false); }
@@ -83,6 +85,15 @@ export default function PublicationPanel({ drafts, publications, ownerId }: { dr
       <p>Scope: this batch only · {V2_TEMPLATE_PRODUCTS[review.proposal.document.productCode].label} · {review.proposal.document.sections.join(', ')}</p>
       <p>Delivery: {v2CourseDeliveryLabel(review.proposal.document.events)}</p>
       <p>Saved draft {review.input.batchRevision} → publication revision {review.proposal.document.revision}. All times IST.</p>
+      {review.input.action === 'publish' && review.proposal.document.events.some(event => event.kind === 'live') && <aside aria-label="Class completion setup">
+        <strong>Next step: confirm each class’s feedback session</strong>
+        <p>{review.input.expectedRevision > 0
+          ? 'Publishing again requires the session links for unfinished classes to be confirmed again, even when only a meeting link changed. Existing links remain in the history.'
+          : 'After publishing, link each live class to its feedback session before marking it complete.'} After confirmation, select Set up class completion to continue.</p>
+        {review.proposal.document.events.some(event => event.kind === 'live' && !(review.proposal.document.sessions ?? []).some(session => session.section === event.section)) && <p>
+          A live-class subject has no course session available for feedback. <a href={`/admin/v2/batches?batch=${review.input.batchId}&outline=1`}>Add a course session</a>, save the draft, then review publication again.
+        </p>}
+      </aside>}
       <p>{review.proposal.document.liveRegistrationLimit === 8 ? 'Live-course registration limit: 8. Registration enforcement belongs to checkout; no session reservations.' : 'No scheduled live sessions.'}</p>
       {drafts.find((batch) => batch.id===review.input.batchId && batch.revision===review.input.batchRevision)
         ? <CourseSessionsPreview sessions={drafts.find((batch) => batch.id===review.input.batchId && batch.revision===review.input.batchRevision)!.sessions ?? []} />
@@ -99,5 +110,9 @@ export default function PublicationPanel({ drafts, publications, ownerId }: { dr
     </section>}
     <p role="alert" className={styles.error}>{error}</p>
     <p role="status" aria-live="polite">{message}</p>
+    {completionBatchId && <div className={styles.fields}>
+      <p>The batch is published. Class-to-session links still need confirmation for this publication before unfinished classes can be marked complete.</p>
+      <a className="btn btn-secondary" href={`/admin/v2/batches/${completionBatchId}/live?setup=1#class-session-mapping`}>Set up class completion</a>
+    </div>}
   </section>;
 }

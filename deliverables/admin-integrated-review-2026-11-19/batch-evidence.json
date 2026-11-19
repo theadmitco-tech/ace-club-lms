@@ -1,0 +1,1296 @@
+{
+  "reviewDate": "2026-11-19",
+  "candidate": "9f8890e882a3b8ae221b11a65636bbe3b9cb5bf2",
+  "scope": "Actual batch UI and Server Action wrappers with synthetic auth/data adapters; no hosted or database acceptance.",
+  "applicationChanges": false,
+  "initialRun": {
+    "passed": 4,
+    "failed": 1,
+    "journeys": [
+      {
+        "name": "Complete creation copied sessions publication and unpublication",
+        "status": "passed",
+        "calls": [
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "saveV2TemplateDraft",
+            "args": [
+              {
+                "id": "51a0ade8-096d-4771-ac15-a5f3174c081e",
+                "requestId": "39be42b5-9abe-4d73-b55f-b89222993177",
+                "expectedRevision": 0,
+                "productCode": "quant",
+                "document": {
+                  "title": "Integration Quant evenings",
+                  "summary": "",
+                  "durationDays": 4,
+                  "sessions": [
+                    {
+                      "key": "00000000-0000-4000-8000-000000000901",
+                      "title": "Saved Quant session",
+                      "section": "quant",
+                      "content": {
+                        "recordings": [],
+                        "materials": [],
+                        "preSessionReads": [],
+                        "postSessionReads": []
+                      }
+                    }
+                  ],
+                  "events": [
+                    {
+                      "key": "11599038-f3e7-401e-9fd1-ce9a887548d4",
+                      "title": "Fractions",
+                      "section": "quant",
+                      "kind": "live",
+                      "dayOffset": 2,
+                      "localStartTime": "23:30",
+                      "durationMinutes": 60,
+                      "instructor": "",
+                      "capacity": 8
+                    },
+                    {
+                      "key": "7e03cf00-da59-461b-9bb7-4fb581ca58e6",
+                      "title": "Ratios",
+                      "section": "quant",
+                      "kind": "live",
+                      "dayOffset": 0,
+                      "localStartTime": "20:30",
+                      "durationMinutes": 60,
+                      "instructor": "",
+                      "capacity": 8
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "previewV2BatchDraft",
+            "args": [
+              {
+                "id": "63bbc49e-54ec-455f-9c25-7e96aec4693c",
+                "templateId": "51a0ade8-096d-4771-ac15-a5f3174c081e",
+                "templateRevision": 1,
+                "expectedRevision": 0,
+                "requestId": "59bb9eaa-a770-454e-b972-309531a74287",
+                "title": "Integration Quant evenings",
+                "startDate": "2026-12-10",
+                "timeZone": "Asia/Kolkata",
+                "events": null
+              }
+            ]
+          },
+          {
+            "method": "saveV2BatchDraft",
+            "args": [
+              {
+                "id": "63bbc49e-54ec-455f-9c25-7e96aec4693c",
+                "templateId": "51a0ade8-096d-4771-ac15-a5f3174c081e",
+                "templateRevision": 1,
+                "expectedRevision": 0,
+                "requestId": "59bb9eaa-a770-454e-b972-309531a74287",
+                "title": "Integration Quant evenings",
+                "startDate": "2026-12-10",
+                "timeZone": "Asia/Kolkata",
+                "events": null
+              },
+              "998217af29980997c54703c0c785fe6b"
+            ]
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "previewV2BatchPublication",
+            "args": [
+              {
+                "batchId": "63bbc49e-54ec-455f-9c25-7e96aec4693c",
+                "batchRevision": 1,
+                "expectedRevision": 0,
+                "requestId": "0aafdd67-552c-4bf0-841a-e8f1842f36a4",
+                "action": "publish"
+              }
+            ]
+          },
+          {
+            "method": "previewV2BatchPublication",
+            "args": [
+              {
+                "batchId": "63bbc49e-54ec-455f-9c25-7e96aec4693c",
+                "batchRevision": 1,
+                "expectedRevision": 0,
+                "requestId": "053b45f4-a080-487d-bb87-873a196cc525",
+                "action": "publish"
+              }
+            ]
+          },
+          {
+            "method": "saveV2BatchPublication",
+            "args": [
+              {
+                "batchId": "63bbc49e-54ec-455f-9c25-7e96aec4693c",
+                "batchRevision": 1,
+                "expectedRevision": 0,
+                "requestId": "053b45f4-a080-487d-bb87-873a196cc525",
+                "action": "publish"
+              },
+              "f27ed7097dba847775ecc6e39300f936"
+            ]
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "previewV2BatchPublication",
+            "args": [
+              {
+                "batchId": "63bbc49e-54ec-455f-9c25-7e96aec4693c",
+                "batchRevision": 1,
+                "expectedRevision": 1,
+                "requestId": "c9b5b83b-8816-4b77-80af-6c2a396e62d9",
+                "action": "unpublish"
+              }
+            ]
+          },
+          {
+            "method": "saveV2BatchPublication",
+            "args": [
+              {
+                "batchId": "63bbc49e-54ec-455f-9c25-7e96aec4693c",
+                "batchRevision": 1,
+                "expectedRevision": 1,
+                "requestId": "c9b5b83b-8816-4b77-80af-6c2a396e62d9",
+                "action": "unpublish"
+              },
+              "2d14b384ee35cf56d1934776e9612f98"
+            ]
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          }
+        ]
+      },
+      {
+        "name": "Mobile keyboard calendar invalid inputs and subject switching",
+        "status": "passed",
+        "calls": [
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "saveV2TemplateDraft",
+            "args": [
+              {
+                "id": "129184dd-c598-4a36-9431-d9a20b472b99",
+                "requestId": "957d14fe-a16b-4e43-820f-dc33d2245849",
+                "expectedRevision": 0,
+                "productCode": "di",
+                "document": {
+                  "title": "Mobile DI",
+                  "summary": "",
+                  "durationDays": 1,
+                  "sessions": [],
+                  "events": [
+                    {
+                      "key": "6d94468a-39e1-45f1-96dc-e78595656ba0",
+                      "title": "Data sufficiency",
+                      "section": "di",
+                      "kind": "live",
+                      "dayOffset": 0,
+                      "localStartTime": "20:15",
+                      "durationMinutes": 60,
+                      "instructor": "",
+                      "capacity": 8
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          }
+        ]
+      },
+      {
+        "name": "Save schedule resume after all batches returns without data loss",
+        "status": "passed",
+        "calls": [
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "saveV2TemplateDraft",
+            "args": [
+              {
+                "id": "17715f21-218e-4e19-b342-68aa8d16c712",
+                "requestId": "3c469922-545d-480d-bb1e-d44df6fabd6a",
+                "expectedRevision": 0,
+                "productCode": "quant",
+                "document": {
+                  "title": "Resume schedule",
+                  "summary": "",
+                  "durationDays": 1,
+                  "sessions": [],
+                  "events": [
+                    {
+                      "key": "4e567897-a64a-4827-922e-cc5b461a8e99",
+                      "title": "First class",
+                      "section": "quant",
+                      "kind": "live",
+                      "dayOffset": 0,
+                      "localStartTime": "19:00",
+                      "durationMinutes": 60,
+                      "instructor": "",
+                      "capacity": 8
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "saveV2TemplateDraft",
+            "args": [
+              {
+                "id": "17715f21-218e-4e19-b342-68aa8d16c712",
+                "requestId": "3c469922-545d-480d-bb1e-d44df6fabd6a",
+                "expectedRevision": 0,
+                "productCode": "quant",
+                "document": {
+                  "title": "Resume schedule",
+                  "summary": "",
+                  "durationDays": 1,
+                  "sessions": [],
+                  "events": [
+                    {
+                      "key": "4e567897-a64a-4827-922e-cc5b461a8e99",
+                      "title": "First class",
+                      "section": "quant",
+                      "kind": "live",
+                      "dayOffset": 0,
+                      "localStartTime": "19:00",
+                      "durationMinutes": 60,
+                      "instructor": "",
+                      "capacity": 8
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "previewV2BatchDraft",
+            "args": [
+              {
+                "id": "70d716a7-40e9-4dbd-aae5-2583758af17e",
+                "templateId": "17715f21-218e-4e19-b342-68aa8d16c712",
+                "templateRevision": 1,
+                "expectedRevision": 0,
+                "requestId": "f36529cf-4b85-476f-a69f-41ba9c32609e",
+                "title": "Resume schedule",
+                "startDate": "2026-12-10",
+                "timeZone": "Asia/Kolkata",
+                "events": null
+              }
+            ]
+          },
+          {
+            "method": "saveV2BatchDraft",
+            "args": [
+              {
+                "id": "70d716a7-40e9-4dbd-aae5-2583758af17e",
+                "templateId": "17715f21-218e-4e19-b342-68aa8d16c712",
+                "templateRevision": 1,
+                "expectedRevision": 0,
+                "requestId": "f36529cf-4b85-476f-a69f-41ba9c32609e",
+                "title": "Resume schedule",
+                "startDate": "2026-12-10",
+                "timeZone": "Asia/Kolkata",
+                "events": null
+              },
+              "2aba6b5091cfa2af7b67be505ea5119a"
+            ]
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          }
+        ]
+      },
+      {
+        "name": "Interrupted batch confirmation is idempotent and stale edits remain recoverable",
+        "status": "passed",
+        "calls": [
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "previewV2BatchDraft",
+            "args": [
+              {
+                "id": "00000000-0000-4000-8000-000000000010",
+                "templateId": "00000000-0000-4000-8000-000000000001",
+                "templateRevision": 1,
+                "expectedRevision": 1,
+                "requestId": "d4e495aa-d484-458d-9dc1-01a1c94b2d94",
+                "title": "Changed title",
+                "startDate": "2026-11-02",
+                "timeZone": "Asia/Kolkata",
+                "events": [
+                  {
+                    "key": "00000000-0000-4000-8000-000000000101",
+                    "localDate": "2026-11-02",
+                    "localStartTime": "18:00",
+                    "durationMinutes": 60,
+                    "instructor": "Test instructor",
+                    "capacity": 8,
+                    "kind": "live"
+                  },
+                  {
+                    "key": "00000000-0000-4000-8000-000000000201",
+                    "localDate": null,
+                    "localStartTime": null,
+                    "durationMinutes": null,
+                    "instructor": "",
+                    "capacity": 8,
+                    "kind": "outline"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "method": "saveV2BatchDraft",
+            "args": [
+              {
+                "id": "00000000-0000-4000-8000-000000000010",
+                "templateId": "00000000-0000-4000-8000-000000000001",
+                "templateRevision": 1,
+                "expectedRevision": 1,
+                "requestId": "d4e495aa-d484-458d-9dc1-01a1c94b2d94",
+                "title": "Changed title",
+                "startDate": "2026-11-02",
+                "timeZone": "Asia/Kolkata",
+                "events": [
+                  {
+                    "key": "00000000-0000-4000-8000-000000000101",
+                    "localDate": "2026-11-02",
+                    "localStartTime": "18:00",
+                    "durationMinutes": 60,
+                    "instructor": "Test instructor",
+                    "capacity": 8,
+                    "kind": "live"
+                  },
+                  {
+                    "key": "00000000-0000-4000-8000-000000000201",
+                    "localDate": null,
+                    "localStartTime": null,
+                    "durationMinutes": null,
+                    "instructor": "",
+                    "capacity": 8,
+                    "kind": "outline"
+                  }
+                ]
+              },
+              "4a633529f5edf66a00e9af5a0840ce75"
+            ]
+          },
+          {
+            "method": "saveV2BatchDraft",
+            "args": [
+              {
+                "id": "00000000-0000-4000-8000-000000000010",
+                "templateId": "00000000-0000-4000-8000-000000000001",
+                "templateRevision": 1,
+                "expectedRevision": 1,
+                "requestId": "d4e495aa-d484-458d-9dc1-01a1c94b2d94",
+                "title": "Changed title",
+                "startDate": "2026-11-02",
+                "timeZone": "Asia/Kolkata",
+                "events": [
+                  {
+                    "key": "00000000-0000-4000-8000-000000000101",
+                    "localDate": "2026-11-02",
+                    "localStartTime": "18:00",
+                    "durationMinutes": 60,
+                    "instructor": "Test instructor",
+                    "capacity": 8,
+                    "kind": "live"
+                  },
+                  {
+                    "key": "00000000-0000-4000-8000-000000000201",
+                    "localDate": null,
+                    "localStartTime": null,
+                    "durationMinutes": null,
+                    "instructor": "",
+                    "capacity": 8,
+                    "kind": "outline"
+                  }
+                ]
+              },
+              "4a633529f5edf66a00e9af5a0840ce75"
+            ]
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "previewV2BatchDraft",
+            "args": [
+              {
+                "id": "00000000-0000-4000-8000-000000000010",
+                "templateId": "00000000-0000-4000-8000-000000000001",
+                "templateRevision": 1,
+                "expectedRevision": 2,
+                "requestId": "72e44a0c-c012-4fba-a5d8-50c84accb947",
+                "title": "Stale local title",
+                "startDate": "2026-11-02",
+                "timeZone": "Asia/Kolkata",
+                "events": [
+                  {
+                    "key": "00000000-0000-4000-8000-000000000101",
+                    "localDate": "2026-11-02",
+                    "localStartTime": "18:00",
+                    "durationMinutes": 60,
+                    "instructor": "Test instructor",
+                    "capacity": 8,
+                    "kind": "live"
+                  },
+                  {
+                    "key": "00000000-0000-4000-8000-000000000201",
+                    "localDate": null,
+                    "localStartTime": null,
+                    "durationMinutes": null,
+                    "instructor": "",
+                    "capacity": 8,
+                    "kind": "outline"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "method": "saveV2BatchDraft",
+            "args": [
+              {
+                "id": "00000000-0000-4000-8000-000000000010",
+                "templateId": "00000000-0000-4000-8000-000000000001",
+                "templateRevision": 1,
+                "expectedRevision": 2,
+                "requestId": "72e44a0c-c012-4fba-a5d8-50c84accb947",
+                "title": "Stale local title",
+                "startDate": "2026-11-02",
+                "timeZone": "Asia/Kolkata",
+                "events": [
+                  {
+                    "key": "00000000-0000-4000-8000-000000000101",
+                    "localDate": "2026-11-02",
+                    "localStartTime": "18:00",
+                    "durationMinutes": 60,
+                    "instructor": "Test instructor",
+                    "capacity": 8,
+                    "kind": "live"
+                  },
+                  {
+                    "key": "00000000-0000-4000-8000-000000000201",
+                    "localDate": null,
+                    "localStartTime": null,
+                    "durationMinutes": null,
+                    "instructor": "",
+                    "capacity": 8,
+                    "kind": "outline"
+                  }
+                ]
+              },
+              "b520a7dae497939858c48ea3dfabb8f1"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Browser Back returns to prior page with dirty schedule protection",
+        "status": "failed",
+        "error": "Browser Back leaves dirty batch creation without retaining its form\n\n0 !== 1\n",
+        "calls": [
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          }
+        ]
+      }
+    ],
+    "browserErrors": [],
+    "blockedOrigins": []
+  },
+  "diagnosticFollowup": {
+    "passed": 2,
+    "failed": 0,
+    "interpretation": "Assertions confirm defect behavior; no fixes applied.",
+    "journeys": [
+      {
+        "name": "Browser Back loses unsaved creation after real navigation while explicit navigation guards",
+        "status": "passed",
+        "calls": [
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          }
+        ]
+      },
+      {
+        "name": "Default live-only creation has no completion mapping warning or session requirement",
+        "status": "passed",
+        "calls": [
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "saveV2TemplateDraft",
+            "args": [
+              {
+                "id": "34b82b2b-0914-487b-a32f-3c23ef18a158",
+                "requestId": "2958eae4-7c64-4c18-b9d3-d8c313a20349",
+                "expectedRevision": 0,
+                "productCode": "quant",
+                "document": {
+                  "title": "Live only default",
+                  "summary": "",
+                  "durationDays": 1,
+                  "sessions": [],
+                  "events": [
+                    {
+                      "key": "b36d3d11-8c59-4867-997d-de263e4909c1",
+                      "title": "Live class",
+                      "section": "quant",
+                      "kind": "live",
+                      "dayOffset": 0,
+                      "localStartTime": "19:00",
+                      "durationMinutes": 60,
+                      "instructor": "",
+                      "capacity": 8
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "previewV2BatchDraft",
+            "args": [
+              {
+                "id": "6b32ccdd-c2fe-42b8-9e0b-c8fa11b04e1a",
+                "templateId": "34b82b2b-0914-487b-a32f-3c23ef18a158",
+                "templateRevision": 1,
+                "expectedRevision": 0,
+                "requestId": "fe87930c-19a6-4bc8-b429-c64e9276a241",
+                "title": "Live only default",
+                "startDate": "2026-12-10",
+                "timeZone": "Asia/Kolkata",
+                "events": null
+              }
+            ]
+          },
+          {
+            "method": "saveV2BatchDraft",
+            "args": [
+              {
+                "id": "6b32ccdd-c2fe-42b8-9e0b-c8fa11b04e1a",
+                "templateId": "34b82b2b-0914-487b-a32f-3c23ef18a158",
+                "templateRevision": 1,
+                "expectedRevision": 0,
+                "requestId": "fe87930c-19a6-4bc8-b429-c64e9276a241",
+                "title": "Live only default",
+                "startDate": "2026-12-10",
+                "timeZone": "Asia/Kolkata",
+                "events": null
+              },
+              "cddb9d4314baef4c9d5b48a2fbc43b43"
+            ]
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "previewV2BatchPublication",
+            "args": [
+              {
+                "batchId": "6b32ccdd-c2fe-42b8-9e0b-c8fa11b04e1a",
+                "batchRevision": 1,
+                "expectedRevision": 0,
+                "requestId": "7933d3a9-9b10-44be-83d2-0dd4afdf09cf",
+                "action": "publish"
+              }
+            ]
+          },
+          {
+            "method": "saveV2BatchPublication",
+            "args": [
+              {
+                "batchId": "6b32ccdd-c2fe-42b8-9e0b-c8fa11b04e1a",
+                "batchRevision": 1,
+                "expectedRevision": 0,
+                "requestId": "7933d3a9-9b10-44be-83d2-0dd4afdf09cf",
+                "action": "publish"
+              },
+              "512c71374e3f514d16256c2fde36b74f"
+            ]
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          },
+          {
+            "method": "fixtureIdentity",
+            "args": [
+              "admin"
+            ]
+          },
+          {
+            "method": "listV2BatchDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2TemplateDrafts",
+            "args": []
+          },
+          {
+            "method": "listV2BatchPublications",
+            "args": []
+          }
+        ]
+      }
+    ],
+    "browserErrors": [],
+    "blockedOrigins": []
+  },
+  "backObservation": {
+    "explicitNavigationDialogs": 1,
+    "browserBackDialogs": 0,
+    "restoredBatchName": "",
+    "restoredClassName": "",
+    "restoreEditsOffered": false,
+    "saveOrPreviewCalls": 0
+  },
+  "liveOnlyObservation": {
+    "setupDefault": "Live classes only",
+    "copiedSessionsOptional": true,
+    "savedSessionCount": 0,
+    "publishedSessionCount": 0,
+    "publicationAllowed": true,
+    "completionWarningDuringReview": false,
+    "completionLinkRendered": true,
+    "completionDestinationExercised": false
+  },
+  "sourceHashes": {
+    "src/lib/server/v2Phase1Feature.ts": "fa2b89f8464c3505e503c73fd7536a2a31fa7723ebdfb2cb1cd03612a64fa352",
+    "src/app/admin/v2/layout.tsx": "a00fdb4b80da25a0c329a9787fc539bf505b7d98ed3fe5e6b51990e1ec2005a9",
+    "src/app/admin/v2/WorkspaceNavigation.tsx": "9c9d68330a0c25b566d0a8bc498c0416173e7e79cc900e844213591f0a87ca4e",
+    "src/app/admin/v2/workspace.module.css": "881d9d63b26d4aefd49b7efb912bcdc4c132a38843b6d1185df915d0cf6abcea",
+    "src/app/admin/v2/page.tsx": "b9a8846183ce57f81962e8ef195d3fea186f096090cd7bcc07071dee99cb195b",
+    "src/app/admin/v2/templates/ReadingPreview.tsx": "ea08797ef2cf11a1dfa29e512ef44b1bcfd2d21722313c8ff5a51f626eef3d5d",
+    "src/components/student/NotionReader.tsx": "de6aa3c60952d661577547ece27871e60769868328527fc283f1889a96890475",
+    "src/components/student/V2CourseSessionView.tsx": "191e6dc2decdd614b96b5eafacaffcce8999a743c6edfc19dac4a568732c5198",
+    "src/components/student/V2LearningWorkspace.tsx": "125e138058c85aa1f1bd5af847701cc2b0b0d188f1a12637ff0427aff5133a7a",
+    "src/components/student/V2LearningLibrary.tsx": "42fdcddb45ae2560878221352fc1b212596702a840c3d4cbd5b042358c9fe713",
+    "src/components/student/V2RecordingPlayer.tsx": "a114c4b578521b0f2fe318e138b55b09eaffc0286ae5384cb45996f8f65f732f",
+    "src/components/student/v2Learning.module.css": "d87fcdfabbd43ef36b99f0b99a1f8b7930e57c202acf91ce161d9a38dfb30871",
+    "src/lib/v2Learning.ts": "bdfccbf8c32059c55a250aeae7a1ca4ae89aa4b7674b2129c079f467e535a5ea",
+    "src/lib/v2StudentDelivery.ts": "4607ae93554d432746b7dc27a490a8e95a12581872b14397420fe3ff7ad748c2",
+    "src/components/student/v2CourseSession.module.css": "7351b5b0fb86dabe7b4ac411a460be23b0851767d326d928b695651c109ab63f",
+    "src/lib/v2SessionPresentation.ts": "1b2159e08a40d2c2430f80d62fdb77c961da4debd5e27bc1d5fed5124f92e3b4",
+    "src/lib/v2ContentAssets.ts": "60ac8111d22c6ad8df52fb91cf3cac2f24ecc46ba8b9334c7447fa7ca68ae388",
+    "src/lib/v2ContentPublishing.ts": "e2ae6374390e0d998832118559eb812386afedb561f1ca13f6d6a2bb65e45ad4",
+    "src/lib/youtube.ts": "c4154560e720a7cc63d2aaa30ff41944240eab04bd85d7d62980186360f3d62d",
+    "src/lib/v2ReadingPreview.ts": "c3c914c1437e9971dc94bfb6b4da3c1b5d97d14cdff1739eb0ad253945c33f9f",
+    "src/app/session/[id]/material/[materialId]/material.css": "5a84d928a3b5ba8776f44cda141cbf190b5407c3abd358cc32907c3be7f3b30b",
+    "src/app/schedule/v2/page.tsx": "2fe3c926ca8a2ba2251969fc0d245ad032a00a3798ab48dbd35914f55efd58c3",
+    "src/app/dashboard/dashboard.css": "1263275a91e701b9b7682669c62f0daac7e3845719df4c33feacf0cfcf9d5aac",
+    "src/components/student/StudentHeader.tsx": "035013be495e7423f40850ad46ad9c9fe90fac0fd4d1a0c26b62a4a5b1f034a2",
+    "src/components/student/studentPreview.module.css": "d3c1c4731f93d722338b8c6da996b570a558061b4af2723dcd5ae733bbdadc20",
+    "src/components/student/SignOutButton.tsx": "9ada77d4cecad38d2d9729d8d20d975a919a6fa6b95fdc70516f009dc819622b",
+    "src/lib/v2Enrollments.ts": "ec5ceec1a5f25267e14072c7317af4027c19e9cb8d897f38716ba67ece44471b",
+    "src/app/admin/v2/batches/[batchId]/students/page.tsx": "ca94fcd16f0c70f5bb6a74d95a8211bf4531ee4c9b9128e631873b991aea37d6",
+    "src/app/admin/v2/batches/[batchId]/students/EnrollmentEditor.tsx": "ab0a845a0dcb3f5c04e741bfa41487d240d17d7d415c42365d93b808d313a74b",
+    "src/app/admin/v2/batches/[batchId]/students/actions.ts": "75e9e9f19e935d0f3ed5f434995c4dff1641df53d263835e14797ed41c224d1e",
+    "src/app/admin/AdminShell.tsx": "0af58ee9edecd9885e98616e894b82e2361254999213bd801869d04b523e6821",
+    "src/app/admin/admin.css": "8a536bf66de9d105e8e2aa378eddd6434cfafba01dadfe6677158ccc97b6049e",
+    "src/app/admin/workflow.css": "236a1904678daa7f6ae40cf24aa183235846153d43bcfed33d28f153cd382979",
+    "src/app/admin/v2/batches/BatchWorkspace.tsx": "2d50c8ef03f2f600e2541aafd4455b8dbd3ed4beb4f0d9ebeea5b5d9ecd4199f",
+    "src/app/admin/v2/batches/NewLiveBatch.tsx": "c568b1c9c2cf09e575bebc4d43a4442b845f45a3b2a732617014dbad406203a1",
+    "src/app/admin/v2/batches/batchWorkspace.module.css": "2aac34a5297c198126071fd42c0d364deb7d6b6f74d347a645c5dc2a35848223",
+    "src/components/AdminDraftNavigation.tsx": "66c2cb37d18fc5ef00d42ed852acba3ea8cfcac3e21b823ba611f98ff841d0ea",
+    "src/components/DraftRecovery.tsx": "f1a2f1d6113a849692b3642b2a07fcf6aa13d2846c11126b92ba7eeb487b7d33",
+    "src/components/student/WorksheetLog.tsx": "01bf0138827455325a31a54b096dfddc3c047d052d38639d8e505533f4e2aafa",
+    "src/lib/studentPractice.ts": "0518a13a95f4d1d7e23cc9f007d0d27ef3fa041111cf31623cc3a21bb07db007",
+    "src/lib/worksheetRecovery.ts": "207ff4f92b52bd45c9da5e0088538ce4ebdfb26b24cbd3dd0b52497a05997861",
+    "src/lib/draftRecovery.ts": "09185b2311f9a5b374d721216097f431a87c0f588847214b6601f8073980c788",
+    "src/lib/v2WorkspaceRecovery.ts": "a8bbb559c6ae95e30da63ec93ed5d4439cc52c57333526aeb8cbace6e1b7392f",
+    "src/components/BrandLogo.tsx": "56a57e01003d4195f1ae2a7b771fbd5ab9dccb84fc9765b88445165fcc583a0f",
+    "src/app/admin/v2/templates/page.tsx": "6421d177c7ac9a380e112691000b530da17b746e39be3b2c60fa4dcd53231737",
+    "src/app/admin/v2/templates/TemplateEditor.tsx": "84c466273a58b44edf6cbd24b8b9a3f3bd7a800cf48ba1b774909dfc0bfe96a2",
+    "src/app/admin/v2/templates/CourseSessions.tsx": "d1e14632c841821b03eb8701f1ca6e2e0bb32c6af7be0163eb89e4bbf2072647",
+    "src/app/admin/v2/templates/actions.ts": "649e9f6e158f0ca8b46c1ee85e2b224bdb9519deb123dbb795f30338f35894ad",
+    "src/app/admin/v2/templates/templates.module.css": "dc87ddc5867b00a1c9e65abd707110a35f48e149da328850468fcf23840679f0",
+    "src/app/admin/v2/batches/page.tsx": "00b1eb397dec966013cae5dc22caaaf5a7dc1ca43d7c81c1d2135735b94944bb",
+    "src/app/admin/v2/batches/BatchDraftEditor.tsx": "9013ebd86c376fb094b46edcd093aab568efe7e4365a1bba1fa80112a6635cb1",
+    "src/app/admin/v2/batches/BatchDatePicker.tsx": "14657448ff8e2888e1d4a71ab7ca7c7594910f8f52b02e22d2f59c5f5e8adb79",
+    "src/app/admin/v2/batches/batchCalendar.module.css": "c628fdf5bc3ad15a7f985e81c8083d663a7130c17aef2c24474fb46db6e1a189",
+    "src/app/admin/v2/batches/PublicationPanel.tsx": "55f55234d614425de2d7150cf697ed311e55c863a6481d6018304001f4a65ac2",
+    "src/app/admin/v2/batches/PublicationScopePanel.tsx": "63a6ec75d0a07672f4e48f9ea50970ec13e1b53bb292029cb3c8c2c7b0f10679",
+    "src/app/admin/v2/batches/scopeActions.ts": "87a21823b3bc35720683bc0204f20c1a5d728b0ebe03e17ea33b0a3510bab1d7",
+    "src/lib/v2PublicationScopes.ts": "b2cf7b3df5b22e50b3330062f15319bd3c958e51245eed0ab5f10ffc85b0f5f4",
+    "src/app/admin/v2/batches/actions.ts": "2b315677034de2e5e02ee4946d2a9b1cfac7638243598e9496df94e438be40f4",
+    "src/app/admin/v2/batches/[batchId]/meeting/page.tsx": "f1841d99691e6ccbfb98ba581ec71716cc5f2a3dd2fdb89e17f81699eb385a39",
+    "src/app/admin/v2/batches/[batchId]/meeting/MeetingDraftEditor.tsx": "8c154456a3748a56e64368b87a732212df436d40c691b1ffc4b891778ace43c4",
+    "src/app/admin/v2/batches/[batchId]/meeting/actions.ts": "00a333d7415d92e22c747c1977980e33e95d6aafb1d170b3fb51e8d79e063297",
+    "src/lib/v2Products.ts": "cf0833e5cc92920a48215c06760a69cfc42e7cf37c096bba459ca439268cbd1e",
+    "src/lib/v2Templates.ts": "7824905327aa90eaf5cddd94ce2454a3d13a54bc543b582e9b01b22aa22ab114",
+    "src/lib/v2Batches.ts": "cdd283bdff994a4c963cfccc58410dbdf9a31fbae5cd9d6e20cf028ddb4bead6",
+    "src/lib/v2Meetings.ts": "714ee6ea4ce540d73b18876d5822ba7df27e26de377f5e79d5f7399d4a345a85",
+    "src/lib/v2Publications.ts": "f714f6a5caba0a7f8b3bba87a228d528042a289be55668e808807d706e968c55",
+    "public/5.svg": "6712128c2ebc5febc738bda30b4eb69d794eaa96f4908ffa14ff213e5ca0f068",
+    "public/6.svg": "81cd3689a08965edb8cbc24aa4abc99887faa9d148e9a96ac99958e7481625b6",
+    "src/app/admin/page.tsx": "82e29b6ab1ac87f7c33a5b508f6d49851ad5a3cd347d220dfc519936b5e4308e",
+    "src/app/admin/v2/students/[studentId]/page.tsx": "5f0789a9f15f7d67971af606229e44cc0c13a0cff7bc50da6a6e1c1345b75469",
+    "src/app/admin/v2/students/[studentId]/studentAccess.module.css": "f60b5f2e0bd4266264d87f3a03af4a548aa01d7420c2164847888e60d6d8d6e8"
+  },
+  "sourceHashMeaning": "Repository input hashes; overridden fixture dependencies did not execute their original implementations.",
+  "privateEvidence": [
+    {
+      "file": "failed-Browser-Back-returns-to-prior-page-with-dirty-schedule-protection.png",
+      "sha256": "67fc6616fcb513f6a7dc8f4375fecb51a3b72089a56934b075bf2aa613f77128",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "Interrupted-batch-confirmation-is-idempotent-and-stale-edits-remain-recoverable.png",
+      "sha256": "e691b64f74e7d772f8d2e3e0151f11d1c7a7e49f3de6783674d332aec81a7fc5",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "05-stale-edit.png",
+      "sha256": "e691b64f74e7d772f8d2e3e0151f11d1c7a7e49f3de6783674d332aec81a7fc5",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "Save-schedule-resume-after-all-batches-returns-without-data-loss.png",
+      "sha256": "04ea29650c03aa0640b8d5c56f2d21c20e0c8e8bfdd8c8ddae89be6e2076e336",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "Mobile-keyboard-calendar-invalid-inputs-and-subject-switching.png",
+      "sha256": "3fb69e9ac69fbb5713689fae633f5611dc438dcdd56ef8758abc5c4320359d17",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "04-mobile-review-320.png",
+      "sha256": "c9b68e96995eec7a3b1547980ff9c81230a8beca8254a6ade78f2f2f00242b55",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "04-mobile-review-390.png",
+      "sha256": "74b97db4e87a7a7a928436722c853de695ec843d5563ded720a195d7a7556e6c",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "Complete-creation-copied-sessions-publication-and-unpublication.png",
+      "sha256": "0311b10c3fb2e66a552612ee0e63f2c8fdff53e68399089d70b5bac0c0e9b32a",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "03-reopened-batch.png",
+      "sha256": "0311b10c3fb2e66a552612ee0e63f2c8fdff53e68399089d70b5bac0c0e9b32a",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "02-created-batch.png",
+      "sha256": "9a333b251614b84f67ca2845c37df364c07653204e24d05cf7955f9fb14506a6",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "01-schedule-review.png",
+      "sha256": "e4123cb2c1fc9c8d3d55379f723fa06df64ad5f9abebd02551ecbfcf066a43e7",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "Default-live-only-creation-has-no-completion-mapping-warning-or-session-requirement.png",
+      "sha256": "32921e6e5ddda5e70a3490b9c7f30594be8b58994f99e5f076434618bc7f45da",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "default-published-no-sessions.png",
+      "sha256": "32921e6e5ddda5e70a3490b9c7f30594be8b58994f99e5f076434618bc7f45da",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "default-live-only-setup.png",
+      "sha256": "0622779971b93a13e667cb6bd7638a072dbdcc3468f46cad2a7c5fbeba29da2a",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "Browser-Back-loses-unsaved-creation-after-real-navigation-while-explicit-navigation-guards.png",
+      "sha256": "359d8ae29be7ac9bdabd984e471b3b793a3aba828c832591462bef8a72fe02d8",
+      "storage": "private temporary artifact"
+    }
+  ],
+  "privateRunners": [
+    {
+      "file": "ace-batch-integration-run.mjs",
+      "sha256": "a0671e4c713e1bb56035ed159e89e4d722dbb2f3783940f3cefcd9c3d78dd77a",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "ace-batch-followup-run.mjs",
+      "sha256": "aaae4ecd9142f4741ba9dfcf97c6040a031df506c56fe90cfff4f6178b1e9f11",
+      "storage": "private temporary artifact"
+    }
+  ],
+  "limitations": [
+    "Admin content destination is a placeholder; Admin navigation and enabled entry redirect match application behavior.",
+    "Synthetic adapters do not establish authorization, RLS, DB validation or real persistence.",
+    "Publication adapter does not enforce all database constraints or propagate into Student schedules.",
+    "Live-only completion boundary was inspected in source, not executed in this browser fixture.",
+    "Stale-save rejection was exercised; subsequent reload-and-reapply recovery was not exercised.",
+    "Accessibility automation was scoped to New live batch setup at review; no screen-reader or physical touch acceptance."
+  ]
+}

@@ -1,0 +1,304 @@
+{
+  "scope": "Local disposable PostgreSQL; real repository routines with synthetic auth/storage and fixture-granted entitlements. No browser, provider or hosted acceptance.",
+  "checks": [
+    {
+      "id": "draft-enrollment-remains-hidden",
+      "status": "pass"
+    },
+    {
+      "id": "draft-live-registration-denied",
+      "status": "pass"
+    },
+    {
+      "id": "meeting-draft-before-publication",
+      "status": "pass"
+    },
+    {
+      "id": "published-recording-access-without-live",
+      "status": "pass"
+    },
+    {
+      "id": "wrong-or-missing-entitlement-and-no-enrollment-denied",
+      "status": "pass"
+    },
+    {
+      "id": "registration-requires-current-access-and-enrollment",
+      "status": "pass"
+    },
+    {
+      "id": "enrollment-stale-revision-conflicts",
+      "status": "pass"
+    },
+    {
+      "id": "registered-student-sees-live-schedule-and-private-meeting",
+      "status": "pass"
+    },
+    {
+      "id": "course-and-schedule-never-contain-private-meeting-url",
+      "status": "pass"
+    },
+    {
+      "id": "stale-registration-cannot-reinstate-access",
+      "status": "pass"
+    },
+    {
+      "id": "registration-audit-matches-three-confirmed-transitions",
+      "status": "pass"
+    },
+    {
+      "id": "unpublished-meeting-edit-stays-private",
+      "status": "pass"
+    },
+    {
+      "id": "republish-delivers-exact-reviewed-meeting",
+      "status": "pass"
+    },
+    {
+      "id": "republish-requires-mapping-reconfirmation",
+      "status": "pass"
+    },
+    {
+      "id": "completion-requires-explicit-session-mapping",
+      "status": "pass"
+    },
+    {
+      "id": "stale-completion-is-denied-before-write",
+      "status": "pass"
+    },
+    {
+      "id": "completion-creates-feedback-and-removes-join",
+      "status": "pass"
+    },
+    {
+      "id": "completion-replay-does-not-duplicate-obligation",
+      "status": "pass"
+    },
+    {
+      "id": "missed-class-feedback-resolves-without-invented-attendance",
+      "status": "pass"
+    },
+    {
+      "id": "withdraw-enrollment-immediately-denies-readers",
+      "status": "pass"
+    },
+    {
+      "id": "unpublish-denies-all-readers-without-revoking-purchase",
+      "status": "pass"
+    },
+    {
+      "id": "republish-restores-course-with-completed-class-still-closed",
+      "status": "pass"
+    },
+    {
+      "id": "inactive-student-or-revoked-purchase-denies-all-readers",
+      "status": "pass"
+    },
+    {
+      "id": "student-cannot-toggle-own-registration",
+      "status": "pass"
+    },
+    {
+      "id": "live-only-batch-can-publish-enroll-and-join",
+      "status": "pass"
+    },
+    {
+      "id": "confirmed-defect-live-only-completion-has-no-valid-session",
+      "status": "pass"
+    }
+  ],
+  "status": "passed",
+  "findings": [
+    {
+      "id": "DELIVERY-01",
+      "severity": "high",
+      "status": "reproduced",
+      "description": "The live-only creation path publishes a joinable batch with zero sessions. Learning-enabled completion requires a same-subject published session, so the completion UI has no selectable mapping and completion cannot succeed."
+    },
+    {
+      "id": "DELIVERY-02",
+      "severity": "medium",
+      "status": "confirmed-behavior",
+      "description": "Republishing a meeting-only edit invalidates the current publication mapping; Admin must reconfirm mapping before completion."
+    }
+  ],
+  "sourceSha256": "9d3d7d3b8805f87c63f13e8f73eb428b9653088fe803a0a3622ecf89c0a8ad94",
+  "candidate": "9f8890e882a3b8ae221b11a65636bbe3b9cb5bf2",
+  "recordedAt": "2026-11-19T06:41:15.113625+00:00",
+  "resultInterpretation": "26 assertions completed; one reproducible product dead end and one mapping-reconfirmation friction. Passing assertions include expected rejection that reproduces the dead end; this is not full workflow acceptance.",
+  "runnerSource": "import assert from 'node:assert/strict';\nimport {randomUUID,createHash} from 'node:crypto';\nimport {readFileSync,writeFileSync} from 'node:fs';\nimport {pathToFileURL} from 'node:url';\nconst root=process.cwd();\nconst {withDisposablePostgres}=await import(pathToFileURL(root+'/scripts/helpers/disposable-postgres.mjs'));\nconst {preparePhase3Database,as,json,literal}=await import(pathToFileURL(root+'/scripts/helpers/v2-phase3-fixture.mjs'));\nconst report={scope:'Local disposable PostgreSQL; real repository routines with synthetic auth/storage and fixture-granted entitlements. No browser, provider or hosted acceptance.',checks:[],status:'running'};\nconst check=(id,fn)=>{fn();report.checks.push({id,status:'pass'});console.log('PASS '+id)};\ntry{await withDisposablePostgres(async db=>{\n const {query,rejects}=db,f=preparePhase3Database(db),admin=f.admin;\n for(const m of ['20261113090000_add_v2_sales_catalogue.sql','20261113100000_add_v2_checkout_ledger.sql','20261113110000_add_v2_payment_fulfillment.sql'])db.apply(m);\n const rpc=(id,name,args='')=>JSON.parse(query(as(id,`select public.${name}(${args})`))||'null');\n const user=(product=null)=>{const id=randomUUID();query(`insert into auth.users(id,email) values('${id}','${id}@example.invalid');update public.profiles set role='student',is_active=true where id='${id}'`);if(product){const q=JSON.parse(query(`select public.quote_v2_products(array['${product}'])`));query(`select public.grant_v2_purchase('${id}',array['${product}'],'synthetic:${id}',now()-interval '1 second','${q.price_version_id}',${q.amount_paise},'INR')`)}return id};\n const s=user('quant_crash'),unpaid=user(),wrong=user('di_crash'),other=user('quant_crash');\n const b=f.batch('quant',true);\n const course=(id=s)=>rpc(id,'get_my_v2_published_course',`'${b.id}'`),state=(id=s)=>rpc(id,'get_my_v2_learning_state',`'${b.id}'`),meeting=(id=s)=>rpc(id,'get_my_v2_meeting',`'${b.id}','${b.eventKey}'`),schedule=(id=s)=>rpc(id,'get_my_v2_batch_schedules');\n const enroll=(id,active=true,revision=0)=>rpc(admin,'set_v2_batch_enrollment',`'${b.id}','${id}',${active},${revision}`);\n const register=(id=s,active=true,revision=0)=>rpc(admin,'set_v2_live_registration',`'${b.id}','${id}',${active},${revision}`);\n const deny=(sql,pattern)=>rejects(as(admin,sql),pattern);\n check('draft-enrollment-remains-hidden',()=>{enroll(s);assert.equal(course(),null);assert.equal(meeting(),null);assert.equal(schedule().length,0)});\n check('draft-live-registration-denied',()=>deny(`select public.set_v2_live_registration('${b.id}','${s}',true,0)`,/Published live batch required/));\n check('meeting-draft-before-publication',()=>rpc(admin,'save_v2_meeting_draft',json({batchId:b.id,batchRevision:1,expectedRevision:0,requestId:randomUUID(),links:[{key:b.eventKey,url:'https://meet.google.com/abc-defg-hij'}]})));\n f.publish(b);\n check('published-recording-access-without-live',()=>{assert.equal(course().sessions.length,1);assert.equal(state().liveRegistered,false);assert.equal(schedule()[0].events.length,0);assert.equal(meeting(),null)});\n check('wrong-or-missing-entitlement-and-no-enrollment-denied',()=>{for(const id of [unpaid,wrong,other,admin,null]){assert.equal(course(id),null);assert.equal(meeting(id),null)}});\n check('registration-requires-current-access-and-enrollment',()=>{for(const id of [unpaid,wrong,other])deny(`select public.set_v2_live_registration('${b.id}','${id}',true,0)`,/product access and enrollment/)});\n check('enrollment-stale-revision-conflicts',()=>query(as(admin,`do $$begin perform public.set_v2_batch_enrollment('${b.id}','${s}',false,0);raise exception 'missing conflict';exception when sqlstate 'PT409' then null;end;$$`)));\n\n check('registered-student-sees-live-schedule-and-private-meeting',()=>{register();assert.equal(state().liveRegistered,true);assert.equal(schedule()[0].events.length,1);assert.equal(meeting().url,'https://meet.google.com/abc-defg-hij');assert.equal(meeting(other),null)});\n check('course-and-schedule-never-contain-private-meeting-url',()=>{assert.doesNotMatch(JSON.stringify([course(),schedule(),state()]),/meet\\.google|actor_id|request_id/)});\n check('stale-registration-cannot-reinstate-access',()=>{register(s,false,1);assert.equal(meeting(),null);query(as(admin,`do $$begin perform public.set_v2_live_registration('${b.id}','${s}',true,1);raise exception 'missing conflict';exception when sqlstate 'PT409' then null;end;$$`));assert.equal(meeting(),null);register(s,true,2);assert.ok(meeting())});\n check('registration-audit-matches-three-confirmed-transitions',()=>assert.equal(query(`select count(*) from public.v2_live_registration_audit where batch_id='${b.id}' and student_id='${s}'`),'3'));\n rpc(admin,'set_v2_live_session_mapping',`'${b.id}','${b.eventKey}','${b.sessionKey}',1`);\n check('unpublished-meeting-edit-stays-private',()=>{rpc(admin,'save_v2_meeting_draft',json({batchId:b.id,batchRevision:1,expectedRevision:1,requestId:randomUUID(),links:[{key:b.eventKey,url:'https://meet.google.com/klm-nopq-rst'}]}));assert.equal(meeting().url,'https://meet.google.com/abc-defg-hij')});\n f.publish(b,1);\n check('republish-delivers-exact-reviewed-meeting',()=>assert.equal(meeting().url,'https://meet.google.com/klm-nopq-rst'));\n check('republish-requires-mapping-reconfirmation',()=>{const rows=rpc(admin,'list_v2_live_session_mappings',`'${b.id}'`);assert.equal(rows.length,1);assert.equal(rows[0].publicationRevision,1)});\n check('completion-requires-explicit-session-mapping',()=>deny(`select public.complete_v2_learning_live_class('${b.id}','${b.eventKey}',2)`,/mapping is required/));\n rpc(admin,'set_v2_live_session_mapping',`'${b.id}','${b.eventKey}','${b.sessionKey}',2`);\n check('stale-completion-is-denied-before-write',()=>deny(`select public.complete_v2_learning_live_class('${b.id}','${b.eventKey}',1)`,/Publication changed/));\n check('completion-creates-feedback-and-removes-join',()=>{rpc(admin,'complete_v2_learning_live_class',`'${b.id}','${b.eventKey}',2`);assert.equal(state().obligations.length,1);assert.equal(meeting(),null);assert.equal(course().sessions.length,1)});\n check('completion-replay-does-not-duplicate-obligation',()=>{const r=rpc(admin,'complete_v2_learning_live_class',`'${b.id}','${b.eventKey}',2`);assert.equal(r.replayed,true);assert.equal(state().obligations.length,1)});\n check('missed-class-feedback-resolves-without-invented-attendance',()=>{const o=state().obligations[0];rpc(s,'submit_v2_session_feedback',`'${o.id}','${randomUUID()}',${json({attendance:'missed',usefulness:null,clarity:null,comment:''})}`);assert.equal(state().obligations.length,0);assert.equal(query(`select response->>'attendance' from public.v2_session_feedback where student_id='${s}'`),'missed')});\n check('withdraw-enrollment-immediately-denies-readers',()=>{enroll(s,false,1);assert.equal(course(),null);assert.equal(state(),null);assert.equal(meeting(),null);assert.equal(schedule().length,0);enroll(s,true,2);assert.ok(course())});\n f.publish(b,2,'unpublish');\n check('unpublish-denies-all-readers-without-revoking-purchase',()=>{assert.equal(course(),null);assert.equal(state(),null);assert.equal(meeting(),null);assert.equal(schedule().length,0);assert.equal(query(`select public.v2_student_has_product('${s}','quant')`),'t')});\n f.publish(b,3);\n check('republish-restores-course-with-completed-class-still-closed',()=>{assert.ok(course());assert.equal(state().obligations.length,0);assert.equal(meeting(),null)});\n check('inactive-student-or-revoked-purchase-denies-all-readers',()=>{for(const mutation of [`update public.profiles set is_active=false where id='${s}'`,`update public.v2_purchases set revoked_at=now() where student_id='${s}'`]){const r=JSON.parse(query(`begin;${mutation};set local role authenticated;set local request.jwt.claim.sub='${s}';select jsonb_build_array(public.get_my_v2_published_course('${b.id}'),public.get_my_v2_learning_state('${b.id}'),public.get_my_v2_meeting('${b.id}','${b.eventKey}'),public.get_my_v2_batch_schedules());rollback;`));assert.deepEqual(r,[null,null,null,[]])}});\n check('student-cannot-toggle-own-registration',()=>rejects(as(s,`select public.set_v2_live_registration('${b.id}','${s}',false,3)`),/Admin access required/));\n\n const empty={...b,id:randomUUID(),templateId:randomUUID(),eventKey:randomUUID()};\n const doc={...b.document,sessions:[],events:[{...b.document.events[0],key:empty.eventKey}]};\n rpc(admin,'save_v2_template_draft',`'${empty.templateId}','quant',0,'${randomUUID()}',${json(doc)}`);\n const request={id:empty.id,templateId:empty.templateId,templateRevision:1,expectedRevision:0,requestId:randomUUID(),title:'Synthetic live-only batch',startDate:'2027-01-10',timeZone:'Asia/Kolkata',events:null};\n const preview=rpc(admin,'preview_v2_batch_draft',json(request));rpc(admin,'save_v2_batch_draft',`${json(request)},${literal(preview.fingerprint)}`);\n rpc(admin,'save_v2_meeting_draft',json({batchId:empty.id,batchRevision:1,expectedRevision:0,requestId:randomUUID(),links:[{key:empty.eventKey,url:'https://meet.google.com/abc-defg-hij'}]}));f.publish(empty);\n rpc(admin,'set_v2_batch_enrollment',`'${empty.id}','${s}',true,0`);rpc(admin,'set_v2_live_registration',`'${empty.id}','${s}',true,0`);\n check('live-only-batch-can-publish-enroll-and-join',()=>{assert.ok(rpc(s,'get_my_v2_meeting',`'${empty.id}','${empty.eventKey}'`));assert.equal(rpc(s,'get_my_v2_published_course',`'${empty.id}'`).sessions.length,0)});\n check('confirmed-defect-live-only-completion-has-no-valid-session',()=>{deny(`select public.set_v2_live_session_mapping('${empty.id}','${empty.eventKey}','${b.sessionKey}',1)`,/published session in the live class subject/);deny(`select public.complete_v2_learning_live_class('${empty.id}','${empty.eventKey}',1)`,/mapping is required/);assert.equal(query(`select count(*) from public.v2_live_class_completions where batch_id='${empty.id}'`),'0')});\n report.findings=[{id:'DELIVERY-01',severity:'high',status:'reproduced',description:'The live-only creation path publishes a joinable batch with zero sessions. Learning-enabled completion requires a same-subject published session, so the completion UI has no selectable mapping and completion cannot succeed.'},{id:'DELIVERY-02',severity:'medium',status:'confirmed-behavior',description:'Republishing a meeting-only edit invalidates the current publication mapping; Admin must reconfirm mapping before completion.'}];\n});report.status='passed'}catch(e){report.status='failed';report.error=e.message;console.error(e);process.exitCode=1}finally{report.sourceSha256=createHash('sha256').update(readFileSync(new URL(import.meta.url))).digest('hex');writeFileSync('/tmp/ace-admin-delivery-evidence.json',JSON.stringify(report,null,2)+'\\n')}\n",
+  "commands": [
+    {
+      "command": "node /tmp/ace-admin-delivery-audit.mjs",
+      "exitCode": 0,
+      "checks": 26,
+      "scope": "Actual repository migrations and routines on isolated local PostgreSQL; final corrected harness."
+    },
+    {
+      "command": "node --test scripts/v2-student-delivery.test.mjs scripts/v2-learning-security.test.mjs",
+      "exitCode": 0,
+      "reportedFileTests": 2,
+      "scope": "Actual TypeScript contracts and server adapters executed with mocked identity/RPC I/O; not browser execution."
+    }
+  ],
+  "attempts": [
+    "Initial sandbox execution could not spawn pg_ctl; approved local-socket execution used.",
+    "First fixture assertion incorrectly expected stale-completion PT409 before a matching old mapping existed; actual missing-mapping denial was safe.",
+    "After an old mapping was added to test republish behavior, the stale-completion expectation was corrected to Publication changed. Final run passed all assertions."
+  ],
+  "sources": [
+    {
+      "path": "src/app/admin/v2/batches/NewLiveBatch.tsx",
+      "sha256": "c568b1c9c2cf09e575bebc4d43a4442b845f45a3b2a732617014dbad406203a1"
+    },
+    {
+      "path": "src/app/admin/v2/batches/[batchId]/students/actions.ts",
+      "sha256": "75e9e9f19e935d0f3ed5f434995c4dff1641df53d263835e14797ed41c224d1e"
+    },
+    {
+      "path": "src/app/admin/v2/batches/[batchId]/live/actions.ts",
+      "sha256": "9b6aab4c41a5d25b6b22584a67358485e8fbf0f9679d76710cf8afa1a5f7ba57"
+    },
+    {
+      "path": "src/app/admin/v2/batches/[batchId]/live/page.tsx",
+      "sha256": "2d1f043fdb1b81d97838aa6fc741b86d2c0b8626f8604154cbd7c6fce168d223"
+    },
+    {
+      "path": "src/app/admin/v2/batches/[batchId]/live/LiveSessionMappings.tsx",
+      "sha256": "5ba35d67c541fa5bf44f3c95296f6f7bcae205790b64d56eb2050c410f8feaf8"
+    },
+    {
+      "path": "src/app/admin/v2/batches/[batchId]/live/LiveOperations.tsx",
+      "sha256": "368a925ddca0b196b8759d1041d02e614a659d733cc4e4f80d774d1ae3fba251"
+    },
+    {
+      "path": "src/lib/server/v2Enrollments.ts",
+      "sha256": "31eae128f3f80d7bebc6158ff982285697fc18820cb59db12c196a1f35fb0339"
+    },
+    {
+      "path": "src/lib/server/v2StudentDelivery.ts",
+      "sha256": "f00d51a4d1034401025176d8a74eea8859087ebf08d37c239e1a6cb22a2cec72"
+    },
+    {
+      "path": "src/lib/server/v2StudentSchedules.ts",
+      "sha256": "ea9a7a7a8916fa1ec3bd24eab62cd0cad247f59d132d1c3bd62611283603de7b"
+    },
+    {
+      "path": "src/app/api/v2/meeting/route.ts",
+      "sha256": "6ff70fd84987b0c7cd9a4f588a76ef02130e27104346a08ab7e908ea9fa81223"
+    },
+    {
+      "path": "scripts/helpers/v2-phase3-fixture.mjs",
+      "sha256": "b6388789a7933db9087d2802e2ba245938cc0ef9e17f5857e5452380838b46a8"
+    },
+    {
+      "path": "scripts/helpers/disposable-postgres.mjs",
+      "sha256": "5c80373bf60340ae9fc595f55e31b52b3c395b378ec12d0b7652bee5da6db6c5"
+    },
+    {
+      "path": "supabase/migrations/20261102170000_add_v2_learning_feedback.sql",
+      "sha256": "edaa5148af61d151ea4d59436929db652fbb5fc6c3bdeba0d7c2711b0af4f958"
+    }
+  ],
+  "limitations": [
+    "No browser-to-real-database session was exercised by this agent.",
+    "Synthetic local Auth/Storage catalogues are not hosted Supabase Auth or Storage.",
+    "Fixture-granted product access does not prove Razorpay payment, webhook or capacity settlement.",
+    "No existing personal accounts, private env files or hosted data used.",
+    "Human usability and final hosted acceptance remain separate.",
+    "Concurrent multi-Admin operation was not added to this connected runner."
+  ],
+  "appliedMigrations": [
+    {
+      "path": "supabase/migrations/20260731051000_production_baseline.sql",
+      "sha256": "05f9ebbf522a797148fa72f8df73bb01494b920a1a15c204e40d602514de96d9"
+    },
+    {
+      "path": "supabase/migrations/20260731062700_enforce_material_release.sql",
+      "sha256": "aa0c4df5f7d10455c7d88d1049b2977d35967060046262272cb21b55d19e3e98"
+    },
+    {
+      "path": "supabase/migrations/20260731110000_require_provisioned_portal_access.sql",
+      "sha256": "d28e1d4d113f473e954b9d20b32749cfdc6c1cd30083d4eb26b881b9d108a200"
+    },
+    {
+      "path": "supabase/migrations/20261018090000_add_v2_product_entitlements.sql",
+      "sha256": "ff5c9f0f2ae055c6c3b3e2d67fd64390a9ba4b19deaf14a103ddda71e50047b7"
+    },
+    {
+      "path": "supabase/migrations/20261019090000_add_v2_template_drafts.sql",
+      "sha256": "ac8ffd1121f548764b053a1913c726193c115bd1de38a5309e795c9d93940526"
+    },
+    {
+      "path": "supabase/migrations/20261019100000_add_v2_batch_drafts.sql",
+      "sha256": "56dc2a297441ecfa9a685a3d470789045b46e2ba7b92fe4c80c4ce000fcd20a9"
+    },
+    {
+      "path": "supabase/migrations/20261019110000_add_v2_private_meeting_drafts.sql",
+      "sha256": "ebbed93aad1b6fb7b5264848689c594b7856a8c3ad2346fa112a242bb01b0c9f"
+    },
+    {
+      "path": "supabase/migrations/20261020090000_add_v2_outline_schedules.sql",
+      "sha256": "60ad573ecb52e3f52d3e9bbf4e74e04d8cdd52a8a82bde1694be37eb8b075c7b"
+    },
+    {
+      "path": "supabase/migrations/20261020100000_add_v2_batch_publication.sql",
+      "sha256": "67dfa87d955b7cbf27dee0e45fe6b6ed469d0dd51c9d3df2c7466a67f2ee7b6e"
+    },
+    {
+      "path": "supabase/migrations/20261025100000_add_v2_enrolled_schedules.sql",
+      "sha256": "73949fb28c3e9692406efd509a83974806a588fac5e81f898e9ddc6e30b73a0a"
+    },
+    {
+      "path": "supabase/migrations/20261102100000_add_v2_programme_content.sql",
+      "sha256": "5b911ea86793d5dbf65f90c7932ed2c2d7570852174f3ddfa8febd558d913ed4"
+    },
+    {
+      "path": "supabase/migrations/20261102110000_add_v2_student_delivery.sql",
+      "sha256": "47a460e04fdc7aebdb0b0d5c1ad967f31c38c4da2827776c9bbc287511b59702"
+    },
+    {
+      "path": "supabase/migrations/20261102120000_add_v2_content_imports.sql",
+      "sha256": "9b5090efa2c6ea565ac6a3188bc148af0539c62715b50544eeede94aadfd88e9"
+    },
+    {
+      "path": "supabase/migrations/20261102130000_add_v2_publication_scopes.sql",
+      "sha256": "0a1ea7fb252ca4f3f3370e60fe8001e895029d26ad3aae57b3e69bb3af77f88a"
+    },
+    {
+      "path": "supabase/migrations/20261102170000_add_v2_learning_feedback.sql",
+      "sha256": "edaa5148af61d151ea4d59436929db652fbb5fc6c3bdeba0d7c2711b0af4f958"
+    },
+    {
+      "path": "supabase/migrations/20261103090000_add_v2_content_publishing.sql",
+      "sha256": "b4ccac5d81fa4e55cb5bf0a5dd7a84de81f135fc514a1d51206977793435edb4"
+    },
+    {
+      "path": "supabase/migrations/20261103091000_add_v2_private_content_storage.sql",
+      "sha256": "14ce35774ae0d305145b1bf16feb6d4aa2732d4d57049450f109331654e13f24"
+    },
+    {
+      "path": "supabase/migrations/20261103100000_fix_v2_content_readonly_previews.sql",
+      "sha256": "3e1b752f96cfda032a951f4ac305d671dfb7bddff7cd881f01aa3579851384cd"
+    },
+    {
+      "path": "supabase/migrations/20261103110000_fix_v2_content_conflict_responses.sql",
+      "sha256": "8c245203566f84ba7a82ebcf5f194b9a4af2bbc36acde5b68d3255468ddf8e62"
+    },
+    {
+      "path": "supabase/migrations/20261103120000_fix_v2_integration_conflicts.sql",
+      "sha256": "c921797533b1761a634729e6997712dc7b8389cbf5a50996280a323b813a9eb4"
+    },
+    {
+      "path": "supabase/migrations/20261113090000_add_v2_sales_catalogue.sql",
+      "sha256": "21b5d7ba9c0b0697a4acef72e533bb3947791f1b098a35e55366927252f4f54f"
+    },
+    {
+      "path": "supabase/migrations/20261113100000_add_v2_checkout_ledger.sql",
+      "sha256": "555b7e49be59842a425b40188ebb1b9b457c6ba4df93f0ce208ecf19233f6b4b"
+    },
+    {
+      "path": "supabase/migrations/20261113110000_add_v2_payment_fulfillment.sql",
+      "sha256": "da996f6d8f059a2a1677bb0b573bff3d9322bc3505282bd0fa20af204735ee58"
+    }
+  ]
+}

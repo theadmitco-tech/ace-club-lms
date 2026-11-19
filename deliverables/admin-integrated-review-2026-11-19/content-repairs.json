@@ -1,0 +1,706 @@
+{
+  "finding": "CONTENT-01",
+  "status": "repaired-and-locally-verified",
+  "scope": "New session resource preparation before first publication; no backend schema change.",
+  "sourceState": "Uncommitted repair on recorded base commit. Source hashes identify actual components executed; the first full run predates the render-state lint correction.",
+  "runs": [
+    {
+      "baseCommit": "9f8890e882a3b8ae221b11a65636bbe3b9cb5bf2",
+      "mode": "isolated UI fixture; synthetic learning state and mutation responses; session and batch Server Actions replaced by fixture HTTP adapters; not hosted or database authorization evidence",
+      "browser": "156.0.8078.47",
+      "results": [
+        {
+          "name": "New session prepares all resources privately before publication and safely retries the complete draft",
+          "status": "passed"
+        },
+        {
+          "name": "An empty new session offers private resource preparation without claiming publication readiness",
+          "status": "passed"
+        },
+        {
+          "name": "Resource validation identifies the field without reporting a connection failure",
+          "status": "passed"
+        },
+        {
+          "name": "Upload validation focuses the file field and preserves a protected existing source",
+          "status": "passed"
+        },
+        {
+          "name": "Resource locations stay compact and cancel preserves the original placement",
+          "status": "passed"
+        },
+        {
+          "name": "Location dialog stages changes, supports Escape and never submits the resource on search Enter",
+          "status": "passed"
+        },
+        {
+          "name": "Location summary and modal remain accessible and fit mobile screens",
+          "status": "passed"
+        },
+        {
+          "name": "Reordering stays in the outline while the selected session content remains visible",
+          "status": "passed"
+        },
+        {
+          "name": "Keyboard reordering announces moves, preserves focus, undoes and saves exact order",
+          "status": "passed"
+        },
+        {
+          "name": "Mouse drag reorders through a visible drop target without saving automatically",
+          "status": "passed"
+        },
+        {
+          "name": "Mobile move buttons and retry preserve the same session request",
+          "status": "passed"
+        },
+        {
+          "name": "A stale session list cannot overwrite the current course order",
+          "status": "passed"
+        },
+        {
+          "name": "Existing unpublished changes block reordering without new writes",
+          "status": "passed"
+        },
+        {
+          "name": "Narrow layouts retain readable titles, touch targets and reduced-motion behavior",
+          "status": "passed"
+        },
+        {
+          "name": "Automated accessibility checks pass for browsing, reordering, adding and renaming",
+          "status": "passed"
+        },
+        {
+          "name": "Name review can return to editing and closing restores focus",
+          "status": "passed"
+        },
+        {
+          "name": "Inline rename supports double click, cancellation and reviewed publication",
+          "status": "passed"
+        },
+        {
+          "name": "Keyboard rename preserves the request on interrupted save and rejects stale publication",
+          "status": "passed"
+        },
+        {
+          "name": "Shared heading edits retain every target for review",
+          "status": "passed"
+        },
+        {
+          "name": "Mobile rename rejects empty names and Escape leaves no draft",
+          "status": "passed"
+        },
+        {
+          "name": "Adding a session keeps existing content and retries the same private draft",
+          "status": "passed"
+        },
+        {
+          "name": "Existing course drafts must be reviewed before another session is added",
+          "status": "passed"
+        },
+        {
+          "name": "Five reading placements render once and follow the video order",
+          "status": "passed"
+        },
+        {
+          "name": "Universal outer readings appear once across authorized session targets",
+          "status": "passed"
+        },
+        {
+          "name": "Admin preview navigation and readings make no learning requests",
+          "status": "passed"
+        },
+        {
+          "name": "Locked subject resources are absent including all outer reading placements",
+          "status": "passed"
+        },
+        {
+          "name": "Admin creates universal content and reviews affected sessions before confirmation",
+          "status": "passed"
+        },
+        {
+          "name": "Admin editing an original item preserves its replacement identity and order",
+          "status": "passed"
+        },
+        {
+          "name": "Subject navigation retains the selected session after editing",
+          "status": "passed"
+        },
+        {
+          "name": "Only three subjects are offered and switching opens the matching library",
+          "status": "passed"
+        },
+        {
+          "name": "Mobile subject and session selection stays compact and editable",
+          "status": "passed"
+        },
+        {
+          "name": "Multiple readings offer named ordering without immediate publication",
+          "status": "passed"
+        },
+        {
+          "name": "Failed save retains values and never publishes",
+          "status": "passed"
+        },
+        {
+          "name": "Conflict removes confirmation and requires latest-version review plus a fresh save",
+          "status": "passed"
+        },
+        {
+          "name": "Leaving a changed resource can be cancelled without losing edits",
+          "status": "passed"
+        }
+      ],
+      "blockedOrigins": [],
+      "browserErrors": [],
+      "attempt": "full-content-regression-before-lint-state-correction",
+      "sourceAttribution": [
+        {
+          "file": "public/5.svg",
+          "currentRepositorySha256": "6712128c2ebc5febc738bda30b4eb69d794eaa96f4908ffa14ff213e5ca0f068",
+          "executedFixtureSha256": "6712128c2ebc5febc738bda30b4eb69d794eaa96f4908ffa14ff213e5ca0f068",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "public/6.svg",
+          "currentRepositorySha256": "81cd3689a08965edb8cbc24aa4abc99887faa9d148e9a96ac99958e7481625b6",
+          "executedFixtureSha256": "81cd3689a08965edb8cbc24aa4abc99887faa9d148e9a96ac99958e7481625b6",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/AdminShell.tsx",
+          "currentRepositorySha256": "0af58ee9edecd9885e98616e894b82e2361254999213bd801869d04b523e6821",
+          "executedFixtureSha256": "0af58ee9edecd9885e98616e894b82e2361254999213bd801869d04b523e6821",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/admin.css",
+          "currentRepositorySha256": "8a536bf66de9d105e8e2aa378eddd6434cfafba01dadfe6677158ccc97b6049e",
+          "executedFixtureSha256": "8a536bf66de9d105e8e2aa378eddd6434cfafba01dadfe6677158ccc97b6049e",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/v2/batches/actions.ts",
+          "currentRepositorySha256": "2b315677034de2e5e02ee4946d2a9b1cfac7638243598e9496df94e438be40f4",
+          "executedFixtureSha256": "324e1cd35088d6af76e95703d79b944afd6d995aaa3d9506d43f093c3887db8d",
+          "syntheticAdapter": true
+        },
+        {
+          "file": "src/app/admin/v2/content/AddSession.tsx",
+          "currentRepositorySha256": "d58b45d2844317ddbcc76c732cdfced40b2d5dc1e83e5dab9ba37fae46f13908",
+          "executedFixtureSha256": "4bc58b02974bea0c81767d41d6ab81aba19f8d5cb2ebcbacccf115a835b4110e",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/v2/content/ContentEditor.tsx",
+          "currentRepositorySha256": "cd542dd994a0190618fdf8a75d22c0b08283281b7f0010e0c4eaad09bd40fc9d",
+          "executedFixtureSha256": "cd542dd994a0190618fdf8a75d22c0b08283281b7f0010e0c4eaad09bd40fc9d",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/v2/content/CourseResourceBrowser.tsx",
+          "currentRepositorySha256": "e17ac56fca2325c221b63ff66d9777dfeded3328a948d722b4eaf97471cab110",
+          "executedFixtureSha256": "e17ac56fca2325c221b63ff66d9777dfeded3328a948d722b4eaf97471cab110",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/v2/content/PlacementEditor.tsx",
+          "currentRepositorySha256": "160dbc3bcdfc6a6fcea280437c3129a19e2f42b2400763c67a19cd515f5f14fc",
+          "executedFixtureSha256": "160dbc3bcdfc6a6fcea280437c3129a19e2f42b2400763c67a19cd515f5f14fc",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/v2/content/ReorderSessions.tsx",
+          "currentRepositorySha256": "217dae17323c426cc3a2d56a19d2be15d70330391391097e94a84653d934711a",
+          "executedFixtureSha256": "217dae17323c426cc3a2d56a19d2be15d70330391391097e94a84653d934711a",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/v2/content/SessionDraftResources.tsx",
+          "currentRepositorySha256": "18ddc064166b8dd534dc69eb8a979fc08c7368bfbc8eae791dca982944d9c315",
+          "executedFixtureSha256": "18ddc064166b8dd534dc69eb8a979fc08c7368bfbc8eae791dca982944d9c315",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/v2/content/SessionName.tsx",
+          "currentRepositorySha256": "6afb6189e58828fe97bbfaeaad1fa7ec452bed28e8f9af932a3e445aca4deb98",
+          "executedFixtureSha256": "6afb6189e58828fe97bbfaeaad1fa7ec452bed28e8f9af932a3e445aca4deb98",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/v2/content/content.module.css",
+          "currentRepositorySha256": "69d25d7a663d8695514afb67f5e4d0838fc14008afc13cfaace8d48f4b5750a4",
+          "executedFixtureSha256": "69d25d7a663d8695514afb67f5e4d0838fc14008afc13cfaace8d48f4b5750a4",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/v2/content/session-actions.ts",
+          "currentRepositorySha256": "94b7f8120249b6bff1b34d3bac4f590516ff15e02b7606f930f548d394006858",
+          "executedFixtureSha256": "78ee24bac9ef50ccad36ee6451163f70faef6b15a4aeb658dce2be9202fec09f",
+          "syntheticAdapter": true
+        },
+        {
+          "file": "src/app/admin/v2/content/session-draft-resources.module.css",
+          "currentRepositorySha256": "4bd8ac53cd39c240c98b8d188a46c84daf9314527a426826bf3d7cc26dbf5b22",
+          "executedFixtureSha256": "4bd8ac53cd39c240c98b8d188a46c84daf9314527a426826bf3d7cc26dbf5b22",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/workflow.css",
+          "currentRepositorySha256": "236a1904678daa7f6ae40cf24aa183235846153d43bcfed33d28f153cd382979",
+          "executedFixtureSha256": "236a1904678daa7f6ae40cf24aa183235846153d43bcfed33d28f153cd382979",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/session/[id]/material/[materialId]/material.css",
+          "currentRepositorySha256": "5a84d928a3b5ba8776f44cda141cbf190b5407c3abd358cc32907c3be7f3b30b",
+          "executedFixtureSha256": "5a84d928a3b5ba8776f44cda141cbf190b5407c3abd358cc32907c3be7f3b30b",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/components/AdminDraftNavigation.tsx",
+          "currentRepositorySha256": "66c2cb37d18fc5ef00d42ed852acba3ea8cfcac3e21b823ba611f98ff841d0ea",
+          "executedFixtureSha256": "66c2cb37d18fc5ef00d42ed852acba3ea8cfcac3e21b823ba611f98ff841d0ea",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/components/BrandLogo.tsx",
+          "currentRepositorySha256": "56a57e01003d4195f1ae2a7b771fbd5ab9dccb84fc9765b88445165fcc583a0f",
+          "executedFixtureSha256": "56a57e01003d4195f1ae2a7b771fbd5ab9dccb84fc9765b88445165fcc583a0f",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/components/student/NotionReader.tsx",
+          "currentRepositorySha256": "de6aa3c60952d661577547ece27871e60769868328527fc283f1889a96890475",
+          "executedFixtureSha256": "de6aa3c60952d661577547ece27871e60769868328527fc283f1889a96890475",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/components/student/V2CourseSessionView.tsx",
+          "currentRepositorySha256": "191e6dc2decdd614b96b5eafacaffcce8999a743c6edfc19dac4a568732c5198",
+          "executedFixtureSha256": "191e6dc2decdd614b96b5eafacaffcce8999a743c6edfc19dac4a568732c5198",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/components/student/V2LearningWorkspace.tsx",
+          "currentRepositorySha256": "125e138058c85aa1f1bd5af847701cc2b0b0d188f1a12637ff0427aff5133a7a",
+          "executedFixtureSha256": "125e138058c85aa1f1bd5af847701cc2b0b0d188f1a12637ff0427aff5133a7a",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/components/student/V2RecordingPlayer.tsx",
+          "currentRepositorySha256": "a114c4b578521b0f2fe318e138b55b09eaffc0286ae5384cb45996f8f65f732f",
+          "executedFixtureSha256": "a114c4b578521b0f2fe318e138b55b09eaffc0286ae5384cb45996f8f65f732f",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/components/student/v2CourseSession.module.css",
+          "currentRepositorySha256": "7351b5b0fb86dabe7b4ac411a460be23b0851767d326d928b695651c109ab63f",
+          "executedFixtureSha256": "7351b5b0fb86dabe7b4ac411a460be23b0851767d326d928b695651c109ab63f",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/components/student/v2Learning.module.css",
+          "currentRepositorySha256": "d87fcdfabbd43ef36b99f0b99a1f8b7930e57c202acf91ce161d9a38dfb30871",
+          "executedFixtureSha256": "d87fcdfabbd43ef36b99f0b99a1f8b7930e57c202acf91ce161d9a38dfb30871",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/AuthContext.tsx",
+          "currentRepositorySha256": "2cdb56d5a122f1caf2c2fbf89ac0025831bef6f1c9e1eeec4d4c93e96b2b64ab",
+          "executedFixtureSha256": "a2e0f5d3ff8ccb31147b5be0d3911f772999f8dab49adbbc2edf4ae495888819",
+          "syntheticAdapter": true
+        },
+        {
+          "file": "src/lib/adminResourceOrder.ts",
+          "currentRepositorySha256": "9ce5150c03f5f64064e8a6cb7f9ac2b47c618f26d324431c2e751e56c09a3cce",
+          "executedFixtureSha256": "9ce5150c03f5f64064e8a6cb7f9ac2b47c618f26d324431c2e751e56c09a3cce",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/draftRecovery.ts",
+          "currentRepositorySha256": "09185b2311f9a5b374d721216097f431a87c0f588847214b6601f8073980c788",
+          "executedFixtureSha256": "09185b2311f9a5b374d721216097f431a87c0f588847214b6601f8073980c788",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/types.ts",
+          "currentRepositorySha256": "628afbf597774d9eafd03b182620a75afcfba44d4972aae4797a23907f955ee6",
+          "executedFixtureSha256": "628afbf597774d9eafd03b182620a75afcfba44d4972aae4797a23907f955ee6",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2Batches.ts",
+          "currentRepositorySha256": "cdd283bdff994a4c963cfccc58410dbdf9a31fbae5cd9d6e20cf028ddb4bead6",
+          "executedFixtureSha256": "cdd283bdff994a4c963cfccc58410dbdf9a31fbae5cd9d6e20cf028ddb4bead6",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2ContentAssets.ts",
+          "currentRepositorySha256": "60ac8111d22c6ad8df52fb91cf3cac2f24ecc46ba8b9334c7447fa7ca68ae388",
+          "executedFixtureSha256": "60ac8111d22c6ad8df52fb91cf3cac2f24ecc46ba8b9334c7447fa7ca68ae388",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2ContentPublishing.ts",
+          "currentRepositorySha256": "e2ae6374390e0d998832118559eb812386afedb561f1ca13f6d6a2bb65e45ad4",
+          "executedFixtureSha256": "e2ae6374390e0d998832118559eb812386afedb561f1ca13f6d6a2bb65e45ad4",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2Learning.ts",
+          "currentRepositorySha256": "bdfccbf8c32059c55a250aeae7a1ca4ae89aa4b7674b2129c079f467e535a5ea",
+          "executedFixtureSha256": "bdfccbf8c32059c55a250aeae7a1ca4ae89aa4b7674b2129c079f467e535a5ea",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2Meetings.ts",
+          "currentRepositorySha256": "714ee6ea4ce540d73b18876d5822ba7df27e26de377f5e79d5f7399d4a345a85",
+          "executedFixtureSha256": "714ee6ea4ce540d73b18876d5822ba7df27e26de377f5e79d5f7399d4a345a85",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2Products.ts",
+          "currentRepositorySha256": "cf0833e5cc92920a48215c06760a69cfc42e7cf37c096bba459ca439268cbd1e",
+          "executedFixtureSha256": "cf0833e5cc92920a48215c06760a69cfc42e7cf37c096bba459ca439268cbd1e",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2ReadingPreview.ts",
+          "currentRepositorySha256": "c3c914c1437e9971dc94bfb6b4da3c1b5d97d14cdff1739eb0ad253945c33f9f",
+          "executedFixtureSha256": "c3c914c1437e9971dc94bfb6b4da3c1b5d97d14cdff1739eb0ad253945c33f9f",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2SessionOrder.ts",
+          "currentRepositorySha256": "70a7783e89f667b45448a6b47dfad4190ec847e33323f1406de105c681a61f9f",
+          "executedFixtureSha256": "70a7783e89f667b45448a6b47dfad4190ec847e33323f1406de105c681a61f9f",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2SessionPresentation.ts",
+          "currentRepositorySha256": "1b2159e08a40d2c2430f80d62fdb77c961da4debd5e27bc1d5fed5124f92e3b4",
+          "executedFixtureSha256": "1b2159e08a40d2c2430f80d62fdb77c961da4debd5e27bc1d5fed5124f92e3b4",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2StudentDelivery.ts",
+          "currentRepositorySha256": "4607ae93554d432746b7dc27a490a8e95a12581872b14397420fe3ff7ad748c2",
+          "executedFixtureSha256": "4607ae93554d432746b7dc27a490a8e95a12581872b14397420fe3ff7ad748c2",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2Templates.ts",
+          "currentRepositorySha256": "7824905327aa90eaf5cddd94ce2454a3d13a54bc543b582e9b01b22aa22ab114",
+          "executedFixtureSha256": "7824905327aa90eaf5cddd94ce2454a3d13a54bc543b582e9b01b22aa22ab114",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/youtube.ts",
+          "currentRepositorySha256": "c4154560e720a7cc63d2aaa30ff41944240eab04bd85d7d62980186360f3d62d",
+          "executedFixtureSha256": "c4154560e720a7cc63d2aaa30ff41944240eab04bd85d7d62980186360f3d62d",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/utils/supabase/client.ts",
+          "currentRepositorySha256": "9ebc9963d43aee91d147bb3fa2969bd873389cbbaad13ff3108fee43c1d021da",
+          "executedFixtureSha256": "9ebc9963d43aee91d147bb3fa2969bd873389cbbaad13ff3108fee43c1d021da",
+          "syntheticAdapter": false
+        }
+      ],
+      "privateScreenshots": [
+        {
+          "filename": "new-session-resources-private.png",
+          "sha256": "6687edf1ae95fe3b41b7e5db6c1c5b836624dc9266fc7cdc4806a7f40e4f8d48"
+        }
+      ]
+    },
+    {
+      "baseCommit": "9f8890e882a3b8ae221b11a65636bbe3b9cb5bf2",
+      "mode": "isolated UI fixture; synthetic learning state and mutation responses; session and batch Server Actions replaced by fixture HTTP adapters; not hosted or database authorization evidence",
+      "browser": "156.0.8078.47",
+      "results": [
+        {
+          "name": "New session prepares all resources privately before publication and safely retries the complete draft",
+          "status": "passed"
+        },
+        {
+          "name": "An empty new session offers private resource preparation without claiming publication readiness",
+          "status": "passed"
+        }
+      ],
+      "blockedOrigins": [],
+      "browserErrors": [],
+      "attempt": "final-source-targeted-continuation",
+      "sourceAttribution": [
+        {
+          "file": "public/5.svg",
+          "currentRepositorySha256": "6712128c2ebc5febc738bda30b4eb69d794eaa96f4908ffa14ff213e5ca0f068",
+          "executedFixtureSha256": "6712128c2ebc5febc738bda30b4eb69d794eaa96f4908ffa14ff213e5ca0f068",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "public/6.svg",
+          "currentRepositorySha256": "81cd3689a08965edb8cbc24aa4abc99887faa9d148e9a96ac99958e7481625b6",
+          "executedFixtureSha256": "81cd3689a08965edb8cbc24aa4abc99887faa9d148e9a96ac99958e7481625b6",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/AdminShell.tsx",
+          "currentRepositorySha256": "0af58ee9edecd9885e98616e894b82e2361254999213bd801869d04b523e6821",
+          "executedFixtureSha256": "0af58ee9edecd9885e98616e894b82e2361254999213bd801869d04b523e6821",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/admin.css",
+          "currentRepositorySha256": "8a536bf66de9d105e8e2aa378eddd6434cfafba01dadfe6677158ccc97b6049e",
+          "executedFixtureSha256": "8a536bf66de9d105e8e2aa378eddd6434cfafba01dadfe6677158ccc97b6049e",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/v2/batches/actions.ts",
+          "currentRepositorySha256": "2b315677034de2e5e02ee4946d2a9b1cfac7638243598e9496df94e438be40f4",
+          "executedFixtureSha256": "324e1cd35088d6af76e95703d79b944afd6d995aaa3d9506d43f093c3887db8d",
+          "syntheticAdapter": true
+        },
+        {
+          "file": "src/app/admin/v2/content/AddSession.tsx",
+          "currentRepositorySha256": "d58b45d2844317ddbcc76c732cdfced40b2d5dc1e83e5dab9ba37fae46f13908",
+          "executedFixtureSha256": "d58b45d2844317ddbcc76c732cdfced40b2d5dc1e83e5dab9ba37fae46f13908",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/v2/content/ContentEditor.tsx",
+          "currentRepositorySha256": "cd542dd994a0190618fdf8a75d22c0b08283281b7f0010e0c4eaad09bd40fc9d",
+          "executedFixtureSha256": "cd542dd994a0190618fdf8a75d22c0b08283281b7f0010e0c4eaad09bd40fc9d",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/v2/content/CourseResourceBrowser.tsx",
+          "currentRepositorySha256": "e17ac56fca2325c221b63ff66d9777dfeded3328a948d722b4eaf97471cab110",
+          "executedFixtureSha256": "e17ac56fca2325c221b63ff66d9777dfeded3328a948d722b4eaf97471cab110",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/v2/content/PlacementEditor.tsx",
+          "currentRepositorySha256": "160dbc3bcdfc6a6fcea280437c3129a19e2f42b2400763c67a19cd515f5f14fc",
+          "executedFixtureSha256": "160dbc3bcdfc6a6fcea280437c3129a19e2f42b2400763c67a19cd515f5f14fc",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/v2/content/ReorderSessions.tsx",
+          "currentRepositorySha256": "217dae17323c426cc3a2d56a19d2be15d70330391391097e94a84653d934711a",
+          "executedFixtureSha256": "217dae17323c426cc3a2d56a19d2be15d70330391391097e94a84653d934711a",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/v2/content/SessionDraftResources.tsx",
+          "currentRepositorySha256": "18ddc064166b8dd534dc69eb8a979fc08c7368bfbc8eae791dca982944d9c315",
+          "executedFixtureSha256": "18ddc064166b8dd534dc69eb8a979fc08c7368bfbc8eae791dca982944d9c315",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/v2/content/SessionName.tsx",
+          "currentRepositorySha256": "6afb6189e58828fe97bbfaeaad1fa7ec452bed28e8f9af932a3e445aca4deb98",
+          "executedFixtureSha256": "6afb6189e58828fe97bbfaeaad1fa7ec452bed28e8f9af932a3e445aca4deb98",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/v2/content/content.module.css",
+          "currentRepositorySha256": "69d25d7a663d8695514afb67f5e4d0838fc14008afc13cfaace8d48f4b5750a4",
+          "executedFixtureSha256": "69d25d7a663d8695514afb67f5e4d0838fc14008afc13cfaace8d48f4b5750a4",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/v2/content/session-actions.ts",
+          "currentRepositorySha256": "94b7f8120249b6bff1b34d3bac4f590516ff15e02b7606f930f548d394006858",
+          "executedFixtureSha256": "78ee24bac9ef50ccad36ee6451163f70faef6b15a4aeb658dce2be9202fec09f",
+          "syntheticAdapter": true
+        },
+        {
+          "file": "src/app/admin/v2/content/session-draft-resources.module.css",
+          "currentRepositorySha256": "4bd8ac53cd39c240c98b8d188a46c84daf9314527a426826bf3d7cc26dbf5b22",
+          "executedFixtureSha256": "4bd8ac53cd39c240c98b8d188a46c84daf9314527a426826bf3d7cc26dbf5b22",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/admin/workflow.css",
+          "currentRepositorySha256": "236a1904678daa7f6ae40cf24aa183235846153d43bcfed33d28f153cd382979",
+          "executedFixtureSha256": "236a1904678daa7f6ae40cf24aa183235846153d43bcfed33d28f153cd382979",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/app/session/[id]/material/[materialId]/material.css",
+          "currentRepositorySha256": "5a84d928a3b5ba8776f44cda141cbf190b5407c3abd358cc32907c3be7f3b30b",
+          "executedFixtureSha256": "5a84d928a3b5ba8776f44cda141cbf190b5407c3abd358cc32907c3be7f3b30b",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/components/AdminDraftNavigation.tsx",
+          "currentRepositorySha256": "66c2cb37d18fc5ef00d42ed852acba3ea8cfcac3e21b823ba611f98ff841d0ea",
+          "executedFixtureSha256": "66c2cb37d18fc5ef00d42ed852acba3ea8cfcac3e21b823ba611f98ff841d0ea",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/components/BrandLogo.tsx",
+          "currentRepositorySha256": "56a57e01003d4195f1ae2a7b771fbd5ab9dccb84fc9765b88445165fcc583a0f",
+          "executedFixtureSha256": "56a57e01003d4195f1ae2a7b771fbd5ab9dccb84fc9765b88445165fcc583a0f",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/components/student/NotionReader.tsx",
+          "currentRepositorySha256": "de6aa3c60952d661577547ece27871e60769868328527fc283f1889a96890475",
+          "executedFixtureSha256": "de6aa3c60952d661577547ece27871e60769868328527fc283f1889a96890475",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/components/student/V2CourseSessionView.tsx",
+          "currentRepositorySha256": "191e6dc2decdd614b96b5eafacaffcce8999a743c6edfc19dac4a568732c5198",
+          "executedFixtureSha256": "191e6dc2decdd614b96b5eafacaffcce8999a743c6edfc19dac4a568732c5198",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/components/student/V2LearningWorkspace.tsx",
+          "currentRepositorySha256": "125e138058c85aa1f1bd5af847701cc2b0b0d188f1a12637ff0427aff5133a7a",
+          "executedFixtureSha256": "125e138058c85aa1f1bd5af847701cc2b0b0d188f1a12637ff0427aff5133a7a",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/components/student/V2RecordingPlayer.tsx",
+          "currentRepositorySha256": "a114c4b578521b0f2fe318e138b55b09eaffc0286ae5384cb45996f8f65f732f",
+          "executedFixtureSha256": "a114c4b578521b0f2fe318e138b55b09eaffc0286ae5384cb45996f8f65f732f",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/components/student/v2CourseSession.module.css",
+          "currentRepositorySha256": "7351b5b0fb86dabe7b4ac411a460be23b0851767d326d928b695651c109ab63f",
+          "executedFixtureSha256": "7351b5b0fb86dabe7b4ac411a460be23b0851767d326d928b695651c109ab63f",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/components/student/v2Learning.module.css",
+          "currentRepositorySha256": "d87fcdfabbd43ef36b99f0b99a1f8b7930e57c202acf91ce161d9a38dfb30871",
+          "executedFixtureSha256": "d87fcdfabbd43ef36b99f0b99a1f8b7930e57c202acf91ce161d9a38dfb30871",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/AuthContext.tsx",
+          "currentRepositorySha256": "2cdb56d5a122f1caf2c2fbf89ac0025831bef6f1c9e1eeec4d4c93e96b2b64ab",
+          "executedFixtureSha256": "a2e0f5d3ff8ccb31147b5be0d3911f772999f8dab49adbbc2edf4ae495888819",
+          "syntheticAdapter": true
+        },
+        {
+          "file": "src/lib/adminResourceOrder.ts",
+          "currentRepositorySha256": "9ce5150c03f5f64064e8a6cb7f9ac2b47c618f26d324431c2e751e56c09a3cce",
+          "executedFixtureSha256": "9ce5150c03f5f64064e8a6cb7f9ac2b47c618f26d324431c2e751e56c09a3cce",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/draftRecovery.ts",
+          "currentRepositorySha256": "09185b2311f9a5b374d721216097f431a87c0f588847214b6601f8073980c788",
+          "executedFixtureSha256": "09185b2311f9a5b374d721216097f431a87c0f588847214b6601f8073980c788",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/types.ts",
+          "currentRepositorySha256": "628afbf597774d9eafd03b182620a75afcfba44d4972aae4797a23907f955ee6",
+          "executedFixtureSha256": "628afbf597774d9eafd03b182620a75afcfba44d4972aae4797a23907f955ee6",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2Batches.ts",
+          "currentRepositorySha256": "cdd283bdff994a4c963cfccc58410dbdf9a31fbae5cd9d6e20cf028ddb4bead6",
+          "executedFixtureSha256": "cdd283bdff994a4c963cfccc58410dbdf9a31fbae5cd9d6e20cf028ddb4bead6",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2ContentAssets.ts",
+          "currentRepositorySha256": "60ac8111d22c6ad8df52fb91cf3cac2f24ecc46ba8b9334c7447fa7ca68ae388",
+          "executedFixtureSha256": "60ac8111d22c6ad8df52fb91cf3cac2f24ecc46ba8b9334c7447fa7ca68ae388",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2ContentPublishing.ts",
+          "currentRepositorySha256": "e2ae6374390e0d998832118559eb812386afedb561f1ca13f6d6a2bb65e45ad4",
+          "executedFixtureSha256": "e2ae6374390e0d998832118559eb812386afedb561f1ca13f6d6a2bb65e45ad4",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2Learning.ts",
+          "currentRepositorySha256": "bdfccbf8c32059c55a250aeae7a1ca4ae89aa4b7674b2129c079f467e535a5ea",
+          "executedFixtureSha256": "bdfccbf8c32059c55a250aeae7a1ca4ae89aa4b7674b2129c079f467e535a5ea",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2Meetings.ts",
+          "currentRepositorySha256": "714ee6ea4ce540d73b18876d5822ba7df27e26de377f5e79d5f7399d4a345a85",
+          "executedFixtureSha256": "714ee6ea4ce540d73b18876d5822ba7df27e26de377f5e79d5f7399d4a345a85",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2Products.ts",
+          "currentRepositorySha256": "cf0833e5cc92920a48215c06760a69cfc42e7cf37c096bba459ca439268cbd1e",
+          "executedFixtureSha256": "cf0833e5cc92920a48215c06760a69cfc42e7cf37c096bba459ca439268cbd1e",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2ReadingPreview.ts",
+          "currentRepositorySha256": "c3c914c1437e9971dc94bfb6b4da3c1b5d97d14cdff1739eb0ad253945c33f9f",
+          "executedFixtureSha256": "c3c914c1437e9971dc94bfb6b4da3c1b5d97d14cdff1739eb0ad253945c33f9f",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2SessionOrder.ts",
+          "currentRepositorySha256": "70a7783e89f667b45448a6b47dfad4190ec847e33323f1406de105c681a61f9f",
+          "executedFixtureSha256": "70a7783e89f667b45448a6b47dfad4190ec847e33323f1406de105c681a61f9f",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2SessionPresentation.ts",
+          "currentRepositorySha256": "1b2159e08a40d2c2430f80d62fdb77c961da4debd5e27bc1d5fed5124f92e3b4",
+          "executedFixtureSha256": "1b2159e08a40d2c2430f80d62fdb77c961da4debd5e27bc1d5fed5124f92e3b4",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2StudentDelivery.ts",
+          "currentRepositorySha256": "4607ae93554d432746b7dc27a490a8e95a12581872b14397420fe3ff7ad748c2",
+          "executedFixtureSha256": "4607ae93554d432746b7dc27a490a8e95a12581872b14397420fe3ff7ad748c2",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/v2Templates.ts",
+          "currentRepositorySha256": "7824905327aa90eaf5cddd94ce2454a3d13a54bc543b582e9b01b22aa22ab114",
+          "executedFixtureSha256": "7824905327aa90eaf5cddd94ce2454a3d13a54bc543b582e9b01b22aa22ab114",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/lib/youtube.ts",
+          "currentRepositorySha256": "c4154560e720a7cc63d2aaa30ff41944240eab04bd85d7d62980186360f3d62d",
+          "executedFixtureSha256": "c4154560e720a7cc63d2aaa30ff41944240eab04bd85d7d62980186360f3d62d",
+          "syntheticAdapter": false
+        },
+        {
+          "file": "src/utils/supabase/client.ts",
+          "currentRepositorySha256": "9ebc9963d43aee91d147bb3fa2969bd873389cbbaad13ff3108fee43c1d021da",
+          "executedFixtureSha256": "9ebc9963d43aee91d147bb3fa2969bd873389cbbaad13ff3108fee43c1d021da",
+          "syntheticAdapter": false
+        }
+      ],
+      "privateScreenshots": [
+        {
+          "filename": "new-session-resources-prepared.png",
+          "sha256": "cc43eadc7e1c0442624417d68630c731ff24cf1117186370364e3eca9b583240"
+        },
+        {
+          "filename": "new-session-resources-private.png",
+          "sha256": "ff04c7794c3fab8dd39b0528493aed091b0092cbb735744c35f7a8b78e4f19ae"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Content/batch Server Actions and API responses are synthetic; no real database publication performed.",
+    "The resource editor accepts HTTPS and existing protected PDF references; a new private-upload picker is not included.",
+    "BatchWorkspace continuation is verified separately by the batch workflow owner.",
+    "No hosted or Production changes."
+  ]
+}

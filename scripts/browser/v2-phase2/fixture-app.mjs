@@ -48,6 +48,7 @@ export const sources = [
   'src/lib/worksheetRecovery.ts',
   'src/lib/draftRecovery.ts',
   'src/lib/v2WorkspaceRecovery.ts',
+  'src/lib/v2LiveBatchSetup.ts',
   'src/components/BrandLogo.tsx',
   'src/app/admin/v2/templates/page.tsx',
   'src/app/admin/v2/templates/TemplateEditor.tsx',

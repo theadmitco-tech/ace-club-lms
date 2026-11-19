@@ -20,6 +20,9 @@
 .form :is(input,select) { width: 100%; min-width: 0; padding: 10px 12px; border: 1px solid #bdcdbf; border-radius: 6px; background: #fff; color: #293f36; font: inherit; }
 .fields { display: grid; grid-template-columns: 160px minmax(0,1fr); gap: 20px; margin: 24px 0; }
 .source { margin-bottom: 28px; }
+.feedbackChoice { margin: -12px 0 28px; }
+.feedbackChoice label { display: flex; align-items: center; gap: 12px; min-height: 44px; }
+.feedbackChoice input[type="checkbox"] { flex: 0 0 20px; width: 20px; min-height: 20px; height: 20px; padding: 0; accent-color: #245b49; }
 .source .help { margin: 0; font-weight: 400; }
 .sectionTitle { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
 .sectionTitle span { color: #52645b; font-size: 12px; }
@@ -39,3 +42,5 @@
 @media(max-width:1100px) { .classFields { grid-template-columns: 1fr 1fr; } .classFields > div:first-child { grid-column: 1/-1; } }
 @media(max-width:600px) { .fields,.classFields { grid-template-columns: 1fr; } .footer { align-items: stretch; flex-direction: column; } .classCard { padding: 14px; } .toolbar { align-items: stretch; } .toolbar > label,.toolbar input { width: 100%; } .actions > button { flex: 1 1 100%; white-space: normal; overflow-wrap: anywhere; } }
 @media(prefers-reduced-motion:reduce) { .workspace * { scroll-behavior: auto; } }
+
+.setupFields { min-width: 0; margin: 0; padding: 0; border: 0; }

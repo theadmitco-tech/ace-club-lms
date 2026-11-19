@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 const suites = [
   'v2-learning-feedback-database.test.mjs',
   'v2-learning-security.test.mjs',
+  'v2-live-mapping-guidance.test.mjs',
   'phase4/recovery.test.mjs',
   'phase4/fixtures.test.mjs',
   'phase4/activation.test.mjs',

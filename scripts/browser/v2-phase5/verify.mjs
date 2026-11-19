@@ -163,6 +163,27 @@ function fivePlacements(){
  state.placedItems=state.placements.map(p=>({key:p.key,title:`Reading ${p.placement}`,url:'https://example.test/reading'}));
 }
 async function runTests() {
+ await test('New session prepares all resources privately before publication and safely retries the complete draft',async page=>{
+  const original=structuredClone(sourceSessions);await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'+ Add session',exact:true}).click();
+  const editor=page.getByRole('region',{name:'Add session',exact:true});await editor.getByLabel('New session name',{exact:true}).fill('Ratios workshop');
+  const kinds=[['preSessionReads','Pre-class read'],['recordings','Recording'],['postSessionReads','Post-class read'],['materials','Worksheet']];
+  const section=editor.getByRole('region',{name:'New session resources',exact:true});
+  for(const [kind,label] of kinds){
+    const disclosure=section.locator('details').filter({has:page.locator('summary',{hasText:label})});await disclosure.locator('summary').click();await disclosure.getByRole('button',{name:'Add '+label.toLowerCase(),exact:true}).click();
+    const item=disclosure.getByRole('group',{name:label+' 1',exact:true});await item.getByLabel('Title',{exact:true}).fill('  Workshop '+label.toLowerCase()+'  ');await item.getByLabel('Resource link',{exact:true}).fill('https://example.test/'+kind);
+  }
+  await page.screenshot({path:path.join(output,'new-session-resources-prepared.png'),fullPage:true});await page.addScriptTag({path:path.join(repo,'node_modules/axe-core/axe.min.js')});const accessibility=await page.evaluate(async()=>window.axe.run(document.querySelector('[aria-label="Add session"]'),{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}));assert.deepEqual(accessibility.violations.map(v=>v.id),[]);
+  const first=section.getByRole('group',{name:'Pre-class read 1',exact:true});const url=first.getByLabel('Resource link',{exact:true});await url.fill('http://example.test/unsafe');await first.locator('..').locator('summary').click();
+  await editor.getByRole('button',{name:'Add session',exact:true}).click();assert.equal(await url.getAttribute('aria-invalid'),'true');assert.equal(await url.evaluate(el=>el===document.activeElement),true);assert.equal(state.sessionCalls.length,0);
+  await url.fill('https://example.test/preSessionReads');state.failSessionSave=true;await editor.getByRole('button',{name:'Add session',exact:true}).click();await editor.getByText('Synthetic save interruption',{exact:true}).waitFor();assert.equal(await url.isDisabled(),true);
+  await editor.getByRole('button',{name:'Retry saving session',exact:true}).click();await editor.getByRole('heading',{name:'Session draft saved',exact:true}).waitFor();
+  const saves=state.sessionCalls.filter(call=>call.action==='save');assert.equal(saves.length,2);assert.deepEqual(saves[0],saves[1]);const draft=saves[1].input;assert.deepEqual(draft.sessions.slice(0,-1),original.filter(s=>s.section==='quant'));assert.deepEqual(draft.events,[existingEvent]);assert.deepEqual(sourceSessions,original);
+  const created=draft.sessions.at(-1);assert.equal(created.title,'Ratios workshop');for(const [kind,label]of kinds){assert.equal(created.content[kind].length,1);assert.equal(created.content[kind][0].title,'Workshop '+label.toLowerCase());assert.equal(created.content[kind][0].url,'https://example.test/'+kind);}
+  assert.equal(state.editorCalls.length,0);assert.equal(await editor.getByRole('link',{name:'Edit session draft',exact:true}).getAttribute('href'),'/admin/v2/batches?batch='+batchId+'&outline=1&session='+created.key);assert.equal(await editor.getByRole('link',{name:'Review & publish session',exact:true}).getAttribute('href'),'/admin/v2/batches?batch='+batchId+'&review=1');await noOverflow(page);await page.screenshot({path:path.join(output,'new-session-resources-private.png'),fullPage:true});
+ },true);
+ await test('An empty new session offers private resource preparation without claiming publication readiness',async page=>{
+  await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'+ Add session',exact:true}).click();const editor=page.getByRole('region',{name:'Add session',exact:true});await editor.getByLabel('New session name',{exact:true}).fill('Preparation later');await editor.getByRole('button',{name:'Add session',exact:true}).click();await editor.getByRole('heading',{name:'Session draft saved',exact:true}).waitFor();await editor.getByText('No resources have been added. Resources can be prepared in the saved draft before publication.',{exact:true}).waitFor();assert.equal(await editor.getByText(/is ready for publication/).count(),0);await editor.getByRole('link',{name:'Edit session draft',exact:true}).waitFor();assert.equal(state.editorCalls.length,0);
+ });
  await test('Resource validation identifies the field without reporting a connection failure',async page=>{
   await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'Add pre-class read',exact:true}).click();
   const title=page.getByLabel('Title',{exact:true}),url=page.getByLabel('Resource URL',{exact:false}),save=page.getByRole('button',{name:'Save draft',exact:true});

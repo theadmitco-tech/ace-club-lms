@@ -15,6 +15,7 @@ const suites = [
   'v2-enrolled-schedules.test.mjs',
   'v2-enrolled-schedules-database.test.mjs',
   'draft-recovery.test.mjs',
+  'live-batch-setup-recovery.test.mjs',
   'admin-draft-navigation.test.mjs',
   'v2-approved-authoring.test.mjs',
   'v2-publication-database.test.mjs',

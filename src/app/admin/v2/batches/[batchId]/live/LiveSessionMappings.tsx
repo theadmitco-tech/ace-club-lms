@@ -21,7 +21,13 @@ export default function LiveSessionMappings({ publication, mappings }: { publica
     <ul className={styles.list}>{publication.events.filter(event => event.kind === 'live').map(event => {
       const saved = mappings.find(m => m.eventKey === event.key && m.publicationRevision === publication.revision);
       const value = choices[event.key] ?? saved?.sessionKey ?? '';
-      return <li className={styles.event} key={event.key}><label htmlFor={`mapping-${event.key}`}>{event.title}</label><select id={`mapping-${event.key}`} value={value} disabled={busy} onChange={e => setChoices(current => ({ ...current, [event.key]: e.target.value }))}><option value="">Choose the corresponding session</option>{(publication.sessions ?? []).filter(session => session.section === event.section).map(session => <option key={session.key} value={session.key}>{session.title}</option>)}</select>
+      const sessions = (publication.sessions ?? []).filter(session => session.section === event.section);
+      if (!sessions.length) return <li className={styles.event} key={event.key}>
+        <strong>{event.title}</strong>
+        <p>No published course session is available in this class’s subject. Add a session, save and publish the batch, then return here to confirm its feedback session.</p>
+        <a className="btn btn-secondary" href={`/admin/v2/batches?batch=${publication.batchId}&outline=1`}>Add a course session</a>
+      </li>;
+      return <li className={styles.event} key={event.key}><label htmlFor={`mapping-${event.key}`}>{event.title}</label><select id={`mapping-${event.key}`} value={value} disabled={busy} onChange={e => setChoices(current => ({ ...current, [event.key]: e.target.value }))}><option value="">Choose the corresponding session</option>{sessions.map(session => <option key={session.key} value={session.key}>{session.title}</option>)}</select>
         <button className="btn btn-secondary" type="button" disabled={busy || !value || value === saved?.sessionKey} onClick={() => save(event.key, value)}>Confirm session mapping</button>{saved && <small>Mapping confirmed for this publication.</small>}
       </li>;
     })}</ul>

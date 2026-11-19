@@ -539,9 +539,13 @@ async function runTests() {
     const item = publication.getByRole('listitem').filter({ has: page.getByText('Browser revised batch', { exact: true }) });
     await item.getByRole('button', { name: 'Preview publication', exact: true }).click();
     await text(page, 'Scope: this batch only · Full Course · quant, verbal, di');
+    await text(page, 'After publishing, link each live class to its feedback session');
     assert.equal(state.publications.length, 0);
     await button(page, 'Confirm publish').click();
     await text(page, 'Publication revision 1 published.');
+    const completionSetup = page.getByRole('link', { name: 'Set up class completion', exact: true });
+    await visible(completionSetup);
+    assert.equal(await completionSetup.getAttribute('href'), `/admin/v2/batches/${saved.id}/live?setup=1#class-session-mapping`);
     await page.getByLabel('Start time (IST)').fill('19:00');
     await button(page, 'Review course and schedule').click();
     await button(page, 'Confirm and save draft').click();
@@ -550,6 +554,8 @@ async function runTests() {
     assert.equal(state.templates[0].document.events[0].localStartTime, '18:00');
     await item.getByRole('button', { name: 'Preview publication', exact: true }).click();
     await visible(button(page, 'Confirm publish'));
+    await text(page, 'even when only a meeting link changed');
+    assert.equal(await completionSetup.count(), 0);
     await screenshot(page, 'publication-desktop');
     await button(page, 'Confirm publish').click();
     await text(page, 'Publication revision 2 published.');
@@ -558,6 +564,7 @@ async function runTests() {
     await item.getByRole('button', { name: 'Review unpublish', exact: true }).click();
     await button(page, 'Confirm unpublish').click();
     await text(page, 'Publication revision 3 unpublished.');
+    assert.equal(await completionSetup.count(), 0);
     await item.getByRole('button', { name: 'Preview publication', exact: true }).click();
     await button(page, 'Confirm publish').click();
     await text(page, 'Publication revision 4 published.');

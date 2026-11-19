@@ -1,0 +1,51 @@
+{
+  "baseCommit": "9f8890e882a3b8ae221b11a65636bbe3b9cb5bf2",
+  "date": "2026-11-19",
+  "scope": "Local synthetic Admin workflow repairs; no hosted acceptance",
+  "applicationSourceHashes": {
+    "src/app/admin/v2/batches/NewLiveBatch.tsx": "7be04e4a3bfe5ebbf4da12c811956bc2e2ae06dcb9733b66f3672a05c0905f9d",
+    "src/app/admin/v2/batches/PublicationPanel.tsx": "3d06a2e0d62601b1e375d1458b4d7c728b2c7bd6087c78962e415a00ecc3f43f",
+    "src/app/admin/v2/batches/[batchId]/live/LiveSessionMappings.tsx": "b1a15410b2946ede07da3be17f7990343f9317cb1ab681e5514a1e94485add95",
+    "src/app/admin/v2/batches/[batchId]/live/page.tsx": "d0f2d7f87b357a762427961dddcb4f61fdba7b2faa2f403fde0ef96e8f16a99a",
+    "src/app/admin/v2/batches/batchWorkspace.module.css": "3fba39ad1024e7c5ecdfab4d4e97cb454775aef7c401d75a180cada1e85c1ddf",
+    "src/app/admin/v2/content/AddSession.tsx": "d58b45d2844317ddbcc76c732cdfced40b2d5dc1e83e5dab9ba37fae46f13908",
+    "src/lib/v2LiveBatchSetup.ts": "bb7ddea080d376d8c786bc4bbded23296faddf427a9ce56ad28eeaea36c83a35",
+    "src/app/admin/v2/content/SessionDraftResources.tsx": "18ddc064166b8dd534dc69eb8a979fc08c7368bfbc8eae791dca982944d9c315",
+    "src/app/admin/v2/content/session-draft-resources.module.css": "4bd8ac53cd39c240c98b8d188a46c84daf9314527a426826bf3d7cc26dbf5b22"
+  },
+  "checks": [
+    {
+      "command": "npm run lint",
+      "exitCode": 0
+    },
+    {
+      "command": "node node_modules/typescript/bin/tsc --noEmit",
+      "exitCode": 0
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "warning": "Existing multiple-lockfile workspace-root warning"
+    },
+    {
+      "command": "node --test scripts/draft-recovery.test.mjs scripts/live-batch-setup-recovery.test.mjs scripts/v2-batch-authoring.test.mjs scripts/v2-template-authoring.test.mjs",
+      "exitCode": 0,
+      "passedFiles": 4
+    }
+  ],
+  "earlierAttempt": {
+    "command": "npm run lint",
+    "outcome": "Failed on render-time ref access in AddSession; corrected before successful checks"
+  },
+  "accessCheck": {
+    "knownAdminPreviewLogin": "https://ace-club-lms-git-intern-v2-adm-7f39d2-theadmitco-techs-projects.vercel.app/login",
+    "httpStatus": 302,
+    "redirectHost": "vercel.com",
+    "redirectPath": "/sso-api",
+    "deploymentMetadata": "Connected Vercel account returned 403; CLI credentials absent",
+    "latestHostedCommitVerified": false
+  },
+  "hostedMutations": false,
+  "productionChanged": false,
+  "finalNavigationRepair": "Native document navigation verified for identical and changed-query recovery destinations; broad checks repeated after the final source change."
+}

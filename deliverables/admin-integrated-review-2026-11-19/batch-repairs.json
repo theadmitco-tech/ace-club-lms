@@ -1,0 +1,306 @@
+{
+  "reviewDate": "2026-11-19",
+  "baseCommit": "9f8890e882a3b8ae221b11a65636bbe3b9cb5bf2",
+  "candidateState": "uncommitted repairs",
+  "scope": "Actual Admin UI and Server Actions with synthetic data adapters; no hosted actions.",
+  "attempts": [
+    {
+      "stage": "Initial repair build",
+      "status": "build_failed_before_browser",
+      "cause": "PublicationPanel event callback lacked annotation with synthetic adapter return type.",
+      "results": [
+        {
+          "name": "Harness",
+          "status": "failed",
+          "error": "Fixture build failed\n\n1 !== 0\n"
+        }
+      ]
+    },
+    {
+      "stage": "Full Admin browser run",
+      "passed": 24,
+      "failed": 1,
+      "failureClassification": "New test selector was overly strict; requested actual session was already open.",
+      "results": [
+        {
+          "name": "Three primary destinations open directly in course content",
+          "status": "passed"
+        },
+        {
+          "name": "Template and batch choices exclude Full Course without deleting records",
+          "status": "passed"
+        },
+        {
+          "name": "Mobile navigation closes with Escape",
+          "status": "passed"
+        },
+        {
+          "name": "Tablet navigation remains hidden until opened",
+          "status": "passed"
+        },
+        {
+          "name": "Batch calendar cancel preserves date and explicit save is required",
+          "status": "passed"
+        },
+        {
+          "name": "Calendar keyboard navigation and Escape preserve the draft and return focus",
+          "status": "passed"
+        },
+        {
+          "name": "Calendar shows scheduled classes and selected times without background submission",
+          "status": "passed"
+        },
+        {
+          "name": "Mobile calendar is accessible and month year navigation preserves unconfirmed dates",
+          "status": "passed"
+        },
+        {
+          "name": "Calendar today and tomorrow follow IST from another browser time zone",
+          "status": "passed"
+        },
+        {
+          "name": "Batch publication requires explicit review then confirmation",
+          "status": "passed"
+        },
+        {
+          "name": "Create batch works without a live template and preserves original course records",
+          "status": "passed"
+        },
+        {
+          "name": "Batch setup supports no saved templates and accessible mobile inputs",
+          "status": "passed"
+        },
+        {
+          "name": "Interrupted schedule saves restore the same request without duplication",
+          "status": "passed"
+        },
+        {
+          "name": "Unreviewed batch edits survive repeated Back and reload with account isolation",
+          "status": "passed"
+        },
+        {
+          "name": "Malformed initial batch recovery is ignored without a server write",
+          "status": "passed"
+        },
+        {
+          "name": "New feedback sessions require consent and keep session and class keys stable on retry",
+          "status": "passed"
+        },
+        {
+          "name": "New session deep link opens the saved draft and keeps four resources editable",
+          "status": "failed",
+          "error": "locator.inputValue: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel('Choose a session', { exact: true })\u001b[22m\n"
+        },
+        {
+          "name": "Batch filters clear cleanly and creation remains available",
+          "status": "passed"
+        },
+        {
+          "name": "Every saved live class has independent date and time controls",
+          "status": "passed"
+        },
+        {
+          "name": "Subject libraries replace the combined library while live batches retain separate controls",
+          "status": "passed"
+        },
+        {
+          "name": "Mobile batch access has accessible actions and no horizontal overflow",
+          "status": "passed"
+        },
+        {
+          "name": "Empty batches show honest group empty states",
+          "status": "passed"
+        },
+        {
+          "name": "Unavailable enrollment records never display missing-access statuses",
+          "status": "passed"
+        },
+        {
+          "name": "Expired purchases do not imply renewed course access",
+          "status": "passed"
+        },
+        {
+          "name": "Access load failure is shown instead of an empty entitlement state",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "stage": "Focused selector confirmation and payload capture",
+      "passed": 6,
+      "failed": 0,
+      "results": [
+        {
+          "name": "Batch setup supports no saved templates and accessible mobile inputs",
+          "status": "passed"
+        },
+        {
+          "name": "Interrupted schedule saves restore the same request without duplication",
+          "status": "passed"
+        },
+        {
+          "name": "Unreviewed batch edits survive repeated Back and reload with account isolation",
+          "status": "passed"
+        },
+        {
+          "name": "Malformed initial batch recovery is ignored without a server write",
+          "status": "passed"
+        },
+        {
+          "name": "New feedback sessions require consent and keep session and class keys stable on retry",
+          "status": "passed"
+        },
+        {
+          "name": "New session deep link opens the saved draft and keeps four resources editable",
+          "status": "passed"
+        }
+      ]
+    }
+  ],
+  "sourceHashes": {
+    "src/app/admin/v2/batches/NewLiveBatch.tsx": "7be04e4a3bfe5ebbf4da12c811956bc2e2ae06dcb9733b66f3672a05c0905f9d",
+    "src/app/admin/v2/batches/batchWorkspace.module.css": "3fba39ad1024e7c5ecdfab4d4e97cb454775aef7c401d75a180cada1e85c1ddf",
+    "src/lib/v2LiveBatchSetup.ts": "bb7ddea080d376d8c786bc4bbded23296faddf427a9ce56ad28eeaea36c83a35",
+    "scripts/live-batch-setup-recovery.test.mjs": "07f72be64a359ea27822a3d1bf4eebe5a408f48555292d86266e10f756b9f14f",
+    "scripts/browser/admin-workflow/verify.mjs": "d823da22851f8c5e486906175496578fbe79969dce1d68aec4cb38381025fdad",
+    "scripts/browser/v2-phase2/fixture-app.mjs": "8b425c324efa8673b2f4b16dc87133961f885793f5e4faf9d561960c2b0de7df",
+    "scripts/verify-v2-phase2.mjs": "bc599c66795697297e5183383bb5a270a9ec401498b8f18351485f810de788c9",
+    "src/app/admin/v2/batches/PublicationPanel.tsx": "3d06a2e0d62601b1e375d1458b4d7c728b2c7bd6087c78962e415a00ecc3f43f"
+  },
+  "focusedBrowserErrors": [],
+  "focusedBlockedOrigins": [],
+  "localChecks": {
+    "recoveryTests": {
+      "passed": 2,
+      "failed": 0
+    },
+    "focusedLint": "passed",
+    "applicationTypeScript": "passed",
+    "diffWhitespace": "passed"
+  },
+  "privateGeneratedRequest": {
+    "file": "generated-feedback-template-request.json",
+    "sha256": "b831fba23e364b8c598c85243cb0d98826adf846005cb68984c11d9b37b9318c",
+    "meaning": "Exact actual NewLiveBatch Server Action request from browser, entirely synthetic."
+  },
+  "screenshots": [
+    {
+      "file": "New-session-deep-link-opens-the-saved-draft-and-keeps-four-resources-editable.png",
+      "sha256": "b8ef7aa029682ddb5705870ac7f79ae3ac2f829559fb781abda45b24b79b4b2e",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "New-feedback-sessions-require-consent-and-keep-session-and-class-keys-stable-on-retry.png",
+      "sha256": "0fed8eed3c3f1c9b602c384c61e78058db51c2b9b3bc3ded8d4e714a9b9c876e",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "feedback-session-review.png",
+      "sha256": "21e845c71470caabda56f6ccf8aed1b1e918251cca16bfbe3dac31449d3df13a",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "Malformed-initial-batch-recovery-is-ignored-without-a-server-write.png",
+      "sha256": "e1cdcd10c2c79b6cf9b9b4921d6a78cc8c4c4810a39a9f4c0e15d303bd947262",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "Unreviewed-batch-edits-survive-repeated-Back-and-reload-with-account-isolation.png",
+      "sha256": "e1cdcd10c2c79b6cf9b9b4921d6a78cc8c4c4810a39a9f4c0e15d303bd947262",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "Interrupted-schedule-saves-restore-the-same-request-without-duplication.png",
+      "sha256": "dbb3d53e6d77a9686f8614ca719a4613b4af719d2f51355f9502cb093b743c7f",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "Batch-setup-supports-no-saved-templates-and-accessible-mobile-inputs.png",
+      "sha256": "f5de83ffca89d8b3e1e6c1e472c12dd102a43fad17b4e8b90d24f52c1e2478be",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "batch-review-320.png",
+      "sha256": "33961a5a96329afb61f0f29c5ffec9f402e1cd69109f8555610e721874eecad0",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "batch-review-390.png",
+      "sha256": "8158f190e6931a58ca165b7a17a962d769b0581562cf691d7a6d9f074b04d783",
+      "storage": "private temporary artifact"
+    },
+    {
+      "file": "create-batch-mobile.png",
+      "sha256": "76787a7c532c8b22462c8e5b509009e48d86d8f68a3120fcaa1d0a011c09eb86",
+      "storage": "private temporary artifact"
+    }
+  ],
+  "limits": [
+    "No hosted or real payment authorization acceptance.",
+    "Data adapters are synthetic; independent disposable database evidence belongs to delivery review.",
+    "Browser Back preserves recovery rather than intercepting history navigation.",
+    "Legacy zero-session recovery guidance was source-reviewed; a dedicated legacy-recovery browser journey was not added."
+  ],
+  "samePageRecoveryFollowup": [
+    {
+      "stage": "Same-page guarded client link before repair",
+      "passed": 0,
+      "failed": 1,
+      "results": [
+        {
+          "name": "Publication recovery link opens course editing and keeps editor after save refresh",
+          "status": "failed",
+          "error": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('heading', { name: 'Edit batch', exact: true }) to be visible\u001b[22m\n"
+        }
+      ],
+      "browserErrors": [],
+      "blockedOrigins": []
+    },
+    {
+      "stage": "Temporary query-key fix with changed query",
+      "passed": 1,
+      "failed": 0,
+      "results": [
+        {
+          "name": "Publication recovery link opens course editing and keeps editor after save refresh",
+          "status": "passed"
+        }
+      ],
+      "browserErrors": [],
+      "blockedOrigins": []
+    },
+    {
+      "stage": "Temporary query-key fix with identical URL",
+      "passed": 0,
+      "failed": 1,
+      "results": [
+        {
+          "name": "Publication recovery link opens course editing and keeps editor after save refresh",
+          "status": "failed",
+          "error": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('heading', { name: 'Edit batch', exact: true }) to be visible\u001b[22m\n"
+        }
+      ],
+      "browserErrors": [],
+      "blockedOrigins": []
+    },
+    {
+      "stage": "Final native recovery link cancel and accept",
+      "passed": 2,
+      "failed": 0,
+      "results": [
+        {
+          "name": "Publication recovery link changed query supports cancel and opens course editing",
+          "status": "passed"
+        },
+        {
+          "name": "Publication recovery link same URL supports cancel and opens course editing",
+          "status": "passed"
+        }
+      ],
+      "browserErrors": [],
+      "blockedOrigins": []
+    }
+  ],
+  "samePageRecoveryImplementation": "Native document navigation uses existing beforeunload review protection; temporary keyed batch page reverted.",
+  "permanentAdminBrowserJourneyCount": 27
+}

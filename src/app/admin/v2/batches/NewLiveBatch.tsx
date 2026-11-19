@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useAdminDraftGuard } from '@/components/AdminDraftNavigation';
 import { DraftRecoveryNotice, useDraftRecovery } from '@/components/DraftRecovery';
+import { isLiveBatchSetup, type LiveBatchSetup, type LiveBatchSubject as Subject, type LiveBatchClassInput as ClassInput } from '@/lib/v2LiveBatchSetup';
 import { isV2BatchDate, type V2BatchDraft } from '@/lib/v2Batches';
 import { V2_TEMPLATE_PRODUCTS, validateV2TemplateSave, type V2TemplateDraft, type V2TemplateSaveInput } from '@/lib/v2Templates';
 import { saveTemplateDraftAction } from '../templates/actions';
@@ -10,8 +11,6 @@ import BatchDraftEditor from './BatchDraftEditor';
 import { BatchDatePicker } from './BatchDatePicker';
 import styles from './batchWorkspace.module.css';
 
-type Subject = 'quant' | 'verbal' | 'di';
-type ClassInput = { key: string; title: string; date: string; time: string; duration: number };
 type Prepared = { request: V2TemplateSaveInput; startDate: string };
 function isPrepared(value: unknown): value is Prepared {
   if (!value || typeof value !== 'object') return false;
@@ -24,10 +23,9 @@ const newClass = (): ClassInput => ({ key: crypto.randomUUID(), title: '', date:
 export default function NewLiveBatch({ templates, drafts, ownerId, onSaved }: {
   templates: V2TemplateDraft[]; drafts: V2BatchDraft[]; ownerId: string; onSaved: (batch: V2BatchDraft) => void;
 }) {
-  const [subject, setSubject] = useState<Subject>('quant');
-  const [title, setTitle] = useState('');
-  const [sourceId, setSourceId] = useState('');
-  const [classes, setClasses] = useState<ClassInput[]>([{ key: 'first', title: '', date: '', time: '19:00', duration: 60 }]);
+  const [form, setForm] = useState<LiveBatchSetup>({ subject: 'quant', title: '', sourceId: '', createFeedbackSessions: false,
+    classes: [{ key: 'first', title: '', date: '', time: '19:00', duration: 60 }] });
+  const { subject, title, sourceId, classes, createFeedbackSessions } = form;
   const [prepared, setPrepared] = useState<Prepared | null>(null);
   const [saved, setSaved] = useState<V2TemplateDraft | null>(null);
   const [pending, setPending] = useState(false);
@@ -36,17 +34,26 @@ export default function NewLiveBatch({ templates, drafts, ownerId, onSaved }: {
   const busy = useRef(false);
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => { if (prepared && !saved) heading.current?.focus(); }, [prepared, saved]);
+  const formRecovery = useDraftRecovery<LiveBatchSetup>(ownerId, 'v2-live-batch-form', isLiveBatchSetup);
   const recovery = useDraftRecovery<Prepared>(ownerId, 'v2-live-batch-setup', isPrepared);
   useAdminDraftGuard(!saved && (!!title || classes.some(item => item.title || item.date) || attempted || pending));
+  const recoveryPending = !!recovery.recovered || !!formRecovery.recovered;
   const sources = templates.filter(item => item.productCode === subject && item.document.sessions?.length);
+  function changeForm(patch: Partial<LiveBatchSetup>) {
+    if (recoveryPending) return;
+    const next = { ...form, ...patch };
+    setForm(next);formRecovery.remember(next);setError('');
+  }
   function changeClass(key: string, patch: Partial<ClassInput>) {
-    setClasses(items => items.map(item => item.key === key ? { ...item, ...patch } : item));
-    setError('');
+    changeForm({ classes: classes.map(item => item.key === key ? { ...item, ...patch } : item) });
   }
   function review(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (busy.current) return;
+    if (busy.current || recoveryPending) return;
     if (!classes.length || classes.some(item => !isV2BatchDate(item.date))) { setError('Add at least one class with a valid date.'); return; }
+    const source = sources.find(item => item.id === sourceId);
+    if (sourceId && !source) { setError('The selected course sessions are no longer available. Choose another source or create feedback sessions.'); return; }
+    if (!source && !createFeedbackSessions) { setError('Choose saved course sessions or confirm creation of feedback sessions before reviewing.'); return; }
     const startDate = classes.map(item => item.date).sort()[0];
     const events = classes.map(item => ({ key: crypto.randomUUID(), title: item.title.trim(), section: subject, kind: 'live' as const,
       dayOffset: (Date.parse(item.date) - Date.parse(startDate)) / 86400000,
@@ -54,7 +61,7 @@ export default function NewLiveBatch({ templates, drafts, ownerId, onSaved }: {
     const endDay = Math.max(...events.map(item => item.dayOffset + Math.ceil((Number(item.localStartTime.slice(0, 2)) * 60 + Number(item.localStartTime.slice(3)) + item.durationMinutes) / 1440)));
     const request: V2TemplateSaveInput = { id: crypto.randomUUID(), requestId: crypto.randomUUID(), expectedRevision: 0, productCode: subject,
       document: { title: title.trim(), summary: '', durationDays: endDay,
-        sessions: structuredClone(sources.find(item => item.id === sourceId)?.document.sessions ?? []), events } };
+        sessions: source ? structuredClone(source.document.sessions ?? []) : classes.map(item => ({ key: crypto.randomUUID(), title: item.title.trim(), section: subject, content: { preSessionReads: [], recordings: [], postSessionReads: [], materials: [] } })), events } };
     const invalid = validateV2TemplateSave(request);
     if (invalid) { setError(invalid); return; }
     const next = { request, startDate };setPrepared(next);setError('');recovery.remember(next);
@@ -71,30 +78,35 @@ export default function NewLiveBatch({ templates, drafts, ownerId, onSaved }: {
   }
   if (saved && prepared) return <>
     <p className={styles.notice} role="status">Schedule saved privately. Review the batch below, then confirm its draft. Nothing is published yet.</p>
+    {!prepared.request.document.sessions?.length && <p role="alert" className={styles.notice}>This recovered schedule has no course sessions. After saving the batch draft, open Edit this batch’s course sessions and add the sessions needed for resources and feedback before publishing.</p>}
     <BatchDraftEditor focused templates={[saved]} drafts={drafts} ownerId={ownerId}
       initialTitle={saved.document.title} initialStartDate={prepared.startDate}
-      onSaved={batch => { recovery.forget();onSaved(batch); }} />
+      onSaved={batch => { recovery.forget();formRecovery.forget();onSaved(batch); }} />
   </>;
   return <section className={styles.setup} aria-label="New live batch setup">
     <ol className={styles.steps} aria-label="Batch creation steps"><li aria-current="step">1. Schedule</li><li>2. Review batch</li><li>3. Publish</li></ol>
-    <DraftRecoveryNotice available={!!recovery.recovered} unavailable={recovery.unavailable} onRestore={() => { if(recovery.recovered){setPrepared(recovery.recovered);setAttempted(true);recovery.acknowledge();} }} onDiscard={recovery.forget} />
+    {!recovery.recovered && <DraftRecoveryNotice available={!!formRecovery.recovered} unavailable={formRecovery.unavailable} onRestore={() => { if(formRecovery.recovered){setForm(formRecovery.recovered);formRecovery.acknowledge();} }} onDiscard={formRecovery.forget} />}
+    <DraftRecoveryNotice available={!!recovery.recovered} unavailable={recovery.unavailable} onRestore={() => { if(recovery.recovered){setPrepared(recovery.recovered);setAttempted(true);formRecovery.acknowledge();recovery.acknowledge();} }} onDiscard={() => { recovery.forget();formRecovery.forget(); }} />
     {prepared ? <div className={styles.form}>
       <h2 ref={heading} tabIndex={-1}>Review the schedule</h2>
       <p><strong>{prepared.request.document.title}</strong> · {V2_TEMPLATE_PRODUCTS[prepared.request.productCode].label}</p>
       <p className={styles.help}>{prepared.request.document.sessions?.length ?? 0} course sessions included. All class times are IST.</p>
       <ul className={styles.review}>{prepared.request.document.events.map(item => <li key={item.key}><strong>{item.title}</strong><span>{new Intl.DateTimeFormat('en-IN',{dateStyle:'medium',timeZone:'UTC'}).format(new Date(Date.parse(prepared.startDate) + item.dayOffset! * 86400000))} · {item.localStartTime} · {item.durationMinutes} min</span></li>)}</ul>
+      <p className={styles.help}>After publication, link each live class to its feedback session in Students &amp; class management before marking classes complete. Sessions are not linked automatically.</p>
       <p className={styles.help}>Continue saves a private schedule. The next step reviews and saves the batch; students receive access only after publication and enrollment.</p>
       <div className={styles.actions}>
         {!attempted && <button type="button" className="btn btn-secondary" onClick={() => {setPrepared(null);recovery.forget();}}>Edit schedule</button>}
         <button type="button" className="btn btn-primary" disabled={pending} onClick={saveSchedule}>{pending ? 'Saving schedule…' : attempted ? 'Retry saving schedule' : 'Save schedule & continue'}</button>
       </div>
     </div> : <form className={styles.form} onSubmit={review}>
+      <fieldset disabled={recoveryPending} className={styles.setupFields}>
       <h2>Batch details</h2><p className={styles.help}>Choose a subject and add the live classes. Each class can have its own date and time.</p>
       <div className={styles.fields}>
-        <label>Subject<select aria-label="Subject" value={subject} onChange={event => {setSubject(event.target.value as Subject);setSourceId('');}}>{(['quant','verbal','di'] as const).map(code => <option key={code} value={code}>{V2_TEMPLATE_PRODUCTS[code].label}</option>)}</select></label>
-        <label>Batch name<input required maxLength={120} value={title} placeholder="e.g. Quant · Weekend batch" onChange={event => setTitle(event.target.value)} /></label>
+        <label>Subject<select aria-label="Subject" value={subject} onChange={event => {changeForm({subject:event.target.value as Subject,sourceId:'',createFeedbackSessions:false});}}>{(['quant','verbal','di'] as const).map(code => <option key={code} value={code}>{V2_TEMPLATE_PRODUCTS[code].label}</option>)}</select></label>
+        <label>Batch name<input required maxLength={120} value={title} placeholder="e.g. Quant · Weekend batch" onChange={event => changeForm({title:event.target.value})} /></label>
       </div>
-      <label className={styles.source}>Include saved course sessions<select aria-label="Include saved course sessions" value={sourceId} onChange={event => setSourceId(event.target.value)}><option value="">Live classes only</option>{sources.map(item => <option value={item.id} key={item.id}>{item.document.title} · {item.document.sessions!.length} sessions</option>)}</select><span className={styles.help}>Optional. Sessions are copied into this draft; the original course stays unchanged.</span></label>
+      <label className={styles.source}>Include saved course sessions<select aria-label="Include saved course sessions" value={sourceId} onChange={event => changeForm({sourceId:event.target.value,createFeedbackSessions:false})}><option value="">New sessions for this batch</option>{sources.map(item => <option value={item.id} key={item.id}>{item.document.title} · {item.document.sessions!.length} sessions</option>)}</select><span className={styles.help}>Existing sessions can be copied into this draft; the original course stays unchanged.</span></label>
+      {!sourceId && <div className={styles.feedbackChoice}><label><input type="checkbox" required checked={createFeedbackSessions} onChange={event => changeForm({createFeedbackSessions:event.target.checked})} /> Create a feedback session for each live class</label><p className={styles.help}>These sessions hold class resources and feedback. Each starts with the class name and no resources. After publication, link each class to its session before marking it complete.</p></div>}
       <div className={styles.sectionTitle}><h2>Live classes</h2><span>India Standard Time</span></div>
       {classes.map((item,index) => <fieldset className={styles.classCard} key={item.key}>
         <legend>Class {index + 1}</legend>
@@ -104,10 +116,11 @@ export default function NewLiveBatch({ templates, drafts, ownerId, onSaved }: {
           <label>Start time (IST)<input type="time" required value={item.time} onChange={event => changeClass(item.key,{time:event.target.value})} /></label>
           <label>Duration (minutes)<input type="number" required min={15} max={720} step={1} value={item.duration||''} onChange={event => changeClass(item.key,{duration:Number(event.target.value)})} /></label>
         </div>
-        {classes.length > 1 && <button type="button" className={styles.remove} aria-label={`Remove class ${index+1}`} onClick={() => setClasses(items => items.filter(entry => entry.key !== item.key))}>Remove class</button>}
+        {classes.length > 1 && <button type="button" className={styles.remove} aria-label={`Remove class ${index+1}`} onClick={() => changeForm({classes:classes.filter(entry => entry.key !== item.key)})}>Remove class</button>}
       </fieldset>)}
-      <button className="btn btn-secondary" type="button" disabled={classes.length>=100} onClick={() => setClasses(items => [...items,newClass()])}>+ Add class</button>
+      <button className="btn btn-secondary" type="button" disabled={classes.length>=100} onClick={() => changeForm({classes:[...classes,newClass()]})}>+ Add class</button>
       <div className={styles.footer}><p className={styles.help}>Review first. Changes remain private until published.</p><button className="btn btn-primary" type="submit">Review schedule</button></div>
+      </fieldset>
     </form>}
     {error && <p role="alert" className="workflow-error">{error}</p>}
   </section>;
