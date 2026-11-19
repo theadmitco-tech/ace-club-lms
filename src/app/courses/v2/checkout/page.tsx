@@ -6,9 +6,10 @@ import type { V2ProductCode } from '@/lib/v2Products';
 import CheckoutForm from './CheckoutForm';
 import styles from '@/components/courses/courses.module.css';
 export const dynamic = 'force-dynamic';
-export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ upgrade?: string }> }) {
+export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ upgrade?: string; auth?: string }> }) {
   if (!isV2CheckoutEnabled()) notFound();
-  const upgradeRequested = (await searchParams).upgrade === '1';
+  const params = await searchParams;
+  const upgradeRequested = params.upgrade === '1';
   const loaded = await Promise.all([loadV2Sales(), loadV2CheckoutAccount()]).catch(() => null);
   if (!loaded || !loaded[0]) return <main className={styles.main}><h1>Registration is temporarily unavailable</h1><p>The catalogue or account could not be verified. Please retry shortly.</p><Link href="/courses/v2">Return to courses</Link></main>;
   const [sales, account] = loaded;
@@ -19,6 +20,6 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
     return <main className={`${styles.page} ${styles.main}`}><Link href="/courses/v2">← Course catalogue</Link>
       <div className={styles.intro}><span className={styles.eyebrow}>YOUR NEXT CHAPTER</span><h1>Choose your course. Start learning.</h1><p>One account for the curriculum, recordings and live classes.</p></div>
       <div className={styles.notice}><strong>Test checkout</strong><p>This Preview uses simulated payments. No real money is charged.</p></div>
-      <CheckoutForm {...sales} {...account} prices={prices} upgradeRequested={upgradeRequested} />
+      <CheckoutForm {...sales} {...account} prices={prices} upgradeRequested={upgradeRequested} signInFailed={params.auth === 'failed'} />
     </main>;
 }

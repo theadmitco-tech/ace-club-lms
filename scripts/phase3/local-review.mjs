@@ -41,7 +41,7 @@ function privatePaymentFile(filename) {
 
 export async function main(argv = process.argv.slice(2)) {
   if (argv.includes('--help')) {
-    console.log('Local review: node scripts/phase3/local-review.mjs --staging-env <private-file> [--razorpay-env <private-test-file>] [--port 3030] [--check]');
+    console.log('Local review: node scripts/phase3/local-review.mjs --staging-env <private-file> [--razorpay-env <private-test-file>] [--port 3000] [--check]');
     return;
   }
   const options = {};
@@ -60,7 +60,7 @@ export async function main(argv = process.argv.slice(2)) {
   }
   const staging = readConfig(options['--staging-env'], { database: false });
   const payment = options['--razorpay-env'] ? privatePaymentFile(options['--razorpay-env']) : null;
-  const port = Number(options['--port'] || 3030);
+  const port = Number(options['--port'] || 3000);
   const env = reviewEnvironment(staging, payment, port, process.env);
   console.log(JSON.stringify({ check: 'local_review_configuration', stagingProject: 'eyphkkginlgoaxflauog',
     loopbackOnly: true, checkoutTestEnabled: Boolean(payment), credentialsPrinted: false }));

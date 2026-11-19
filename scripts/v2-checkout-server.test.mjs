@@ -195,3 +195,42 @@ test('unknown actions and non-Admin recovery stop before privileged checkout loo
  assert.equal((await h.route.POST(h.request({action:'admin-reconcile'}))).status,403);
  assert.equal(h.calls.length,0);
 });
+
+function signupCallbackHarness() {
+ const calls=[];
+ const state={enabled:true,throws:false,error:null};
+ const route=load('src/app/auth/v2/callback/route.ts',{
+  'next/server':{NextResponse:class extends Response { static redirect(url){return Response.redirect(url,307);} }},
+  '@/lib/server/v2Checkout':{isV2CheckoutEnabled:()=>state.enabled},
+  '@/utils/supabase/server':{createClient:async()=>({auth:{exchangeCodeForSession:async code=>{
+   calls.push(code);if(state.throws)throw Error('private provider diagnostic');return {error:state.error};
+  }}})},
+ });
+ return {calls,state,route,request:query=>new Request('https://preview.example.test/auth/v2/callback'+query)};
+}
+test('checkout signup cancellation returns to same-site retry without exchanging a code',async()=>{
+ const h=signupCallbackHarness();
+ for(const query of ['','?error=access_denied&error_description=private','?code=unused&error=access_denied&next=https://foreign.invalid']){
+  const response=await h.route.GET(h.request(query));
+  assert.equal(response.status,307);
+  assert.equal(response.headers.get('location'),'https://preview.example.test/courses/v2/checkout?auth=failed');
+ }
+ assert.deepEqual(h.calls,[]);
+});
+test('expired or interrupted checkout signup returns a safe retry instead of a server error',async()=>{
+ for(const throws of [false,true]){
+  const h=signupCallbackHarness();h.state.throws=throws;h.state.error={message:'private provider diagnostic'};
+  const response=await h.route.GET(h.request('?code=synthetic-expired'));
+  assert.equal(response.status,307);
+  assert.equal(response.headers.get('location'),'https://preview.example.test/courses/v2/checkout?auth=failed');
+  assert.deepEqual(h.calls,['synthetic-expired']);
+ }
+});
+test('successful checkout signup returns to checkout while a disabled feature rejects the callback',async()=>{
+ const h=signupCallbackHarness();
+ assert.equal((await h.route.GET(h.request('?code=synthetic-valid&next=https://foreign.invalid'))).headers.get('location'),'https://preview.example.test/courses/v2/checkout');
+ assert.deepEqual(h.calls,['synthetic-valid']);
+ h.state.enabled=false;
+ assert.equal((await h.route.GET(h.request('?code=another'))).status,404);
+ assert.deepEqual(h.calls,['synthetic-valid']);
+});

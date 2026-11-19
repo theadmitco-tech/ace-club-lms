@@ -18,9 +18,9 @@ async function post(body: Record<string, unknown>) {
   if (!response.ok) throw new Error(result.error || 'Checkout unavailable.');
   return result;
 }
-export default function CheckoutForm({ batches, availability, email, checkouts, packages, prices, upgradeRequested, renderedAt }: {
+export default function CheckoutForm({ batches, availability, email, checkouts, packages, prices, upgradeRequested, renderedAt, signInFailed = false }: {
   batches: SalesBatch[]; availability: { batchId: string; placesRemaining: number }[]; email: string | null;
-  checkouts: CheckoutSummary[]; packages: PurchasePackage[]; prices: Record<string, number | null>; upgradeRequested: boolean; renderedAt: number;
+  checkouts: CheckoutSummary[]; packages: PurchasePackage[]; prices: Record<string, number | null>; upgradeRequested: boolean; renderedAt: number; signInFailed?: boolean;
 }) {
   const router = useRouter();
   const [selected, setSelected] = useState<V2ProductCode[]>([]), [chosen, setChosen] = useState<Record<string, string>>({});
@@ -85,7 +85,9 @@ export default function CheckoutForm({ batches, availability, email, checkouts, 
   }
   return <>
     <Script src="https://checkout.razorpay.com/v1/checkout.js" onReady={() => setScriptReady(true)} onError={() => setMessage('The payment form failed to load. Please retry this page.')} />
-    {!email ? <section className={styles.panel}><h2>Continue with Google</h2><p>The verified Google email becomes the learning account. Course outlines and prices remain available before sign-in.</p><button type="button" className={styles.button} disabled={busy} onClick={signIn}>Continue with Google</button></section> : <p className={styles.notice}>Signed in as {email}</p>}
+    {!email ? <section className={styles.panel}><h2>Continue with Google</h2>
+      {signInFailed && <p role="alert">Google sign-in could not be completed. Please select Continue with Google to try again.</p>}
+      <p>The verified Google email becomes the learning account. Course outlines and prices remain available before sign-in.</p><button type="button" className={styles.button} disabled={busy} onClick={signIn}>Continue with Google</button></section> : <p className={styles.notice}>Signed in as {email}</p>}
     <form onSubmit={submit} className={form.grid}>
       <section className={styles.panel}><h2>1. Choose the curriculum</h2>
         <fieldset disabled={busy} className={styles.choices}><legend>Full Course or individual subjects</legend>
