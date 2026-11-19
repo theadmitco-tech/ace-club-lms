@@ -1,0 +1,190 @@
+{
+  "scope": "Local implementation and synthetic browser/disposable database verification; no staging deletion.",
+  "testedBaseCommit": "32314eaf3859433c67ff64b21815d7273b503766",
+  "sourceSha256": {
+    "src/app/admin/v2/content/DeleteSession.tsx": "0f3bc9c7a21087d6c40359e0306209c53de40aa1229d9ef13370d5618797441f",
+    "src/app/admin/v2/content/CourseResourceBrowser.tsx": "29aa4b0d7a70a035f78814c7c0d4510b6c650a69f69272382ccf1b54dcf68eca",
+    "src/app/admin/v2/content/content.module.css": "c40f130ccd9e0e7ce4fd8699809b1d8f197c79129c4d5098333b6359d48ee37a",
+    "src/lib/v2SessionDeletion.ts": "0ee5b5a6928d6e276231bfb91a89fbbf919aab0ab93e47b1fcaccde32eecbb5e",
+    "scripts/session-deletion.test.mjs": "3cf873897b78ffe5a4e6dfa017b5406e01bb63d7efb8128a53c0517feb949e2a",
+    "scripts/browser/v2-phase5/verify.mjs": "b4b265060172d155cc27c58deb95979450a5639a5029a1957ab54255601d1194",
+    ".github/workflows/verify.yml": "559ee30d0fa385de67c75032c5a112fadc5ce366c3b3253e7924e342f67d62fa"
+  },
+  "databaseAndUnitChecks": {
+    "passed": 12,
+    "failed": 0,
+    "command": "node --test --test-reporter=tap scripts/session-deletion.test.mjs scripts/admin-session-actions.test.mjs scripts/session-order.test.mjs"
+  },
+  "browser": {
+    "passed": 39,
+    "failed": 0,
+    "mode": "isolated UI fixture; synthetic learning state and mutation responses; session and batch Server Actions replaced by fixture HTTP adapters; not hosted or database authorization evidence",
+    "results": [
+      {
+        "name": "Session deletion cancellation preserves the outline and returns keyboard focus",
+        "status": "passed"
+      },
+      {
+        "name": "Session deletion saves only the selected session removal as a private draft",
+        "status": "passed"
+      },
+      {
+        "name": "Session deletion mobile retry preserves request identity and accessible dialog controls",
+        "status": "passed"
+      },
+      {
+        "name": "Session deletion rejects stale lists and routes existing drafts to review without overwriting",
+        "status": "passed"
+      },
+      {
+        "name": "New session prepares all resources privately before publication and safely retries the complete draft",
+        "status": "passed"
+      },
+      {
+        "name": "An empty new session offers private resource preparation without claiming publication readiness",
+        "status": "passed"
+      },
+      {
+        "name": "Resource validation identifies the field without reporting a connection failure",
+        "status": "passed"
+      },
+      {
+        "name": "Upload validation focuses the file field and preserves a protected existing source",
+        "status": "passed"
+      },
+      {
+        "name": "Resource locations stay compact and cancel preserves the original placement",
+        "status": "passed"
+      },
+      {
+        "name": "Location dialog stages changes, supports Escape and never submits the resource on search Enter",
+        "status": "passed"
+      },
+      {
+        "name": "Location summary and modal remain accessible and fit mobile screens",
+        "status": "passed"
+      },
+      {
+        "name": "Reordering stays in the outline while the selected session content remains visible",
+        "status": "passed"
+      },
+      {
+        "name": "Keyboard reordering announces moves, preserves focus, undoes and saves exact order",
+        "status": "passed"
+      },
+      {
+        "name": "Mouse drag reorders through a visible drop target without saving automatically",
+        "status": "passed"
+      },
+      {
+        "name": "Mobile move buttons and retry preserve the same session request",
+        "status": "passed"
+      },
+      {
+        "name": "A stale session list cannot overwrite the current course order",
+        "status": "passed"
+      },
+      {
+        "name": "Existing unpublished changes block reordering without new writes",
+        "status": "passed"
+      },
+      {
+        "name": "Narrow layouts retain readable titles, touch targets and reduced-motion behavior",
+        "status": "passed"
+      },
+      {
+        "name": "Automated accessibility checks pass for browsing, reordering, adding and renaming",
+        "status": "passed"
+      },
+      {
+        "name": "Name review can return to editing and closing restores focus",
+        "status": "passed"
+      },
+      {
+        "name": "Inline rename supports double click, cancellation and reviewed publication",
+        "status": "passed"
+      },
+      {
+        "name": "Keyboard rename preserves the request on interrupted save and rejects stale publication",
+        "status": "passed"
+      },
+      {
+        "name": "Shared heading edits retain every target for review",
+        "status": "passed"
+      },
+      {
+        "name": "Mobile rename rejects empty names and Escape leaves no draft",
+        "status": "passed"
+      },
+      {
+        "name": "Adding a session keeps existing content and retries the same private draft",
+        "status": "passed"
+      },
+      {
+        "name": "Existing course drafts must be reviewed before another session is added",
+        "status": "passed"
+      },
+      {
+        "name": "Five reading placements render once and follow the video order",
+        "status": "passed"
+      },
+      {
+        "name": "Universal outer readings appear once across authorized session targets",
+        "status": "passed"
+      },
+      {
+        "name": "Admin preview navigation and readings make no learning requests",
+        "status": "passed"
+      },
+      {
+        "name": "Locked subject resources are absent including all outer reading placements",
+        "status": "passed"
+      },
+      {
+        "name": "Admin creates universal content and reviews affected sessions before confirmation",
+        "status": "passed"
+      },
+      {
+        "name": "Admin editing an original item preserves its replacement identity and order",
+        "status": "passed"
+      },
+      {
+        "name": "Subject navigation retains the selected session after editing",
+        "status": "passed"
+      },
+      {
+        "name": "Only three subjects are offered and switching opens the matching library",
+        "status": "passed"
+      },
+      {
+        "name": "Mobile subject and session selection stays compact and editable",
+        "status": "passed"
+      },
+      {
+        "name": "Multiple readings offer named ordering without immediate publication",
+        "status": "passed"
+      },
+      {
+        "name": "Failed save retains values and never publishes",
+        "status": "passed"
+      },
+      {
+        "name": "Conflict removes confirmation and requires latest-version review plus a fresh save",
+        "status": "passed"
+      },
+      {
+        "name": "Leaving a changed resource can be cancelled without losing edits",
+        "status": "passed"
+      }
+    ],
+    "browserErrors": []
+  },
+  "staticChecks": {
+    "lint": "passed",
+    "typescript": "passed",
+    "webpackBuild": "passed"
+  },
+  "visualReview": "Synthetic desktop and mobile confirmation dialog screenshots inspected locally; screenshots not published.",
+  "stagingMutated": false,
+  "migrationRequired": false
+}

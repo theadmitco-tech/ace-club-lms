@@ -163,6 +163,45 @@ function fivePlacements(){
  state.placedItems=state.placements.map(p=>({key:p.key,title:`Reading ${p.placement}`,url:'https://example.test/reading'}));
 }
 async function runTests() {
+ await test('Session deletion cancellation preserves the outline and returns keyboard focus',async page=>{
+  await page.goto(origin+'/admin/v2/content');
+  const trigger=page.getByRole('button',{name:'Delete session',exact:true});await trigger.click();
+  const dialog=page.getByRole('dialog',{name:'Delete this session?',exact:true});await dialog.waitFor();
+  assert.equal(await dialog.getByRole('button',{name:'Cancel',exact:true}).evaluate(el=>el===document.activeElement),true);
+  await page.keyboard.press('Escape');await until(async()=>assert.equal(await dialog.count(),0));
+  await until(async()=>assert.equal(await trigger.evaluate(el=>el===document.activeElement),true));
+  assert.deepEqual(state.sessionCalls,[]);
+  await page.getByRole('button',{name:/01 Quant 4/}).waitFor();
+ });
+ await test('Session deletion saves only the selected session removal as a private draft',async page=>{
+  await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'Delete session',exact:true}).click();
+  const dialog=page.getByRole('dialog');await page.screenshot({path:path.join(output,'delete-session-desktop.png'),fullPage:true});
+  await dialog.getByRole('button',{name:'Delete session',exact:true}).click();
+  await page.getByRole('heading',{name:'Deletion saved as a draft',exact:true}).waitFor();
+  const saved=state.sessionCalls.find(c=>c.action==='save').input;
+  assert.deepEqual(saved.sessions,sourceSessions.filter(s=>s.key===quant5));assert.deepEqual(saved.events,[existingEvent]);assert.equal(saved.expectedRevision,3);
+  assert.equal(state.editorCalls.length,0);
+  assert.equal(await dialog.getByRole('link',{name:'Review & publish deletion',exact:true}).getAttribute('href'),'/admin/v2/batches?batch='+batchId+'&review=1');
+  await dialog.getByRole('button',{name:'Done',exact:true}).click();await page.getByText('Session changes saved as a draft',{exact:true}).waitFor();
+  await page.getByRole('button',{name:/01 Quant 4/}).waitFor();
+ });
+ await test('Session deletion mobile retry preserves request identity and accessible dialog controls',async page=>{
+  state.failSessionSave=true;await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'Delete session',exact:true}).click();
+  const dialog=page.getByRole('dialog');await noOverflow(page);
+  await page.addScriptTag({path:path.join(repo,'node_modules/axe-core/axe.min.js')});
+  assert.deepEqual(await page.evaluate(async()=>{const r=await window.axe.run(document.querySelector('dialog'),{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}});return r.violations.map(v=>v.id);}),[]);
+  await page.screenshot({path:path.join(output,'delete-session-mobile.png'),fullPage:true});
+  await dialog.getByRole('button',{name:'Delete session',exact:true}).click();await dialog.getByRole('alert').waitFor();
+  await dialog.getByRole('button',{name:'Retry saving deletion',exact:true}).click();await page.getByRole('heading',{name:'Deletion saved as a draft',exact:true}).waitFor();
+  const saves=state.sessionCalls.filter(c=>c.action==='save');assert.equal(saves.length,2);assert.deepEqual(saves[0],saves[1]);
+ },true);
+ await test('Session deletion rejects stale lists and routes existing drafts to review without overwriting',async page=>{
+  state.staleSessionList=true;await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'Delete session',exact:true}).click();
+  let dialog=page.getByRole('dialog');await dialog.getByRole('button',{name:'Delete session',exact:true}).click();await dialog.getByRole('alert').filter({hasText:/session list changed/}).waitFor();assert.deepEqual(state.sessionCalls.map(c=>c.action),['load']);
+  await dialog.getByRole('button',{name:'Cancel',exact:true}).click();state.sessionCalls=[];state.staleSessionList=false;state.pendingSession=true;
+  await page.getByRole('button',{name:'Delete session',exact:true}).click();dialog=page.getByRole('dialog');await dialog.getByRole('button',{name:'Delete session',exact:true}).click();
+  await dialog.getByRole('link',{name:'Review saved draft changes',exact:true}).waitFor();assert.deepEqual(state.sessionCalls.map(c=>c.action),['load']);
+ });
  await test('New session prepares all resources privately before publication and safely retries the complete draft',async page=>{
   const original=structuredClone(sourceSessions);await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'+ Add session',exact:true}).click();
   const editor=page.getByRole('region',{name:'Add session',exact:true});await editor.getByLabel('New session name',{exact:true}).fill('Ratios workshop');

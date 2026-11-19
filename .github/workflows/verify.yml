@@ -66,6 +66,7 @@ jobs:
       - run: npm run test:v2:phase5
       - run: npm run test:v2:phase6
       - run: node --test scripts/admin-student-access.test.mjs scripts/admin-resource-order.test.mjs
+      - run: node --test scripts/session-deletion.test.mjs scripts/admin-session-actions.test.mjs scripts/session-order.test.mjs
       - run: npm run test:v2:phase7
       - name: Rehearse synthetic database recovery
         run: node --test scripts/phase7/recovery-rehearsal.test.mjs
