@@ -1,3 +1,4 @@
+import { courseReadmePosition } from './v2CourseReadmes';
 import { isV2MeetingBatchId } from './v2Meetings';
 import { isV2ContentUrl, type V2CourseSession, type V2SessionContentKind } from './v2Templates';
 export const CONTENT_PLACEMENTS = {
@@ -20,6 +21,7 @@ export function validContentDocument(v: unknown): v is ContentDocument {
     || !Array.isArray(v.targets) || v.targets.length < 1 || v.targets.length > 200) return false;
   return v.targets.every(t => object(t) && Object.keys(t).length === 7 && isV2MeetingBatchId(t.batchId) && isV2MeetingBatchId(t.sessionKey)
     && Number.isInteger(t.publicationRevision) && Number(t.publicationRevision) > 0 && Number(t.publicationRevision) < 1e9
+    && !(typeof t.sessionKey === 'string' && courseReadmePosition(t.sessionKey) && (v.kind !== 'preSessionReads' || t.placement !== 'session'))
     && typeof t.placement === 'string' && Object.hasOwn(CONTENT_PLACEMENTS,t.placement)
     && Number.isInteger(t.order) && Number(t.order) >= 0 && Number(t.order) <= 9999
     && (['heading','materials','recordings'].includes(String(v.kind)) ? t.placement === 'session' : true)

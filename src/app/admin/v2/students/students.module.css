@@ -1,0 +1,44 @@
+.workspace { color: #293f36; }
+.header { margin: 12px 0 28px; }
+.header p { margin-top: 8px; }
+.searchForm { margin: 0 0 28px; }
+.searchForm label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.searchControls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.searchInput { display: flex; align-items: center; gap: 10px; flex: 0 1 390px; min-width: 180px; padding: 0 14px; border: 1px solid #bdcdbf; border-radius: 8px; background: #fff; color: #52645b; }
+.searchInput:focus-within { outline: 2px solid #35775e; outline-offset: 2px; }
+.searchInput svg { flex: none; }
+.searchInput input { border: 0; outline: none; width: 100%; min-width: 0; min-height: 44px; padding: 10px 0; background: transparent; font: inherit; font-size: 14px; color: #293f36; caret-color: #285b47; }
+.searchInput input::placeholder { color: #617166; }
+.workspace .clear { display: inline-flex; align-items: center; min-height: 44px; padding: 8px; color: #285b47; text-decoration: underline; text-underline-offset: 4px; font-size: 14px; }
+.resultSummary { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px 16px; margin: 12px 0; font-size: 13px; color: #52645b; }
+.resultSummary p { margin: 0; overflow-wrap: anywhere; }
+.resultSummary span { font-variant-numeric: tabular-nums; }
+.tableWrap { border: 1px solid #d8e2dc; border-radius: 12px; background: #fff; overflow: hidden; }
+.table { width: 100%; border-collapse: collapse; text-align: left; }
+.table th { padding: 14px 20px; background: #f0f5f1; color: #52645b; font-size: 12px; font-weight: 600; }
+.table td { padding: 18px 20px; border-top: 1px solid #e2e8e3; vertical-align: middle; }
+.table td:first-child { width: 55%; overflow-wrap: anywhere; }
+.table td:last-child { text-align: right; }
+.table strong { display: block; font-size: 15px; font-weight: 600; line-height: 1.5; }
+.email { display: block; font-size: 13px; color: #52645b; margin-top: 5px; overflow-wrap: anywhere; }
+.table tbody tr { transition: background-color 140ms ease; }
+.table tbody tr:hover, .table tbody tr:focus-within { background: #f8faf8; }
+.status { display: inline-flex; padding: 5px 9px; border-radius: 5px; background: #f1f3f2; color: #52645b; font-size: 12px; line-height: 1.5; }
+.status[data-active=true] { background: #e9f2ec; color: #24543e; }
+.workspace .openStudent { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 44px; padding: 9px 12px; border: 1px solid #cad8ce; border-radius: 7px; color: #245b49; text-decoration: none; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.workspace .openStudent:hover { background: #edf3ef; border-color: #547763; }
+.pagination { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 16px; margin: 18px 0; font-size: 13px; }
+.pagination a, .empty a, .error a, .moreTools a { display: inline-flex; align-items: center; min-height: 44px; color: #285b47; text-decoration: underline; text-underline-offset: 4px; }
+.note { margin: 18px 0 24px; color: #52645b; font-size: 13px; line-height: 1.65; }
+.empty, .error { padding: 32px 24px; border: 1px solid #d8e2dc; border-radius: 12px; background: #fff; }
+.empty h2, .error h2 { font-size: 19px; margin: 0 0 8px; }
+.empty p, .error p { margin: 0; font-size: 14px; line-height: 1.7; color: #52645b; }
+.error { border-color: #dec7ba; background: #fff8f2; }
+.moreTools { border-top: 1px solid #dce5df; padding-top: 12px; margin-top: 24px; font-size: 14px; }
+.moreTools summary { display: list-item; width: fit-content; padding: 12px 0; color: #40594d; cursor: pointer; }
+.moreTools nav { display: flex; gap: 8px 24px; flex-wrap: wrap; }
+.workspace :is(a,button,summary):focus-visible { outline: 2px solid #35775e; outline-offset: 3px; }
+.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media(max-width:750px) { .table th, .table td { padding: 14px 12px; } .table td:first-child { width: auto; } .table .openStudent { white-space: normal; } }
+@media(max-width:480px) { .table { table-layout: fixed; } .table th:first-child { width: 45%; } .table th:nth-child(2) { width: 27%; } .table th:last-child { width: 28%; } .table th, .table td { padding: 12px 8px; } .table .openStudent { padding: 8px; gap: 4px; } .table .openStudent span { display: none; } .searchInput { flex: 1 1 100%; } }
+@media(prefers-reduced-motion:reduce) { .table tbody tr { transition: none; } }

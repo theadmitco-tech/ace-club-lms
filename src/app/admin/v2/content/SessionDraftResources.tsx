@@ -1,24 +1,27 @@
 'use client';
 
-import { V2_SESSION_STAGES } from '@/lib/v2SessionPresentation';
+import { v2SessionStages } from '@/lib/v2SessionPresentation';
 import type { V2SessionContent, V2SessionContentKind } from '@/lib/v2Templates';
 import styles from './session-draft-resources.module.css';
 
-export default function SessionDraftResources({ content, onChange, invalidField, errorId }: {
-  content: V2SessionContent; onChange: (content: V2SessionContent) => void; invalidField: string | null; errorId: string;
+export default function SessionDraftResources({ content, onChange, invalidField, errorId, sessionKey }: {
+  content: V2SessionContent; onChange: (content: V2SessionContent) => void; invalidField: string | null; errorId: string; sessionKey?: string;
 }) {
   function change(kind: V2SessionContentKind, key: string, field: 'title' | 'url', value: string) {
     onChange({ ...content, [kind]: content[kind].map(item => item.key === key ? { ...item, [field]: value } : item) });
   }
   function add(kind: V2SessionContentKind) {
+    const trigger = document.activeElement;
     const key = crypto.randomUUID();
     onChange({ ...content, [kind]: [...content[kind], { key, title: '', url: '' }] });
-    requestAnimationFrame(() => document.getElementById(`${key}-title`)?.focus());
+    requestAnimationFrame(() => { if (document.activeElement === trigger) document.getElementById(`${key}-title`)?.focus(); });
   }
+  const stages = v2SessionStages(sessionKey);
+  const readingOnly = stages.length === 1;
   return <section aria-label="New session resources" className={styles.resources}>
-    <h3>Session resources</h3>
-    <p>Readings, recordings and worksheets can be prepared now using HTTPS links or existing protected PDF links. All resources stay private with the session draft.</p>
-    {V2_SESSION_STAGES.map(({ kind, title }) => <details key={kind} className={styles.stage}>
+    <h3>{readingOnly ? 'README content' : 'Session resources'}</h3>
+    <p>{readingOnly ? 'Add reading links or PDF documents. Changes stay private until published.' : 'Readings, recordings and worksheets can be prepared now using HTTPS links or existing protected PDF links. All resources stay private with the session draft.'}</p>
+    {stages.map(({ kind, title }) => <details key={kind} className={styles.stage} open={readingOnly || undefined}>
       <summary>{title}<span>{content[kind].length ? `${content[kind].length} added` : 'Optional'}</span></summary>
       {content[kind].map((item, index) => <fieldset key={item.key} className={styles.item}>
         <legend>{title} {index + 1}</legend>

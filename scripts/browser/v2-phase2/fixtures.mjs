@@ -40,9 +40,10 @@ function instants(kind, date, time, duration) {
 export function batchProposal(input, state) {
   const source = state.templates.find((item) => item.id === input.templateId);
   const previous = state.drafts.find((item) => item.id === input.id);
-  const events = previous ? previous.events.map((event) => {
-    const edit = input.events.find((item) => item.key === event.key);
-    return { ...event, ...edit, ...instants(event.kind, edit.localDate, edit.localStartTime, edit.durationMinutes) };
+  const events = previous ? input.events.map((edit) => {
+    const event = previous.events.find((item) => item.key === edit.key) ?? {};
+    const kind = edit.kind ?? event.kind ?? 'live';
+    return { ...event, ...edit, kind, ...instants(kind, edit.localDate, edit.localStartTime, edit.durationMinutes) };
   }) : source.document.events.map((event) => {
     const date = event.kind === 'outline' ? null
       : new Date(Date.parse(`${input.startDate}T00:00:00Z`) + event.dayOffset * 86400000).toISOString().slice(0, 10);
@@ -140,6 +141,12 @@ const handlers = {
     return { data: question, error: null };
   },
   listV2TemplateDrafts: (state) => state.readError ? { status: 'error' } : { status: 'ready', templates: state.templates },
+  fixtureBatchArchives: (state) => state.archives ?? [],
+  fixtureArchiveBatch: (state, input) => {
+    state.archives = [{batchId: input.batchId,revision:input.revision+1,archived:input.archived}];
+    state.publications = state.publications.map(p=>p.batchId===input.batchId?{...p,state:'unpublished',revision:p.revision+1}:p);
+    return {error:null};
+  },
   listV2BatchDrafts: (state) => state.readError ? { status: 'error' } : { status: 'ready', drafts: state.drafts },
   listV2BatchPublications: (state) => state.readError ? { status: 'error' } : { status: 'ready', publications: state.publications },
   readV2MeetingDraft: (state, batchId) => ({ status: 'ready', draft: {

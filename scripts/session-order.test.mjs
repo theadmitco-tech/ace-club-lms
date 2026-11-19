@@ -3,10 +3,12 @@ import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import test from 'node:test';
 import ts from 'typescript';
+const readmes = {};
+runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/v2CourseReadmes.ts', import.meta.url), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, {exports:readmes});
 const exports = {};
 const source = readFileSync(new URL('../src/lib/v2SessionOrder.ts', import.meta.url), 'utf8');
 runInNewContext(ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText, {
-  exports, require: name => { assert.equal(name, './v2Batches'); return { editableV2BatchEvents: events => events }; },
+  exports, require: name => { if(name === './v2CourseReadmes') return readmes; assert.equal(name, './v2Batches'); return { editableV2BatchEvents: events => events }; },
 });
 const { moveSessionKey, reorderedSessionInput } = exports;
 const json = value => JSON.parse(JSON.stringify(value));
@@ -17,7 +19,7 @@ test('Moves preserve identity and the source array without duplicates', () => {
   assert.equal(moveSessionKey(source,'missing',1),source);assert.equal(moveSessionKey(source,'a',0),source);
 });
 test('A reordered draft retains exact session objects, metadata and scheduled events', () => {
-  const input=reorderedSessionInput(draft,['a','b','c'],['c','a','b'],'request');assert.equal(input.sessions[0],draft.sessions[2]);assert.equal(input.events,draft.events);assert.equal(input.expectedRevision,4);assert.equal(input.requestId,'request');assert.equal(input.templateRevision,2);assert.deepEqual(input.sessions.map(s=>s.key),['c','a','b']);assert.deepEqual(draft.sessions.map(s=>s.key),['a','b','c']);
+  const input=reorderedSessionInput(draft,['a','b','c'],['c','a','b'],'request');assert.equal(input.sessions[0],draft.sessions[2]);assert.equal(input.events,draft.events);assert.equal(input.expectedRevision,4);assert.equal(input.requestId,'request');assert.equal(input.templateRevision,2);assert.deepEqual(json(input.sessions.map(s=>s.key)),['c','a','b']);assert.deepEqual(draft.sessions.map(s=>s.key),['a','b','c']);
 });
 test('Missing, duplicated, extra and foreign session keys are rejected', () => {
   for(const keys of [['a','a','c'],['a','b'],['a','b','c','d'],['a','b','foreign']])assert.throws(()=>reorderedSessionInput(draft,['a','b','c'],keys,'request'),/incomplete/);

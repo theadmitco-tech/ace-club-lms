@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { courseReadmePosition, withCourseReadmes, pinCourseReadmes } from '@/lib/v2CourseReadmes';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { V2PublishedCourse } from '@/lib/v2StudentDelivery';
@@ -53,15 +54,17 @@ function FeedbackForm({ obligation, onSaved }: { obligation: V2LearningObligatio
 }
 export function V2LearningWorkspace({ course, learning, initialView = 'recordings', placements = [], preview = false }: { course: V2PublishedCourse; learning: V2LearningState; initialView?: 'recordings' | 'live'; placements?: ContentPlacementView[]; preview?: boolean }) {
   const router = useRouter();
-  const initial = learning.sessions.find(s => s.key === learning.lastSessionKey && !s.locked)?.key ?? learning.sessions.find(s => !s.locked)?.key ?? null;
+  const courseSessions = course.productCode === 'full_course' ? course.sessions : withCourseReadmes(course.batchId, course.productCode, course.sessions);
+  const outlineSessions = pinCourseReadmes([...learning.sessions, ...courseSessions.filter(session => courseReadmePosition(session.key) && !learning.sessions.some(item => item.key === session.key)).map(session => ({ key: session.key, title: session.title, section: session.section, locked: false }))]);
+  const initial = outlineSessions.find(s => s.key === learning.lastSessionKey && !s.locked)?.key ?? outlineSessions.find(s => !s.locked)?.key ?? null;
   const [selected, setSelected] = useState<string | null>(initial), [tab, setTab] = useState<'recordings' | 'live'>(initialView);
-  const [subject, setSubject] = useState<string>(() => learning.sessions.find(s => s.key === initial)?.section ?? 'quant');
-  const subjects = ['quant', 'verbal', 'di', 'programme'].filter(section => learning.sessions.some(session => session.section === section));
-  const subjectSessions = learning.sessions.filter(session => session.section === subject);
+  const [subject, setSubject] = useState<string>(() => outlineSessions.find(s => s.key === initial)?.section ?? 'quant');
+  const subjects = ['quant', 'verbal', 'di', 'programme'].filter(section => outlineSessions.some(session => session.section === section));
+  const subjectSessions = outlineSessions.filter(session => session.section === subject);
   const [message, setMessage] = useState(''), [feedbackId, setFeedbackId] = useState<string | null>(null);
   const [focus, setFocus] = useState(false), [largeText, setLargeText] = useState(false);
   const feedbackRef = useRef<HTMLElement>(null);
-  const active = course.sessions.find(s => s.key === selected && learning.sessions.some(item => item.key === s.key && item.section === s.section && !item.locked));
+  const active = courseSessions.find(s => s.key === selected && outlineSessions.some(item => item.key === s.key && item.section === s.section && !item.locked));
   const feedbackSessions = Array.from(new Map(learning.obligations.map(item => [
     `${item.batchId}:${item.sessionKey}`, learning.obligations.find(other => other.batchId === item.batchId && other.sessionKey === item.sessionKey && other.source === 'live') ?? item,
   ])).values());
@@ -73,7 +76,7 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
     window.addEventListener('keydown', escape); return () => window.removeEventListener('keydown', escape);
   }, [focus]);
   async function progress(sessionKey: string, itemKey: string | null, state: 'opened' | 'read') {
-    if (preview) return;
+    if (preview || !learning.sessions.some(session => session.key === sessionKey)) return;
     try {
       await saveLearning({ action: 'progress', batchId: course.batchId, sessionKey, itemKey, state, publicationRevision: learning.publicationRevision });
       router.refresh();
@@ -82,14 +85,14 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
   const mode = preview ? 'admin-preview' : 'student';
   const learningForSession = (sessionKey: string): V2ResourceLearning => ({ publicationRevision: learning.publicationRevision, feedbackTracking: course.sessions.find(s => s.key === sessionKey)?.section !== 'programme', progress: learning.progress.filter(p => p.sessionKey === sessionKey), onProgress: (itemKey,state) => progress(sessionKey,itemKey,state), onFeedbackDue: () => router.refresh() });
   function select(key: string) {
-    if (!learning.sessions.some(s => s.key === key && !s.locked)) return;
-    setSubject(learning.sessions.find(s => s.key === key)!.section);
+    if (!outlineSessions.some(s => s.key === key && !s.locked)) return;
+    setSubject(outlineSessions.find(s => s.key === key)!.section);
     setSelected(key); setTab('recordings'); setMessage(''); void progress(key, null, 'opened');
   }
   function chooseSubject(section: string) {
     setSubject(section);
-    const next = learning.sessions.find(s => s.section === section && s.key === learning.lastSessionKey && !s.locked)
-      ?? learning.sessions.find(s => s.section === section && !s.locked);
+    const next = outlineSessions.find(s => s.section === section && s.key === learning.lastSessionKey && !s.locked)
+      ?? outlineSessions.find(s => s.section === section && !s.locked);
     setSelected(next?.key ?? null);
     setMessage('');
   }
@@ -116,9 +119,9 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
       {!focus && <div className={styles.subjects} role="group" aria-label="Course subjects">{subjects.map(section => <button key={section} type="button" aria-label={sectionName(section)} aria-pressed={subject === section} onClick={() => chooseSubject(section)}>{sectionName(section)}{learning.obligations.some(o => o.section === section) && <small>Feedback due</small>}</button>)}</div>}
       {!focus && last && last.section === subject && <section className={styles.resume}><div><span>Last opened</span><h2>Pick up where you left off</h2><p>{last.title}</p><small>Session order is flexible.</small></div><button type="button" className={styles.primary} onClick={() => select(last.key)}>Resume session</button></section>}
       <div className={styles.layout}>
-        <aside className={styles.outline} aria-label="Course outline"><details open><summary><span>{sectionName(subject)} · Course outline</span><small>{subjectSessions.length} sessions · any order</small></summary>
+        <aside className={styles.outline} aria-label="Course outline"><details open><summary><span>{sectionName(subject)} · Course outline</span><small>{subjectSessions.filter(session => !courseReadmePosition(session.key)).length} sessions · any order</small></summary>
           <ol>{subjectSessions.map(item => { const visited = learning.progress.some(p => p.sessionKey === item.key); return <li key={item.key} className={`${item.locked ? styles.locked : ''} ${item.key === selected ? styles.current : ''}`}>
-            <button type="button" disabled={item.locked} aria-current={item.key === selected ? 'step' : undefined} aria-label={`Open ${item.title}`} onClick={() => select(item.key)}><span>{sectionName(item.section)}</span><strong>{item.title}</strong><small>{item.locked ? 'Feedback due in this subject' : learning.obligations.some(o => o.batchId === course.batchId && o.sessionKey === item.key) ? 'Current feedback session · accessible' : item.key === learning.lastSessionKey ? 'Last opened · resume here' : visited ? 'Previously opened' : 'Ready to explore'}</small></button>
+            <button type="button" disabled={item.locked} aria-current={item.key === selected ? 'step' : undefined} aria-label={`Open ${item.title}`} onClick={() => select(item.key)}><span>{courseReadmePosition(item.key) ? 'Course README' : sectionName(item.section)}</span><strong>{item.title}</strong><small>{item.locked ? 'Feedback due in this subject' : learning.obligations.some(o => o.batchId === course.batchId && o.sessionKey === item.key) ? 'Current feedback session · accessible' : item.key === learning.lastSessionKey ? 'Last opened · resume here' : visited ? 'Previously opened' : courseReadmePosition(item.key) ? 'Fixed course page' : 'Ready to explore'}</small></button>
           </li>; })}</ol></details>
         </aside>
         <section className={styles.content} aria-label="Selected session">

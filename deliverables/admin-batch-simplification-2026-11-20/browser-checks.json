@@ -1,0 +1,313 @@
+{
+  "admin-workflow": {
+    "scope": "Actual browser components with synthetic server adapters; no hosted authorization or staging write claim.",
+    "results": [
+      {
+        "name": "Three primary destinations open directly in course content",
+        "status": "passed"
+      },
+      {
+        "name": "Live batches include combined subjects while content libraries stay separate",
+        "status": "passed"
+      },
+      {
+        "name": "Batch overview keeps schedule readable and management actions discoverable",
+        "status": "passed"
+      },
+      {
+        "name": "Mobile navigation closes with Escape",
+        "status": "passed"
+      },
+      {
+        "name": "Tablet navigation remains hidden until opened",
+        "status": "passed"
+      },
+      {
+        "name": "Batch calendar cancel preserves date and explicit save is required",
+        "status": "passed"
+      },
+      {
+        "name": "Calendar keyboard navigation and Escape preserve the draft and return focus",
+        "status": "passed"
+      },
+      {
+        "name": "Calendar shows scheduled classes and selected times without background submission",
+        "status": "passed"
+      },
+      {
+        "name": "Mobile calendar is accessible and month year navigation preserves unconfirmed dates",
+        "status": "passed"
+      },
+      {
+        "name": "Calendar today and tomorrow follow IST from another browser time zone",
+        "status": "passed"
+      },
+      {
+        "name": "Batch publication requires explicit review then confirmation",
+        "status": "passed"
+      },
+      {
+        "name": "Simple publication review recovers interrupted saves and confirms hiding separately",
+        "status": "passed"
+      },
+      {
+        "name": "One private save creates a batch and preserves copied course originals",
+        "status": "passed"
+      },
+      {
+        "name": "All subjects share one live timetable with accessible creation fields",
+        "status": "passed"
+      },
+      {
+        "name": "Creation works without saved templates at narrow widths",
+        "status": "passed"
+      },
+      {
+        "name": "Interrupted saveV2TemplateDraft resumes the exact creation without duplication",
+        "status": "passed"
+      },
+      {
+        "name": "Interrupted saveV2BatchDraft resumes the exact creation without duplication",
+        "status": "passed"
+      },
+      {
+        "name": "Unfinished batch edits survive Back and reload with account isolation",
+        "status": "passed"
+      },
+      {
+        "name": "Saved classes support rename add remove and undo before a private save",
+        "status": "passed"
+      },
+      {
+        "name": "New session deep link opens the saved draft and keeps four resources editable",
+        "status": "passed"
+      },
+      {
+        "name": "Publication recovery link changed query supports cancel and opens course editing",
+        "status": "passed"
+      },
+      {
+        "name": "Publication recovery link same URL supports cancel and opens course editing",
+        "status": "passed"
+      },
+      {
+        "name": "Batch filters clear cleanly and creation remains available",
+        "status": "passed"
+      },
+      {
+        "name": "Every saved live class has independent date and time controls",
+        "status": "passed"
+      },
+      {
+        "name": "Subject libraries replace the combined library while live batches retain separate controls",
+        "status": "passed"
+      },
+      {
+        "name": "Mobile batch access has accessible actions and no horizontal overflow",
+        "status": "passed"
+      },
+      {
+        "name": "Empty batches show honest group empty states",
+        "status": "passed"
+      },
+      {
+        "name": "Unavailable enrollment records never display missing-access statuses",
+        "status": "passed"
+      },
+      {
+        "name": "Expired purchases do not imply renewed course access",
+        "status": "passed"
+      },
+      {
+        "name": "Access load failure is shown instead of an empty entitlement state",
+        "status": "passed"
+      }
+    ]
+  },
+  "undo-refinement": {
+    "scope": "Actual browser components with synthetic server adapters; no hosted authorization or staging write claim.",
+    "results": [
+      {
+        "name": "Saved classes support rename add remove and undo before a private save",
+        "status": "passed"
+      }
+    ]
+  },
+  "legacy-regressions": {
+    "scope": "Actual browser components with synthetic server adapters; no hosted authorization or staging write claim.",
+    "results": [
+      {
+        "name": "Offering publication review lists exact batches and preserves stale and interrupted confirmations",
+        "status": "passed"
+      },
+      {
+        "name": "Batch calendar selects an IST date without saving and restores keyboard focus",
+        "status": "passed"
+      },
+      {
+        "name": "Full session preview matches four-stage order and never writes progress or publication",
+        "status": "passed"
+      },
+      {
+        "name": "Reading preview renders draft title, rich content and placement without saving on mobile",
+        "status": "passed"
+      },
+      {
+        "name": "Reading preview replaces changed sources and never shows stale content after failure",
+        "status": "passed"
+      },
+      {
+        "name": "Reading preview reports empty and unsupported sources and retries a failed fetch",
+        "status": "passed"
+      },
+      {
+        "name": "Reading preview shared renderer keeps Student requests on the material-authorized endpoint",
+        "status": "passed"
+      },
+      {
+        "name": "V2 legacy embed references prefer the authorized reader and retain a visible source fallback",
+        "status": "passed"
+      },
+      {
+        "name": "Reading preview uses the reviewed batch revision and preserves reading order",
+        "status": "passed"
+      },
+      {
+        "name": "Enrolled schedule renders published live times and undated outlines on mobile",
+        "status": "passed"
+      },
+      {
+        "name": "Enrolled schedule distinguishes empty and failed reads",
+        "status": "passed"
+      },
+      {
+        "name": "Enrollment review confirms by keyboard and removes on mobile",
+        "status": "passed"
+      },
+      {
+        "name": "Interrupted enrollment reloads committed state without repeating a stale confirmation",
+        "status": "passed"
+      },
+      {
+        "name": "Empty screens and recoverable list errors",
+        "status": "passed"
+      },
+      {
+        "name": "Four product forms, keyboard save and native validation",
+        "status": "passed"
+      },
+      {
+        "name": "Complete individual content saves without a live schedule and survives reload",
+        "status": "passed"
+      },
+      {
+        "name": "Course content preview, edit and publication are independent of live scheduling",
+        "status": "passed"
+      },
+      {
+        "name": "Template interrupted save, busy state and retry identity",
+        "status": "passed"
+      },
+      {
+        "name": "Batch review, publish, independent edits, unpublish and republish",
+        "status": "passed"
+      },
+      {
+        "name": "Batch stale errors and interrupted confirmations preserve review",
+        "status": "passed"
+      },
+      {
+        "name": "An interrupted publication review cannot be silently replaced",
+        "status": "passed"
+      },
+      {
+        "name": "Template event reordering survives recovery and saving without moving an existing batch",
+        "status": "passed"
+      },
+      {
+        "name": "Publication review protects meeting-link navigation",
+        "status": "passed"
+      },
+      {
+        "name": "Publication stale and interrupted responses keep the confirmation safe",
+        "status": "passed"
+      },
+      {
+        "name": "Meeting validation, stale failure, lost confirmation and reload",
+        "status": "passed"
+      },
+      {
+        "name": "Unsaved navigation cancellation, reload and sign-out",
+        "status": "passed"
+      },
+      {
+        "name": "Template recovery survives navigation and a lost save confirmation after reload",
+        "status": "passed"
+      },
+      {
+        "name": "Batch recovery preserves the reviewed schedule and exact interrupted request",
+        "status": "passed"
+      },
+      {
+        "name": "Meeting recovery preserves private links and interrupted request across reload",
+        "status": "passed"
+      },
+      {
+        "name": "Publication recovery requires another explicit confirmation and retains replay identity",
+        "status": "passed"
+      },
+      {
+        "name": "Recovery isolates users, supports discard and clears on sign-out",
+        "status": "passed"
+      },
+      {
+        "name": "Unavailable tab storage reports recovery loss while server saving remains usable",
+        "status": "passed"
+      },
+      {
+        "name": "Student worksheet edits survive navigation, stay isolated and save after explicit retry",
+        "status": "passed"
+      },
+      {
+        "name": "Student thrown saves become retryable and partial bulk retries touch failed questions only",
+        "status": "passed"
+      },
+      {
+        "name": "Student recovery preserves newer server edits and ignores removed questions",
+        "status": "passed"
+      },
+      {
+        "name": "Recovered stale template cannot overwrite a newer saved revision",
+        "status": "passed"
+      },
+      {
+        "name": "Recovered private links stop when the batch schedule has changed",
+        "status": "passed"
+      },
+      {
+        "name": "Student saving disables overlapping bulk actions and malformed receipts retain edits",
+        "status": "passed"
+      },
+      {
+        "name": "Pending recovery requires an explicit choice before replacing worksheet, meeting or publication work",
+        "status": "passed"
+      },
+      {
+        "name": "Responsive forms and long titles at 320px",
+        "status": "passed"
+      },
+      {
+        "name": "Responsive forms and long titles at 390px",
+        "status": "passed"
+      },
+      {
+        "name": "Responsive forms and long titles at 768px",
+        "status": "passed"
+      },
+      {
+        "name": "Mobile navigation has an accessible name and avoids hidden keyboard targets",
+        "status": "passed"
+      }
+    ]
+  }
+}

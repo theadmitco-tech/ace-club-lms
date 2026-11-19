@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import {readFileSync} from 'node:fs';
+import {randomUUID} from 'node:crypto';
+import {withDisposablePostgres} from './helpers/disposable-postgres.mjs';
+import {preparePhase3Database,as} from './helpers/v2-phase3-fixture.mjs';
+test('Batch archive hides publication, preserves records and restores privately',async()=>withDisposablePostgres(async db=>{
+ const f=preparePhase3Database(db), b=f.batch('quant',true);f.publish(b);
+ db.query('create schema supabase_migrations;create table supabase_migrations.schema_migrations(version text primary key,name text,statements text[]);');
+ const packet=readFileSync('deliverables/admin-batch-archiving-2026-11-20/RUN-BATCH-ARCHIVING.sql','utf8');
+ assert.equal(JSON.parse(db.query(packet)).existingRowsPreserved,true);
+ db.rejects(packet,/already exists/);
+ const snapshot=()=>db.query(`select md5(jsonb_agg(to_jsonb(r))::text) from public.v2_course_batch_revisions r`);
+ const before=snapshot(),token=randomUUID();
+ const call=(archived,revision,pub,id=token)=>`select public.set_v2_batch_archived('${b.id}',${archived},${revision},1,${pub},'${id}')`;
+ db.rejects(as(null,call(true,0,1),'anon'),/permission denied/);
+ const result=db.query(as(f.admin,call(true,0,1)));assert.equal(JSON.parse(result).archived,true);
+ assert.equal(db.query(as(f.admin,call(true,0,1))),result);
+ assert.equal(snapshot(),before);
+ assert.equal(db.query(`select document->>'state' from public.v2_batch_publication_revisions where batch_id='${b.id}' order by revision desc limit 1`),'unpublished');
+ db.rejects(as(f.admin,call(false,0,2,randomUUID())),/Batch changed/);
+ db.rejects(as(f.admin,`select public.save_v2_batch_publication(r,public.preview_v2_batch_publication(r)->>'fingerprint') from (select jsonb_build_object('batchId','${b.id}','batchRevision',1,'expectedRevision',2,'requestId','${randomUUID()}','action','publish') r) q`),/Restore this batch/);
+ db.rejects(as(f.admin,'select * from public.v2_batch_archive_history'),/permission denied/);
+ assert.equal(JSON.parse(db.query(as(f.admin,call(false,1,2,randomUUID())))).archived,false);
+ assert.equal(snapshot(),before);
+ assert.equal(db.query(`select document->>'state' from public.v2_batch_publication_revisions where batch_id='${b.id}' order by revision desc limit 1`),'unpublished');
+}));

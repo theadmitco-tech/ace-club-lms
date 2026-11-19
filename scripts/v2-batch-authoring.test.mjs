@@ -53,7 +53,7 @@ test('editable schedules enforce bounds, canonical times and distinct event iden
   const input = { ...request(),expectedRevision: 1,events: [event()] };
   assert.equal(domain.validateV2BatchInput(input),null);
   for (const patch of [{ localDate: '2027-02-29' },{ localStartTime: '24:00' },{ localStartTime: '8:00' },{ durationMinutes: 14 },
-    { durationMinutes: 721 },{ capacity: 0 },{ capacity: 1001 },{ capacity: '8' },{ instructor: null },{ section: 'di' },{ key: 'id' }]) {
+    { durationMinutes: 721 },{ capacity: 0 },{ capacity: 1001 },{ capacity: '8' },{ instructor: null },{ section: 'programme' },{ title: '' },{ title: null },{ key: 'id' }]) {
     assert.equal(typeof domain.validateV2BatchInput({ ...input,events: [{ ...input.events[0],...patch }] }),'string');
   }
   for (const events of [null,[null],[input.events[0],input.events[0]],Array.from({ length: 101 },event)]) {
@@ -72,9 +72,24 @@ test('read DTOs enforce scope, exact instants and minimal fields before reaching
   }
   for (const value of [null,{}, { draft,fingerprint: 'bad' },{ draft,fingerprint,private: 'value' }]) assert.equal(domain.isV2BatchProposal(value),false);
   const edits = domain.editableV2BatchEvents(draft.events);
-  assert.deepEqual(Object.keys(edits[0]).sort(),['capacity','durationMinutes','instructor','key','localDate','localStartTime']);
+  assert.deepEqual(Object.keys(edits[0]).sort(),['capacity','durationMinutes','instructor','key','localDate','localStartTime','section','title']);
   edits[0].capacity=1;
   assert.equal(draft.events[0].capacity,8);
+});
+test('live edit metadata is optional for legacy requests and checked against the returned projection', async () => {
+  const app = harness();
+  const input = { ...request(), expectedRevision: 1, events: [{ ...event(), title: 'Reviewed class', section: 'quant' }] };
+  assert.equal(domain.validateV2BatchInput(input), null);
+  const draft = { ...draftFor(input), events: [{ ...input.events[0], ...domain.v2BatchEventInstants(input.events[0]) }] };
+  app.state.result = { data: { draft, fingerprint }, error: null };
+  assert.equal((await app.previewV2BatchDraft(input)).status, 'success');
+  for (const patch of [{ title: 'Other class' }, { section: 'di' }]) {
+    app.state.result = { data: { draft: { ...draft, events: [{ ...draft.events[0], ...patch }] }, fingerprint }, error: null };
+    assert.equal((await app.previewV2BatchDraft(input)).status, 'error');
+  }
+  const legacy = { ...input, events: input.events.map(({ title, section, ...rest }) => rest) };
+  app.state.result = { data: { draft, fingerprint }, error: null };
+  assert.equal((await app.previewV2BatchDraft(legacy)).status, 'success');
 });
 test('batch authoring needs both explicit flags and remains disabled on Vercel Production', () => {
   for (const env of [{}, { V2_BATCH_AUTHORING_ENABLED: 'true' },{ V2_TEMPLATE_AUTHORING_ENABLED: 'true' },
@@ -92,7 +107,7 @@ test('batch authoring needs both explicit flags and remains disabled on Vercel P
 function harness() {
   const state = { enabled: true,identity: { role: 'admin' },identityCalls: 0,clients: 0,calls: [],fault: '',result: { data: [],error: null } };
   const api = load('src/lib/server/v2Batches.ts', {
-    'server-only': {},'@/lib/v2Batches': domain, '@/lib/v2Templates': templates,
+    'server-only': {},'@/lib/v2Batches': domain, '@/lib/v2CourseReadmes': load('src/lib/v2CourseReadmes.ts'), '@/lib/v2Templates': templates,
     '@/lib/server/v2BatchFeature': { isV2BatchAuthoringEnabled: () => state.enabled },
     '@/lib/server/portalAuthorization': { getPortalIdentity: async () => {
       state.identityCalls++;
@@ -105,6 +120,7 @@ function harness() {
       return { rpc: async (name,args) => {
         state.calls.push({ name,args });
         if (state.fault === 'rpc') throw new Error('Synthetic private details');
+        if(name==='list_v2_batch_drafts' && state.currentDrafts)return {data:state.currentDrafts,error:null};
         return state.result;
       } };
     } },
@@ -241,6 +257,7 @@ test('the batch page authorizes before loading either templates or batches and h
   const page=load('src/app/admin/v2/batches/page.tsx',{
     '@/lib/server/v2ContentPublishing':{isV2ContentPublishingEnabled:()=>false},
     './BatchWorkspace':{default:'batch-workspace'},
+    './archive-actions':{readBatchArchives:async()=>{calls.push('archives');return [];}},
     '../templates/templates.module.css': { default: {} },
     'react/jsx-runtime': { jsx: () => ({}),jsxs: () => ({}) },'@/components/AdminDraftNavigation': {},'./BatchDraftEditor': {}, './PublicationPanel': {}, './PublicationScopePanel': {},
     'next/navigation': { notFound: () => { throw new Error('Not found'); } },
@@ -258,13 +275,14 @@ test('the batch page authorizes before loading either templates or batches and h
   assert.deepEqual(calls,['admin']);
   calls.length=0; deny=false;
   await page.default({searchParams:Promise.resolve({})});
-  assert.deepEqual(calls,['admin','batches','templates','publications']);
+  assert.deepEqual(calls,['admin','batches','templates','publications','archives']);
 });
 
 test('course content edits are validated and a missing or changed save receipt cannot discard them', async () => {
   const app=harness(), input={...request(),expectedRevision:1,events:[],sessions:[{key:randomUUID(),title:'Quant fundamentals',section:'quant',content:clone(templates.emptyV2SessionContent())}]};
   const draft={...draftFor(input),events:[],sessions:clone(input.sessions)};
   assert.equal(domain.validateV2BatchInput(input),null);
+  app.state.currentDrafts=[structuredClone(draft)];
   app.state.result={data:{draft,replayed:false},error:null};
   assert.equal((await app.saveV2BatchDraft(input,fingerprint)).status,'success');
   delete draft.sessions;

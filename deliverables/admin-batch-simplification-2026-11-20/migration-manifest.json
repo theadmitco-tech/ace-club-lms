@@ -1,0 +1,30 @@
+{
+  "status": "prepared; not applied to staging or Production",
+  "migration": "20261120100000_add_v2_live_class_editing.sql",
+  "sourceSha256": "7128d3044b6a8c8819399acb25f8287d48682e360e028e4a0750c9296dc25cfb",
+  "packetSha256": "88b8bd7ae3b62578b4a8629b4594dc36853e82da5312f28571aeb0617eabaa11",
+  "expectedStagingPublicTables": 92,
+  "tablePreservation": "all current public tables captured and verified dynamically within the transaction",
+  "functions": [
+    {
+      "signature": "assert_v2_batch_request(jsonb)",
+      "before": "9ea0873db8a56370ee5c97eb25e3ba2d",
+      "after": "7ce4271b58244f89f061eb53d6d602a4"
+    },
+    {
+      "signature": "build_v2_batch_draft(jsonb)",
+      "before": "77b7199da5350706feb4fea24928083a",
+      "after": "86665aa8a81b21912a8564191f117105"
+    },
+    {
+      "signature": "build_v2_batch_publication(jsonb)",
+      "before": "7523d5acfd53a4c7b152d60beba4c4f6",
+      "after": "adb033360ffae94ed48fb1c4845bdd7e"
+    },
+    {
+      "signature": "assert_v2_completed_class_preservation(uuid,jsonb)",
+      "before": null,
+      "after": "23823d5ff015043fd2c1b5d26ce50621"
+    }
+  ]
+}

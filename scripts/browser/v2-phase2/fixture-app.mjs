@@ -23,6 +23,7 @@ export const sources = [
   'src/lib/v2SessionPresentation.ts',
   'src/lib/v2ContentAssets.ts',
   'src/lib/v2ContentPublishing.ts',
+  'src/lib/v2CourseReadmes.ts',
   'src/lib/youtube.ts',
   'src/lib/v2ReadingPreview.ts',
   'src/app/session/[id]/material/[materialId]/material.css',
@@ -201,5 +202,9 @@ export function createClient() {
     return body.status === 'error' ? { data: null, error: { message: body.message } } : body;
   } };
 }`);
+  await put('src/app/admin/v2/batches/archive-actions.ts', `'use server';
+import {call} from '@/lib/server/fixture';
+export async function readBatchArchives(){return call('fixtureBatchArchives');}
+export async function archiveBatch(input:unknown){return call('fixtureArchiveBatch',input);}`);
   return root;
 }

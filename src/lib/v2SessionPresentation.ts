@@ -1,3 +1,4 @@
+import { courseReadmePosition } from './v2CourseReadmes';
 import { contentAssetPath,contentAssetExtension } from './v2ContentAssets';
 import { isV2ContentUrl, type V2SessionContentKind } from './v2Templates';
 
@@ -7,6 +8,13 @@ export const V2_SESSION_STAGES: readonly { kind: V2SessionContentKind; title: st
   { kind: 'postSessionReads', title: 'Post-class read', description: 'Key ideas and further reading' },
   { kind: 'materials', title: 'Worksheet', description: 'Practice and supporting material' },
 ];
+
+const README_STAGES: typeof V2_SESSION_STAGES = [
+  { kind: 'preSessionReads', title: 'Reading material', description: 'Course guidance and supporting documents' },
+];
+export function v2SessionStages(sessionKey?: string) {
+  return sessionKey && courseReadmePosition(sessionKey) ? README_STAGES : V2_SESSION_STAGES;
+}
 
 export function v2ResourceUrl(value: string): string | null {
   try {

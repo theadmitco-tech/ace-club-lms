@@ -1,3 +1,4 @@
+import { courseReadmePosition, pinCourseReadmes } from './v2CourseReadmes';
 import { editableV2BatchEvents, type V2BatchDraft, type V2BatchInput } from './v2Batches';
 
 export function moveSessionKey(keys: string[], key: string, destination: number): string[] {
@@ -10,7 +11,7 @@ export function moveSessionKey(keys: string[], key: string, destination: number)
 }
 
 export function reorderedSessionInput(draft: V2BatchDraft, original: string[], order: string[], requestId: string): V2BatchInput {
-  const sessions = draft.sessions;
+  const sessions = draft.sessions?.filter(session => !courseReadmePosition(session.key));
   if (!sessions || !['quant', 'verbal', 'di'].includes(draft.productCode)
     || sessions.length !== original.length || sessions.some((session, index) => session.key !== original[index])) {
     throw new Error('The session list changed. Close this editor and reload the course before reordering.');
@@ -22,6 +23,6 @@ export function reorderedSessionInput(draft: V2BatchDraft, original: string[], o
     id: draft.id, templateId: draft.templateId, templateRevision: draft.templateRevision,
     expectedRevision: draft.revision, requestId, title: draft.title, startDate: draft.startDate,
     timeZone: draft.timeZone, events: editableV2BatchEvents(draft.events),
-    sessions: order.map(key => sessions.find(session => session.key === key)!),
+    sessions: pinCourseReadmes([...draft.sessions!.filter(session => courseReadmePosition(session.key)), ...order.map(key => sessions.find(session => session.key === key)!)]),
   };
 }

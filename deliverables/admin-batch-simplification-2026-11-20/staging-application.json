@@ -1,0 +1,13 @@
+{
+  "evidenceSource": "Deployment operator supplied SQL Editor result; not an independently observed hosted browser test.",
+  "project": "eyphkkginlgoaxflauog",
+  "result": {
+    "check": "live_class_editing",
+    "migration": "20261120100000",
+    "existingRowsPreserved": true,
+    "publicTablesPreserved": 92,
+    "originalLedgerPreserved": true,
+    "existingMetadataPreserved": true,
+    "publishedSchedulesChanged": false
+  }
+}

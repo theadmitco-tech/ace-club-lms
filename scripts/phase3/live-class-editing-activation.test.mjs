@@ -1,0 +1,57 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import test from 'node:test';
+import { withDisposablePostgres } from '../helpers/disposable-postgres.mjs';
+import { preparePhase3Database, literal } from '../helpers/v2-phase3-fixture.mjs';
+
+const directory = 'deliverables/admin-batch-simplification-2026-11-20';
+const packet = readFileSync(`${directory}/RUN-LIVE-CLASS-EDITING.sql`, 'utf8');
+const manifest = JSON.parse(readFileSync(`${directory}/migration-manifest.json`, 'utf8'));
+const source = readFileSync(`supabase/migrations/${manifest.migration}`, 'utf8');
+const sha256 = text => createHash('sha256').update(text).digest('hex');
+
+test('live-class activation packet preserves current rows, metadata and ledger atomically', { timeout: 120000 }, async () => {
+  assert.equal(sha256(source), manifest.sourceSha256);
+  assert.equal(sha256(packet), manifest.packetSha256);
+  await withDisposablePostgres(async db => {
+    const { query, rejects, apply } = db;
+    const { admin, batch, publish } = preparePhase3Database(db);
+    for (const name of ['20261113090000_add_v2_sales_catalogue.sql', '20261113100000_add_v2_checkout_ledger.sql', '20261113110000_add_v2_payment_fulfillment.sql']) apply(name);
+    const existing = batch('quant', true); publish(existing);
+    query(`create schema supabase_migrations;create table supabase_migrations.schema_migrations(version text primary key,name text,statements text[]);
+      insert into supabase_migrations.schema_migrations values('20261103120000','fixture',array['synthetic']),('20261113110000','fixture',array['synthetic']);
+      create table public.synthetic_extra_preserved(id integer primary key,payload text);insert into public.synthetic_extra_preserved values(1,'Preserved dynamic table');`);
+    const count = Number(query("select count(*) from pg_class where relnamespace='public'::regnamespace and relkind in('r','p')"));
+    const before = query('select jsonb_agg(to_jsonb(m) order by version) from supabase_migrations.schema_migrations m');
+    const definition = query("select pg_get_functiondef('public.build_v2_batch_draft(jsonb)'::regprocedure)");
+    query(definition.replace('Batch revision changed', 'Synthetic unexpected definition'));
+    rejects(packet, /Reviewed function baseline mismatch/);
+    assert.equal(query("select to_regprocedure('public.assert_v2_completed_class_preservation(uuid,jsonb)') is null"), 't');
+    query(definition);
+    query('grant execute on function public.build_v2_batch_draft(jsonb) to anon');
+    rejects(packet, /Unexpected baseline function privilege/);
+    query('revoke execute on function public.build_v2_batch_draft(jsonb) from anon');
+    const changedRows = packet.replace('do $postflight$', "update public.synthetic_extra_preserved set payload='Unexpected mutation';\ndo $postflight$");
+    rejects(changedRows, /Application data changed/);
+    assert.equal(query('select payload from public.synthetic_extra_preserved'), 'Preserved dynamic table');
+    assert.equal(query("select to_regprocedure('public.assert_v2_completed_class_preservation(uuid,jsonb)') is null"), 't');
+    const changedMetadata = packet.replace('do $postflight$', 'revoke select on public.synthetic_extra_preserved from anon;\ndo $postflight$');
+    rejects(changedMetadata, /Existing schema or security metadata changed/);
+    const changedLedger = packet.replace('do $postflight$', "update supabase_migrations.schema_migrations set name='Unexpected change';\ndo $postflight$");
+    rejects(changedLedger, /Original migration ledger changed/);
+    assert.equal(query('select jsonb_agg(to_jsonb(m) order by version) from supabase_migrations.schema_migrations m'), before);
+    query(`update public.profiles set full_name='Current Admin label' where id='${admin}'`);
+    const result = JSON.parse(query(packet));
+    assert.equal(result.publicTablesPreserved, count);
+    assert.equal(result.existingRowsPreserved, true);
+    assert.equal(result.existingMetadataPreserved, true);
+    assert.equal(result.originalLedgerPreserved, true);
+    assert.equal(result.publishedSchedulesChanged, false);
+    assert.equal(query(`select full_name from public.profiles where id='${admin}'`), 'Current Admin label');
+    assert.equal(query("select jsonb_agg(to_jsonb(m) order by version) from supabase_migrations.schema_migrations m where version<>'20261120100000'"), before);
+    assert.equal(query("select statements[1] from supabase_migrations.schema_migrations where version='20261120100000'"), source.trim());
+    assert.equal(query(`select count(*) from public.v2_batch_publication_revisions where batch_id=${literal(existing.id)}`), '1');
+    rejects(packet, /already recorded/);
+  });
+});

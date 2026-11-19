@@ -16,7 +16,7 @@ function load(file, deps = {}) {
 }
 const templates = load('src/lib/v2Templates.ts');
 const batches = load('src/lib/v2Batches.ts', { './v2Templates': templates });
-const { deletedSessionInput } = load('src/lib/v2SessionDeletion.ts', { './v2Batches': batches });
+const { deletedSessionInput } = load('src/lib/v2SessionDeletion.ts', { './v2Batches': batches, './v2CourseReadmes': load('src/lib/v2CourseReadmes.ts') });
 const draft = { id:randomUUID(), templateId:randomUUID(), templateRevision:1, revision:3, productCode:'quant', title:'Synthetic course', startDate:'', timeZone:'Asia/Kolkata', events:[],
   sessions:['First','Second'].map(title=>({key:randomUUID(),title,section:'quant',content:templates.emptyV2SessionContent()})) };
 test('Deletion preserves other session identities, source revision and input snapshot', () => {
@@ -35,6 +35,7 @@ test('Deletion rejects stale, duplicate, absent and foreign session selections',
 });
 test('Session deletion requires publication, preserves historical revisions and denies Student writes', {timeout:120000}, () => withDisposablePostgres(async db => {
   const f=preparePhase3Database(db), b=f.batch('quant',true);
+  db.apply('20261120100000_add_v2_live_class_editing.sql');
   const readDraft=()=>JSON.parse(db.query(`select document from public.v2_course_batch_revisions where batch_id='${b.id}' order by revision desc limit 1`));
   const previews=new Map();
   const save=input=>{

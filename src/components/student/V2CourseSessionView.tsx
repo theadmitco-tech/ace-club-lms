@@ -1,9 +1,10 @@
 'use client';
 
+import { courseReadmePosition } from '@/lib/v2CourseReadmes';
 import dynamic from 'next/dynamic';
 import { Component, Fragment, useState, type ReactNode } from 'react';
 import { v2ReadingPageId } from '@/lib/v2ReadingPreview';
-import { V2_SESSION_STAGES, v2CourseResourceHref } from '@/lib/v2SessionPresentation';
+import { v2SessionStages, v2CourseResourceHref } from '@/lib/v2SessionPresentation';
 import { getYoutubeEmbedUrl } from '@/lib/youtube';
 import type { V2CourseSession, V2SessionContentItem, V2SessionContentKind } from '@/lib/v2Templates';
 import styles from './v2CourseSession.module.css';
@@ -77,11 +78,11 @@ export function V2CourseSessionView({ session, mode, readingEndpoint, batchId, l
   const outsideStage = new Set(placements.filter(p => p.sessionKey === session.key && p.placement !== 'session').map(p => p.key));
   return <article className={styles.session} aria-label={`Session content: ${session.title}`}>
     <header className={styles.heading}>
-      <p className={styles.eyebrow}>{session.section === 'programme' ? 'Programme' : session.section === 'di' ? 'DI' : session.section === 'quant' ? 'Quant' : 'Verbal'} · Course session</p>
+      <p className={styles.eyebrow}>{session.section === 'programme' ? 'Programme' : session.section === 'di' ? 'DI' : session.section === 'quant' ? 'Quant' : 'Verbal'} · {courseReadmePosition(session.key) ? 'Course README' : 'Course session'}</p>
       <h3>{session.title || 'Untitled session'}</h3>
       {mode === 'admin-preview' && <p className={styles.notice}>Student-view preview · Viewing does not record progress, feedback or attendance.</p>}
     </header>
-    <ol className={styles.stages}>{V2_SESSION_STAGES.map(({ kind, title, description }, index) => {
+    <ol className={styles.stages}>{v2SessionStages(session.key).map(({ kind, title, description }, index) => {
       const items = session.content[kind].filter(item => !outsideStage.has(item.key));
       return <li key={kind}><details className={styles.stage} open={items.length === 0 ? undefined : true}>
         <summary><span className={styles.number}>{index + 1}</span><span><strong>{title}</strong><small>{description}</small></span><span className={styles.count}>{items.length}</span></summary>

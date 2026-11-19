@@ -1,0 +1,12 @@
+{
+  "evidenceSource": "Operator-provided SQL Editor result; not independently queried",
+  "result": {
+    "check": "batch_archiving",
+    "migration": "20261120110000",
+    "archivedBatches": 0,
+    "existingRowsPreserved": true,
+    "publicTablesPreserved": 92,
+    "originalLedgerPreserved": true,
+    "existingPermissionsPreserved": true
+  }
+}

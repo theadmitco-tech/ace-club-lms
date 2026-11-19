@@ -6,6 +6,8 @@ export const V2_BATCH_TIME_ZONE = 'Asia/Kolkata' as const;
 
 export type V2BatchEventInput = {
   key: string;
+  title?: string;
+  section?: V2Section;
   kind?: 'live' | 'outline';
   localDate: string | null;
   localStartTime: string | null;
@@ -71,8 +73,10 @@ export function v2BatchEventInstants(event: V2BatchEventInput): { startsAt: stri
 }
 
 function eventValid(value: unknown): value is V2BatchEventInput {
-  if (!object(value) || !keys(value, ['key', 'localDate', 'localStartTime', 'durationMinutes', 'instructor', 'capacity', ...(Object.hasOwn(value, 'kind') ? ['kind'] : [])])
+  if (!object(value) || !keys(value, ['key', 'localDate', 'localStartTime', 'durationMinutes', 'instructor', 'capacity', ...['kind', 'title', 'section'].filter(key => Object.hasOwn(value, key))])
     || !uuid(value.key) || !integer(value.capacity, 1, 1000) || !label(value.instructor)) return false;
+  if (Object.hasOwn(value, 'title') && !label(value.title, value.kind === 'outline' ? 0 : 1)) return false;
+  if (Object.hasOwn(value, 'section') && !['quant', 'verbal', 'di'].includes(value.section as string)) return false;
   if (value.kind === 'outline') return value.localDate === null && value.localStartTime === null && value.durationMinutes === null;
   return (value.kind === undefined || value.kind === 'live') && isV2BatchDate(value.localDate) && typeof value.localStartTime === 'string'
     && /^([01]\d|2[0-3]):[0-5]\d$/.test(value.localStartTime) && integer(value.durationMinutes, 15, 720);
@@ -93,8 +97,8 @@ export function validateV2BatchInput(value: unknown): string | null {
 }
 
 export function editableV2BatchEvents(events: V2BatchEvent[]): V2BatchEventInput[] {
-  return events.map(({ key, localDate, localStartTime, durationMinutes, instructor, capacity, kind }) =>
-    ({ key, localDate, localStartTime, durationMinutes, instructor, capacity, ...(kind ? { kind } : {}) }));
+  return events.map(({ key, title, section, localDate, localStartTime, durationMinutes, instructor, capacity, kind }) =>
+    ({ key, localDate, localStartTime, durationMinutes, instructor, capacity, ...(kind ? { kind } : {}), ...(kind !== 'outline' ? { title, section } : {}) }));
 }
 
 export function isV2BatchDraft(value: unknown): value is V2BatchDraft {

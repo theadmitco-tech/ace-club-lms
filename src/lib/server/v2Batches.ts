@@ -1,3 +1,4 @@
+import { validateCourseReadmes } from '@/lib/v2CourseReadmes';
 import { sameV2CourseSessions } from '@/lib/v2Templates';
 import 'server-only';
 
@@ -13,7 +14,7 @@ type BatchListResult = { status: 'ready'; drafts: V2BatchDraft[] }
 const failure = 'The schedule could not be confirmed. Retry the same operation or reload the latest drafts.';
 function message(code?: string) {
   if ((code === '40001' || code === 'PT409')) return 'The batch or template changed. Reload the latest drafts and review the schedule again.';
-  if (code === '22023') return 'Review the schedule fields and saved template. Event identities and the template start date must be preserved when editing.';
+  if (code === '22023') return 'Review the class details. Existing subjects, completed classes and the original template date must stay unchanged. New classes need a name and an included subject.';
   return failure;
 }
 function matches(draft: V2BatchDraft, input: V2BatchInput) {
@@ -24,6 +25,7 @@ function matches(draft: V2BatchDraft, input: V2BatchInput) {
     && (input.events === null || (draft.events.length === input.events.length && input.events.every((event) => {
       const saved = draft.events.find((candidate) => candidate.key === event.key);
       return saved && (saved.kind ?? 'live') === (event.kind ?? 'live') && saved.localDate === event.localDate && saved.localStartTime === event.localStartTime
+        && (event.title === undefined || saved.title === event.title) && (event.section === undefined || saved.section === event.section)
         && saved.durationMinutes === event.durationMinutes && saved.instructor === event.instructor && saved.capacity === event.capacity;
     })));
 }
@@ -49,6 +51,14 @@ export async function previewV2BatchDraft(value: unknown): Promise<V2BatchPrevie
     if (invalid) return { status: 'error', message: invalid };
     const input = value as V2BatchInput;
     const client = await createClient();
+    if (input.sessions) {
+      const current = await client.rpc('list_v2_batch_drafts');
+      if (current.error || !Array.isArray(current.data)) return { status: 'error', message: 'The current course could not be checked. Retry shortly.' };
+      const draft = current.data.find((item: V2BatchDraft) => item.id === input.id);
+      if (!draft || !isV2BatchDraft(draft)) return { status: 'error', message: 'The course draft must be reloaded before editing.' };
+      const readmeError = validateCourseReadmes(input.id, input.sessions, draft.sessions);
+      if (readmeError) return { status: 'error', message: readmeError };
+    }
     const { data, error } = await client.rpc('preview_v2_batch_draft', { p_request: input });
     if (error || !isV2BatchProposal(data) || !matches(data.draft, input)) return { status: 'error', message: message(error?.code) };
     return { status: 'success', proposal: data };
@@ -66,6 +76,14 @@ export async function saveV2BatchDraft(value: unknown, fingerprint: unknown): Pr
     if (typeof fingerprint !== 'string' || !/^[0-9a-f]{32}$/.test(fingerprint)) return { status: 'error', message: 'Review the schedule before saving.' };
     const input = value as V2BatchInput;
     const client = await createClient();
+    if (input.sessions) {
+      const current = await client.rpc('list_v2_batch_drafts');
+      if (current.error || !Array.isArray(current.data)) return { status: 'error', message: 'The current course could not be checked. Retry shortly.' };
+      const draft = current.data.find((item: V2BatchDraft) => item.id === input.id);
+      if (!draft || !isV2BatchDraft(draft)) return { status: 'error', message: 'The course draft must be reloaded before editing.' };
+      const readmeError = validateCourseReadmes(input.id, input.sessions, draft.sessions);
+      if (readmeError) return { status: 'error', message: readmeError };
+    }
     const { data, error } = await client.rpc('save_v2_batch_draft', { p_request: input, p_fingerprint: fingerprint });
     if (error || !data || !isV2BatchDraft(data.draft) || !matches(data.draft, input) || typeof data.replayed !== 'boolean') {
       return { status: 'error', message: message(error?.code) };

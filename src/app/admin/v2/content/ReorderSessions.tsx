@@ -9,8 +9,8 @@ import { previewBatchDraftAction, saveBatchDraftAction } from '../batches/action
 import styles from './content.module.css';
 
 type Session = { key: string; title: string };
-export default function ReorderSessions({ batchId, sessions, selectedKey, onSelect, onClose, onSaved }: {
-  batchId: string; sessions: Session[]; selectedKey?: string; onSelect: (key: string) => void; onClose: () => void; onSaved: () => void;
+export default function ReorderSessions({ batchId, sessions, selectedKey, onSelect, onClose, onSaved, inline = false, search = '', disabled = false, onDirty, onRename }: {
+  batchId: string; sessions: Session[]; selectedKey?: string; onSelect: (key: string) => void; onClose: () => void; onSaved: () => void; inline?: boolean; search?: string; disabled?: boolean; onDirty?: () => void; onRename?: (key: string) => void;
 }) {
   const [original] = useState(() => sessions.map(session => session.key));
   const [order, setOrder] = useState(original), [history, setHistory] = useState<string[][]>([]);
@@ -23,9 +23,9 @@ export default function ReorderSessions({ batchId, sessions, selectedKey, onSele
   const positions = useRef(new Map<string, number>()), focusKey = useRef<string | null>(null);
   const helpId = useId(), titleId = useId();
   const dirty = order.some((key, index) => key !== original[index]);
-  const locked = pending || submitted || saved;
+  const locked = disabled || pending || submitted || saved;
   useAdminDraftGuard(!saved && (dirty || submitted));
-  useEffect(() => { heading.current?.focus(); }, [saved]);
+  useEffect(() => { if (!inline || saved) heading.current?.focus(); }, [saved, inline]);
   useLayoutEffect(() => {
     for (const row of list.current?.querySelectorAll<HTMLElement>('[data-session-key]') ?? []) {
       const previous = positions.current.get(row.dataset.sessionKey!);
@@ -49,7 +49,7 @@ export default function ReorderSessions({ batchId, sessions, selectedKey, onSele
     if (locked) return;
     const next = moveSessionKey(order, key, destination);
     if (next === order) return;
-    rememberPositions(); focusKey.current = key;
+    rememberPositions(); focusKey.current = key; onDirty?.();
     setHistory(previous => [...previous, order]); setOrder(next);
     setAnnouncement(`${sessions.find(session => session.key === key)?.title} moved to position ${destination + 1} of ${order.length}.`);
   }
@@ -81,27 +81,28 @@ export default function ReorderSessions({ batchId, sessions, selectedKey, onSele
   }
   return <section className={styles.outlineReorder} aria-labelledby={titleId} aria-busy={pending}>
     <h3 id={titleId} ref={heading} tabIndex={-1} className={styles.visuallyHidden}>{saved ? 'Session order saved' : 'Reorder sessions'}</h3>
-    <p id={helpId} className={styles.outlineOrderHelp}>{saved ? 'Draft order · not yet published' : 'Drag a handle or use the arrows.'}<span className={styles.visuallyHidden}> Keyboard: focus a handle and use the arrow keys, Home or End.</span></p>
+    <p id={helpId} className={styles.outlineOrderHelp}>{saved ? 'Draft order · not yet published' : 'Drag ⠿ to reorder sessions.'}<span className={styles.visuallyHidden}> Keyboard: focus a handle and use the arrow keys, Home or End.</span></p>
       <ol className={`${styles.reorderList} ${styles.outlineOrderList}`} ref={list} aria-label="Session order">
         {order.map((key, index) => {
           const title = sessions.find(session => session.key === key)!.title;
+          if (search && !title.toLowerCase().includes(search.toLowerCase())) return null;
           return <li key={key} data-session-key={key} data-selected={key === selectedKey || undefined} data-dragging={dragging === key || undefined} data-drop={over?.key === key ? over.edge : undefined}
             onDragOver={event => { if (!dragging || locked) return; event.preventDefault(); event.dataTransfer.dropEffect = 'move'; const rect = event.currentTarget.getBoundingClientRect(); setOver({ key, edge: event.clientY < rect.top + rect.height / 2 ? 'before' : 'after' }); }}
             onDrop={event => { event.preventDefault(); if (!dragging || locked) return; const from = order.indexOf(dragging); const slot = index + (over?.edge === 'after' ? 1 : 0); move(dragging, Math.max(0, Math.min(order.length - 1, slot - (from < slot ? 1 : 0)))); setDragging(null); setOver(null); }}>
-            <button type="button" className={styles.dragHandle} data-handle-key={key} disabled={locked} draggable={!locked} aria-label={`Move ${title}`} aria-describedby={helpId}
+            <button type="button" className={styles.dragHandle} data-handle-key={key} disabled={locked || !!search} draggable={!locked && !search} aria-label={`Move ${title}`} aria-describedby={helpId}
               onDragStart={event => { setDragging(key); event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', key); if (event.currentTarget.parentElement) event.dataTransfer.setDragImage(event.currentTarget.parentElement, 24, 24); }}
               onDragEnd={() => { setDragging(null); setOver(null); }}
               onKeyDown={event => { const target = event.key === 'ArrowUp' ? index - 1 : event.key === 'ArrowDown' ? index + 1 : event.key === 'Home' ? 0 : event.key === 'End' ? order.length - 1 : null; if (target !== null) { event.preventDefault(); move(key, target); } }}><span aria-hidden="true">⠿</span></button>
-            <button type="button" className={styles.outlineSessionTitle} aria-current={key === selectedKey ? 'true' : undefined} aria-label={`Open ${title}`} disabled={pending} onClick={() => onSelect(key)}><span className={styles.orderNumber} aria-hidden="true">{String(index + 1).padStart(2, '0')}</span><span className={styles.orderTitle}>{title}</span></button>
-            <div className={styles.moveButtons}><button type="button" disabled={locked || index === 0} aria-label={`Move ${title} up`} onClick={() => move(key, index - 1)}>↑</button><button type="button" disabled={locked || index === order.length - 1} aria-label={`Move ${title} down`} onClick={() => move(key, index + 1)}>↓</button></div>
+            <button type="button" className={styles.outlineSessionTitle} aria-current={key === selectedKey ? 'true' : undefined} aria-label={`Open ${title}`} disabled={pending || disabled} onDoubleClick={() => { if (!dirty && !locked) onRename?.(key); }} onClick={() => onSelect(key)}><span className={styles.orderNumber} aria-hidden="true">{String(index + 1).padStart(2, '0')}</span><span className={styles.orderTitle}>{title}</span></button>
+            {!inline && <div className={styles.moveButtons}><button type="button" disabled={locked || index === 0} aria-label={`Move ${title} up`} onClick={() => move(key, index - 1)}>↑</button><button type="button" disabled={locked || index === order.length - 1} aria-label={`Move ${title} down`} onClick={() => move(key, index + 1)}>↓</button></div>}
           </li>;
         })}
       </ol>
     <p role="status" aria-live="polite" aria-atomic="true" className={styles.visuallyHidden}>{saved ? 'Saved draft · awaiting publication' : announcement || 'Current published order'}</p>
     {error && <p role="alert" className={styles.inlineError}>{error}</p>}
-    <footer className={`${styles.taskActions} ${styles.outlineOrderActions}`}>{saved ? <><Link className={styles.primary} href={`/admin/v2/batches?batch=${batchId}&review=1`}>Review & publish order</Link><button onClick={onClose}>Done</button></> : <>
+    {(!inline || dirty || saved || submitted) && <footer className={`${styles.taskActions} ${styles.outlineOrderActions}`}>{saved ? <><Link className={styles.primary} href={`/admin/v2/batches?batch=${batchId}&review=1`}>Review & publish order</Link><button onClick={onClose}>Done</button></> : <>
       {existingDraft ? <Link href={`/admin/v2/batches?batch=${batchId}&review=1`}>Review saved draft changes</Link> : <button className={styles.primary} disabled={pending || !dirty} onClick={() => void save()}>{pending ? 'Saving…' : submitted ? 'Retry saving order' : 'Save order'}</button>}
       <button disabled={locked || !history.length} onClick={undo}>Undo move</button><button disabled={pending} onClick={onClose}>{submitted ? 'Close editor' : 'Cancel'}</button>
-    </>}</footer>
+    </>}</footer>}
   </section>;
 }
