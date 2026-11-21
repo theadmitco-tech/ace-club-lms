@@ -14,6 +14,7 @@ import { previewBatchDraftAction, saveBatchDraftAction } from './actions';
 import styles from '../templates/templates.module.css';
 import batchStyles from './batchWorkspace.module.css';
 import { pinCourseReadmes } from '@/lib/v2CourseReadmes';
+import { weekdayLabel } from '@/lib/v2LiveBatchSetup';
 
 function formatInstant(value: string | null) {
   if (value === null) return 'Unscheduled';
@@ -34,7 +35,6 @@ export default function BatchDraftEditor({ courseMode = false, drafts, templates
   const [dirty, setDirty] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const [removing, setRemoving] = useState<string | null>(null);
   const [removedEdits, setRemovedEdits] = useState<Record<string, {event:V2BatchEventInput; index:number}>>({});
   const busy = useRef(false);
   const liveTemplates = templates;
@@ -195,42 +195,45 @@ export default function BatchDraftEditor({ courseMode = false, drafts, templates
     const live = (input.events ?? []).filter(event => event.kind !== 'outline');
     const removed = original.events.filter(event => event.kind !== 'outline' && !input.events?.some(item => item.key === event.key));
     const locked = !!pending || !!review || !!recovery.recovered;
-    return <div className={batchStyles.setup}>
+    const removeClass = (key: string) => {
+      setRemovedEdits(current => ({ ...current, [key]: { event: structuredClone(input.events!.find(item => item.key === key)!), index: input.events!.findIndex(item => item.key === key) } }));
+      change({ ...input, events: input.events!.filter(item => item.key !== key) });
+    };
+    return <div className={`${batchStyles.setup} ${batchStyles.setupWide}`}>
       <DraftRecoveryNotice available={!!recovery.recovered} unavailable={recovery.unavailable} onRestore={restore} onDiscard={recovery.forget} />
-      <form className={batchStyles.form} onSubmit={saveFocused} aria-busy={!!pending}>
-        <h2>Edit schedule</h2><p className={batchStyles.help}>Changes stay private until published. All times IST.</p>
+      <form className={`${batchStyles.form} ${batchStyles.creationForm} ${batchStyles.editForm}`} onSubmit={saveFocused} aria-busy={!!pending}>
         <fieldset className={batchStyles.setupFields} disabled={locked}>
-          <label>Batch name<input required maxLength={120} value={input.title} onChange={event => change({...input,title:event.target.value})} /></label>
-          <div className={batchStyles.scheduleEditHeading}><h3>Live classes</h3><span>{live.length} {live.length === 1 ? 'class' : 'classes'}</span></div>
-          {live.map((event,index) => <fieldset className={batchStyles.classRow} key={event.key}>
-            <legend>Class {index + 1}</legend>
-            <div className={batchStyles.classIdentity}>
-              {productCode === 'full_course' && <label>Subject<select aria-label={`Subject for class ${index+1}`} disabled={original.events.some(item => item.key === event.key)} value={event.section ?? original.events.find(item => item.key === event.key)?.section ?? 'quant'} onChange={e => changeEvent(event.key,{section:e.target.value as 'quant'|'verbal'|'di'})}>{V2_TEMPLATE_PRODUCTS[productCode].sections.map(section => <option key={section} value={section}>{V2_TEMPLATE_PRODUCTS[section].label}</option>)}</select></label>}
-              <label>Class name<input id={`${event.key}-name`} required maxLength={120} value={event.title ?? original.events.find(item => item.key === event.key)?.title ?? ''} onChange={e => changeEvent(event.key,{title:e.target.value})} /></label>
-            </div>
-            <div className={batchStyles.classFields}>
-              <BatchDatePicker id={`${event.key}-date`} label="Date" required value={event.localDate ?? ''} time={event.localStartTime ?? ''} onDateTimeChange={(localDate,localStartTime)=>changeEvent(event.key,{localDate,localStartTime})} onChange={localDate=>changeEvent(event.key,{localDate})} events={calendarEvents} />
-              <label>Start time (IST)<input type="time" required value={event.localStartTime ?? ''} onChange={e=>changeEvent(event.key,{localStartTime:e.target.value})} /></label>
-              <label>Duration (minutes)<input type="number" required min={15} max={720} step={1} value={event.durationMinutes ?? ''} onChange={e=>changeEvent(event.key,{durationMinutes:Number(e.target.value)})} /></label>
-            </div>
-            <div className={batchStyles.rowSecondary}><details className={batchStyles.publishDetails}><summary>Instructor</summary><label>Instructor name<input maxLength={120} value={event.instructor} onChange={e=>changeEvent(event.key,{instructor:e.target.value})} /></label></details>
-              {live.length > 1 && <button type="button" className={batchStyles.remove} aria-label={`Remove class ${index+1}`} onClick={()=>setRemoving(event.key)}>Remove class</button>}
-            </div>
-            {removing === event.key && <div className={batchStyles.removalConfirm} role="group" aria-label="Confirm class removal"><p>Remove {event.title || 'this class'} from the draft? Students keep the published schedule until changes are published.</p><div className={batchStyles.actions}><button type="button" className="btn btn-secondary" onClick={()=>setRemoving(null)}>Keep class</button><button type="button" className="btn btn-secondary" onClick={()=>{setRemovedEdits(current=>({...current,[event.key]:{event:structuredClone(event),index:input.events!.findIndex(item=>item.key===event.key)}}));change({...input,events:input.events!.filter(item=>item.key!==event.key)});setRemoving(null);}}>Remove from draft</button></div></div>}
-          </fieldset>)}
-          {removed.map(event => <p key={event.key} className={batchStyles.removedClass}>{event.title} — removed from this draft. <button type="button" onClick={()=>{const entries=[...(input.events??[])];const saved=removedEdits[event.key];entries.splice(saved?.index??original.events.findIndex(item=>item.key===event.key),0,saved?.event??editableV2BatchEvents([event])[0]);change({...input,events:entries});}}>Undo</button></p>)}
-          <button type="button" className="btn btn-secondary" disabled={(input.events?.length ?? 0)>=100} onClick={()=>{
-            const key=crypto.randomUUID(); const section=V2_TEMPLATE_PRODUCTS[productCode].sections[0];
-            change({...input,events:[...(input.events??[]),{key,kind:'live',title:'',section,localDate:'',localStartTime:'19:00',durationMinutes:60,instructor:'',capacity:8}]});
-            requestAnimationFrame(()=>document.getElementById(`${key}-name`)?.focus());
-          }}>+ Add class</button>
-          <details className={batchStyles.publishDetails} open={outlineOpen || undefined}><summary>Edit this batch’s course sessions</summary><p className={batchStyles.help}>Course materials are separate from class dates.</p><CourseSessionsEditor initialSessionKey={initialSessionKey} sessions={input.sessions ?? []} sections={V2_TEMPLATE_PRODUCTS[productCode].sections} onChange={sessions=>change({...input,sessions})} /></details>
+          <div className={batchStyles.setupMain}>
+            <div className={batchStyles.editHead}><div><h2>Edit schedule</h2><p className={batchStyles.help}>Changes stay private until you publish them. All times IST.</p></div>
+              <label className={batchStyles.editName}>Batch name<input required maxLength={120} value={input.title} onChange={event => change({...input,title:event.target.value})} /></label></div>
+            <div className={batchStyles.classListHeader} aria-hidden="true"><span>Live classes</span><span>{live.length} {live.length === 1 ? 'class' : 'classes'}</span></div>
+            {live.map((event,index) => <fieldset className={`${batchStyles.classRow} ${batchStyles.scheduleRow} ${batchStyles.editRow}`} key={event.key}>
+              <legend>Class {index + 1}</legend>
+              <span className={batchStyles.classNumber} aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+              <div className={batchStyles.classIdentity}>
+                {productCode === 'full_course' && !original.events.some(item => item.key === event.key) && <label>Subject<select aria-label={`Subject for class ${index+1}`} value={event.section ?? 'quant'} onChange={e => changeEvent(event.key,{section:e.target.value as 'quant'|'verbal'|'di'})}>{V2_TEMPLATE_PRODUCTS[productCode].sections.map(section => <option key={section} value={section}>{V2_TEMPLATE_PRODUCTS[section].label}</option>)}</select></label>}
+                <label>Class name<input id={`${event.key}-name`} required maxLength={120} value={event.title ?? original.events.find(item => item.key === event.key)?.title ?? ''} onChange={e => changeEvent(event.key,{title:e.target.value})} /></label>
+              </div>
+              <div className={batchStyles.classFields}>
+                <BatchDatePicker id={`${event.key}-date`} label="Date" required value={event.localDate ?? ''} time={event.localStartTime ?? ''} onDateTimeChange={(localDate,localStartTime)=>changeEvent(event.key,{localDate,localStartTime})} onChange={localDate=>changeEvent(event.key,{localDate})} events={calendarEvents} />
+                <label>Start time (IST)<input type="time" required value={event.localStartTime ?? ''} onChange={e=>changeEvent(event.key,{localStartTime:e.target.value})} /></label>
+                <label>Duration (minutes)<input type="number" required min={15} max={720} step={1} value={event.durationMinutes ?? ''} onChange={e=>changeEvent(event.key,{durationMinutes:Number(e.target.value)})} /></label>
+                {event.localDate && <small className={batchStyles.weekday}>{weekdayLabel(event.localDate)}</small>}
+              </div>
+              {live.length > 1 && <button type="button" className={`${batchStyles.remove} ${batchStyles.removeClassIcon}`} title="Remove class" aria-label={`Remove class ${index+1}`} onClick={() => removeClass(event.key)}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M3 6h18M9 6V4h6v2M5 6l1 14h12l1-14M10 10v6m4-6v6"/></svg></button>}
+            </fieldset>)}
+            {removed.map(event => <div key={event.key} className={batchStyles.removedClass} role="status"><span>{event.title} removed from this draft.</span><button type="button" onClick={()=>{const entries=[...(input.events??[])];const saved=removedEdits[event.key];entries.splice(saved?.index??original.events.findIndex(item=>item.key===event.key),0,saved?.event??editableV2BatchEvents([event])[0]);change({...input,events:entries});}}>Undo</button></div>)}
+            <button type="button" className={`btn btn-secondary ${batchStyles.addClass}`} disabled={(input.events?.length ?? 0)>=100} onClick={()=>{
+              const key=crypto.randomUUID(); const section=V2_TEMPLATE_PRODUCTS[productCode].sections[0];
+              change({...input,events:[...(input.events??[]),{key,kind:'live',title:'',section,localDate:'',localStartTime:'19:00',durationMinutes:60,instructor:'',capacity:8}]});
+              requestAnimationFrame(()=>document.getElementById(`${key}-name`)?.focus());
+            }}>+ Add class</button>
+            <details className={batchStyles.sessionsDisclosure} open={outlineOpen || undefined}><summary>Course sessions in this batch</summary><p className={batchStyles.help}>Readings, recordings and worksheets for this batch. They don’t need dates.</p><CourseSessionsEditor initialSessionKey={initialSessionKey} sessions={input.sessions ?? []} sections={V2_TEMPLATE_PRODUCTS[productCode].sections} onChange={sessions=>change({...input,sessions})} /></details>
+            <div className={batchStyles.footer}><p className={batchStyles.help} role="status">{message || (dirty ? 'Unsaved changes' : 'No unsaved changes')}</p><button type="submit" className="btn btn-primary" disabled={!!pending || !!recovery.recovered || (!dirty && !review)}>{pending ? 'Saving…' : review ? 'Retry saving changes' : 'Save changes'}</button></div>
+            {review && !pending && <p className={batchStyles.help}>The last save wasn’t confirmed. Retry it, or <button type="button" className={batchStyles.inlineLink} onClick={()=>{if(window.confirm('Reload the latest saved batch? Unsaved edits stay available for recovery.'))window.location.reload();}}>reload the saved batch</button>.</p>}
+            {error && <p role="alert" className="workflow-error">{error}</p>}
+          </div>
         </fieldset>
-        <div className={batchStyles.footer}><p className={batchStyles.help}>{dirty ? 'Unsaved changes' : 'Saved draft'} · Students see changes after publication.</p><button type="submit" className="btn btn-primary" disabled={!!pending || !!recovery.recovered || (!dirty && !review)}>{pending ? 'Saving…' : review ? 'Retry saving changes' : 'Save changes'}</button></div>
-        {review && !pending && <p className={batchStyles.help}>This save needs confirmation. Retry it, or reload the latest saved batch before making different changes.</p>}
-        {error && <p role="alert" className="workflow-error">{error}</p>}
-        {message && <p role="status">{message}</p>}
-        {!!review && !pending && <button type="button" className={batchStyles.back} onClick={()=>{if(window.confirm('Reload the latest saved batch? Unsaved edits stay available for recovery.'))window.location.reload();}}>Reload saved batch</button>}
       </form>
     </div>;
   }

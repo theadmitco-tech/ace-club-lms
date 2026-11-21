@@ -416,3 +416,19 @@
   .tabDivider { display: none; }
 }
 .stepper li[data-state="next"]::before { background: #e1e7e3; }
+
+/* ── Edit schedule ─────────────────────────────────────────────────────── */
+.editHead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px; margin-bottom: 20px; }
+.editHead h2 { margin: 0 0 4px; font-size: 18px; letter-spacing: -0.01em; }
+.editHead .help { margin: 0; }
+.setupWide .editName { flex: 0 1 360px; min-width: 240px; font-size: 13px; }
+.setupWide .creationForm .editRow > .removeClassIcon { grid-column: -2; grid-row: 1; margin: 0; align-self: center; }
+.setupWide .creationForm .editRow .classIdentity { display: grid; gap: 8px; }
+.setupWide .creationForm .editRow .classIdentity label { font-size: 12px; color: #5d6d63; }
+.sessionsDisclosure { margin-top: 22px; padding: 14px 16px; border: 1px solid #e3e9e5; border-radius: 10px; background: #fafcfb; }
+.sessionsDisclosure > summary { cursor: pointer; font-weight: 600; font-size: 14px; color: #2c4036; }
+.sessionsDisclosure[open] > summary { margin-bottom: 8px; }
+.inlineLink { background: none; border: 0; padding: 0; font: inherit; color: #245d47; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.setupWide > .creationForm { max-width: 1100px; }
+.setupWide .editForm .setupFields { grid-template-columns: minmax(0, 1fr); }
+.setupWide .creationForm .editRow .classIdentity { max-width: 640px; }

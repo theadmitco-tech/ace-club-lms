@@ -19,3 +19,10 @@ export function isLiveBatchSetup(value: unknown): value is LiveBatchSetup {
     && typeof item.duration === 'number' && Number.isFinite(item.duration))
     && new Set(value.classes.map(item => item.key)).size === value.classes.length;
 }
+
+/** Weekday label for a YYYY-MM-DD class date, so a mistyped day is easy to spot. */
+export function weekdayLabel(date: string | null | undefined) {
+  if (!date || !/^20\d{2}-\d{2}-\d{2}$/.test(date)) return '';
+  const value = new Date(`${date}T00:00:00Z`);
+  return Number.isFinite(value.valueOf()) ? new Intl.DateTimeFormat('en-IN', { timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }).format(value) : '';
+}
