@@ -1,6 +1,7 @@
 'use client';
 import { CourseSessionsEditor, CourseSessionsPreview } from '../templates/CourseSessions';
 import { BatchDatePicker } from './BatchDatePicker';
+import { TimeSelect } from './TimeSelect';
 
 import { useRef, useState, type FormEvent } from 'react';
 import { DraftRecoveryNotice, useDraftRecovery } from '@/components/DraftRecovery';
@@ -216,7 +217,7 @@ export default function BatchDraftEditor({ courseMode = false, drafts, templates
               </div>
               <div className={batchStyles.classFields}>
                 <BatchDatePicker id={`${event.key}-date`} label="Date" required value={event.localDate ?? ''} time={event.localStartTime ?? ''} onDateTimeChange={(localDate,localStartTime)=>changeEvent(event.key,{localDate,localStartTime})} onChange={localDate=>changeEvent(event.key,{localDate})} events={calendarEvents} />
-                <label>Start time (IST)<input type="time" required value={event.localStartTime ?? ''} onChange={e=>changeEvent(event.key,{localStartTime:e.target.value})} /></label>
+                <TimeSelect id={`${event.key}-start-time`} label="Start time (IST)" required value={event.localStartTime ?? ''} onChange={localStartTime=>changeEvent(event.key,{localStartTime})} />
                 <label>Duration (minutes)<input type="number" required min={15} max={720} step={1} value={event.durationMinutes ?? ''} onChange={e=>changeEvent(event.key,{durationMinutes:Number(e.target.value)})} /></label>
                 {event.localDate && <small className={batchStyles.weekday}>{weekdayLabel(event.localDate)}</small>}
               </div>

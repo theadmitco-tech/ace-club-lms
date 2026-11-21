@@ -13,6 +13,7 @@ import { V2_TEMPLATE_PRODUCTS, validateV2TemplateSave, type V2TemplateDraft, typ
 import { saveTemplateDraftAction } from '../templates/actions';
 import { previewBatchDraftAction, saveBatchDraftAction } from './actions';
 import { BatchDatePicker } from './BatchDatePicker';
+import { TimeSelect } from './TimeSelect';
 import styles from './batchWorkspace.module.css';
 
 type Prepared = { sources?: CurriculumSource[]; request: V2TemplateSaveInput; startDate: string; batchRequest?: V2BatchInput; proposal?: V2BatchProposal };
@@ -178,7 +179,7 @@ export default function NewLiveBatch({ drafts, ownerId, onSaved }: {
           <div className={styles.patternControls}>
             <label>First class on<input type="date" value={pattern.start} onChange={event => setPattern({ ...pattern, start: event.target.value })} /><small>{weekdayLabel(pattern.start)}</small></label>
             <fieldset className={styles.weekdays}><legend>Class days</legend>{[1,2,3,4,5,6,0].map(day => { const label = WEEKDAYS[day]; return <label key={label}><input type="checkbox" checked={pattern.weekdays.includes(day)} onChange={event => setPattern({ ...pattern, weekdays: event.target.checked ? [...pattern.weekdays, day] : pattern.weekdays.filter(item => item !== day) })} />{label}</label>; })}</fieldset>
-            <label>Class time (IST)<input type="time" value={pattern.time} onChange={event => setPattern({ ...pattern, time: event.target.value })} /></label>
+            <TimeSelect label="Class time (IST)" value={pattern.time} onChange={time => setPattern({ ...pattern, time })} />
             <button type="button" className="btn btn-secondary" disabled={!isV2BatchDate(pattern.start) || !pattern.weekdays.length} onClick={fillFromPattern}>Fill {undatedLive.length} {undatedLive.length === 1 ? 'date' : 'dates'}</button>
           </div>
         </div>}
@@ -198,7 +199,7 @@ export default function NewLiveBatch({ drafts, ownerId, onSaved }: {
           {curriculumKeys.has(item.key) && <label className={styles.liveToggle}><input type="checkbox" checked={isLive(item)} onChange={event => changeClass(item.key,{live:event.target.checked})} />Live class</label>}
           {isLive(item) ? <div className={styles.classFields}>
             <BatchDatePicker id={`new-${item.key}`} label="Date" required value={item.date} time={item.time} onChange={date => changeClass(item.key,{date})} onDateTimeChange={(date,time) => changeClass(item.key,{date,time})} events={classes.filter(entry => entry.date).map(entry => ({date:entry.date,time:entry.time,title:entry.title||'Live class'}))} />
-            <label>Start time (IST)<input type="time" required value={item.time} onChange={event => changeClass(item.key,{time:event.target.value})} /></label>
+            <TimeSelect id={`new-${item.key}-time`} label="Start time (IST)" required value={item.time} onChange={time => changeClass(item.key,{time})} />
             <label>Duration (minutes)<input type="number" required min={15} max={720} step={1} value={item.duration||''} onChange={event => changeClass(item.key,{duration:Number(event.target.value)})} /></label>
             {item.date && <small className={styles.weekday} aria-live="polite">{weekdayLabel(item.date)}</small>}
           </div> : <p className={styles.noDate}>No date needed · content stays available in this batch</p>}

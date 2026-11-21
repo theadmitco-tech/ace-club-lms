@@ -477,3 +477,6 @@
 .contentPreview { padding: 16px; max-height: 560px; overflow: auto; }
 @media (max-width: 760px) { .contentList summary { grid-template-columns: 1fr; } .contentCounts { justify-content: flex-start; } }
 .publishMain h3.publishSection { margin: 0 0 8px; font-size: 13px; line-height: 1.4; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #3d5246; }
+/* Time picker inside class rows shares the aligned label row */
+.setupWide .creationForm .scheduleRow .classFields > div:not(:first-child) { display: grid; grid-template-rows: 24px auto; gap: 4px; align-content: end; }
+.setupWide .creationForm .scheduleRow .classFields > div:not(:first-child) > label { align-self: end; white-space: nowrap; }

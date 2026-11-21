@@ -46,6 +46,8 @@ export const sources = [
   'src/app/admin/v2/batches/BatchWorkspace.tsx',
   'src/app/admin/v2/batches/NewLiveBatch.tsx',
   'src/app/admin/v2/batches/BatchSetupSteps.tsx',
+  'src/app/admin/v2/batches/TimeSelect.tsx',
+  'src/app/admin/v2/batches/timeSelect.module.css',
   'src/app/admin/v2/batches/batchWorkspace.module.css',
   'src/components/AdminDraftNavigation.tsx',
   'src/components/DraftRecovery.tsx',
