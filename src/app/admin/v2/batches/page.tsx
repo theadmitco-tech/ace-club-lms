@@ -14,6 +14,7 @@ import { listV2BatchPublications } from '@/lib/server/v2Publications';
 import { isV2StudentScheduleEnabled } from '@/lib/server/v2StudentScheduleFeature';
 import { listV2EnrollmentOptions } from '@/lib/server/v2Enrollments';
 import { readV2LiveOperations } from '@/lib/server/v2StudentDelivery';
+import { readV2MeetingDraft } from '@/lib/server/v2Meetings';
 import type { BatchRoster } from './BatchWorkspace';
 import styles from '../templates/templates.module.css';
 
@@ -33,8 +34,9 @@ export default async function V2BatchesPage({searchParams}:{searchParams:Promise
   // Enrolled students and live seats per live batch; missing data shows as unavailable rather than zero.
   const rosters: Record<string, BatchRoster> = {};
   if (isV2StudentScheduleEnabled() && batches.status === 'ready') await Promise.all(batches.drafts.filter(draft => draft.events.some(event => event.kind === 'live')).map(async draft => {
-    const [enrollment, live] = await Promise.all([listV2EnrollmentOptions(draft.id).catch(() => null), readV2LiveOperations(draft.id).catch(() => null)]);
-    rosters[draft.id] = { enrolled: enrollment?.status === 'ready' ? enrollment.options.filter(item => item.active).length : null, liveSeats: live ? live.registrations.filter(item => item.active).length : null };
+    const [enrollment, live, meeting] = await Promise.all([listV2EnrollmentOptions(draft.id).catch(() => null), readV2LiveOperations(draft.id).catch(() => null), readV2MeetingDraft(draft.id).catch(() => null)]);
+    rosters[draft.id] = { enrolled: enrollment?.status === 'ready' ? enrollment.options.filter(item => item.active).length : null, liveSeats: live ? live.registrations.filter(item => item.active).length : null,
+      meetLinks: meeting?.status === 'ready' ? meeting.draft.links.filter(link => link.url).map(link => link.key) : null, completed: live ? live.classes.filter(item => item.completedAt).map(item => item.eventKey) : null };
   }));
   if (isV2ContentPublishingEnabled() && batches.status === 'ready' && templates.status === 'ready' && publications.status === 'ready') return <BatchWorkspace rosters={rosters} archives={archives} reviewOpen={query.review==='1'} initialSessionKey={query.session} initialBatchId={query.batch} outlineOpen={query.outline==='1'} drafts={curriculumDrafts} templates={templates.templates} publications={publications.publications} ownerId={identity.id}/>;
   return <div>

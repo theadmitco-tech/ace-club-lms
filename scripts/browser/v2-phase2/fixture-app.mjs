@@ -44,6 +44,7 @@ export const sources = [
   'src/app/admin/workflow.css',
   'src/app/admin/v2/batches/BatchWorkspace.tsx',
   'src/app/admin/v2/batches/NewLiveBatch.tsx',
+  'src/app/admin/v2/batches/BatchSetupSteps.tsx',
   'src/app/admin/v2/batches/batchWorkspace.module.css',
   'src/components/AdminDraftNavigation.tsx',
   'src/components/DraftRecovery.tsx',
@@ -168,7 +169,8 @@ export async function call(method: string, ...args: unknown[]) {
     listV2BatchDrafts: "Promise<{ status: 'ready'; drafts: import('@/lib/v2Batches').V2BatchDraft[] } | { status: 'unavailable'; drafts: [] }>",
     getMyV2BatchSchedules: "Promise<{ status: 'ready'; schedules: import('@/lib/v2Publications').V2Publication[] } | { status: 'unavailable' }>",
     listV2EnrollmentOptions: "Promise<{ status: 'ready'; options: import('@/lib/v2Enrollments').V2EnrollmentOption[] } | { status: 'unavailable' }>",
-    readV2LiveOperations: "Promise<{ registrations: import('@/lib/v2Enrollments').V2EnrollmentOption[]; classes: unknown[] } | null>",
+    readV2LiveOperations: "Promise<{ registrations: import('@/lib/v2Enrollments').V2EnrollmentOption[]; classes: import('@/lib/v2StudentDelivery').V2LiveClassStatus[] } | null>",
+    readV2MeetingDraft: "Promise<{ status: 'ready'; draft: import('@/lib/v2Meetings').V2MeetingDraft } | { status: 'unavailable' }>",
   };
   for (const [module, methods] of Object.entries({
     v2Enrollments: ['listV2EnrollmentOptions', 'setV2Enrollment'],

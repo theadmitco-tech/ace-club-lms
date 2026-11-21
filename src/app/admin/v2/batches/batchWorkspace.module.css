@@ -259,12 +259,12 @@
 .setupAside .linkedMaterials { margin-bottom: 0; }
 
 /* Class list: one quiet list with aligned columns */
-.classListHeader { display: flex; justify-content: space-between; padding: 0 4px 10px; margin-bottom: 4px; border-bottom: 1px solid #edf1ee; font-size: 12px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; color: #6a7a70; }
+.classListHeader { display: flex; justify-content: space-between; padding: 0 4px 10px; margin-bottom: 4px; border-bottom: 1px solid #edf1ee; font-size: 12px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; color: #56665d; }
 .setupWide .creationForm .scheduleRow { grid-template-columns: 32px minmax(180px, 1fr) auto minmax(380px, 1.5fr) 36px; gap: 18px; border: 0; border-bottom: 1px solid #edf1ee; border-radius: 0; padding: 16px 4px; margin: 0; background: transparent; transition: background-color 160ms ease; }
 .setupWide .creationForm .scheduleRow:hover { background: #fafcfb; }
 .setupWide .creationForm .scheduleRow:focus-within { background: #f6faf7; border-color: #edf1ee; }
-.setupWide .creationForm .scheduleRow[data-off] .curriculumTitle { color: #7b8a81; font-weight: 500; }
-.setupWide .creationForm .scheduleRow[data-off] .classNumber { background: #f1f3f2; color: #8a968f; }
+.setupWide .creationForm .scheduleRow[data-off] .curriculumTitle { color: #56665d; font-weight: 500; }
+.setupWide .creationForm .scheduleRow[data-off] .classNumber { background: #f1f3f2; color: #56665d; }
 .setupWide .classNumber { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 999px; background: #eaf2ed; color: #2f5f49; font-size: 12px; font-weight: 600; }
 .setupWide .creationForm .scheduleRow .curriculumTitle { font-size: 14.5px; line-height: 1.5; }
 .setupWide .creationForm .scheduleRow .classFields { grid-template-columns: minmax(150px, 1.3fr) minmax(110px, 1fr) minmax(90px, .7fr); column-gap: 12px; row-gap: 4px; align-items: end; }
@@ -276,7 +276,7 @@
 .setupWide .creationForm .scheduleRow :is(input, select) { min-height: 40px; }
 .setupWide .creationForm .scheduleRow .classFields [class*="inputRow"] input, .setupWide .creationForm .scheduleRow .classFields [class*="inputRow"] button { min-height: 40px; }
 .setupWide .weekday { grid-column: 1 / 2; padding-left: 2px; color: #2f5f49; font-weight: 500; }
-.setupWide .noDate { font-size: 13px; color: #7b8a81; font-style: italic; }
+.setupWide .noDate { font-size: 13px; color: #56665d; font-style: italic; }
 .setupWide .creationForm .addClass { margin-top: 16px; }
 
 /* Live class switch (still a native checkbox for keyboard and screen readers) */
@@ -302,3 +302,54 @@
 @media (prefers-reduced-motion: reduce) { .setupWide .creationForm .liveToggle input, .setupWide .creationForm .liveToggle input::before, .setupWide .creationForm .scheduleRow { transition: none; } }
 .setupWide .creationForm .scheduleRow .liveToggle input[type="checkbox"] { min-height: 0; height: 20px; width: 36px; padding: 0; margin: 0; flex: none; border-radius: 999px; }
 @media (max-width: 1500px) { .setupWide .creationForm .scheduleRow .classFields, .setupWide .creationForm .scheduleRow .noDate { grid-column: 2 / -1; } }
+
+/* ── Batch overview: setup steps and class readiness ──────────────────── */
+.visuallyHiddenText { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.setupSteps { background: #fff; border: 1px solid #e3e9e5; border-radius: 14px; padding: clamp(18px, 2vw, 26px); margin: 0 0 20px; box-shadow: 0 1px 2px #1f3a2c08, 0 6px 24px #1f3a2c0a; }
+.setupSteps > header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+.setupSteps > header h2 { margin: 0 0 4px; font-size: 18px; letter-spacing: -0.01em; }
+.setupSteps > header p { margin: 0; color: #5d6d63; font-size: 14px; }
+.stepCount { font-size: 12px; font-weight: 600; color: #2f5f49; background: #eaf2ed; border-radius: 999px; padding: 5px 10px; }
+.setupSteps ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.setupSteps li { position: relative; display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 14px 4px; border-top: 1px solid #edf1ee; }
+.setupSteps li[data-state="next"] { background: #f6faf7; border-radius: 10px; border-top-color: transparent; padding-inline: 12px; margin-inline: -8px; }
+.setupSteps li[data-state="next"] + li { border-top-color: transparent; }
+.stepMarker { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #f1f3f2; color: #56665d; border: 1px solid #e1e6e3; }
+.setupSteps li[data-state="done"] .stepMarker { background: #2f6b52; color: #fff; border-color: #2f6b52; }
+.setupSteps li[data-state="next"] .stepMarker { background: #fff; color: #2f6b52; border: 2px solid #2f6b52; }
+.stepText h3 { margin: 0; font-size: 14.5px; font-weight: 600; color: #263b31; }
+.stepText h3 small { font-weight: 400; color: #56665d; font-size: 12px; }
+.stepText p { margin: 2px 0 0; font-size: 13px; color: #5d6d63; }
+.setupSteps li[data-state="done"] .stepText h3 { color: #4a5e53; }
+.stepAction { background: transparent; border: 1px solid #d5ded8; color: #2f5f49; border-radius: 8px; padding: 8px 12px; font: inherit; font-size: 13px; font-weight: 500; text-decoration: none; cursor: pointer; white-space: nowrap; }
+.stepAction:hover { background: #f3f6f4; }
+.setupSteps li .btn { white-space: nowrap; }
+@media (max-width: 640px) { .setupSteps li { grid-template-columns: 28px minmax(0, 1fr); } .setupSteps li > :is(a, button) { grid-column: 2; justify-self: start; } }
+
+.timetable li { grid-template-columns: 112px minmax(0, 1fr) auto 110px; }
+.classStatus { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+.classStatus span { font-size: 12px; font-weight: 500; border-radius: 999px; padding: 4px 10px; background: #f1f3f2; color: #5d6d63; white-space: nowrap; }
+.classStatus span[data-tone="ok"] { background: #e8f2ec; color: #2c6249; }
+.classStatus span[data-tone="warn"] { background: #fbf3e2; color: #8a5a12; }
+.statusAction { font-size: 12px; font-weight: 600; border-radius: 999px; padding: 4px 10px; background: #2f6b52; color: #fff !important; text-decoration: none; white-space: nowrap; }
+@media (max-width: 750px) { .timetable li { grid-template-columns: 1fr auto; } .classStatus { grid-column: 1 / -1; justify-content: flex-start; } }
+
+/* Roomier class rows: decide the layout from the list's own width */
+.setupMain { container-type: inline-size; container-name: classlist; }
+.setupWide .creationForm .scheduleRow { grid-template-columns: 32px minmax(0, 1fr) auto 36px; row-gap: 14px; column-gap: 20px; padding: 18px 6px; }
+.setupWide .creationForm .scheduleRow .classFields, .setupWide .creationForm .scheduleRow .noDate { grid-column: 2 / -1; grid-row: 2; }
+.setupWide .creationForm .scheduleRow .classFields { grid-template-columns: minmax(190px, 1.2fr) minmax(140px, 1fr) minmax(120px, .8fr); column-gap: 14px; max-width: 640px; }
+.setupWide .creationForm .scheduleRow .classFields label, .setupWide .creationForm .scheduleRow .classFields > div:first-child > :first-child { white-space: nowrap; }
+@container classlist (min-width: 1080px) {
+  .setupWide .creationForm .scheduleRow { grid-template-columns: 32px minmax(240px, 1fr) auto minmax(480px, 560px) 36px; }
+  .setupWide .creationForm .scheduleRow .classFields, .setupWide .creationForm .scheduleRow .noDate { grid-column: 4; grid-row: 1; }
+  .setupWide .creationForm .scheduleRow .classFields { max-width: none; }
+}
+@container classlist (max-width: 560px) {
+  .setupWide .creationForm .scheduleRow { grid-template-columns: 28px minmax(0, 1fr) 36px; }
+  .setupWide .creationForm .scheduleRow .liveToggle { grid-column: 2 / -1; grid-row: 2; }
+  .setupWide .creationForm .scheduleRow .classFields, .setupWide .creationForm .scheduleRow .noDate { grid-column: 1 / -1; grid-row: 3; }
+  .setupWide .creationForm .scheduleRow .classFields { grid-template-columns: 1fr 1fr; }
+  .setupWide .creationForm .scheduleRow .classFields > div:first-child { grid-column: 1 / -1; }
+}
+.setupSteps .stepAction { font-size: 13px; line-height: 1.2; padding: 8px 12px; min-height: 36px; display: inline-flex; align-items: center; }

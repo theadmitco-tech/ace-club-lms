@@ -7,13 +7,14 @@ import type { V2BatchDraft } from '@/lib/v2Batches';
 import { V2_TEMPLATE_PRODUCTS, type V2TemplateDraft } from '@/lib/v2Templates';
 import type { V2Publication } from '@/lib/v2Publications';
 import NewLiveBatch from './NewLiveBatch';
+import BatchSetupSteps from './BatchSetupSteps';
 import styles from './batchWorkspace.module.css';
 import BatchDraftEditor from './BatchDraftEditor';
 import PublicationPanel from './PublicationPanel';
 
 /** Live-course registration closes at eight students (approved decision C1). */
 export const LIVE_SEAT_LIMIT = 8;
-export type BatchRoster = { enrolled: number | null; liveSeats: number | null };
+export type BatchRoster = { enrolled: number | null; liveSeats: number | null; meetLinks?: string[] | null; completed?: string[] | null };
 type Props = { rosters?: Record<string, BatchRoster>; archives?: {batchId:string;revision:number;archived:boolean}[]|null; drafts: V2BatchDraft[]; templates: V2TemplateDraft[]; publications: V2Publication[]; ownerId: string; initialBatchId?: string; outlineOpen?: boolean; initialSessionKey?: string; reviewOpen?: boolean };
 type Task = 'schedule' | 'edit' | 'publish';
 function subjectLabel(batch: V2BatchDraft) {
@@ -28,6 +29,18 @@ function RosterSummary({ roster }: { roster?: BatchRoster }) {
     <span data-full={full || undefined}>{roster.liveSeats === null ? 'Live seats unavailable' : `${roster.liveSeats} / ${LIVE_SEAT_LIMIT} live seats${full ? ' · Full' : ''}`}</span>
   </p>;
 }
+/** Per-class readiness: private Meet link and, once the class has ended, completion. */
+function ClassStatus({ batchId, eventKey, startsAt, durationMinutes, published, roster, now }: { batchId: string; eventKey: string; startsAt: string | null; durationMinutes: number | null; published: boolean; roster?: BatchRoster; now: number }) {
+  const ended = !!startsAt && Date.parse(startsAt) + (durationMinutes ?? 0) * 60000 < now;
+  const completed = roster?.completed?.includes(eventKey);
+  const linked = roster?.meetLinks?.includes(eventKey);
+  return <div className={styles.classStatus}>
+    {roster?.meetLinks && <span data-tone={linked ? 'ok' : 'warn'}>{linked ? 'Meet link added' : 'No Meet link'}</span>}
+    {completed ? <span data-tone="ok">Completed</span>
+      : ended && published ? <Link className={styles.statusAction} href={`/admin/v2/batches/${batchId}/live`} prefetch={false}>Mark complete →</Link>
+      : startsAt ? <span data-tone="muted">Upcoming</span> : null}
+  </div>;
+}
 function statusLabel(batch: V2BatchDraft, publication?: V2Publication) {
   return publication?.state === 'published'
     ? publication.batchRevision === batch.revision ? 'Published' : 'Published · draft changes'
@@ -40,6 +53,7 @@ export default function BatchWorkspace({ rosters = {}, archives = [], drafts, te
   const [active, setActive] = useState<V2BatchDraft | null | undefined>(() => drafts.find(batch => batch.id === initialBatchId));
   const [tab, setTab] = useState<Task>(reviewOpen ? 'publish' : outlineOpen || initialSessionKey ? 'edit' : 'schedule');
   const [search, setSearch] = useState('');
+  const [now] = useState(() => Date.now());
   const [notice, setNotice] = useState('');
   const [filter, setFilter] = useState<'all' | 'draft' | 'published' | 'archived'>('all');
   const [archiveBusy,setArchiveBusy]=useState(false);
@@ -65,7 +79,7 @@ export default function BatchWorkspace({ rosters = {}, archives = [], drafts, te
     setActive(batch); setTab('schedule'); setNotice('');
     requestAnimationFrame(() => heading.current?.focus());
   }
-  function saved(batch: V2BatchDraft) { setActive(batch); setNotice('Draft saved. Review & publish when ready.'); if (!outlineOpen && !initialSessionKey) setTab('schedule'); }
+  function saved(batch: V2BatchDraft) { setActive(batch); setNotice('Draft saved. Follow the steps below to get this batch ready for students.'); if (!outlineOpen && !initialSessionKey) setTab('schedule'); }
   function task(next: Task) { if (confirmLeave()) { setTab(next); setNotice(''); } }
   const current = active ? drafts.find(batch => batch.id === active.id && batch.revision > active.revision) ?? active : null;
   const publication = current ? publications.find(item => item.batchId === current.id) : undefined;
@@ -135,11 +149,13 @@ export default function BatchWorkspace({ rosters = {}, archives = [], drafts, te
           {!!classes.length && <><Link href={`/admin/v2/batches/${current.id}/meeting`}>Meeting links</Link><Link href={`/admin/v2/batches/${current.id}/live`}>Class completion</Link></>}
         </nav>
       </div>
+      {tab === 'schedule' && <BatchSetupSteps batch={current} publication={publication} roster={rosters[current.id]} seatLimit={LIVE_SEAT_LIMIT} onEditSchedule={() => task('edit')} onPublish={() => task('publish')} />}
       {tab === 'schedule' ? <section className={styles.schedule} aria-labelledby="live-schedule-title">
         <div className={styles.scheduleHeader}><div><h2 id="live-schedule-title">Live classes</h2><p>{publication?.state === 'published' && publication.batchRevision !== current.revision ? 'Saved draft shown below. Review and publish to update the student schedule.' : publication?.state === 'published' ? 'The published schedule for this batch.' : 'This schedule is private until published.'}</p></div><button className="btn btn-secondary" onClick={() => task('edit')}>Edit schedule</button></div>
         {classes.length ? <ol className={styles.timetable}>{classes.map(event => <li key={event.key}>
           <div className={styles.classDate}><strong>{dateLabel(event.startsAt, { day: 'numeric', month: 'short' })}</strong><span>{event.startsAt ? `${dateLabel(event.startsAt, { weekday: 'short' })} · ${dateLabel(event.startsAt, { year: 'numeric' })}` : ''}</span></div>
           <div className={styles.classInfo}><h3>{event.title}</h3><span>{V2_TEMPLATE_PRODUCTS[event.section].label}{event.instructor ? ` · ${event.instructor}` : ''}</span></div>
+          <ClassStatus batchId={current.id} eventKey={event.key} startsAt={event.startsAt} durationMinutes={event.durationMinutes} published={publication?.state === 'published'} roster={rosters[current.id]} now={now} />
           <div className={styles.classTime}><strong><time dateTime={event.startsAt ?? undefined}>{event.startsAt ? dateLabel(event.startsAt, { hour: 'numeric', minute: '2-digit' }) : 'Time to be set'}</time></strong><span>{event.durationMinutes ? `${event.durationMinutes} min` : ''}</span></div>
         </li>)}</ol> : <p className={styles.help}>No live classes have been added.</p>}
       </section> : tab === 'edit' ? <BatchDraftEditor key={current.id} focused outlineOpen={outlineOpen} initialSessionKey={initialSessionKey} initialDraft={current} drafts={drafts} templates={templates} ownerId={ownerId} onSaved={saved} /> : <PublicationPanel key={current.id} focused onBack={() => setTab('schedule')} drafts={[current]} publications={publications} ownerId={ownerId} />}
