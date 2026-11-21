@@ -18,8 +18,8 @@ export async function previewBatchDraftAction(input: unknown) {
   return previewV2BatchDraft(input);
 }
 
-export async function saveBatchDraftAction(input: unknown, fingerprint: unknown) {
-  const result = await saveV2BatchDraft(input, fingerprint);
+export async function saveBatchDraftAction(input: unknown, fingerprint: unknown, sources?: unknown) {
+  const result = await saveV2BatchDraft(input, fingerprint, sources);
   if (result.status === 'success') revalidatePath('/admin/v2/batches');
   return result;
 }

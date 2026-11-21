@@ -27,6 +27,7 @@ test('independent publication, five placements, preview isolation and access enf
  const conflictPacket=readFileSync('deliverables/phase5-preview-activation/REPAIR-CONFLICT-RESPONSES.sql','utf8');
  const conflictRepair=JSON.parse(query(conflictPacket));assert.equal(conflictRepair.functionsRepaired,5);assert.equal(conflictRepair.existingRowsPreserved,true);assert.equal(conflictRepair.functionSecurityMetadataPreserved,true);
  rejects(conflictPacket,/Conflict repair already recorded/);
+ if(process.env.V2_TEST_CURRICULUM_LINKS==='1')apply('20261121100000_add_v2_curriculum_links.sql');
  const workspace=JSON.parse(query(asRead(admin,'select public.list_v2_content_workspace()')));assert.equal(workspace.courses.length,2);
  rejects(asRead(student,'select public.list_v2_content_workspace()'),/Admin access required/);
  const rpcRead=(id,name,args)=>JSON.parse(query(asRead(id,`select public.${name}(${args})`))||'null');

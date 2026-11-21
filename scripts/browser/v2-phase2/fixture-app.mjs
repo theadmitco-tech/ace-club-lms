@@ -74,6 +74,7 @@ export const sources = [
   'src/lib/v2Products.ts',
   'src/lib/v2Templates.ts',
   'src/lib/v2Batches.ts',
+  'src/lib/v2CurriculumLinks.ts',
   'src/lib/v2Meetings.ts',
   'src/lib/v2Publications.ts',
   'public/5.svg',

@@ -35,6 +35,7 @@ export type V2BatchInput = {
   events: V2BatchEventInput[] | null;
 };
 export type V2BatchDraft = {
+  curriculumPublicationRevision?: number;
   sessions?: V2CourseSession[];
   id: string;
   productCode: V2CourseCode;

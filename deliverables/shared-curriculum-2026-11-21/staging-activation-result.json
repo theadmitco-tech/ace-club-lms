@@ -1,0 +1,10 @@
+{
+  "check": "shared_curriculum",
+  "migration": "20261121100000",
+  "sourceSha256": "65d19390b295d187db266b52c09244329e696ea5df2a7311ca83ad5b43f0180a",
+  "existingBatchesLinked": 0,
+  "existingRowsPreserved": true,
+  "publicTablesPreserved": 93,
+  "originalLedgerPreserved": true,
+  "existingPermissionsPreserved": true
+}

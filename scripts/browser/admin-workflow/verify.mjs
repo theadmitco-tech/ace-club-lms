@@ -17,7 +17,7 @@ function studentDirectory(pattern='',from=0,to=25) {
  const data=Array.from({length:26},(_,index)=>({id:id(601+index),full_name:'Synthetic Student '+String(index+1).padStart(2,'0'),email:'student'+(index+1)+'@example.test',is_active:index%3!==1})).filter(row=>!query||row.full_name.toLowerCase().includes(query));
  return {data:data.slice(from,to+1),error:null};
 }
-const backend=createServer(async(req,res)=>{try{let body='';for await(const part of req)body+=part;const method=req.url.slice(1),args=JSON.parse(body);const result=method==='fixtureStudentDirectory'?studentDirectory(...args):await respond(state,method,args);res.writeHead(200,{'Content-Type':'application/json'}).end(JSON.stringify(result));}catch{res.writeHead(500).end('Synthetic interruption');}});
+const backend=createServer(async(req,res)=>{try{let body='';for await(const part of req)body+=part;const method=req.url.slice(1),args=JSON.parse(body);const result=method==='fixtureContentWorkspace'?{items:[],courses:state.drafts.filter(d=>!d.events.some(e=>e.kind==='live')).map(d=>({batchId:d.id,title:d.title,productCode:d.productCode,publicationRevision:1,sessions:d.sessions,anchors:d.sessions}))}:method==='fixtureStudentDirectory'?studentDirectory(...args):await respond(state,method,args);res.writeHead(200,{'Content-Type':'application/json'}).end(JSON.stringify(result));}catch{res.writeHead(500).end('Synthetic interruption');}});
 await new Promise(resolve=>backend.listen(0,'127.0.0.1',resolve));
 const root=await createFixtureApp(backend.address().port,true);
 const put=async(file,body)=>{await mkdir(path.dirname(path.join(root,file)),{recursive:true});await writeFile(path.join(root,file),body);};
@@ -26,7 +26,7 @@ const testedSourceHashes={};for(const file of [...sources,...extra])testedSource
 for(const file of extra){await mkdir(path.dirname(path.join(root,file)),{recursive:true});await copyFile(path.join(repo,file),path.join(root,file));}
 await put('src/app/admin/page.tsx',`import {redirect} from 'next/navigation';export default function Page(){redirect('/admin/v2/content');}`);
 await put('src/app/admin/v2/content/page.tsx',`export default function Page(){return <h1>Course content</h1>}`);
-await put('src/lib/server/v2ContentPublishing.ts',`export function isV2ContentPublishingEnabled(){return true;}export async function readContentWorkspace():Promise<{items:{id:string;deleted:boolean;draft_revision:number;published_revision:number|null;document:{title:string}}[];courses:import('@/lib/v2ContentPublishing').ContentCourse[]}>{return {items:[],courses:[]};}`);
+await put('src/lib/server/v2ContentPublishing.ts',`import {call} from '@/lib/server/fixture';export function isV2ContentPublishingEnabled(){return true;}export async function readContentWorkspace():Promise<{items:{id:string;deleted:boolean;draft_revision:number;published_revision:number|null;document:{title:string}}[];courses:import('@/lib/v2ContentPublishing').ContentCourse[]}>{return call('fixtureContentWorkspace');}`);
 await put('src/utils/supabase/server.ts',`import {call} from '@/lib/server/fixture';
 export async function createClient(){return {from(table:string){if(table!=='profiles')throw Error('Unexpected fixture table');let pattern='';const query={select(_fields:string){return query;},eq(_field:string,_value:string){return query;},ilike(_field:string,value:string){pattern=value;return query;},order(_field:string){return query;},async range(from:number,to:number):Promise<{data:{id:string;full_name:string;email:string;is_active:boolean}[]|null;error:{message:string}|null}>{return call('fixtureStudentDirectory',pattern,from,to);}};return query;}};}`);
 await put('src/lib/server/v2CourseWorkspace.ts',`export function historyPage(value:unknown){return typeof value==='string'&&/^[1-9]\\d{0,4}$/.test(value)?Number(value):1;}`);
@@ -179,6 +179,7 @@ try{
   assert.equal(await page.getByLabel('Date',{exact:true}).inputValue(),'2026-12-10');
   await page.screenshot({path:path.join(output,'curriculum-create.png'),fullPage:true});
   await button(page,'Save batch draft').click();await page.getByRole('heading',{name:'Live classes',exact:true,level:2}).waitFor();
+  const linkedCall=state.calls.find(call=>call.method==='saveV2BatchDraft');assert(linkedCall);assert.equal(linkedCall.args[2][0].batchId,libraries[0].id);
   const created=state.drafts.find(item=>item.title==='Weekend Quant');assert.equal(created.events.length,1);assert.equal(created.events[0].title,'quant foundations');assert.equal(created.events[0].durationMinutes,120);assert.equal(created.sessions.length,1);assert.equal(created.sessions[0].key,id(900));assert.equal(state.publications.length,0);
   for(const original of originals)assert.deepEqual(state.drafts.find(item=>item.id===original.id),original);
   await button(page,'Review & publish').click();await button(page,'Publish batch').click();await button(page,'View schedule').waitFor();assert.equal(state.publications[0].state,'published');

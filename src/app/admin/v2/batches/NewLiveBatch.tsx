@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState, type FormEvent } from 'react';
+import { validCurriculumSources, type CurriculumSource } from '@/lib/v2CurriculumLinks';
 import { curriculumLibraries, curriculumClasses } from '@/lib/v2BatchCurriculum';
 import { courseReadmePosition } from '@/lib/v2CourseReadmes';
 import { useRouter } from 'next/navigation';
@@ -14,11 +15,11 @@ import { previewBatchDraftAction, saveBatchDraftAction } from './actions';
 import { BatchDatePicker } from './BatchDatePicker';
 import styles from './batchWorkspace.module.css';
 
-type Prepared = { request: V2TemplateSaveInput; startDate: string; batchRequest?: V2BatchInput; proposal?: V2BatchProposal };
+type Prepared = { sources?: CurriculumSource[]; request: V2TemplateSaveInput; startDate: string; batchRequest?: V2BatchInput; proposal?: V2BatchProposal };
 function isPrepared(value: unknown): value is Prepared {
   if (!value || typeof value !== 'object') return false;
   const item = value as Prepared;
-  return typeof item.startDate === 'string' && isV2BatchDate(item.startDate)
+  return (item.sources === undefined || validCurriculumSources(item.sources)) && typeof item.startDate === 'string' && isV2BatchDate(item.startDate)
     && validateV2TemplateSave(item.request) === null && item.request.expectedRevision === 0 && item.request.document.events.length > 0
     && (item.batchRequest === undefined || (validateV2BatchInput(item.batchRequest) === null && item.batchRequest.expectedRevision === 0
       && item.batchRequest.templateId === item.request.id && item.batchRequest.templateRevision === 1
@@ -84,7 +85,7 @@ export default function NewLiveBatch({ drafts, ownerId, onSaved }: {
         setPrepared(reviewed); recovery.remember(reviewed);
       }
       if (!proposal) { setError('The batch preview could not be checked. Retry saving this batch.'); return; }
-      const result = await saveBatchDraftAction(next.batchRequest!, proposal.fingerprint);
+      const result = await saveBatchDraftAction(next.batchRequest!, proposal.fingerprint, next.sources);
       if (result.status === 'error') { setError(result.message); return; }
       recovery.forget(); formRecovery.forget(); onSaved(result.draft); router.refresh();
     } catch { setError('The save was interrupted. Retry to recover the same batch without creating a duplicate.'); }
@@ -106,7 +107,9 @@ export default function NewLiveBatch({ drafts, ownerId, onSaved }: {
       document: { title: title.trim(), summary: '', durationDays: endDay, sessions: [...structuredClone(selectedSources.flatMap(source => (source.sessions ?? []).filter(session => !courseReadmePosition(session.key) && classes.some(item => item.key === session.key)))), ...classes.filter(item => !curriculumKeys.has(item.key)).map(item => ({key:item.key,title:item.title,section:item.section ?? 'quant',content:{preSessionReads:[],recordings:[],postSessionReads:[],materials:[]}}))], events } };
     const invalid = validateV2TemplateSave(request);
     if (invalid) { setError(invalid); return; }
-    void persist({ request, startDate });
+    const linkedSources = selectedSources.map(source => ({batchId:source.id,revision:source.curriculumPublicationRevision ?? source.revision,sessionKeys:(source.sessions ?? []).filter(session=>!courseReadmePosition(session.key) && classes.some(item=>item.key===session.key)).map(session=>session.key)})).filter(source=>source.sessionKeys.length>0);
+    if (!validCurriculumSources(linkedSources)) {setError('Keep at least one course session in this batch.');return;}
+    void persist({ request, startDate, sources:linkedSources });
   }
   return <section className={styles.setup} aria-label="New live batch setup">
     {!recovery.recovered && <DraftRecoveryNotice available={!!formRecovery.recovered} unavailable={formRecovery.unavailable} onRestore={() => { if(formRecovery.recovered){setFormChanged(true);setForm(formRecovery.recovered);formRecovery.acknowledge();} }} onDiscard={formRecovery.forget} />}
@@ -124,7 +127,7 @@ export default function NewLiveBatch({ drafts, ownerId, onSaved }: {
         </div>
         {sources.length > 1 && subject !== 'full_course' && <label>Course<select value={sourceId} onChange={event => { if(classes.some(item=>item.date)&&!window.confirm('Changing the course replaces the class dates. Continue?'))return; const library=sources.find(item=>item.id===event.target.value); changeForm({sourceId:event.target.value,classes:library?curriculumClasses([library]):[]});setRemovedClass(null); }}>{sources.map(item=><option key={item.id} value={item.id}>{item.title}</option>)}</select></label>}
         <div className={styles.sectionTitle}><h2>Schedule the classes</h2><span>All times IST</span></div>
-        <p className={styles.help}>{classes.length} {classes.length === 1 ? 'class' : 'classes'} from Course content. Set a date and time for each. Reading pages and materials do not need dates.</p>
+        <p className={styles.help}>{classes.length} {classes.length === 1 ? 'class' : 'classes'} from Course content. Set a date and time for each. Recordings and reading pages stay linked to Course content and do not need dates.</p>
         {!selectedSources.length && <p role="status">No course sessions are available for this subject. <a href="/admin/v2/content">Add them in Course content</a> first.</p>}
         {classes.map((item,index) => <fieldset className={styles.classRow} key={item.key}>
           <legend>Class {index + 1}</legend>

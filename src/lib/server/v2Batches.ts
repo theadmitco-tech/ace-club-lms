@@ -1,3 +1,4 @@
+import { validCurriculumSources } from '@/lib/v2CurriculumLinks';
 import { validateCourseReadmes } from '@/lib/v2CourseReadmes';
 import { sameV2CourseSessions } from '@/lib/v2Templates';
 import 'server-only';
@@ -67,7 +68,7 @@ export async function previewV2BatchDraft(value: unknown): Promise<V2BatchPrevie
   }
 }
 
-export async function saveV2BatchDraft(value: unknown, fingerprint: unknown): Promise<V2BatchSaveResult> {
+export async function saveV2BatchDraft(value: unknown, fingerprint: unknown, sources?: unknown): Promise<V2BatchSaveResult> {
   if (!isV2BatchAuthoringEnabled()) return { status: 'error', message: 'Batch authoring is unavailable.' };
   try {
     if ((await getPortalIdentity())?.role !== 'admin') return { status: 'error', message: 'Active Admin access is required.' };
@@ -84,7 +85,11 @@ export async function saveV2BatchDraft(value: unknown, fingerprint: unknown): Pr
       const readmeError = validateCourseReadmes(input.id, input.sessions, draft.sessions);
       if (readmeError) return { status: 'error', message: readmeError };
     }
-    const { data, error } = await client.rpc('save_v2_batch_draft', { p_request: input, p_fingerprint: fingerprint });
+    if (sources !== undefined && (!validCurriculumSources(sources) || input.expectedRevision !== 0 || input.sessions !== undefined)) return { status: 'error', message: 'Review the source curriculum before creating this batch.' };
+    const { data, error } = sources === undefined
+      ? await client.rpc('save_v2_batch_draft', { p_request: input, p_fingerprint: fingerprint })
+      : await client.rpc('save_v2_curriculum_batch', { p_request: input, p_fingerprint: fingerprint, p_sources: sources });
+    if (error?.code === 'PGRST202' && sources !== undefined) return {status:'error',message:'Shared curriculum setup is required. The saved schedule can be retried after staging setup.'};
     if (error || !data || !isV2BatchDraft(data.draft) || !matches(data.draft, input) || typeof data.replayed !== 'boolean') {
       return { status: 'error', message: message(error?.code) };
     }

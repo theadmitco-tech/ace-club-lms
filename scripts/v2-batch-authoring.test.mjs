@@ -107,6 +107,7 @@ test('batch authoring needs both explicit flags and remains disabled on Vercel P
 function harness() {
   const state = { enabled: true,identity: { role: 'admin' },identityCalls: 0,clients: 0,calls: [],fault: '',result: { data: [],error: null } };
   const api = load('src/lib/server/v2Batches.ts', {
+    '@/lib/v2CurriculumLinks': load('src/lib/v2CurriculumLinks.ts'),
     'server-only': {},'@/lib/v2Batches': domain, '@/lib/v2CourseReadmes': load('src/lib/v2CourseReadmes.ts'), '@/lib/v2Templates': templates,
     '@/lib/server/v2BatchFeature': { isV2BatchAuthoringEnabled: () => state.enabled },
     '@/lib/server/portalAuthorization': { getPortalIdentity: async () => {
@@ -289,4 +290,16 @@ test('course content edits are validated and a missing or changed save receipt c
   assert.equal((await app.saveV2BatchDraft(input,fingerprint)).status,'error');
   input.sessions[0].localDate='2026-11-01';
   assert.equal(typeof domain.validateV2BatchInput(input),'string');
+});
+
+test('curriculum creation uses one atomic save and rejects malformed links', async () => {
+ const app=harness(),input=request(),draft=draftFor(input);
+ const sources=[{batchId:randomUUID(),revision:1,sessionKeys:[randomUUID()]}];
+ app.state.result={data:{draft,replayed:false},error:null};
+ assert.equal((await app.saveV2BatchDraft(input,fingerprint,sources)).status,'success');
+ assert.deepEqual(clone(app.state.calls.at(-1)),{name:'save_v2_curriculum_batch',args:{p_request:input,p_fingerprint:fingerprint,p_sources:sources}});
+ const count=app.state.calls.length;
+ assert.equal((await app.saveV2BatchDraft(input,fingerprint,[])).status,'error');assert.equal(app.state.calls.length,count);
+ app.state.result={data:null,error:{code:'PGRST202'}};
+ assert.match((await app.saveV2BatchDraft(input,fingerprint,sources)).message,/Shared curriculum setup/);
 });

@@ -24,7 +24,8 @@ export default async function V2BatchesPage({searchParams}:{searchParams:Promise
   if (requestedCourse && isV2ContentPublishingEnabled()) redirect(`/admin/v2/content/course/${requestedCourse.id}${query.outline === '1' ? `?edit=1${query.session ? `&session=${encodeURIComponent(query.session)}` : ''}` : ''}`);
   const curriculumDrafts = batches.drafts.map(draft => {
     const published = content?.courses?.find(course => course.batchId === draft.id);
-    return published && !draft.events.some(event => event.kind === 'live') ? {...draft,sessions:draft.sessions?.map(session => { const anchor=published.anchors.find(item => item.key === session.key); const current=publications.publications.find(item => item.batchId===draft.id)?.batchRevision===draft.revision; return anchor && current ? {...session,title:anchor.title,content:anchor.content} : session; })} : draft;
+    const enriched = {...draft,curriculumPublicationRevision:published?.publicationRevision ?? -1};
+    return published && !draft.events.some(event => event.kind === 'live') ? {...enriched,sessions:published.anchors} : enriched;
   });
   if (isV2ContentPublishingEnabled() && batches.status === 'ready' && templates.status === 'ready' && publications.status === 'ready') return <BatchWorkspace archives={archives} reviewOpen={query.review==='1'} initialSessionKey={query.session} initialBatchId={query.batch} outlineOpen={query.outline==='1'} drafts={curriculumDrafts} templates={templates.templates} publications={publications.publications} ownerId={identity.id}/>;
   return <div>

@@ -4,7 +4,7 @@ import { courseReadmePosition } from './v2CourseReadmes';
 
 export function curriculumLibraries(drafts: V2BatchDraft[], subject: LiveBatchSubject) {
   return drafts.filter(draft => (subject === 'full_course' ? ['quant','verbal','di'].includes(draft.productCode) : draft.productCode === subject)
-    && !draft.events.some(event => event.kind === 'live') && !!draft.sessions?.some(session => !courseReadmePosition(session.key)));
+    && draft.curriculumPublicationRevision !== -1 && !draft.events.some(event => event.kind === 'live') && !!draft.sessions?.some(session => !courseReadmePosition(session.key)));
 }
 export function curriculumClasses(drafts: V2BatchDraft[]): LiveBatchClassInput[] {
   return drafts.flatMap(draft => (draft.sessions ?? []).filter(session => !courseReadmePosition(session.key) && session.section !== 'programme').map(session => ({
