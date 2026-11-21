@@ -11,10 +11,22 @@ import styles from './batchWorkspace.module.css';
 import BatchDraftEditor from './BatchDraftEditor';
 import PublicationPanel from './PublicationPanel';
 
-type Props = { archives?: {batchId:string;revision:number;archived:boolean}[]|null; drafts: V2BatchDraft[]; templates: V2TemplateDraft[]; publications: V2Publication[]; ownerId: string; initialBatchId?: string; outlineOpen?: boolean; initialSessionKey?: string; reviewOpen?: boolean };
+/** Live-course registration closes at eight students (approved decision C1). */
+export const LIVE_SEAT_LIMIT = 8;
+export type BatchRoster = { enrolled: number | null; liveSeats: number | null };
+type Props = { rosters?: Record<string, BatchRoster>; archives?: {batchId:string;revision:number;archived:boolean}[]|null; drafts: V2BatchDraft[]; templates: V2TemplateDraft[]; publications: V2Publication[]; ownerId: string; initialBatchId?: string; outlineOpen?: boolean; initialSessionKey?: string; reviewOpen?: boolean };
 type Task = 'schedule' | 'edit' | 'publish';
 function subjectLabel(batch: V2BatchDraft) {
-  return batch.productCode === 'full_course' ? 'Quant · Verbal · DI' : V2_TEMPLATE_PRODUCTS[batch.productCode].label;
+  return batch.productCode === 'full_course' ? 'Full Course · Quant, Verbal, DI' : V2_TEMPLATE_PRODUCTS[batch.productCode].label;
+}
+function RosterSummary({ roster }: { roster?: BatchRoster }) {
+  if (!roster) return null;
+  const full = roster.liveSeats !== null && roster.liveSeats >= LIVE_SEAT_LIMIT;
+  return <p className={styles.roster}>
+    <span>{roster.enrolled === null ? 'Enrollment unavailable' : `${roster.enrolled} enrolled`}</span>
+    <span aria-hidden="true">·</span>
+    <span data-full={full || undefined}>{roster.liveSeats === null ? 'Live seats unavailable' : `${roster.liveSeats} / ${LIVE_SEAT_LIMIT} live seats${full ? ' · Full' : ''}`}</span>
+  </p>;
 }
 function statusLabel(batch: V2BatchDraft, publication?: V2Publication) {
   return publication?.state === 'published'
@@ -24,7 +36,7 @@ function statusLabel(batch: V2BatchDraft, publication?: V2Publication) {
 function dateLabel(value: string | null, options: Intl.DateTimeFormatOptions) {
   return value ? new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', ...options }).format(new Date(value)) : 'Date to be set';
 }
-export default function BatchWorkspace({ archives = [], drafts, templates, publications, ownerId, initialBatchId, outlineOpen = false, initialSessionKey, reviewOpen = false }: Props) {
+export default function BatchWorkspace({ rosters = {}, archives = [], drafts, templates, publications, ownerId, initialBatchId, outlineOpen = false, initialSessionKey, reviewOpen = false }: Props) {
   const [active, setActive] = useState<V2BatchDraft | null | undefined>(() => drafts.find(batch => batch.id === initialBatchId));
   const [tab, setTab] = useState<Task>(reviewOpen ? 'publish' : outlineOpen || initialSessionKey ? 'edit' : 'schedule');
   const [search, setSearch] = useState('');
@@ -33,9 +45,10 @@ export default function BatchWorkspace({ archives = [], drafts, templates, publi
   const [archiveBusy,setArchiveBusy]=useState(false);
   const [archiveError,setArchiveError]=useState('');
   const archiveRequests=useRef(new Map<string,string>());
+  const [archivePrompt,setArchivePrompt]=useState<{batch:V2BatchDraft;archived:boolean}|null>(null);
   async function changeArchive(batch:V2BatchDraft, archived:boolean) {
     if(archiveBusy||!archives)return;
-    if(!window.confirm(archived?`Archive “${batch.title}”? It will be hidden from students. Enrollment and payment history will be kept. It can be restored later.`:`Restore “${batch.title}”? It will return as a private batch. Publishing is a separate step.`))return;
+    setArchivePrompt(null);
     const key=batch.id+':'+archived;
     if(!archiveRequests.current.has(key))archiveRequests.current.set(key,crypto.randomUUID());
     setArchiveBusy(true);setArchiveError('');
@@ -71,6 +84,7 @@ export default function BatchWorkspace({ archives = [], drafts, templates, publi
     <header className={styles.pageHeader}>
       <div><h1 ref={heading} tabIndex={-1} className="admin-page-title">{active === undefined ? 'Batches' : current?.title ?? 'Create a live batch'}</h1>
         <p className="admin-page-subtitle">{active === undefined ? 'Manage live classes and the students attending them.' : current ? `${subjectLabel(current)} · ${classes.length} live ${classes.length === 1 ? 'class' : 'classes'} · All times IST` : 'Choose a subject and schedule its course sessions. Save privately before publishing.'}</p>
+        {current && <RosterSummary roster={rosters[current.id]} />}
       </div>
       {active === undefined ? <button className="btn btn-primary" onClick={() => open(null)}>Create batch</button> : current && <span className={styles.status} data-published={publication?.state === 'published'} data-changed={publication?.state === 'published' && publication.batchRevision !== current.revision}>{statusLabel(current, publication)}</span>}
     </header>
@@ -95,11 +109,16 @@ export default function BatchWorkspace({ archives = [], drafts, templates, publi
           const events = batch.events.filter(event => event.kind !== 'outline');
           const dates = events.flatMap(event => event.startsAt ? [event.startsAt] : []).sort();
           return <article key={batch.id} className={styles.batchRow}>
-            <div className={styles.batchInfo}><h2>{batch.title}</h2><p>{subjectLabel(batch)} <span aria-hidden="true">·</span> {events.length} live {events.length === 1 ? 'class' : 'classes'}</p>
+            <div className={styles.batchInfo}><h2>{batch.title}</h2><p>{subjectLabel(batch)} <span aria-hidden="true">·</span> {events.length} live {events.length === 1 ? 'class' : 'classes'}</p><RosterSummary roster={rosters[batch.id]} />
               <p className={styles.dates}><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 11h18"/></svg>{dates.length ? `${dateLabel(dates[0], { day: 'numeric', month: 'short', year: 'numeric' })}${dates.length > 1 ? ` – ${dateLabel(dates.at(-1)!, { day: 'numeric', month: 'short', year: 'numeric' })}` : ''}` : 'Dates to be set'}</p>
             </div>
             <span className={styles.status} data-published={savedPublication?.state === 'published'} data-changed={savedPublication?.state === 'published' && savedPublication.batchRevision !== batch.revision}>{archivedIds.has(batch.id)?'Archived':statusLabel(batch, savedPublication)}</span>
-            <div className={styles.rowActions}><button className="btn btn-secondary" aria-label={`Open batch: ${batch.title}`} onClick={() => open(batch)}>Open batch <span aria-hidden="true">→</span></button><button type="button" disabled={archiveBusy||archives===null} className={styles.archiveButton} aria-label={`${archivedIds.has(batch.id)?'Restore':'Archive'} batch: ${batch.title}`} onClick={()=>void changeArchive(batch,!archivedIds.has(batch.id))}>{archivedIds.has(batch.id)?'Restore':'Archive batch'}</button></div>
+            <div className={styles.rowActions}><button className="btn btn-secondary" aria-label={`Open batch: ${batch.title}`} onClick={() => open(batch)}>Open batch <span aria-hidden="true">→</span></button><button type="button" disabled={archiveBusy||archives===null} className={styles.archiveButton} aria-label={`${archivedIds.has(batch.id)?'Restore':'Archive'} batch: ${batch.title}`} onClick={()=>setArchivePrompt({batch,archived:!archivedIds.has(batch.id)})}>{archivedIds.has(batch.id)?'Restore':'Archive batch'}</button></div>
+            {archivePrompt?.batch.id===batch.id && <div className={styles.archivePrompt} role="alertdialog" aria-label={`${archivePrompt.archived?'Archive':'Restore'} ${batch.title}`}>
+              <p>{archivePrompt.archived?'Archiving hides this batch from students. Enrollment and payment history are kept, and it can be restored later.':'Restoring returns this batch as a private draft. Publishing is a separate step.'}</p>
+              <button type="button" className="btn btn-primary" disabled={archiveBusy} onClick={()=>void changeArchive(batch,archivePrompt.archived)}>{archivePrompt.archived?'Archive batch':'Restore batch'}</button>
+              <button type="button" className="btn btn-secondary" disabled={archiveBusy} onClick={()=>setArchivePrompt(null)}>Cancel</button>
+            </div>}
           </article>;
         })}
         {!matches.length && <div className={styles.empty}><h2>{search || filter !== 'all' ? 'No matching batches' : 'Plan the next live batch'}</h2><p>{search || filter !== 'all' ? 'Try another name or clear the filters.' : 'Start with a batch name and the live classes to schedule.'}</p>{(search || filter !== 'all') && <button type="button" className="btn btn-secondary" onClick={() => {setSearch('');setFilter('all');}}>Clear filters</button>}</div>}
@@ -119,7 +138,7 @@ export default function BatchWorkspace({ archives = [], drafts, templates, publi
       {tab === 'schedule' ? <section className={styles.schedule} aria-labelledby="live-schedule-title">
         <div className={styles.scheduleHeader}><div><h2 id="live-schedule-title">Live classes</h2><p>{publication?.state === 'published' && publication.batchRevision !== current.revision ? 'Saved draft shown below. Review and publish to update the student schedule.' : publication?.state === 'published' ? 'The published schedule for this batch.' : 'This schedule is private until published.'}</p></div><button className="btn btn-secondary" onClick={() => task('edit')}>Edit schedule</button></div>
         {classes.length ? <ol className={styles.timetable}>{classes.map(event => <li key={event.key}>
-          <div className={styles.classDate}><strong>{dateLabel(event.startsAt, { day: 'numeric', month: 'short' })}</strong><span>{dateLabel(event.startsAt, { weekday: 'short', year: 'numeric' })}</span></div>
+          <div className={styles.classDate}><strong>{dateLabel(event.startsAt, { day: 'numeric', month: 'short' })}</strong><span>{event.startsAt ? `${dateLabel(event.startsAt, { weekday: 'short' })} · ${dateLabel(event.startsAt, { year: 'numeric' })}` : ''}</span></div>
           <div className={styles.classInfo}><h3>{event.title}</h3><span>{V2_TEMPLATE_PRODUCTS[event.section].label}{event.instructor ? ` · ${event.instructor}` : ''}</span></div>
           <div className={styles.classTime}><strong><time dateTime={event.startsAt ?? undefined}>{event.startsAt ? dateLabel(event.startsAt, { hour: 'numeric', minute: '2-digit' }) : 'Time to be set'}</time></strong><span>{event.durationMinutes ? `${event.durationMinutes} min` : ''}</span></div>
         </li>)}</ol> : <p className={styles.help}>No live classes have been added.</p>}

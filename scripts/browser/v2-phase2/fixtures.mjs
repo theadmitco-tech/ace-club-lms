@@ -127,6 +127,7 @@ const handlers = {
   },
   getMyV2BatchSchedules: (state) => state.readError ? { status: 'unavailable', schedules: [] } : { status: 'ready', schedules: state.studentSchedules },
   listV2EnrollmentOptions: (state) => ({ status: 'ready', options: state.enrollmentOptions }),
+  readV2LiveOperations: (state) => ({ registrations: state.liveRegistrations ?? [], classes: [] }),
   setV2Enrollment: (state, input) => {
     const row = state.enrollmentOptions.find((item) => item.studentId === input.studentId);
     if (!row || row.revision !== input.expectedRevision) return { status: 'error', message: 'Enrollment changed. Reload the student list before retrying.' };

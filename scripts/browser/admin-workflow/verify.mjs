@@ -60,17 +60,17 @@ try{
  server=spawn(process.execPath,[next,'start','--hostname','127.0.0.1','--port',String(port)],{cwd:root,env,stdio:['ignore','pipe','pipe']});server.stdout.pipe(log,{end:false});server.stderr.pipe(log,{end:false});await until(async()=>assert.equal((await fetch(origin+'/admin')).status,200));browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_EXECUTABLE||'/usr/bin/chromium'});
  await test('Batch archive cancellation and restoration preserve the active list',async page=>{
   await page.goto(origin+'/admin/v2/batches');
-  page.once('dialog',dialog=>dialog.dismiss());
   await page.getByRole('button',{name:'Archive batch: Synthetic batch',exact:true}).click();
+  await page.getByRole('alertdialog',{name:'Archive Synthetic batch',exact:true}).getByRole('button',{name:'Cancel',exact:true}).click();
   assert.equal((state.archives??[]).length,0);
-  page.once('dialog',dialog=>dialog.accept());
   await page.getByRole('button',{name:'Archive batch: Synthetic batch',exact:true}).click();
+  await page.getByRole('alertdialog',{name:'Archive Synthetic batch',exact:true}).getByRole('button',{name:'Archive batch',exact:true}).click();
   await until(async()=>assert.equal(await page.getByRole('button',{name:'Open batch: Synthetic batch',exact:true}).count(),0));
   await button(page,'Archived').click();
   await page.getByRole('button',{name:'Restore batch: Synthetic batch',exact:true}).waitFor();
   await page.screenshot({path:path.join(output,'batch-archived.png'),fullPage:true});
-  page.once('dialog',dialog=>dialog.accept());
   await page.getByRole('button',{name:'Restore batch: Synthetic batch',exact:true}).click();
+  await page.getByRole('alertdialog',{name:'Restore Synthetic batch',exact:true}).getByRole('button',{name:'Restore batch',exact:true}).click();
   await page.getByRole('button',{name:'Archive batch: Synthetic batch',exact:true}).waitFor();
   assert.equal(state.archives[0].archived,false);
  });
@@ -116,11 +116,30 @@ try{
   library.sessions.splice(1,1,...Array.from({length:7},(_,index)=>({...structuredClone(lesson),key:id(910+index),title:`QA ${index+1}: Fractions + Percentages + Ratios & Mixtures + Simple and Compound Interest`})));
   await page.goto(origin+'/admin/v2/batches');await button(page,'Create batch').click();
   assert.equal(await page.getByLabel('Date',{exact:true}).count(),7);
-  assert.equal(await page.getByRole('button',{name:/^Remove class [1-7]$/}).count(),7);
+  assert.equal(await page.getByRole('checkbox',{name:'Live class',exact:true}).count(),7);
+  assert.equal(await page.getByRole('button',{name:/^Remove class [1-7]$/}).count(),0);
   await page.getByLabel('Date',{exact:true}).first().fill('2026-12-10');
   await page.addScriptTag({path:path.join(repo,'node_modules/axe-core/axe.min.js')});
   const violations=await page.evaluate(async()=>{const r=await window.axe.run(document.querySelector('main'),{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}});return r.violations.map(v=>v.id);});assert.deepEqual(violations,[]);
   await page.screenshot({path:path.join(output,'batch-seven-classes.png'),fullPage:true});
+ });
+ await test('Sessions without live classes keep their content and a weekly pattern dates the rest',async page=>{
+  const [library]=seedCurriculum();const lesson=structuredClone(library.sessions[1]);
+  library.sessions.splice(1,1,...Array.from({length:4},(_,index)=>({...structuredClone(lesson),key:id(930+index),title:`Session ${index+1}`})));
+  await page.goto(origin+'/admin/v2/batches');await button(page,'Create batch').click();
+  await page.getByLabel('Batch name',{exact:true}).fill('Pattern batch');
+  await page.getByRole('group',{name:'Class 4'}).getByRole('checkbox',{name:'Live class',exact:true}).uncheck();
+  await page.getByLabel('First class on',{exact:true}).fill('2026-12-05');
+  await button(page,'Fill 3 dates').click();
+  assert.deepEqual(await page.getByLabel('Date',{exact:true}).evaluateAll(items=>items.map(item=>item.value)),['2026-12-05','2026-12-06','2026-12-12']);
+  await page.getByText('Sat, 5 Dec, 2026',{exact:false}).first().waitFor();
+  await button(page,'Undo last change').click();
+  assert.deepEqual(await page.getByLabel('Date',{exact:true}).evaluateAll(items=>items.map(item=>item.value)),['','','']);
+  await button(page,'Fill 3 dates').click();
+  await button(page,'Save batch draft').click();await page.getByRole('heading',{name:'Live classes',exact:true,level:2}).waitFor();
+  const created=state.drafts.find(item=>item.title==='Pattern batch');
+  assert.equal(created.events.length,3);assert.equal(created.sessions.length,4);
+  const linked=state.calls.find(call=>call.method==='saveV2BatchDraft').args[2][0];assert.equal(linked.sessionKeys.length,4);
  });
  await test('Schedule dates can be cleared and undone and recovery can be kept or discarded',async page=>{
   seedCurriculum();await page.goto(origin+'/admin/v2/batches');await button(page,'Create batch').click();
@@ -142,10 +161,10 @@ try{
   seedCurriculum();await page.goto(origin+'/admin/v2/batches');await button(page,'Create batch').click();
   await page.getByLabel('Date',{exact:true}).fill('2026-12-10');await page.getByLabel('Start time (IST)',{exact:true}).fill('20:30');await button(page,'+ Add extra class').click();
   assert.equal(await page.getByLabel('Class name',{exact:true}).evaluate(el=>el===document.activeElement),true);await page.getByLabel('Class name',{exact:true}).fill('Extra class');
-  await button(page,'Remove class 1').click();await button(page,'Undo').click();
+  await button(page,'Remove class 2').click();await button(page,'Undo').click();
   await page.getByRole('heading',{name:'quant foundations',exact:true}).waitFor();assert.equal(await page.getByLabel('Class name',{exact:true}).inputValue(),'Extra class');
   assert.equal(await page.getByLabel('Date',{exact:true}).first().inputValue(),'2026-12-10');assert.equal(await page.getByLabel('Start time (IST)',{exact:true}).first().inputValue(),'20:30');
-  assert.equal(await page.getByRole('heading',{name:'quant foundations',exact:true}).evaluate(el=>el===document.activeElement),true);assert.equal(state.calls.filter(call=>/saveV2/.test(call.method)).length,0);
+  assert.equal(await page.getByLabel('Class name',{exact:true}).evaluate(el=>el===document.activeElement),true);assert.equal(state.calls.filter(call=>/saveV2/.test(call.method)).length,0);
  });
  await test('Three primary destinations open directly in course content',async page=>{await page.goto(origin+'/admin');await page.getByRole('heading',{name:'Course content'}).waitFor();assert.equal(new URL(page.url()).pathname,'/admin/v2/content');const nav=page.getByRole('navigation',{name:'Admin navigation',exact:true});assert.equal(await nav.getByRole('button').count(),3);for(const label of ['Course content','Batches','Students'])await nav.getByRole('button',{name:label,exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'Account management',exact:true}).isVisible(),false);await page.getByText('More tools',{exact:true}).click();await button(page,'Account management').waitFor();assert.equal(await nav.getByRole('button',{name:'Students',exact:true}).evaluate(el=>{const box=el.getBoundingClientRect();return box.bottom<=el.parentElement.getBoundingClientRect().bottom;}),true);await page.getByText('More tools',{exact:true}).click();});
  await test('Live batches include combined subjects while content libraries stay separate',async page=>{
@@ -202,7 +221,9 @@ try{
   assert.equal(await page.getByLabel('Class name',{exact:true}).count(),0);
   assert.equal(await page.getByLabel('Date',{exact:true}).count(),1);
   await page.getByLabel('Batch name',{exact:true}).fill('Weekend Quant');await page.getByLabel('Date',{exact:true}).fill('2026-12-10');
-  await page.getByRole('button',{name:'Remove class 1',exact:true}).click();await button(page,'Undo').click();
+  await page.getByRole('checkbox',{name:'Live class',exact:true}).uncheck();await page.getByText('No date needed · content stays available in this batch',{exact:true}).waitFor();
+  assert.equal(await page.getByLabel('Date',{exact:true}).count(),0);
+  await page.getByRole('checkbox',{name:'Live class',exact:true}).check();
   assert.equal(await page.getByLabel('Date',{exact:true}).inputValue(),'2026-12-10');
   await page.screenshot({path:path.join(output,'curriculum-create.png'),fullPage:true});
   await button(page,'Save batch draft').click();await page.getByRole('heading',{name:'Live classes',exact:true,level:2}).waitFor();

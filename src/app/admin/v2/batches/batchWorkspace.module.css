@@ -208,3 +208,31 @@
   .creationForm .footer { position: static; }
 }
 @media(prefers-reduced-motion:reduce) { .creationForm :is(input,select), .creationForm .scheduleRow { transition: none; } }
+/* Live / no-date toggle, weekly pattern fill and inline confirmation */
+.creationForm .scheduleRow { grid-template-columns: 28px minmax(0, 1fr) auto minmax(0, 1.6fr) 36px; }
+.liveToggle { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: #33463c; white-space: nowrap; }
+.liveToggle input { width: 18px; height: 18px; accent-color: #245d47; }
+.noDate { grid-column: span 2; margin: 0; font-size: 13px; color: #607067; }
+.weekday { grid-column: 1 / -1; color: #3d5a4b; font-size: 12px; }
+.patternFill { border: 1px solid #dce3de; border-radius: 10px; padding: 16px 18px; margin: 4px 0 18px; background: #f7faf8; }
+.patternFill h3 { margin: 0 0 4px; font-size: 15px; }
+.patternFill > p { margin: 0 0 12px; font-size: 13px; color: #607067; }
+.patternControls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px 18px; }
+.patternControls > label { display: grid; gap: 4px; font-size: 13px; }
+.patternControls small { color: #3d5a4b; font-size: 12px; min-height: 1em; }
+.weekdays { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.weekdays legend { font-size: 13px; padding: 0; margin-bottom: 4px; }
+.weekdays label { display: inline-flex; align-items: center; gap: 4px; padding: 6px 10px; border: 1px solid #cfdad3; border-radius: 999px; font-size: 13px; background: #fff; cursor: pointer; }
+.weekdays label:has(input:checked) { background: #e6f0ea; border-color: #7fa591; }
+.inlineConfirm { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 14px; border: 1px solid #e3d6a6; background: #fbf8ec; border-radius: 8px; margin: 0 0 16px; font-size: 14px; }
+.inlineConfirm span { flex: 1 1 260px; }
+@media (max-width: 900px) { .creationForm .scheduleRow { grid-template-columns: 28px minmax(0, 1fr) 36px; } .creationForm .scheduleRow .classFields, .creationForm .scheduleRow .noDate, .creationForm .scheduleRow .liveToggle { grid-column: 2 / -1; } }
+.roster { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; font-size: 13px; color: #4d6157; }
+.roster [data-full] { color: #8a4b12; font-weight: 600; }
+.archivePrompt { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 14px; padding: 12px 14px; border: 1px solid #e3d6a6; background: #fbf8ec; border-radius: 8px; }
+.archivePrompt p { flex: 1 1 280px; margin: 0; font-size: 14px; }
+.creationForm .liveToggle input, .patternFill .weekdays input { width: 16px; height: 16px; min-height: 0; padding: 0; margin: 0; flex: none; display: inline-block; }
+.creationForm .liveToggle { flex-direction: row; margin: 0; }
+.patternFill .weekdays label { flex-direction: row; padding: 5px 10px; min-height: 0; line-height: 1.2; }
+.patternFill .patternControls > label input { min-width: 150px; }
+.creationForm .scheduleRow label.liveToggle { display: inline-flex; flex-direction: row; align-items: center; gap: 8px; }

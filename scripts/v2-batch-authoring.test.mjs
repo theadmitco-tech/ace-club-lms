@@ -268,6 +268,8 @@ test('the batch page authorizes before loading either templates or batches and h
     '@/lib/server/v2Publications': { listV2BatchPublications: async () => { calls.push('publications'); return { status: 'ready',publications: [] }; } },
     '@/lib/server/v2Templates': { listV2TemplateDrafts: async () => { calls.push('templates'); return { status: 'ready',templates: [] }; } },
     '@/lib/server/v2Batches': { listV2BatchDrafts: async () => { calls.push('batches'); return { status: 'ready',drafts: [] }; } },
+    '@/lib/server/v2Enrollments': { listV2EnrollmentOptions: async () => { calls.push('enrollments'); return { status: 'ready',options: [] }; } },
+    '@/lib/server/v2StudentDelivery': { readV2LiveOperations: async () => { calls.push('live'); return { registrations: [], classes: [] }; } },
   }, { process: { env: { VERCEL_ENV: 'development' } } });
   await assert.rejects(page.default({searchParams:Promise.resolve({})}),/Not found/);
   assert.equal(calls.length,0);

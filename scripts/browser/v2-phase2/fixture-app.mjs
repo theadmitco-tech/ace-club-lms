@@ -168,6 +168,7 @@ export async function call(method: string, ...args: unknown[]) {
     listV2BatchDrafts: "Promise<{ status: 'ready'; drafts: import('@/lib/v2Batches').V2BatchDraft[] } | { status: 'unavailable'; drafts: [] }>",
     getMyV2BatchSchedules: "Promise<{ status: 'ready'; schedules: import('@/lib/v2Publications').V2Publication[] } | { status: 'unavailable' }>",
     listV2EnrollmentOptions: "Promise<{ status: 'ready'; options: import('@/lib/v2Enrollments').V2EnrollmentOption[] } | { status: 'unavailable' }>",
+    readV2LiveOperations: "Promise<{ registrations: import('@/lib/v2Enrollments').V2EnrollmentOption[]; classes: unknown[] } | null>",
   };
   for (const [module, methods] of Object.entries({
     v2Enrollments: ['listV2EnrollmentOptions', 'setV2Enrollment'],
@@ -177,6 +178,7 @@ export async function call(method: string, ...args: unknown[]) {
     v2Publications: ['listV2BatchPublications', 'previewV2BatchPublication', 'saveV2BatchPublication'],
     v2PublicationScopes: ['previewPublicationScope', 'savePublicationScope'],
     v2Meetings: ['readV2MeetingDraft', 'saveV2MeetingDraft'],
+    v2StudentDelivery: ['readV2LiveOperations'],
   })) {
     await put(`src/lib/server/${module}.ts`, `import { call } from './fixture';\n`
       + methods.map((method) => `export async function ${method}(...args: unknown[])${returnTypes[method] ? ': ' + returnTypes[method] : ''} { return call('${method}', ...args); }`).join('\n'));

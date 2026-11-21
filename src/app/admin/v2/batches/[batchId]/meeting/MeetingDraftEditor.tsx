@@ -102,7 +102,7 @@ export default function MeetingDraftEditor({ draft, ownerId }: { draft: V2Meetin
     <div className={styles.buttons}>
       <button type="button" className="btn btn-secondary" disabled={pending} onClick={() => window.location.reload()}>Reload current draft</button>
       <button type="button" className="btn btn-secondary" disabled={pending} onClick={() => {
-        if (!dirty || window.confirm('Discard unsaved meeting changes?')) router.push('/admin/v2/batches');
+        if (!dirty || window.confirm('Discard unsaved meeting changes?')) router.push(`/admin/v2/batches?batch=${draft.batch.id}`);
       }}>Return to batch drafts</button>
     </div>
   </form>;
