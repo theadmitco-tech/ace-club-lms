@@ -1,8 +1,8 @@
 import { readBatchArchives } from './archive-actions';
-import { isV2ContentPublishingEnabled } from '@/lib/server/v2ContentPublishing';
+import { isV2ContentPublishingEnabled, readContentWorkspace } from '@/lib/server/v2ContentPublishing';
 import BatchWorkspace from './BatchWorkspace';
 import { AdminDraftLink as Link } from '@/components/AdminDraftNavigation';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { isV2BatchAuthoringEnabled } from '@/lib/server/v2BatchFeature';
 import { listV2BatchDrafts } from '@/lib/server/v2Batches';
@@ -19,8 +19,14 @@ export default async function V2BatchesPage({searchParams}:{searchParams:Promise
   if (!isV2BatchAuthoringEnabled() && !previewWorkspace) notFound();
   const identity = await requirePortalRole('admin');
   const query = await searchParams ?? {};
-  const [batches, templates, publications, archives] = await Promise.all([listV2BatchDrafts(), listV2TemplateDrafts(), listV2BatchPublications(), readBatchArchives()]);
-  if (isV2ContentPublishingEnabled() && batches.status === 'ready' && templates.status === 'ready' && publications.status === 'ready') return <BatchWorkspace archives={archives} reviewOpen={query.review==='1'} initialSessionKey={query.session} initialBatchId={query.batch} outlineOpen={query.outline==='1'} drafts={batches.drafts} templates={templates.templates} publications={publications.publications} ownerId={identity.id}/>;
+  const [batches, templates, publications, archives, content] = await Promise.all([listV2BatchDrafts(), listV2TemplateDrafts(), listV2BatchPublications(), readBatchArchives(), isV2ContentPublishingEnabled() ? readContentWorkspace() : Promise.resolve(null)]);
+  const requestedCourse = batches.drafts.find(draft => draft.id === query.batch && ['quant','verbal','di'].includes(draft.productCode) && !draft.events.some(event => event.kind === 'live'));
+  if (requestedCourse && isV2ContentPublishingEnabled()) redirect(`/admin/v2/content/course/${requestedCourse.id}${query.outline === '1' ? `?edit=1${query.session ? `&session=${encodeURIComponent(query.session)}` : ''}` : ''}`);
+  const curriculumDrafts = batches.drafts.map(draft => {
+    const published = content?.courses?.find(course => course.batchId === draft.id);
+    return published && !draft.events.some(event => event.kind === 'live') ? {...draft,sessions:draft.sessions?.map(session => { const anchor=published.anchors.find(item => item.key === session.key); const current=publications.publications.find(item => item.batchId===draft.id)?.batchRevision===draft.revision; return anchor && current ? {...session,title:anchor.title,content:anchor.content} : session; })} : draft;
+  });
+  if (isV2ContentPublishingEnabled() && batches.status === 'ready' && templates.status === 'ready' && publications.status === 'ready') return <BatchWorkspace archives={archives} reviewOpen={query.review==='1'} initialSessionKey={query.session} initialBatchId={query.batch} outlineOpen={query.outline==='1'} drafts={curriculumDrafts} templates={templates.templates} publications={publications.publications} ownerId={identity.id}/>;
   return <div>
     <h1 className="admin-page-title">V2 batch drafts</h1>
     <p className="admin-page-subtitle">Review course content and its optional independent live schedule before saving. Draft batches remain private to Admins.</p>

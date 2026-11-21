@@ -5,6 +5,9 @@ import { fileURLToPath } from 'node:url';
 
 export const repo = fileURLToPath(new URL('../../../', import.meta.url));
 export const sources = [
+  'src/lib/v2BatchCurriculum.ts',
+  'src/app/admin/v2/content/course/[batchId]/page.tsx',
+  'src/app/admin/v2/content/course/[batchId]/CourseDraftReview.tsx',
   'src/lib/server/v2Phase1Feature.ts',
   'src/app/admin/v2/layout.tsx',
   'src/app/admin/v2/WorkspaceNavigation.tsx',
@@ -142,7 +145,7 @@ export function isV2TemplateAuthoringEnabled() { return true; }
   await put('src/lib/server/v2BatchFeature.ts', `
 export function isV2BatchAuthoringEnabled() { return true; }
 `);
-  await put('src/lib/server/v2ContentPublishing.ts', 'export function isV2ContentPublishingEnabled() { return '+workflow+'; }');
+  await put('src/lib/server/v2ContentPublishing.ts', 'export function isV2ContentPublishingEnabled() { return '+workflow+'; } export async function readContentWorkspace():Promise<import("@/lib/v2ContentPublishing").ContentWorkspace|null>{return null;}');
   await put('src/lib/server/v2LearningFeature.ts', 'export function isV2LearningEnabled() { return false; }');
   await put('src/lib/server/v2Learning.ts', 'export async function getMyV2LearningState(_batchId: string) { return null; }');
   await put('src/lib/server/v2StudentScheduleFeature.ts', 'export function isV2StudentScheduleEnabled() { return true; }');

@@ -17,7 +17,7 @@ import batchStyles from './batchWorkspace.module.css';
 const time = (value: string | null) => value === null ? 'Unscheduled'
   : new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
 
-export default function PublicationPanel({ drafts, publications, ownerId, focused = false, onBack }: { drafts: V2BatchDraft[]; publications: V2Publication[]; ownerId: string; focused?: boolean; onBack?: () => void }) {
+export default function PublicationPanel({ drafts, publications, ownerId, focused = false, courseMode = false, onBack }: { drafts: V2BatchDraft[]; publications: V2Publication[]; ownerId: string; focused?: boolean; courseMode?: boolean; onBack?: () => void }) {
   const router = useRouter();
   const [review, setReview] = useState<{ input: V2PublicationInput; proposal: V2PublicationProposal } | null>(null);
   const [pending, setPending] = useState(false);
@@ -25,7 +25,8 @@ export default function PublicationPanel({ drafts, publications, ownerId, focuse
   const [message, setMessage] = useState('');
   const [completionBatchId, setCompletionBatchId] = useState<string | null>(null);
   const busy = useRef(false);
-  const recovery = useDraftRecovery<PublicationWorkspace>(ownerId, 'v2-publication', isPublicationWorkspace);
+  const recoveryKey = courseMode ? `v2-course-publication:${drafts[0]?.id ?? ''}` : 'v2-publication';
+  const recovery = useDraftRecovery<PublicationWorkspace>(ownerId, recoveryKey, isPublicationWorkspace);
   useAdminDraftGuard(pending || review !== null);
 
   async function preview(batch: V2BatchDraft, action: V2PublicationInput['action']) {
@@ -53,7 +54,7 @@ export default function PublicationPanel({ drafts, publications, ownerId, focuse
     const savedPublication = publications.find(item => item.batchId === batch.id);
     if (savedPublication?.state === 'published' && savedPublication.batchRevision === batch.revision) return;
     try {
-      const saved = readDraftRecovery(window.sessionStorage, ownerId, 'v2-publication');
+      const saved = readDraftRecovery(window.sessionStorage, ownerId, recoveryKey);
       if (saved && isPublicationWorkspace(JSON.parse(saved))) return;
     } catch { return; }
     void preview(batch, 'publish');
@@ -72,7 +73,7 @@ export default function PublicationPanel({ drafts, publications, ownerId, focuse
       if (result.status === 'error') { setError(result.message); return; }
       recovery.forget();
       setReview(null);
-      setMessage(focused ? result.document.state === 'published' ? 'Batch published. Enrolled students with active course access can now see it.' : 'Batch unpublished. It is now hidden from students.' : `Publication revision ${result.document.revision} ${result.document.state}${result.replayed ? ' (previous confirmation recovered)' : ''}.`);
+      setMessage(courseMode ? result.document.state === 'published' ? 'Course changes published. Students can now see the updated sessions and reading pages.' : 'Course hidden from students.' : focused ? result.document.state === 'published' ? 'Batch published. Enrolled students with active course access can now see it.' : 'Batch unpublished. It is now hidden from students.' : `Publication revision ${result.document.revision} ${result.document.state}${result.replayed ? ' (previous confirmation recovered)' : ''}.`);
       setCompletionBatchId(result.document.state === 'published' && result.document.events.some((event: V2Publication['events'][number]) => event.kind === 'live') ? result.document.batchId : null);
       router.refresh();
     } catch { setError('Confirmation was interrupted. Retry this same review to recover the submission.'); }
@@ -93,23 +94,29 @@ export default function PublicationPanel({ drafts, publications, ownerId, focuse
         if (!recovery.recovered) return;
         setReview(recovery.recovered); recovery.acknowledge();
       }} onDiscard={recovery.forget} />
-      <h2 id="publication-heading" className={batchStyles.publishTitle}>{message ? 'Done' : review ? unpublish ? 'Hide this batch?' : 'Ready to publish?' : unchanged ? 'This batch is published' : 'Publish this batch'}</h2>
+      <h2 id="publication-heading" className={batchStyles.publishTitle}>{message ? 'Done' : review ? unpublish ? courseMode ? 'Hide this course?' : 'Hide this batch?' : 'Ready to publish?' : unchanged ? courseMode ? 'This course is published' : 'This batch is published' : courseMode ? 'Publish course changes' : 'Publish this batch'}</h2>
       {message ? <>
         <p role="status" className={batchStyles.publishHelp}>{message}</p>
         {completionBatchId && <p className={batchStyles.publishHelp}>Before marking a class complete, check its linked course session in Class completion.</p>}
         <div className={batchStyles.actions}>
-          {onBack && <button type="button" className="btn btn-primary" onClick={onBack}>View schedule</button>}
+          {onBack && <button type="button" className="btn btn-primary" onClick={onBack}>{courseMode ? 'Back to course content' : 'View schedule'}</button>}
           {completionBatchId && <a className="btn btn-secondary" href={`/admin/v2/batches/${completionBatchId}/live?setup=1#class-session-mapping`}>Set up class completion</a>}
         </div>
       </> : review && document ? <>
-        <p className={batchStyles.publishHelp}>{unpublish ? 'This hides the batch’s course and live schedule from students. The saved batch can be published again later.' : 'Check the dates and times below. Publishing makes this batch available to enrolled students with active course access.'}</p>
+        <p className={batchStyles.publishHelp}>{unpublish ? 'This hides the batch’s course and live schedule from students. The saved batch can be published again later.' : courseMode ? 'Check the sessions and reading pages below. Publishing updates this course for students with access.' : 'Check the dates and times below. Publishing makes this batch available to enrolled students with active course access.'}</p>
         <div className={batchStyles.publishSummary}><strong>{document.title}</strong><span>{document.sections.map(section => V2_TEMPLATE_PRODUCTS[section].label).join(' · ')}{liveClasses.length ? ` · ${liveClasses.length} live ${liveClasses.length === 1 ? 'class' : 'classes'} · All times IST` : ''}</span></div>
         {!unpublish && <>
           <ol className={batchStyles.publishClasses}>{liveClasses.map(event => <li key={event.key}>
             <div><strong>{event.title}</strong>{event.instructor && <span>{event.instructor}</span>}</div>
             <span>{event.startsAt ? new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }).format(new Date(event.startsAt)) : 'Date to be set'}{event.endsAt && ` – ${new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', hour: 'numeric', minute: '2-digit' }).format(new Date(event.endsAt))}`}</span>
           </li>)}</ol>
-          {reviewedDraft && <details className={batchStyles.publishDetails}><summary>Included course content</summary><CourseSessionsPreview sessions={reviewedDraft.sessions ?? []} /></details>}
+          {reviewedDraft && courseMode && <section aria-label="Course changes to publish" className={batchStyles.courseReviewList}>
+            {(reviewedDraft.sessions ?? []).map(session => <details key={session.key}>
+              <summary><strong>{session.title}</strong><span>{Object.values(session.content).reduce((total,items)=>total+items.length,0)} resources</span></summary>
+              <CourseSessionsPreview sessions={[session]}/>
+            </details>)}
+          </section>}
+          {reviewedDraft && !courseMode && <details className={batchStyles.publishDetails}><summary>Included course content</summary><CourseSessionsPreview sessions={reviewedDraft.sessions ?? []} /></details>}
           {!!liveClasses.length && <aside className={batchStyles.publishNote} aria-label="Class completion setup">
             {liveClasses.some(event => !(document.sessions ?? []).some(session => session.section === event.section))
               ? <p>A course session is missing for class feedback. <a href={`/admin/v2/batches?batch=${review.input.batchId}&outline=1`}>Add a course session</a> before setting up class completion.</p>
@@ -119,14 +126,14 @@ export default function PublicationPanel({ drafts, publications, ownerId, focuse
         {!reviewedDraft && <p role="alert" className="workflow-error">The saved batch changed. Cancel this review and review it again.</p>}
         <div className={batchStyles.footer}>
           <button type="button" className="btn btn-secondary" disabled={pending} onClick={cancel}>Cancel review</button>
-          <button type="button" className="btn btn-primary" disabled={pending || !reviewedDraft} onClick={confirm}>{pending ? 'Saving…' : unpublish ? 'Unpublish batch' : 'Publish batch'}</button>
+          <button type="button" className="btn btn-primary" disabled={pending || !reviewedDraft} onClick={confirm}>{pending ? 'Saving…' : unpublish ? courseMode ? 'Hide course' : 'Unpublish batch' : courseMode ? 'Publish course changes' : 'Publish batch'}</button>
         </div>
       </> : <>
-        <p className={batchStyles.publishHelp}>{unchanged ? 'Students see the latest saved version. Edit the schedule when something changes.' : 'The saved batch is private until published. Review it once, then publish when ready.'}</p>
+        <p className={batchStyles.publishHelp}>{unchanged ? courseMode ? 'Students see the latest saved course content.' : 'Students see the latest saved version. Edit the schedule when something changes.' : courseMode ? 'Review the saved course changes, then publish when ready.' : 'The saved batch is private until published. Review it once, then publish when ready.'}</p>
         {selected ? <div className={batchStyles.actions}>
-          {!unchanged && <button type="button" className="btn btn-primary" disabled={pending || !!recovery.recovered} onClick={() => preview(selected, 'publish')}>{pending ? 'Loading review…' : 'Review batch'}</button>}
-          {onBack && <button type="button" className="btn btn-secondary" disabled={pending} onClick={onBack}>Back to schedule</button>}
-          {published?.state === 'published' && <details className={batchStyles.publishDetails}><summary>Unpublish batch</summary><p className={batchStyles.publishHelp}>Hide this batch from students. A confirmation is required.</p><button type="button" className="btn btn-secondary" disabled={pending || !!recovery.recovered} onClick={() => preview(selected, 'unpublish')}>Review unpublish</button></details>}
+          {!unchanged && <button type="button" className="btn btn-primary" disabled={pending || !!recovery.recovered} onClick={() => preview(selected, 'publish')}>{pending ? 'Loading review…' : courseMode ? 'Review course changes' : 'Review batch'}</button>}
+          {onBack && <button type="button" className="btn btn-secondary" disabled={pending} onClick={onBack}>{courseMode ? 'Back to course content' : 'Back to schedule'}</button>}
+          {!courseMode && published?.state === 'published' && <details className={batchStyles.publishDetails}><summary>Unpublish batch</summary><p className={batchStyles.publishHelp}>Hide this batch from students. A confirmation is required.</p><button type="button" className="btn btn-secondary" disabled={pending || !!recovery.recovered} onClick={() => preview(selected, 'unpublish')}>Review unpublish</button></details>}
         </div> : <p>Save a batch before publishing.</p>}
       </>}
       {error && <p role="alert" className="workflow-error">{error}</p>}
@@ -149,7 +156,7 @@ export default function PublicationPanel({ drafts, publications, ownerId, focuse
         <p>Saved draft {batch.revision} · {published ? `${published.state}, source draft ${published.batchRevision}` : 'Never published'}</p>
         <div className={styles.buttons}>
           <button type="button" className="btn btn-secondary" disabled={pending || !!recovery.recovered || !!review} onClick={() => preview(batch, 'publish')}>Preview publication</button>
-          {published?.state === 'published' && <details><summary>More actions</summary><button type="button" className="btn btn-secondary" disabled={pending || !!recovery.recovered || !!review} onClick={() => preview(batch, 'unpublish')}>Review unpublish</button></details>}
+          {!courseMode && published?.state === 'published' && <details><summary>More actions</summary><button type="button" className="btn btn-secondary" disabled={pending || !!recovery.recovered || !!review} onClick={() => preview(batch, 'unpublish')}>Review unpublish</button></details>}
         </div>
       </li>;
     })}</ul>

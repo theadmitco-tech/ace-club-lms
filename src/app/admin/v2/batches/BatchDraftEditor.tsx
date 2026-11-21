@@ -25,7 +25,7 @@ function draftInput(batch: V2BatchDraft | null, templates: V2TemplateDraft[]): V
     : {id:crypto.randomUUID(),templateId:templates[0]?.id??'',templateRevision:templates[0]?.revision??0,expectedRevision:0,requestId:crypto.randomUUID(),title:'',startDate:'',timeZone:V2_BATCH_TIME_ZONE,events:null};
 }
 
-export default function BatchDraftEditor({ drafts, templates, ownerId, setupPending = false, focused = false, initialDraft = null, outlineOpen = false, initialSessionKey, onSaved, initialTitle = '', initialStartDate = '' }: { initialTitle?: string; initialStartDate?: string; initialSessionKey?: string; outlineOpen?: boolean; focused?: boolean; initialDraft?: V2BatchDraft | null; onSaved?: (batch: V2BatchDraft) => void; drafts: V2BatchDraft[]; templates: V2TemplateDraft[]; ownerId: string; setupPending?: boolean }) {
+export default function BatchDraftEditor({ courseMode = false, drafts, templates, ownerId, setupPending = false, focused = false, initialDraft = null, outlineOpen = false, initialSessionKey, onSaved, initialTitle = '', initialStartDate = '' }: { courseMode?: boolean; initialTitle?: string; initialStartDate?: string; initialSessionKey?: string; outlineOpen?: boolean; focused?: boolean; initialDraft?: V2BatchDraft | null; onSaved?: (batch: V2BatchDraft) => void; drafts: V2BatchDraft[]; templates: V2TemplateDraft[]; ownerId: string; setupPending?: boolean }) {
   const router = useRouter();
   const [input, setInput] = useState<V2BatchInput | null>(()=>focused?{...draftInput(initialDraft,templates),...(!initialDraft?{title:initialTitle,startDate:initialStartDate}:{})}:null);
   const [original, setOriginal] = useState<V2BatchDraft | null>(initialDraft);
@@ -39,7 +39,7 @@ export default function BatchDraftEditor({ drafts, templates, ownerId, setupPend
   const busy = useRef(false);
   const liveTemplates = templates;
 
-  const recovery = useDraftRecovery<BatchWorkspace>(ownerId, 'v2-batch', isBatchWorkspace);
+  const recovery = useDraftRecovery<BatchWorkspace>(ownerId, courseMode ? `v2-course-draft:${initialDraft?.id ?? ''}` : 'v2-batch', isBatchWorkspace);
   useAdminDraftGuard(dirty || pending !== null);
 
   function restore() {
@@ -143,7 +143,7 @@ export default function BatchDraftEditor({ drafts, templates, ownerId, setupPend
   async function saveFocused(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!input || busy.current || setupPending || recovery.recovered) return;
-    if (!review && !input.events?.some(item => item.kind !== 'outline')) { setError('Keep at least one live class in this batch.'); return; }
+    if (!courseMode && !review && !input.events?.some(item => item.kind !== 'outline')) { setError('Keep at least one live class in this batch.'); return; }
     let request = input;
     if (!review && original) {
       const sessions = [...(input.sessions ?? [])];
@@ -180,6 +180,17 @@ export default function BatchDraftEditor({ drafts, templates, ownerId, setupPend
     date: event.localDate!, time: event.localStartTime,
     title: event.title ?? original?.events.find((item) => item.key === event.key)?.title ?? 'Live class',
   })) ?? [];
+  if (courseMode && original && input && productCode) return <section className={batchStyles.setup}>
+    <DraftRecoveryNotice available={!!recovery.recovered} unavailable={recovery.unavailable} onRestore={restore} onDiscard={recovery.forget}/>
+    <form className={batchStyles.form} onSubmit={saveFocused} aria-busy={!!pending}>
+      <h2>Edit course draft</h2><p className={batchStyles.help}>Update the sessions and reading pages here. Students see the changes only after publication.</p>
+      <fieldset disabled={!!pending || !!review || !!recovery.recovered} className={batchStyles.setupFields}>
+        <CourseSessionsEditor initialSessionKey={initialSessionKey} sessions={input.sessions ?? []} sections={V2_TEMPLATE_PRODUCTS[productCode].sections} onChange={sessions=>change({...input,sessions})}/>
+      </fieldset>
+      <div className={batchStyles.footer}><span>{dirty ? 'Unsaved changes' : 'Saved draft'}</span><button type="submit" className="btn btn-primary" disabled={!!pending || !!recovery.recovered || (!dirty && !review)}>{pending ? 'Saving…' : review ? 'Retry saving changes' : 'Save course draft'}</button></div>
+      {error && <p role="alert">{error}</p>}
+    </form>
+  </section>;
   if (focused && original && input && productCode) {
     const live = (input.events ?? []).filter(event => event.kind !== 'outline');
     const removed = original.events.filter(event => event.kind !== 'outline' && !input.events?.some(item => item.key === event.key));

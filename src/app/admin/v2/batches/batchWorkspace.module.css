@@ -146,3 +146,12 @@
 .archiveButton:hover { text-decoration:underline;text-underline-offset:4px; }
 .archiveButton:disabled { opacity:.5;cursor:not-allowed; }
 .archiveButton:focus-visible { outline:2px solid #285e4c;outline-offset:2px; }
+
+.curriculumTitle { margin: 0 0 16px; font-size: 1rem; font-weight: 600; line-height: 1.5; }
+
+.courseReviewList { margin-block: 20px; }
+.courseReviewList > details { border-bottom: 1px solid #dce5de; }
+.courseReviewList > details > summary { padding: 16px 0; cursor: pointer; color: #294b3e; }
+.courseReviewList > details > summary strong { margin-inline: 8px 16px; font-weight: 600; }
+.courseReviewList > details > summary span { color: #52675c; font-size: .875rem; }
+.courseReviewList > details > summary:focus-visible { outline: 2px solid #28634c; outline-offset: 3px; }

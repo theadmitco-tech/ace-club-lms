@@ -52,8 +52,8 @@ export default function DeleteSession({ batchId, sessionKey, title, sessionKeys,
     </div>
     <footer className={styles.locationDialogActions}>
       <button type="button" ref={cancel} disabled={pending} onClick={onClose}>{saved ? 'Done' : submitted ? 'Close' : 'Cancel'}</button>
-      {saved ? <Link className={styles.primary} href={`/admin/v2/batches?batch=${batchId}&review=1`}>Review & publish deletion</Link>
-        : existingDraft ? <Link href={`/admin/v2/batches?batch=${batchId}&review=1`}>Review saved draft changes</Link>
+      {saved ? <Link className={styles.primary} href={`/admin/v2/content/course/${batchId}`}>Review & publish deletion</Link>
+        : existingDraft ? <Link href={`/admin/v2/content/course/${batchId}`}>Review saved draft changes</Link>
         : <button type="button" className={styles.deleteConfirm} disabled={pending} onClick={() => void save()}>{pending ? 'Saving…' : submitted ? 'Retry saving deletion' : resource ? 'Delete resource' : 'Delete session'}</button>}
     </footer>
   </dialog>;

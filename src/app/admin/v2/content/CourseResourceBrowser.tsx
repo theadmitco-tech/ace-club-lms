@@ -59,7 +59,7 @@ export default function CourseResourceBrowser({ workspace, busy, location, onLoc
     return <button type="button" className={styles.readmeEntry} disabled={locked} aria-current={session?.key === key ? 'true' : undefined} aria-label={`Open ${COURSE_README_TITLES[position]}`}
       onClick={() => onLocation({ subject: subject.key, courseId: course.batchId, sessionId: key })}>
       <svg aria-hidden="true" width="17" height="19" viewBox="0 0 20 22" fill="none" stroke="currentColor" strokeWidth="1.3"><path d="M4 2h8l4 4v14H4zM12 2v5h4M7 11h6M7 15h6"/></svg>
-      <span><strong>{COURSE_README_TITLES[position]}</strong><small>README · Fixed</small></span>
+      <span><strong>{COURSE_README_TITLES[position]}</strong><small>Reading material · Fixed</small></span>
     </button>;
   }
   return <section className={styles.courseBrowser} aria-label="Course resources">
@@ -68,6 +68,7 @@ export default function CourseResourceBrowser({ workspace, busy, location, onLoc
           selectedKeys={new Set([subject.key])} onSelectionChange={keys => { const key = [...keys][0]; if (typeof key === 'string' && key !== subject.key) chooseSubject(key); }}>
           {subjects.map(item => <ToggleButton key={item.key} id={item.key}>{item.title}</ToggleButton>)}
         </ToggleButtonGroup>
+        {course && <Link href={`/admin/v2/content/course/${course.batchId}`}>Review course changes</Link>}
         {course && <a href={`/admin/v2/content/preview/${course.batchId}`} target="_blank" rel="noreferrer">Preview as student ↗</a>}
       </div>
       {courses.length > 1 && <label className={styles.coursePicker}>Published library<select disabled={locked} value={course.batchId} onChange={e => { onLocation({ subject: subject.key, courseId: e.target.value, sessionId: '' }); setSessionSearch(''); }}>{courses.map(item => <option key={item.batchId} value={item.batchId}>{item.title}</option>)}</select></label>}
@@ -90,7 +91,7 @@ export default function CourseResourceBrowser({ workspace, busy, location, onLoc
           onSaved={() => setSavedDrafts(previous => [...new Set([...previous, course.batchId])])} onClose={() => closeTask('reorder')} />
         {readmeEntry('after')}
 
-      </aside><section className={styles.sessionContent} data-reordering={reordering || undefined} aria-label={session ? `Session resources: ${session.title}` : 'Session resources'}>{!adding && !reordering && savedDrafts.includes(course.batchId) && <div className={styles.draftNotice} role="status"><span>Session changes saved as a draft</span><Link href={`/admin/v2/batches?batch=${course.batchId}&review=1`}>Review & publish →</Link></div>}{adding && <AddSession batchId={course.batchId} onSaved={() => setSavedDrafts(previous => [...new Set([...previous, course.batchId])])} onClose={() => closeTask('add')} />}
+      </aside><section className={styles.sessionContent} data-reordering={reordering || undefined} aria-label={session ? `Session resources: ${session.title}` : 'Session resources'}>{!adding && !reordering && savedDrafts.includes(course.batchId) && <div className={styles.draftNotice} role="status"><span>Session changes saved as a draft</span><Link href={`/admin/v2/content/course/${course.batchId}`}>Review & publish →</Link></div>}{adding && <AddSession batchId={course.batchId} onSaved={() => setSavedDrafts(previous => [...new Set([...previous, course.batchId])])} onClose={() => closeTask('add')} />}
       {deleting && session && <DeleteSession batchId={course.batchId} sessionKey={session.key} title={sessionTitle(session.key, session.title)} sessionKeys={course.sessions.map(item => item.key)} onClose={() => closeTask('delete')} onSaved={() => setSavedDrafts(previous => [...new Set([...previous, course.batchId])])} />}
       {readmeEditing && <AddSession key={readmeEditing} batchId={course.batchId} readme={readmeEditing} onSaved={() => setSavedDrafts(previous => [...new Set([...previous, course.batchId])])} onClose={() => setReadmeEditing(null)} />}
       {!adding && !readmeEditing && (session ? <>

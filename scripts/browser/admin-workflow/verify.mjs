@@ -26,7 +26,7 @@ const testedSourceHashes={};for(const file of [...sources,...extra])testedSource
 for(const file of extra){await mkdir(path.dirname(path.join(root,file)),{recursive:true});await copyFile(path.join(repo,file),path.join(root,file));}
 await put('src/app/admin/page.tsx',`import {redirect} from 'next/navigation';export default function Page(){redirect('/admin/v2/content');}`);
 await put('src/app/admin/v2/content/page.tsx',`export default function Page(){return <h1>Course content</h1>}`);
-await put('src/lib/server/v2ContentPublishing.ts',`export function isV2ContentPublishingEnabled(){return true;}export async function readContentWorkspace():Promise<{items:{id:string;deleted:boolean;draft_revision:number;published_revision:number|null;document:{title:string}}[]}>{return {items:[]};}`);
+await put('src/lib/server/v2ContentPublishing.ts',`export function isV2ContentPublishingEnabled(){return true;}export async function readContentWorkspace():Promise<{items:{id:string;deleted:boolean;draft_revision:number;published_revision:number|null;document:{title:string}}[];courses:import('@/lib/v2ContentPublishing').ContentCourse[]}>{return {items:[],courses:[]};}`);
 await put('src/utils/supabase/server.ts',`import {call} from '@/lib/server/fixture';
 export async function createClient(){return {from(table:string){if(table!=='profiles')throw Error('Unexpected fixture table');let pattern='';const query={select(_fields:string){return query;},eq(_field:string,_value:string){return query;},ilike(_field:string,value:string){pattern=value;return query;},order(_field:string){return query;},async range(from:number,to:number):Promise<{data:{id:string;full_name:string;email:string;is_active:boolean}[]|null;error:{message:string}|null}>{return call('fixtureStudentDirectory',pattern,from,to);}};return query;}};}`);
 await put('src/lib/server/v2CourseWorkspace.ts',`export function historyPage(value:unknown){return typeof value==='string'&&/^[1-9]\\d{0,4}$/.test(value)?Number(value):1;}`);
@@ -45,6 +45,15 @@ const origin=`http://127.0.0.1:${port}`,next=path.join(repo,'node_modules/next/d
 const log=createWriteStream(path.join(output,'fixture-server.log'));const results=[],errors=[],blocked=[];let browser,server;
 const until=async(check)=>{for(let n=0;n<100;n++){try{return await check();}catch{await new Promise(r=>setTimeout(r,150));}}throw Error('Condition timed out');};
 async function test(name,fn,width=1440,timeZone='Asia/Kolkata'){if(process.env.ADMIN_WORKFLOW_FILTER&&!new RegExp(process.env.ADMIN_WORKFLOW_FILTER).test(name))return;state=initialState();state.templates[0].productCode='quant';state.templates[0].document.title='Synthetic Quant';state.drafts[0].productCode='quant';const context=await browser.newContext({viewport:{width,height:1000},reducedMotion:'reduce',timezoneId:timeZone});await context.route('**/*',route=>{const url=new URL(route.request().url());if(url.origin===origin)return route.continue();blocked.push(url.origin);return route.abort();});const page=await context.newPage();page.setDefaultTimeout(10000);page.on('pageerror',error=>errors.push(error.message));try{await fn(page);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);results.push({name,status:'passed'});await page.screenshot({path:path.join(output,name.replace(/\W/g,'-')+'.png'),fullPage:true});console.info('PASS '+name);}catch(error){results.push({name,status:'failed',error:error.message});await writeFile(path.join(output,'failed-'+name.replace(/\W/g,'-')+'.json'),JSON.stringify({calls:state.calls,stack:error.stack,recovery:await page.evaluate(()=>Object.fromEntries(Object.entries(sessionStorage)))},null,2));console.error('FAIL '+name+': '+error.message);await page.screenshot({path:path.join(output,'failed-'+name.replace(/\W/g,'-')+'.png'),fullPage:true});}finally{await context.close();}}
+function seedCurriculum() {
+ const empty={recordings:[],materials:[],preSessionReads:[],postSessionReads:[]};
+ const base=structuredClone(state.drafts[0]);
+ const libraries=['quant','verbal','di'].map((subject,index)=>({...base,id:id(800+index),productCode:subject,title:subject+' library',events:[],sessions:[
+ {key:'ace00001'+id(800+index).slice(8),title:'Read before the course',section:subject,content:structuredClone(empty)},
+ {key:id(900+index),title:subject+' foundations',section:subject,content:structuredClone(empty)},
+ {key:'ace00002'+id(800+index).slice(8),title:'Read after the course',section:subject,content:structuredClone(empty)}]}));
+ state.drafts.push(...libraries);return libraries;
+}
 const button=(page,name)=>page.getByRole('button',{name:name==='Open batch'?/^Open batch:/:name,exact:true});
 try{
  const build=spawn(process.execPath,[next,'build','--webpack'],{cwd:root,env,stdio:['ignore','pipe','pipe']});build.stdout.pipe(log,{end:false});build.stderr.pipe(log,{end:false});assert.equal(await new Promise(resolve=>build.on('exit',resolve)),0,'Fixture build failed');
@@ -103,21 +112,13 @@ try{
   await page.screenshot({path:path.join(output,'batch-list-desktop.png'),fullPage:true});
  });
  await test('Adding a class focuses its name and Undo restores removed class details',async page=>{
-  await page.goto(origin+'/admin/v2/batches');await button(page,'Create batch').click();
-  await page.getByLabel('Class name',{exact:true}).fill('Retained preparation');
-  await page.getByLabel('Date',{exact:true}).fill('2026-12-10');
-  await page.getByLabel('Start time (IST)',{exact:true}).fill('20:30');
-  await button(page,'+ Add class').click();
-  assert.equal(await page.getByLabel('Class name',{exact:true}).nth(1).evaluate(el=>el===document.activeElement),true);
-  await page.getByLabel('Class name',{exact:true}).nth(1).fill('Second class');
-  await button(page,'Remove class 1').click();await button(page,'Undo').waitFor();
-  assert.equal(await page.getByLabel('Class name',{exact:true}).count(),1);
-  await button(page,'Undo').click();
-  assert.deepEqual(await page.getByLabel('Class name',{exact:true}).evaluateAll(inputs=>inputs.map(input=>input.value)),['Retained preparation','Second class']);
-  assert.equal(await page.getByLabel('Date',{exact:true}).first().inputValue(),'2026-12-10');
-  assert.equal(await page.getByLabel('Start time (IST)',{exact:true}).first().inputValue(),'20:30');
-  assert.equal(await page.getByLabel('Class name',{exact:true}).first().evaluate(el=>el===document.activeElement),true);
-  assert.equal(state.calls.filter(call=>/saveV2/.test(call.method)).length,0);
+  seedCurriculum();await page.goto(origin+'/admin/v2/batches');await button(page,'Create batch').click();
+  await page.getByLabel('Date',{exact:true}).fill('2026-12-10');await page.getByLabel('Start time (IST)',{exact:true}).fill('20:30');await button(page,'+ Add extra class').click();
+  assert.equal(await page.getByLabel('Class name',{exact:true}).evaluate(el=>el===document.activeElement),true);await page.getByLabel('Class name',{exact:true}).fill('Extra class');
+  await button(page,'Remove class 1').click();await button(page,'Undo').click();
+  await page.getByRole('heading',{name:'quant foundations',exact:true}).waitFor();assert.equal(await page.getByLabel('Class name',{exact:true}).inputValue(),'Extra class');
+  assert.equal(await page.getByLabel('Date',{exact:true}).first().inputValue(),'2026-12-10');assert.equal(await page.getByLabel('Start time (IST)',{exact:true}).first().inputValue(),'20:30');
+  assert.equal(await page.getByRole('heading',{name:'quant foundations',exact:true}).evaluate(el=>el===document.activeElement),true);assert.equal(state.calls.filter(call=>/saveV2/.test(call.method)).length,0);
  });
  await test('Three primary destinations open directly in course content',async page=>{await page.goto(origin+'/admin');await page.getByRole('heading',{name:'Course content'}).waitFor();assert.equal(new URL(page.url()).pathname,'/admin/v2/content');const nav=page.getByRole('navigation',{name:'Admin navigation',exact:true});assert.equal(await nav.getByRole('button').count(),3);for(const label of ['Course content','Batches','Students'])await nav.getByRole('button',{name:label,exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'Account management',exact:true}).isVisible(),false);await page.getByText('More tools',{exact:true}).click();await button(page,'Account management').waitFor();assert.equal(await nav.getByRole('button',{name:'Students',exact:true}).evaluate(el=>{const box=el.getBoundingClientRect();return box.bottom<=el.parentElement.getBoundingClientRect().bottom;}),true);await page.getByText('More tools',{exact:true}).click();});
  await test('Live batches include combined subjects while content libraries stay separate',async page=>{
@@ -167,43 +168,45 @@ try{
   await page.getByText('Unpublish batch',{exact:true}).click();await button(page,'Review unpublish').click();await button(page,'Unpublish batch').waitFor();assert.equal(state.publications[0].state,'published');
   await button(page,'Cancel review').click();assert.equal(state.publications[0].state,'published');await button(page,'Review & publish').click();await page.getByText('Unpublish batch',{exact:true}).click();await button(page,'Review unpublish').click();await button(page,'Unpublish batch').click();await button(page,'View schedule').waitFor();assert.equal(state.publications[0].state,'unpublished');
  });
- await test('One private save creates a batch and preserves copied course originals',async page=>{
-  for(const template of state.templates){template.document.events=[];template.document.durationDays=null;}
-  state.templates[0].document.sessions=[{key:id(901),title:'Saved Quant session',section:'quant',content:{recordings:[],materials:[],preSessionReads:[],postSessionReads:[]}}];
-  const originals=structuredClone(state.templates),count=state.drafts.length;
+ await test('Curriculum prefills classes and preserves originals through batch publication',async page=>{
+  const libraries=seedCurriculum(),originals=structuredClone(libraries);
   await page.goto(origin+'/admin/v2/batches');await button(page,'Create batch').click();
-  await page.getByLabel('Batch name',{exact:true}).fill('Weekend Quant');await page.getByText('Use existing course sessions',{exact:true}).click();await page.getByLabel('Include saved course sessions',{exact:true}).selectOption(originals[0].id);
-  await page.getByLabel('Class name',{exact:true}).fill('Fractions');await page.getByLabel('Date',{exact:true}).fill('2026-12-10');
-  await button(page,'+ Add class').click();await page.getByLabel('Class name',{exact:true}).nth(1).fill('Ratios');await page.getByLabel('Date',{exact:true}).nth(1).fill('2026-12-12');await page.getByLabel('Start time (IST)',{exact:true}).nth(1).fill('20:30');
-  await page.screenshot({path:path.join(output,'create-batch-desktop.png'),fullPage:true});
-  assert.equal(state.templates.length,originals.length);await button(page,'Save batch draft').click();await page.getByRole('heading',{name:'Live classes',exact:true,level:2}).waitFor();
-  const created=state.drafts.find(item=>item.title==='Weekend Quant');assert.equal(state.drafts.length,count+1);assert.equal(created.productCode,'quant');assert.deepEqual(created.events.map(item=>[item.title,item.localDate,item.localStartTime]),[['Fractions','2026-12-10','19:00'],['Ratios','2026-12-12','20:30']]);assert.equal(created.sessions[0].key,id(901));assert.equal(state.publications.length,0);for(const original of originals)assert.deepEqual(state.templates.find(item=>item.id===original.id),original);
-  await button(page,'← All batches').click();await page.getByRole('heading',{name:'Weekend Quant',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'quant foundations',exact:true}).waitFor();
+  assert.equal(await page.getByLabel('Class name',{exact:true}).count(),0);
+  assert.equal(await page.getByLabel('Date',{exact:true}).count(),1);
+  await page.getByLabel('Batch name',{exact:true}).fill('Weekend Quant');await page.getByLabel('Date',{exact:true}).fill('2026-12-10');
+  await page.getByRole('button',{name:'Remove class 1',exact:true}).click();await button(page,'Undo').click();
+  assert.equal(await page.getByLabel('Date',{exact:true}).inputValue(),'2026-12-10');
+  await page.screenshot({path:path.join(output,'curriculum-create.png'),fullPage:true});
+  await button(page,'Save batch draft').click();await page.getByRole('heading',{name:'Live classes',exact:true,level:2}).waitFor();
+  const created=state.drafts.find(item=>item.title==='Weekend Quant');assert.equal(created.events.length,1);assert.equal(created.events[0].title,'quant foundations');assert.equal(created.events[0].durationMinutes,120);assert.equal(created.sessions.length,1);assert.equal(created.sessions[0].key,id(900));assert.equal(state.publications.length,0);
+  for(const original of originals)assert.deepEqual(state.drafts.find(item=>item.id===original.id),original);
+  await button(page,'Review & publish').click();await button(page,'Publish batch').click();await button(page,'View schedule').waitFor();assert.equal(state.publications[0].state,'published');
  });
- await test('All subjects share one live timetable with accessible creation fields',async page=>{
-  state.templates=[];state.drafts=[];await page.goto(origin+'/admin/v2/batches');await button(page,'Create batch').click();
-  assert.deepEqual(await page.getByLabel('Subject',{exact:true}).locator('option').allTextContents(),['Quant','Verbal','DI','All subjects']);await page.getByLabel('Subject',{exact:true}).selectOption('full_course');await page.getByLabel('Batch name',{exact:true}).fill('August mixed batch');
-  for(const [index,section] of ['quant','verbal','di'].entries()){if(index)await button(page,'+ Add class').click();await page.getByLabel('Subject for class '+(index+1),{exact:true}).selectOption(section);await page.getByLabel('Class name',{exact:true}).nth(index).fill(section+' foundations');await page.getByLabel('Date',{exact:true}).nth(index).fill('2026-12-'+(10+index));}
-  await page.addScriptTag({path:path.join(repo,'node_modules/axe-core/axe.min.js')});const violations=await page.evaluate(async()=>{const r=await window.axe.run(document.querySelector('[aria-label="New live batch setup"]'),{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}});return r.violations.map(v=>v.id);});assert.deepEqual(violations,[]);
-  await page.screenshot({path:path.join(output,'all-subjects-batch.png'),fullPage:true});await button(page,'Save batch draft').click();await page.getByRole('heading',{name:'Live classes',exact:true,level:2}).waitFor();
-  assert.equal(state.drafts.length,1);assert.equal(state.drafts[0].productCode,'full_course');assert.deepEqual(state.drafts[0].events.map(e=>e.section),['quant','verbal','di']);assert.deepEqual(state.drafts[0].sessions.map(e=>e.section),['quant','verbal','di']);assert.equal(state.publications.length,0);
+ await test('Curriculum supports all subjects without scheduling fixed reading pages',async page=>{
+  seedCurriculum();await page.goto(origin+'/admin/v2/batches');await button(page,'Create batch').click();await page.getByLabel('Subject',{exact:true}).selectOption('full_course');
+  assert.equal(await page.getByLabel('Class name',{exact:true}).count(),0);assert.equal(await page.getByLabel('Date',{exact:true}).count(),3);
+  await page.getByLabel('Batch name',{exact:true}).fill('Mixed batch');for(let i=0;i<3;i++)await page.getByLabel('Date',{exact:true}).nth(i).fill('2026-12-'+(10+i));
+  await page.addScriptTag({path:path.join(repo,'node_modules/axe-core/axe.min.js')});assert.deepEqual(await page.evaluate(async()=>{const r=await window.axe.run(document.querySelector('[aria-label="New live batch setup"]'),{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}});return r.violations.map(v=>v.id);}),[]);
+  await button(page,'Save batch draft').click();await page.getByRole('heading',{name:'Live classes',exact:true,level:2}).waitFor();const created=state.drafts.find(item=>item.title==='Mixed batch');assert.deepEqual(created.events.map(e=>e.section),['quant','verbal','di']);assert.equal(created.sessions.length,3);
  });
- await test('Creation works without saved templates at narrow widths',async page=>{
-  state.templates=[];state.drafts=[];await page.goto(origin+'/admin/v2/batches');await button(page,'Create batch').click();await page.getByLabel('Subject',{exact:true}).selectOption('di');await page.getByLabel('Batch name',{exact:true}).fill('DI evenings');await button(page,'Save batch draft').click();assert.equal(state.templates.length,0);
-  await page.getByLabel('Class name',{exact:true}).fill('Data sufficiency');await page.getByLabel('Date',{exact:true}).fill('2026-12-10');
-  for(const width of [390,320]){await page.setViewportSize({width,height:844});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);await page.screenshot({path:path.join(output,`batch-creation-${width}.png`),fullPage:true});}
-  await button(page,'Save batch draft').click();await page.getByRole('heading',{name:'Live classes',exact:true,level:2}).waitFor();assert.equal(state.drafts[0].sessions.length,1);assert.equal(state.drafts[0].sessions[0].section,'di');assert.equal(state.publications.length,0);
- },390);
- for(const method of ['saveV2TemplateDraft','saveV2BatchDraft']) await test(`Interrupted ${method} resumes the exact creation without duplication`,async page=>{
-  state.templates=[];state.drafts=[];await page.goto(origin+'/admin/v2/batches');await button(page,'Create batch').click();await page.getByLabel('Batch name',{exact:true}).fill('Retry batch');await page.getByLabel('Class name',{exact:true}).fill('First class');await page.getByLabel('Date',{exact:true}).fill('2026-12-10');state.faults[method]={interruptAfterSave:true};await button(page,'Save batch draft').click();await page.getByRole('alert').filter({hasText:'The save was interrupted'}).waitFor();assert.equal(state.templates.length,1);
-  page.on('dialog',d=>d.accept());await page.reload();await button(page,'Create batch').click();await button(page,'Restore edits').click();await button(page,'Retry saving batch').click();await page.getByRole('heading',{name:'Live classes',exact:true,level:2}).waitFor();assert.equal(state.templates.length,1);assert.equal(state.drafts.length,1);const calls=state.calls.filter(item=>item.method===method);assert.equal(calls.length,2);assert.deepEqual(calls[0].args,calls[1].args);assert.equal(state.publications.length,0);
+ await test('Curriculum missing state directs administrators to course content',async page=>{
+  state.drafts=[];state.templates=[];await page.goto(origin+'/admin/v2/batches');await button(page,'Create batch').click();await page.getByText('No course sessions are available for this subject.',{exact:false}).waitFor();assert.equal(await button(page,'Save batch draft').isDisabled(),true);assert.equal(await page.getByLabel('Class name',{exact:true}).count(),0);
  });
- await test('Unfinished batch edits survive Back and reload with account isolation',async page=>{
-  await page.goto(origin+'/admin');await button(page,'Batches').click();await button(page,'Create batch').click();await page.getByLabel('Batch name',{exact:true}).fill('Recover before save');await page.getByLabel('Subject',{exact:true}).selectOption('verbal');await page.getByLabel('Class name',{exact:true}).fill('Reading comprehension');await page.getByLabel('Date',{exact:true}).fill('2026-12-10');await page.getByLabel('Start time (IST)',{exact:true}).fill('');await page.getByLabel('Duration (minutes)',{exact:true}).fill('14');await button(page,'+ Add class').click();await page.getByLabel('Class name',{exact:true}).nth(1).fill('Unfinished second class');
-  for(let attempt=0;attempt<2;attempt++){await page.goBack();await page.getByRole('heading',{name:'Course content',exact:true}).waitFor();await button(page,'Batches').click();await button(page,'Create batch').click();await button(page,'Restore edits').click();assert.equal(await page.getByLabel('Batch name',{exact:true}).inputValue(),'Recover before save');assert.equal(await page.getByLabel('Subject',{exact:true}).inputValue(),'verbal');assert.equal(await page.getByLabel('Start time (IST)',{exact:true}).nth(0).inputValue(),'');assert.equal(await page.getByLabel('Duration (minutes)',{exact:true}).nth(0).inputValue(),'14');assert.equal(await page.getByLabel('Class name',{exact:true}).nth(1).inputValue(),'Unfinished second class');}
-  page.on('dialog',d=>d.accept());await page.reload();await button(page,'Create batch').click();await button(page,'Restore edits').click();assert.equal(await page.getByLabel('Class name',{exact:true}).count(),2);assert.equal(state.calls.filter(x=>/save|preview/.test(x.method)).length,0);
-  state.ownerId='another-synthetic-admin';await page.reload();await button(page,'Create batch').click();assert.equal(await button(page,'Restore edits').count(),0);assert.equal(await page.getByLabel('Batch name',{exact:true}).inputValue(),'');
-  state.ownerId='synthetic-admin';await page.reload();await button(page,'Create batch').click();await button(page,'Discard recovery').click();await page.reload();await button(page,'Create batch').click();assert.equal(await button(page,'Restore edits').count(),0);
+ for(const method of ['saveV2TemplateDraft','saveV2BatchDraft'])await test('Curriculum retry preserves the same '+method,async page=>{
+  seedCurriculum();const before=state.drafts.length,templatesBefore=state.templates.length;await page.goto(origin+'/admin/v2/batches');await button(page,'Create batch').click();await page.getByLabel('Batch name',{exact:true}).fill('Retry batch');await page.getByLabel('Date',{exact:true}).fill('2026-12-10');state.faults[method]={interruptAfterSave:true};await button(page,'Save batch draft').click();await page.getByRole('alert').filter({hasText:'The save was interrupted'}).waitFor();
+  page.on('dialog',d=>d.accept());await page.reload();await button(page,'Create batch').click();await button(page,'Restore edits').click();await button(page,'Retry saving batch').click();await page.getByRole('heading',{name:'Live classes',exact:true,level:2}).waitFor();assert.equal(state.templates.length,templatesBefore+1);assert.equal(state.drafts.length,before+1);const calls=state.calls.filter(item=>item.method===method);assert.deepEqual(calls[0].args,calls[1].args);
+ });
+ await test('Course review stays in content and publishes without schedule controls',async page=>{
+  const [library]=seedCurriculum();await page.goto(origin+'/admin/v2/batches?batch='+library.id+'&review=1');
+  await page.waitForURL('**/admin/v2/content/course/'+library.id);
+  await button(page,'Publish course changes').waitFor();assert.equal(await button(page,'Publish batch').count(),0);assert.equal(await page.getByRole('button',{name:'Live schedule',exact:true}).count(),0);
+  await page.screenshot({path:path.join(output,'course-review.png'),fullPage:true});
+  await button(page,'Publish course changes').click();await button(page,'Back to course content').waitFor();assert.equal(state.publications[0].batchId,library.id);
+  await page.goto(origin+'/admin/v2/content/course/'+library.id+'?edit=1&session='+library.sessions[0].key);
+  assert.equal(await page.getByLabel('Date',{exact:true}).count(),0);await page.getByRole('heading',{name:'Edit course draft',exact:true}).waitFor();
+  assert.equal(await page.getByLabel('Session title',{exact:true}).inputValue(),'Read before the course');assert.equal(await page.getByLabel('Session title',{exact:true}).getAttribute('readonly'),'');
+  await page.screenshot({path:path.join(output,'course-readme-edit.png'),fullPage:true});
  });
  await test('Saved classes support rename add remove and undo before a private save',async page=>{
   const original=structuredClone(state.drafts[0]);await page.goto(origin+'/admin/v2/batches');await button(page,'Open batch').click();await button(page,'Edit schedule').click();await page.getByLabel('Class name',{exact:true}).fill('Renamed lesson');await button(page,'+ Add class').click();await page.getByLabel('Class name',{exact:true}).nth(1).fill('Second lesson');await page.getByLabel('Date',{exact:true}).nth(1).fill('2026-12-10');

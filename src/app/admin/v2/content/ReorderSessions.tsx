@@ -100,8 +100,8 @@ export default function ReorderSessions({ batchId, sessions, selectedKey, onSele
       </ol>
     <p role="status" aria-live="polite" aria-atomic="true" className={styles.visuallyHidden}>{saved ? 'Saved draft · awaiting publication' : announcement || 'Current published order'}</p>
     {error && <p role="alert" className={styles.inlineError}>{error}</p>}
-    {(!inline || dirty || saved || submitted) && <footer className={`${styles.taskActions} ${styles.outlineOrderActions}`}>{saved ? <><Link className={styles.primary} href={`/admin/v2/batches?batch=${batchId}&review=1`}>Review & publish order</Link><button onClick={onClose}>Done</button></> : <>
-      {existingDraft ? <Link href={`/admin/v2/batches?batch=${batchId}&review=1`}>Review saved draft changes</Link> : <button className={styles.primary} disabled={pending || !dirty} onClick={() => void save()}>{pending ? 'Saving…' : submitted ? 'Retry saving order' : 'Save order'}</button>}
+    {(!inline || dirty || saved || submitted) && <footer className={`${styles.taskActions} ${styles.outlineOrderActions}`}>{saved ? <><Link className={styles.primary} href={`/admin/v2/content/course/${batchId}`}>Review & publish order</Link><button onClick={onClose}>Done</button></> : <>
+      {existingDraft ? <Link href={`/admin/v2/content/course/${batchId}`}>Review saved draft changes</Link> : <button className={styles.primary} disabled={pending || !dirty} onClick={() => void save()}>{pending ? 'Saving…' : submitted ? 'Retry saving order' : 'Save order'}</button>}
       <button disabled={locked || !history.length} onClick={undo}>Undo move</button><button disabled={pending} onClick={onClose}>{submitted ? 'Close editor' : 'Cancel'}</button>
     </>}</footer>}
   </section>;

@@ -10,7 +10,7 @@ const text = (value: unknown, max: number): value is string => typeof value === 
 export function isLiveBatchSetup(value: unknown): value is LiveBatchSetup {
   if (!object(value) || typeof value.subject !== 'string' || !['quant', 'verbal', 'di', 'full_course'].includes(value.subject)
     || !text(value.title, 120) || !text(value.sourceId, 36) || typeof value.createFeedbackSessions !== 'boolean'
-    || !Array.isArray(value.classes) || value.classes.length < 1 || value.classes.length > 100) return false;
+    || !Array.isArray(value.classes) || value.classes.length > 100) return false;
   return value.classes.every(item => object(item) && text(item.key, 64) && item.key.length > 0
     && text(item.title, 120) && text(item.date, 40) && text(item.time, 20)
     && (item.section === undefined || ['quant','verbal','di'].includes(String(item.section)))

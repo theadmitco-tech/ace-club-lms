@@ -1,6 +1,8 @@
 'use client';
 
 import { useRef, useState, type FormEvent } from 'react';
+import { curriculumLibraries, curriculumClasses } from '@/lib/v2BatchCurriculum';
+import { courseReadmePosition } from '@/lib/v2CourseReadmes';
 import { useRouter } from 'next/navigation';
 import { useAdminDraftGuard } from '@/components/AdminDraftNavigation';
 import { DraftRecoveryNotice, useDraftRecovery } from '@/components/DraftRecovery';
@@ -25,13 +27,16 @@ function isPrepared(value: unknown): value is Prepared {
       && item.proposal.draft.templateId === item.request.id && item.proposal.draft.revision === 1));
 }
 const newClass = (subject: Subject): ClassInput => ({ key: crypto.randomUUID(), title: '', date: '', time: '19:00', duration: 60, section: subject === 'full_course' ? 'quant' : subject });
-export default function NewLiveBatch({ templates, ownerId, onSaved }: {
+export default function NewLiveBatch({ drafts, ownerId, onSaved }: {
   templates: V2TemplateDraft[]; drafts: V2BatchDraft[]; ownerId: string; onSaved: (batch: V2BatchDraft) => void;
 }) {
   const router = useRouter();
-  const [form, setForm] = useState<LiveBatchSetup>({ subject: 'quant', title: '', sourceId: '', createFeedbackSessions: true,
-    classes: [{ key: 'first', title: '', date: '', time: '19:00', duration: 60, section: 'quant' }] });
+  const [form, setForm] = useState<LiveBatchSetup>(() => {
+    const library = curriculumLibraries(drafts, 'quant')[0];
+    return {subject:'quant', title:'', sourceId:library?.id ?? '', createFeedbackSessions:true, classes:library ? curriculumClasses([library]) : []};
+  });
   const [prepared, setPrepared] = useState<Prepared | null>(null);
+  const [formChanged, setFormChanged] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
   const [removedClass, setRemovedClass] = useState<{ item: ClassInput; index: number } | null>(null);
@@ -40,13 +45,21 @@ export default function NewLiveBatch({ templates, ownerId, onSaved }: {
   const { subject, title, sourceId, classes } = form;
   const formRecovery = useDraftRecovery<LiveBatchSetup>(ownerId, 'v2-live-batch-form', isLiveBatchSetup);
   const recovery = useDraftRecovery<Prepared>(ownerId, 'v2-live-batch-setup', isPrepared);
-  useAdminDraftGuard(!!title || classes.some(item => item.title || item.date) || !!prepared || pending);
+  useAdminDraftGuard(formChanged || !!prepared || pending);
   const recoveryPending = !!recovery.recovered || !!formRecovery.recovered;
-  const sources = templates.filter(item => item.productCode === subject && item.document.sessions?.length);
+  const sources = curriculumLibraries(drafts, subject);
+  const selectedSources = subject === 'full_course' ? ['quant','verbal','di'].flatMap(code => sources.find(item => item.productCode === code) ?? []) : sources.filter(item => item.id === sourceId);
+  const curriculumKeys = new Set(selectedSources.flatMap(item => (item.sessions ?? []).map(session => session.key)));
+  function chooseSubject(next: Subject) {
+    if (classes.some(item => item.date) && !window.confirm('Changing the subject replaces this class list and its dates. Continue?')) return;
+    const available = curriculumLibraries(drafts, next);
+    const selected = next === 'full_course' ? ['quant','verbal','di'].flatMap(code => available.find(item => item.productCode === code) ?? []) : available.slice(0,1);
+    changeForm({subject:next,sourceId:selected[0]?.id ?? '',classes:curriculumClasses(selected)});setRemovedClass(null);
+  }
   function changeForm(patch: Partial<LiveBatchSetup>) {
     if (recoveryPending || prepared || busy.current) return;
     const next = { ...form, ...patch };
-    setForm(next); formRecovery.remember(next); setError('');
+    setFormChanged(true); setForm(next); formRecovery.remember(next); setError('');
   }
   function changeClass(key: string, patch: Partial<ClassInput>) {
     changeForm({ classes: classes.map(item => item.key === key ? { ...item, ...patch } : item) });
@@ -82,20 +95,21 @@ export default function NewLiveBatch({ templates, ownerId, onSaved }: {
     if (busy.current || recoveryPending) return;
     if (prepared) { void persist(prepared); return; }
     if (!classes.length || classes.some(item => !isV2BatchDate(item.date))) { setError('Add at least one class with a valid date.'); return; }
-    const source = sources.find(item => item.id === sourceId);
-    if (sourceId && !source) { setError('The selected course sessions are no longer available. Choose another course or start with new sessions.'); return; }
+    if (!selectedSources.length || (subject === 'full_course' && selectedSources.length !== 3)) { setError('Add the missing subject curriculum in Course content before creating this batch.'); return; }
+    const expected = curriculumClasses(selectedSources);
+    if (classes.some(item => { const original=expected.find(session=>session.key===item.key); return original && (item.title!==original.title || item.section!==original.section); })) { setError('The course sessions changed. Reload this page to schedule the latest curriculum.'); return; }
     const startDate = classes.map(item => item.date).sort()[0];
     const events = classes.map(item => ({ key: crypto.randomUUID(), title: item.title.trim(), section: subject === 'full_course' ? item.section ?? 'quant' : subject, kind: 'live' as const,
       dayOffset: (Date.parse(item.date) - Date.parse(startDate)) / 86400000, localStartTime: item.time, durationMinutes: item.duration, instructor: '', capacity: 8 }));
     const endDay = Math.max(...events.map(item => item.dayOffset + Math.ceil((Number(item.localStartTime.slice(0, 2)) * 60 + Number(item.localStartTime.slice(3)) + item.durationMinutes) / 1440)));
     const request: V2TemplateSaveInput = { id: crypto.randomUUID(), requestId: crypto.randomUUID(), expectedRevision: 0, productCode: subject,
-      document: { title: title.trim(), summary: '', durationDays: endDay, sessions: source ? structuredClone(source.document.sessions ?? []) : events.map(item => ({ key: crypto.randomUUID(), title: item.title, section: item.section, content: { preSessionReads: [], recordings: [], postSessionReads: [], materials: [] } })), events } };
+      document: { title: title.trim(), summary: '', durationDays: endDay, sessions: [...structuredClone(selectedSources.flatMap(source => (source.sessions ?? []).filter(session => !courseReadmePosition(session.key) && classes.some(item => item.key === session.key)))), ...classes.filter(item => !curriculumKeys.has(item.key)).map(item => ({key:item.key,title:item.title,section:item.section ?? 'quant',content:{preSessionReads:[],recordings:[],postSessionReads:[],materials:[]}}))], events } };
     const invalid = validateV2TemplateSave(request);
     if (invalid) { setError(invalid); return; }
     void persist({ request, startDate });
   }
   return <section className={styles.setup} aria-label="New live batch setup">
-    {!recovery.recovered && <DraftRecoveryNotice available={!!formRecovery.recovered} unavailable={formRecovery.unavailable} onRestore={() => { if(formRecovery.recovered){setForm(formRecovery.recovered);formRecovery.acknowledge();} }} onDiscard={formRecovery.forget} />}
+    {!recovery.recovered && <DraftRecoveryNotice available={!!formRecovery.recovered} unavailable={formRecovery.unavailable} onRestore={() => { if(formRecovery.recovered){setFormChanged(true);setForm(formRecovery.recovered);formRecovery.acknowledge();} }} onDiscard={formRecovery.forget} />}
     <DraftRecoveryNotice available={!!recovery.recovered} unavailable={recovery.unavailable} onRestore={() => { if(recovery.recovered){setPrepared(recovery.recovered);formRecovery.acknowledge();recovery.acknowledge();} }} onDiscard={() => { recovery.forget();formRecovery.forget(); }} />
     {prepared ? <div className={styles.form} aria-busy={pending}>
       <h2>{pending ? 'Saving batch…' : 'Finish saving this batch'}</h2><p className={styles.help}>{prepared.request.document.title} · {prepared.request.document.events.length} live classes</p>
@@ -106,33 +120,35 @@ export default function NewLiveBatch({ templates, ownerId, onSaved }: {
         <h2>Batch details</h2>
         <div className={`${styles.fields} ${styles.batchDetails}`}>
           <label>Batch name<input required maxLength={120} value={title} placeholder="e.g. August weekend batch" onChange={event => changeForm({title:event.target.value})} /></label>
-          <label>Subject<select aria-label="Subject" value={subject} onChange={event => { const next = event.target.value as Subject; changeForm({subject:next,sourceId:'',classes:classes.map(item => ({...item,section:next === 'full_course' ? item.section ?? 'quant' : next}))}); }}>{(['quant','verbal','di','full_course'] as const).map(code => <option key={code} value={code}>{code === 'full_course' ? 'All subjects' : V2_TEMPLATE_PRODUCTS[code].label}</option>)}</select></label>
+          <label>Subject<select aria-label="Subject" value={subject} onChange={event => chooseSubject(event.target.value as Subject)}>{(['quant','verbal','di','full_course'] as const).map(code => <option key={code} value={code}>{code === 'full_course' ? 'All subjects' : V2_TEMPLATE_PRODUCTS[code].label}</option>)}</select></label>
         </div>
-        <div className={styles.sectionTitle}><h2>Live classes</h2><span>All times IST</span></div>
+        {sources.length > 1 && subject !== 'full_course' && <label>Course<select value={sourceId} onChange={event => { if(classes.some(item=>item.date)&&!window.confirm('Changing the course replaces the class dates. Continue?'))return; const library=sources.find(item=>item.id===event.target.value); changeForm({sourceId:event.target.value,classes:library?curriculumClasses([library]):[]});setRemovedClass(null); }}>{sources.map(item=><option key={item.id} value={item.id}>{item.title}</option>)}</select></label>}
+        <div className={styles.sectionTitle}><h2>Schedule the classes</h2><span>All times IST</span></div>
+        <p className={styles.help}>{classes.length} {classes.length === 1 ? 'class' : 'classes'} from Course content. Set a date and time for each. Reading pages and materials do not need dates.</p>
+        {!selectedSources.length && <p role="status">No course sessions are available for this subject. <a href="/admin/v2/content">Add them in Course content</a> first.</p>}
         {classes.map((item,index) => <fieldset className={styles.classRow} key={item.key}>
           <legend>Class {index + 1}</legend>
           <div className={styles.classIdentity}>
-            {subject === 'full_course' && <label>Subject<select aria-label={`Subject for class ${index + 1}`} value={item.section ?? 'quant'} onChange={event => changeClass(item.key,{section:event.target.value as ClassInput['section']})}>{(['quant','verbal','di'] as const).map(code => <option key={code} value={code}>{V2_TEMPLATE_PRODUCTS[code].label}</option>)}</select></label>}
-            <label>Class name<input id={`new-class-${item.key}`} required maxLength={120} value={item.title} placeholder="e.g. QA1 — Fractions and percentages" onChange={event => changeClass(item.key,{title:event.target.value})} /></label>
+            {subject === 'full_course' && !curriculumKeys.has(item.key) && <label>Subject<select aria-label={`Subject for class ${index + 1}`} value={item.section ?? 'quant'} onChange={event => changeClass(item.key,{section:event.target.value as ClassInput['section']})}>{(['quant','verbal','di'] as const).map(code => <option key={code} value={code}>{V2_TEMPLATE_PRODUCTS[code].label}</option>)}</select></label>}
+            {curriculumKeys.has(item.key) ? <h3 id={`new-class-${item.key}`} tabIndex={-1} className={styles.curriculumTitle}>{item.title}</h3> : <label>Class name<input id={`new-class-${item.key}`} required maxLength={120} value={item.title} placeholder="e.g. QA1 — Fractions and percentages" onChange={event => changeClass(item.key,{title:event.target.value})} /></label>}
           </div>
           <div className={styles.classFields}>
             <BatchDatePicker id={`new-${item.key}`} label="Date" required value={item.date} time={item.time} onChange={date => changeClass(item.key,{date})} onDateTimeChange={(date,time) => changeClass(item.key,{date,time})} events={classes.filter(entry => entry.date).map(entry => ({date:entry.date,time:entry.time,title:entry.title||'Live class'}))} />
             <label>Start time (IST)<input type="time" required value={item.time} onChange={event => changeClass(item.key,{time:event.target.value})} /></label>
             <label>Duration (minutes)<input type="number" required min={15} max={720} step={1} value={item.duration||''} onChange={event => changeClass(item.key,{duration:Number(event.target.value)})} /></label>
           </div>
-          {classes.length > 1 && <button type="button" className={styles.remove} aria-label={`Remove class ${index+1}`} onClick={() => { setRemovedClass({item:structuredClone(item),index}); changeForm({classes:classes.filter(entry => entry.key !== item.key)}); requestAnimationFrame(() => addButton.current?.focus({preventScroll:true})); }}>Remove class</button>}
+          {<button type="button" className={styles.remove} aria-label={`Remove class ${index+1}`} onClick={() => { setRemovedClass({item:structuredClone(item),index}); changeForm({classes:classes.filter(entry => entry.key !== item.key)}); requestAnimationFrame(() => addButton.current?.focus({preventScroll:true})); }}>Remove class</button>}
         </fieldset>)}
         {removedClass && <div className={styles.removedClass} role="status"><span>{removedClass.item.title || 'Class'} removed.</span><button type="button" disabled={classes.length >= 100} onClick={() => {
           const restored = {...removedClass.item, section: subject === 'full_course' ? removedClass.item.section : subject};
           const next = [...classes]; next.splice(Math.min(removedClass.index, next.length), 0, restored);
           changeForm({classes:next}); setRemovedClass(null); requestAnimationFrame(() => document.getElementById(`new-class-${restored.key}`)?.focus());
         }}>Undo</button></div>}
-        <button ref={addButton} className={`btn btn-secondary ${styles.addClass}`} type="button" disabled={classes.length>=100} onClick={() => {
+        <button ref={addButton} className={`btn btn-secondary ${styles.addClass}`} type="button" disabled={classes.length>=100 || !selectedSources.length} onClick={() => {
           const item = newClass(subject); changeForm({classes:[...classes,item]});
           requestAnimationFrame(() => document.getElementById(`new-class-${item.key}`)?.focus());
-        }}>+ Add class</button>
-        {!!sources.length && <details className={styles.publishDetails}><summary>Use existing course sessions</summary><label>Course sessions<select aria-label="Include saved course sessions" value={sourceId} onChange={event => changeForm({sourceId:event.target.value})}><option value="">New sessions for these classes</option>{sources.map(item => <option value={item.id} key={item.id}>{item.document.title}</option>)}</select></label><p className={styles.help}>Copies the selected sessions into this batch. Otherwise, each class starts with an empty course session for its resources.</p></details>}
-        <div className={styles.footer}><p className={styles.help}>Save privately first. Publish when ready.</p><button className="btn btn-primary" type="submit">Save batch draft</button></div>
+        }}>+ Add extra class</button>
+        <div className={styles.footer}><p className={styles.help}>Save privately first. Publish when ready.</p><button className="btn btn-primary" type="submit" disabled={!selectedSources.length || (subject==='full_course' && selectedSources.length!==3) || !classes.length}>Save batch draft</button></div>
       </fieldset>
     </form>}
     {error && <p role="alert" className="workflow-error">{error}</p>}

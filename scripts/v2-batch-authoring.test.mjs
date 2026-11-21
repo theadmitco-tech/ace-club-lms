@@ -255,7 +255,7 @@ test('the batch page authorizes before loading either templates or batches and h
   let deny=false;
   const calls=[];
   const page=load('src/app/admin/v2/batches/page.tsx',{
-    '@/lib/server/v2ContentPublishing':{isV2ContentPublishingEnabled:()=>false},
+    '@/lib/server/v2ContentPublishing':{isV2ContentPublishingEnabled:()=>false,readContentWorkspace:async()=>null},
     './BatchWorkspace':{default:'batch-workspace'},
     './archive-actions':{readBatchArchives:async()=>{calls.push('archives');return [];}},
     '../templates/templates.module.css': { default: {} },

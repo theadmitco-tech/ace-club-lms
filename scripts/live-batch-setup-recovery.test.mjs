@@ -12,7 +12,7 @@ test('incomplete creation survives owner-scoped recovery before review', () => {
   assert.equal(readDraftRecovery(storage,'admin-b','v2-live-batch-form',101),null);
 });
 test('corrupt shapes, duplicate class identities and oversized lists cannot be restored', () => {
-  for(const candidate of [null,{}, {...form,subject:'unknown'}, {...form,subject:['quant']}, {...form,createFeedbackSessions:'true'}, {...form,classes:[]}, {...form,classes:[form.classes[0],form.classes[0]]}, {...form,classes:[{...form.classes[0],duration:NaN}]}, {...form,classes:Array.from({length:101},(_,i)=>({...form.classes[0],key:String(i)}))}]) assert.equal(isLiveBatchSetup(candidate),false);
+  for(const candidate of [null,{}, {...form,subject:'unknown'}, {...form,subject:['quant']}, {...form,createFeedbackSessions:'true'},  {...form,classes:[form.classes[0],form.classes[0]]}, {...form,classes:[{...form.classes[0],duration:NaN}]}, {...form,classes:Array.from({length:101},(_,i)=>({...form.classes[0],key:String(i)}))}]) assert.equal(isLiveBatchSetup(candidate),false);
 });
 
 test('combined-subject creation preserves each class subject in recovery', () => {
@@ -20,3 +20,5 @@ test('combined-subject creation preserves each class subject in recovery', () =>
   assert.equal(isLiveBatchSetup(mixed),true);
   assert.equal(isLiveBatchSetup({...mixed,classes:[{...mixed.classes[0],section:'full_course'}]}),false);
 });
+
+test('an empty curriculum remains recoverable while batch saving requires classes',()=>{assert.equal(isLiveBatchSetup({...form,classes:[]}),true);});

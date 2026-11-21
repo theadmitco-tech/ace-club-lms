@@ -70,7 +70,7 @@ export default function BatchWorkspace({ archives = [], drafts, templates, publi
     {active !== undefined && <button className={styles.back} onClick={() => open(undefined)}>← All batches</button>}
     <header className={styles.pageHeader}>
       <div><h1 ref={heading} tabIndex={-1} className="admin-page-title">{active === undefined ? 'Batches' : current?.title ?? 'Create a live batch'}</h1>
-        <p className="admin-page-subtitle">{active === undefined ? 'Manage live classes and the students attending them.' : current ? `${subjectLabel(current)} · ${classes.length} live ${classes.length === 1 ? 'class' : 'classes'} · All times IST` : 'Name the batch and add its live classes. Save privately before publishing.'}</p>
+        <p className="admin-page-subtitle">{active === undefined ? 'Manage live classes and the students attending them.' : current ? `${subjectLabel(current)} · ${classes.length} live ${classes.length === 1 ? 'class' : 'classes'} · All times IST` : 'Choose a subject and schedule its course sessions. Save privately before publishing.'}</p>
       </div>
       {active === undefined ? <button className="btn btn-primary" onClick={() => open(null)}>Create batch</button> : current && <span className={styles.status} data-published={publication?.state === 'published'} data-changed={publication?.state === 'published' && publication.batchRevision !== current.revision}>{statusLabel(current, publication)}</span>}
     </header>
