@@ -9,7 +9,7 @@ import type { V2Publication } from '@/lib/v2Publications';
 import type { V2LiveMapping } from '@/lib/v2LiveMappingSuggestions';
 import { setLiveRegistrationAction, completeLiveClassAction } from './actions';
 import LiveSessionMappings from './LiveSessionMappings';
-import styles from './live.module.css';
+import styles from '../batchPage.module.css';
 
 type Review = { kind: 'registration'; student: V2EnrollmentOption } | { kind: 'completion'; event: V2LiveClassStatus };
 type Props = {

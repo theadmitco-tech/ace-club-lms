@@ -8,7 +8,7 @@ import { isV2StudentScheduleEnabled } from '@/lib/server/v2StudentScheduleFeatur
 import { readV2LiveOperations } from '@/lib/server/v2StudentDelivery';
 import { isV2MeetingBatchId } from '@/lib/v2Meetings';
 import LiveOperations from './LiveOperations';
-import styles from './live.module.css';
+import styles from '../batchPage.module.css';
 
 export default async function LiveOperationsPage({params}:{params:Promise<{batchId:string}>}) {
   if (!isV2StudentScheduleEnabled()) notFound();

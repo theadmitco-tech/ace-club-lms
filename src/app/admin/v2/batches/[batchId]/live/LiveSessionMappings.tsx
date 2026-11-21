@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import type { V2Publication } from '@/lib/v2Publications';
 import { suggestV2LiveMappings, type V2LiveMapping } from '@/lib/v2LiveMappingSuggestions';
 import { setLiveMappingAction } from './actions';
-import styles from './live.module.css';
+import styles from '../batchPage.module.css';
 
 /** `renderAction` lets the operations panel place completion controls in each class row. */
 type Props = { publication: V2Publication; mappings: V2LiveMapping[]; completedEventKeys?: string[]; heading?: string; intro?: string;

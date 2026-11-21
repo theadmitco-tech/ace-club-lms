@@ -362,14 +362,14 @@ async function runTests() {
   });
   await test('Enrollment review confirms by keyboard and removes on mobile', async (page) => {
     await page.goto(`${origin}/admin/v2/batches/${state.drafts[0].id}/students`);
-    await button(page, 'Enroll in batch').click();
+    await button(page, 'Enroll Synthetic Student').click();
     assert.equal(state.enrollmentOptions[0].active, false);
     await text(page, 'Enroll Synthetic Student?');
     await button(page, 'Confirm enrollment').focus();
     await page.keyboard.press('Enter');
     await text(page, 'Student enrolled in this batch.');
     assert.equal(state.enrollmentOptions[0].active, true);
-    await button(page, 'Remove from batch').click();
+    await button(page, 'Remove Synthetic Student').click();
     await button(page, 'Confirm removal').click();
     await text(page, 'Student removed from this batch.');
     assert.equal(state.enrollmentOptions[0].active, false);
@@ -377,14 +377,14 @@ async function runTests() {
   }, { width: 390, height: 844 });
   await test('Interrupted enrollment reloads committed state without repeating a stale confirmation', async (page) => {
     await page.goto(`${origin}/admin/v2/batches/${state.drafts[0].id}/students`);
-    await button(page, 'Enroll in batch').click();
+    await button(page, 'Enroll Synthetic Student').click();
     state.faults.setV2Enrollment = { interruptAfterSave: true };
     await button(page, 'Confirm enrollment').click();
     await text(page, 'Confirmation was interrupted.');
     assert.equal(state.enrollmentOptions[0].active, true);
     assert.equal(await button(page, 'Confirm enrollment').isDisabled(), true);
     await dialog(page, () => button(page, 'Reload student list').click(), true);
-    await visible(button(page, 'Remove from batch'));
+    await visible(button(page, 'Remove Synthetic Student'));
     assert.equal(state.calls.filter((call) => call.method === 'setV2Enrollment').length, 1);
   });
 

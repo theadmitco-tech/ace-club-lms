@@ -39,6 +39,7 @@ export const sources = [
   'src/app/admin/v2/batches/[batchId]/students/page.tsx',
   'src/app/admin/v2/batches/[batchId]/students/EnrollmentEditor.tsx',
   'src/app/admin/v2/batches/[batchId]/students/actions.ts',
+  'src/app/admin/v2/batches/[batchId]/batchPage.module.css',
   'src/app/admin/AdminShell.tsx',
   'src/app/admin/admin.css',
   'src/app/admin/workflow.css',
