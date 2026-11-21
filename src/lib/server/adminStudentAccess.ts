@@ -9,7 +9,7 @@ export async function readAdminStudentAccess(studentId:string) {
   await requirePortalRole('admin');
   const client=await createClient();
   const [profile,purchases,enrollments,registrations,batches]=await Promise.all([
-    client.from('profiles').select('id,full_name,is_active').eq('id',studentId).eq('role','student').maybeSingle(),
+    client.from('profiles').select('id,full_name,email,is_active').eq('id',studentId).eq('role','student').maybeSingle(),
     client.from('v2_purchases').select('id,confirmed_at,expires_at,revoked_at,v2_product_grants(product_code)').eq('student_id',studentId).order('confirmed_at',{ascending:false}).limit(100),
     client.from('v2_batch_enrollments').select('batch_id,active').eq('student_id',studentId),
     client.from('v2_live_registrations').select('batch_id,active').eq('student_id',studentId),listV2BatchDrafts()]);

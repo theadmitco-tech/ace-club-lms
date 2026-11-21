@@ -42,3 +42,30 @@
 @media(max-width:750px) { .table th, .table td { padding: 14px 12px; } .table td:first-child { width: auto; } .table .openStudent { white-space: normal; } }
 @media(max-width:480px) { .table { table-layout: fixed; } .table th:first-child { width: 45%; } .table th:nth-child(2) { width: 27%; } .table th:last-child { width: 28%; } .table th, .table td { padding: 12px 8px; } .table .openStudent { padding: 8px; gap: 4px; } .table .openStudent span { display: none; } .searchInput { flex: 1 1 100%; } }
 @media(prefers-reduced-motion:reduce) { .table tbody tr { transition: none; } }
+
+/* ── Directory v2: access at a glance, whole-row links ─────────────────── */
+.resultSummary { display: block; }
+.table td { padding: 14px 20px; }
+.table td:first-child { width: 42%; }
+.table td:last-child { text-align: left; width: 120px; }
+.table tbody tr { position: relative; cursor: pointer; }
+.workspace .rowLink { display: block; color: inherit; text-decoration: none; }
+.workspace .rowLink::after { content: ''; position: absolute; inset: 0; }
+.workspace .rowLink:focus-visible { outline: none; }
+.table tbody tr:has(.rowLink:focus-visible) { outline: 2px solid #35775e; outline-offset: -2px; }
+.inactive { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: #fbf0dd; color: #7a4f10; font-size: 11.5px; font-weight: 600; vertical-align: 2px; }
+.table td strong { display: inline; }
+.access { display: grid; gap: 3px; }
+.access strong { font-size: 14px; font-weight: 600; }
+.accessStatus { font-size: 12.5px; color: #56665d; }
+.accessStatus[data-state="active"] { color: #24543e; }
+.accessStatus[data-state="expired"], .accessStatus[data-state="revoked"] { color: #8a3a24; }
+.muted { color: #56665d; font-size: 13.5px; }
+.batchCount { font-variant-numeric: tabular-nums; font-size: 14px; white-space: nowrap; }
+.chevron { float: right; color: #8a968f; font-size: 18px; line-height: 1; }
+@media (max-width: 640px) {
+  .table thead { display: none; }
+  .table, .table tbody, .table tr, .table td { display: block; width: auto !important; }
+  .table tr { padding: 12px 14px; border-top: 1px solid #e2e8e3; }
+  .table td { border: 0; padding: 2px 0; }
+}

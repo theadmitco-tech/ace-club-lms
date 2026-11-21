@@ -54,3 +54,25 @@
 @media(max-width:1100px) { .columnLabels[data-live=true], .list > li[data-live=true] { grid-template-columns: minmax(0,1fr) minmax(150px,.8fr) minmax(190px,1fr); gap: 16px; } .list > li[data-live=true] .accessCell { align-items: flex-start; flex-direction: column; gap: 0; } }
 @media(max-width:750px) { .header { align-items: flex-start; flex-direction: column; gap: 12px; } .purchaseDetails summary { gap: 12px; flex-wrap: wrap; } .purchaseIdentity { width: 100%; } .expiry { margin-left: 0; } .detailsLabel { margin-left: auto; } .columnLabels { display: none; } .list > li, .list > li[data-live=true] { grid-template-columns: 1fr; gap: 8px; padding: 16px 20px; } .accessCell, .list > li[data-live=true] .accessCell { flex-direction: row; align-items: center; } .list > li h4 { font-size: 15px; } }
 @media(prefers-reduced-motion:reduce) { .list > li { transition: none; } }
+
+/* ── Student page v2: access first, enrolled batches, no tabs ─────────── */
+.email { margin: 4px 0 0; font-size: 14px; color: #56665d; overflow-wrap: anywhere; }
+.workspace { max-width: 920px; }
+.card { background: #fff; border: 1px solid #e3e9e5; border-radius: 14px; padding: clamp(18px, 2vw, 24px); margin: 0 0 18px; box-shadow: 0 1px 2px #1f3a2c08; }
+.card > h2 { margin: 0 0 12px; font-size: 16px; letter-spacing: -0.01em; }
+.purchaseList, .batchList { list-style: none; margin: 0; padding: 0; }
+.purchaseList li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 12px 0; border-top: 1px solid #eef2ef; }
+.purchaseList li:first-child { border-top: 0; padding-top: 4px; }
+.purchaseList strong { font-size: 15px; }
+.purchaseDates { flex-basis: 100%; font-size: 13px; color: #56665d; }
+.hint { margin: 12px 0 0; padding-top: 12px; border-top: 1px solid #eef2ef; font-size: 12.5px; color: #56665d; }
+.batchList li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px 0; border-top: 1px solid #eef2ef; }
+.batchList li:first-child { border-top: 0; }
+.batchMain { display: grid; gap: 2px; min-width: 0; }
+.batchMain strong { font-size: 14.5px; }
+.batchMain span { font-size: 13px; color: #56665d; }
+.batchActions { display: flex; gap: 8px; }
+.batchActions a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid #cfdcd4; border-radius: 8px; color: #2f5f49; font-size: 13px; font-weight: 600; text-decoration: none; }
+.batchActions a:hover { background: #f1f6f3; }
+.others { margin-top: 14px; padding-top: 10px; border-top: 1px solid #eef2ef; }
+.others > summary { cursor: pointer; padding: 8px 0; font-size: 14px; font-weight: 600; color: #3d5246; }
