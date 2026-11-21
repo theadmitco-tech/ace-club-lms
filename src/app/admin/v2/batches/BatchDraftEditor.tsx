@@ -216,7 +216,7 @@ export default function BatchDraftEditor({ courseMode = false, drafts, templates
                 <label>Class name<input id={`${event.key}-name`} required maxLength={120} value={event.title ?? original.events.find(item => item.key === event.key)?.title ?? ''} onChange={e => changeEvent(event.key,{title:e.target.value})} /></label>
               </div>
               <div className={batchStyles.classFields}>
-                <BatchDatePicker id={`${event.key}-date`} label="Date" required value={event.localDate ?? ''} time={event.localStartTime ?? ''} onDateTimeChange={(localDate,localStartTime)=>changeEvent(event.key,{localDate,localStartTime})} onChange={localDate=>changeEvent(event.key,{localDate})} events={calendarEvents} />
+                <BatchDatePicker id={`${event.key}-date`} label="Date" required value={event.localDate ?? ''} onChange={localDate=>changeEvent(event.key,{localDate})} events={calendarEvents} />
                 <TimeSelect id={`${event.key}-start-time`} label="Start time (IST)" required value={event.localStartTime ?? ''} onChange={localStartTime=>changeEvent(event.key,{localStartTime})} />
                 <label>Duration (minutes)<input type="number" required min={15} max={720} step={1} value={event.durationMinutes ?? ''} onChange={e=>changeEvent(event.key,{durationMinutes:Number(e.target.value)})} /></label>
                 {event.localDate && <small className={batchStyles.weekday}>{weekdayLabel(event.localDate)}</small>}
@@ -291,11 +291,9 @@ export default function BatchDraftEditor({ courseMode = false, drafts, templates
           {event.kind === 'outline' && <p>Undated outline item. No attendance or session booking.</p>}
           <div className={styles.grid}>
             {event.kind !== 'outline' && <>
-            <BatchDatePicker id={`${event.key}-date`} label="Date" required value={event.localDate ?? ''} time={event.localStartTime ?? ''} onDateTimeChange={(localDate,localStartTime)=>changeEvent(event.key,{localDate,localStartTime})}
+            <BatchDatePicker id={`${event.key}-date`} label="Date" required value={event.localDate ?? ''}
               onChange={(localDate) => changeEvent(event.key, { localDate })} events={calendarEvents} />
-            <label htmlFor={`${event.key}-time`}>Start time (IST)
-              <input id={`${event.key}-time`} className="form-input" type="time" required value={event.localStartTime ?? ''} onChange={(e) => changeEvent(event.key, { localStartTime: e.target.value })} />
-            </label>
+            <TimeSelect id={`${event.key}-time`} label="Start time (IST)" required value={event.localStartTime ?? ''} onChange={localStartTime => changeEvent(event.key, { localStartTime })} />
             </>}
             <details className="workflow-class-options" open={!focused || undefined}><summary>Duration & instructor</summary>
             {event.kind!=='outline'&&<label htmlFor={`${event.key}-duration`}>Duration in minutes

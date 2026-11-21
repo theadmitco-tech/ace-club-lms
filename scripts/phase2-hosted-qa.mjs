@@ -145,8 +145,8 @@ if(mode==='prepare'){
     const completionArgs={p_batch_id:quant.batchId,p_event_key:quant.eventKey,p_publication_revision:current.revision};
     await admin.page.goto(`${state.preview}/admin/v2/batches/${quant.batchId}/live`,{waitUntil:'domcontentloaded'});
     await admin.page.getByRole('button',{name:'Mark class complete',exact:true}).click();
-    await admin.page.getByRole('heading',{name:'Mark this live class complete?',exact:true}).waitFor();
-    await admin.page.getByRole('button',{name:'Confirm',exact:true}).click();
+    await admin.page.getByText('Mark this live class complete?',{exact:true}).waitFor();
+    await admin.page.getByRole('button',{name:'Confirm class completion',exact:true}).click();
     await admin.page.getByText('Class completion recorded. Attendance and feedback remain separate.',{exact:true}).waitFor({timeout:20000});
     const statuses=await rpc(admin.client,'list_v2_live_class_status',{p_batch_id:quant.batchId});
     const completed=statuses.find(event=>event.eventKey===quant.eventKey);const replay=await rpc(admin.client,'complete_v2_live_class',completionArgs);

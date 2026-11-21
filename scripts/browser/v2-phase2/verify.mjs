@@ -152,7 +152,7 @@ async function runTests() {
     await button(modal, 'Go to the Previous Month').click();
     await modal.getByRole('button', { name: 'Tuesday, 3 November 2026', exact: true }).click();
     assert.equal(await page.getByLabel('Date', { exact: true }).inputValue(), '2026-11-02');
-    await button(modal, 'Use date & time').click();
+    await button(modal, 'Use this date').click();
     assert.equal(await page.getByLabel('Date', { exact: true }).inputValue(), '2026-11-03');
     assert.equal(await modal.isVisible(), false);
     assert.equal(await calendar.evaluate((element) => element === document.activeElement), true);
@@ -546,7 +546,8 @@ async function runTests() {
     const completionSetup = page.getByRole('link', { name: 'Set up class completion', exact: true });
     await visible(completionSetup);
     assert.equal(await completionSetup.getAttribute('href'), `/admin/v2/batches/${saved.id}/live?setup=1#class-session-mapping`);
-    await page.getByLabel('Start time (IST)').fill('19:00');
+    await page.getByRole('button', { name: /Start time \(IST\)/ }).first().click();
+    await page.getByRole('option', { name: '7:00 pm', exact: true }).click();
     await button(page, 'Review course and schedule').click();
     await button(page, 'Confirm and save draft').click();
     await text(page, 'Draft revision 2 saved.');

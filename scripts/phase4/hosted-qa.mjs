@@ -137,11 +137,11 @@ if(mode==='prepare'){
   await page.getByRole('button',{name:`Open ${f5.title}`,exact:true}).waitFor();await page.waitForFunction(title=>{const b=document.querySelector(`button[aria-label="Open ${title}"]`);return b&&!b.disabled;},f5.title);
   ok('browser-feedback-confirmed-unlock',(await learning('full',full)).obligations.length===0,['P4-09']);
   await admin.page.goto(`${state.preview}/admin/v2/batches/${full.batchId}/live`,{waitUntil:'domcontentloaded'});
-  await admin.page.getByRole('heading',{name:'Link live classes to course sessions',exact:true}).waitFor();
+  await admin.page.getByRole('heading',{name:'Classes',exact:true}).waitFor();
   ok('admin-explicit-mappings-rendered',await admin.page.getByLabel(full.document.events[1].title,{exact:true}).inputValue()===f5.key);
   const classRow=admin.page.getByRole('listitem').filter({has:admin.page.locator('strong').filter({hasText:full.document.events[1].title})});
   await classRow.getByRole('button',{name:'Mark class complete',exact:true}).click();
-  await admin.page.getByRole('region',{name:'Confirm live operation',exact:true}).getByRole('button',{name:'Confirm',exact:true}).click();
+  await admin.page.getByRole('region',{name:'Confirm live operation',exact:true}).getByRole('button',{name:'Confirm class completion',exact:true}).click();
   await admin.page.getByText('Class completion recorded. Attendance and feedback remain separate.',{exact:true}).waitFor();
   const completion=(await rpc(admin.client,'list_v2_live_class_status',{p_batch_id:full.batchId})).find(c=>c.eventKey===full.document.events[1].key);
   ok('admin-mapped-live-completion',Boolean(completion?.completedAt),['P4-10']);

@@ -61,6 +61,8 @@ export default function NewLiveBatch({ drafts, ownerId, onSaved }: {
   const [undoMessage, setUndoMessage] = useState('');
   const [pendingChange, setPendingChange] = useState<{ message: string; apply: () => void } | null>(null);
   const [pattern, setPattern] = useState<{ start: string; weekdays: number[]; time: string }>({ start: '', weekdays: [6, 0], time: '19:00' });
+  // Full Course batches teach each subject on its own days (brochure: DI Fri, Verbal Sat, Quant Sun).
+  const [subjectDays, setSubjectDays] = useState<Record<'quant' | 'verbal' | 'di', number[]>>({ quant: [0], verbal: [6], di: [5] });
   const { subject, title, sourceId, classes } = form;
   const formRecovery = useDraftRecovery<LiveBatchSetup>(ownerId, 'v2-live-batch-form', isLiveBatchSetup);
   const recovery = useDraftRecovery<Prepared>(ownerId, 'v2-live-batch-setup', isPrepared);
@@ -90,10 +92,24 @@ export default function NewLiveBatch({ drafts, ownerId, onSaved }: {
   function changeClass(key: string, patch: Partial<ClassInput>) {
     changeForm({ classes: classes.map(item => item.key === key ? { ...item, ...patch } : item) }, true);
   }
+  const patternReady = subject === 'full_course'
+    ? (['quant', 'verbal', 'di'] as const).every(section => subjectDays[section].length > 0 || !undatedLive.some(item => (item.section ?? 'quant') === section))
+    : pattern.weekdays.length > 0;
+  const dayPicker = (legend: string, days: number[], onChange: (days: number[]) => void) => <fieldset className={styles.weekdays} key={legend}><legend>{legend}</legend>{[1,2,3,4,5,6,0].map(day => { const label = WEEKDAYS[day]; return <label key={label}><input type="checkbox" aria-label={`${legend}: ${label}`} checked={days.includes(day)} onChange={event => onChange(event.target.checked ? [...days, day] : days.filter(item => item !== day))} />{label}</label>; })}</fieldset>;
   function fillFromPattern() {
-    if (!isV2BatchDate(pattern.start) || !pattern.weekdays.length || !undatedLive.length) return;
-    const dates = patternDates(pattern.start, pattern.weekdays, undatedLive.length);
-    const assigned = new Map(undatedLive.map((item, index) => [item.key, dates[index]]));
+    if (!isV2BatchDate(pattern.start) || !patternReady || !undatedLive.length) return;
+    const assigned = new Map<string, string>();
+    if (subject === 'full_course') {
+      for (const section of ['quant', 'verbal', 'di'] as const) {
+        const pending = undatedLive.filter(item => (item.section ?? 'quant') === section);
+        const dates = patternDates(pattern.start, subjectDays[section], pending.length);
+        pending.forEach((item, index) => assigned.set(item.key, dates[index]));
+      }
+    } else {
+      const dates = patternDates(pattern.start, pattern.weekdays, undatedLive.length);
+      undatedLive.forEach((item, index) => assigned.set(item.key, dates[index]));
+    }
+    const dates = [...assigned.values()];
     changeForm({ classes: classes.map(item => assigned.has(item.key) ? { ...item, date: assigned.get(item.key)!, time: pattern.time } : item) }, true);
     setUndoMessage(`${dates.length} ${dates.length === 1 ? 'class' : 'classes'} dated from the weekly pattern. Undo last change reverts this.`);
   }
@@ -175,12 +191,14 @@ export default function NewLiveBatch({ drafts, ownerId, onSaved }: {
         {classes.length > 0 && <div className={styles.scheduleProgress} role="status"><span><strong>{datedClasses} of {liveClasses.length}</strong> live classes dated{classes.length > liveClasses.length ? ` · ${classes.length - liveClasses.length} with no date needed` : ''}</span><span>{!liveClasses.length ? 'No live classes yet' : undatedLive.length ? `${undatedLive.length} still to schedule` : 'All dates set'}</span><progress aria-label="Live classes with dates" value={datedClasses} max={Math.max(liveClasses.length, 1)} /></div>}
         {undatedLive.length > 0 && <div className={styles.patternFill} role="group" aria-labelledby="pattern-fill-title">
           <h3 id="pattern-fill-title">Fill dates from a weekly pattern</h3>
-          <p>Dates the {undatedLive.length} undated live {undatedLive.length === 1 ? 'class' : 'classes'} in order. Dates already set are kept.</p>
+          <p>{subject === 'full_course' ? 'Each subject’s undated live classes are dated in order on that subject’s days.' : `Dates the ${undatedLive.length} undated live ${undatedLive.length === 1 ? 'class' : 'classes'} in order.`} Dates already set are kept.</p>
           <div className={styles.patternControls}>
             <label>First class on<input type="date" value={pattern.start} onChange={event => setPattern({ ...pattern, start: event.target.value })} /><small>{weekdayLabel(pattern.start)}</small></label>
-            <fieldset className={styles.weekdays}><legend>Class days</legend>{[1,2,3,4,5,6,0].map(day => { const label = WEEKDAYS[day]; return <label key={label}><input type="checkbox" checked={pattern.weekdays.includes(day)} onChange={event => setPattern({ ...pattern, weekdays: event.target.checked ? [...pattern.weekdays, day] : pattern.weekdays.filter(item => item !== day) })} />{label}</label>; })}</fieldset>
+            {subject === 'full_course'
+              ? (['di', 'verbal', 'quant'] as const).map(section => dayPicker(`${V2_TEMPLATE_PRODUCTS[section].label} days`, subjectDays[section], days => setSubjectDays({ ...subjectDays, [section]: days })))
+              : dayPicker('Class days', pattern.weekdays, weekdays => setPattern({ ...pattern, weekdays }))}
             <TimeSelect label="Class time (IST)" value={pattern.time} onChange={time => setPattern({ ...pattern, time })} />
-            <button type="button" className="btn btn-secondary" disabled={!isV2BatchDate(pattern.start) || !pattern.weekdays.length} onClick={fillFromPattern}>Fill {undatedLive.length} {undatedLive.length === 1 ? 'date' : 'dates'}</button>
+            <button type="button" className="btn btn-secondary" disabled={!isV2BatchDate(pattern.start) || !patternReady} onClick={fillFromPattern}>Fill {undatedLive.length} {undatedLive.length === 1 ? 'date' : 'dates'}</button>
           </div>
         </div>}
         <p className={styles.undoMessage} role="status">{undoMessage}</p>
@@ -198,7 +216,7 @@ export default function NewLiveBatch({ drafts, ownerId, onSaved }: {
           </div>
           {curriculumKeys.has(item.key) && <label className={styles.liveToggle}><input type="checkbox" checked={isLive(item)} onChange={event => changeClass(item.key,{live:event.target.checked})} />Live class</label>}
           {isLive(item) ? <div className={styles.classFields}>
-            <BatchDatePicker id={`new-${item.key}`} label="Date" required value={item.date} time={item.time} onChange={date => changeClass(item.key,{date})} onDateTimeChange={(date,time) => changeClass(item.key,{date,time})} events={classes.filter(entry => entry.date).map(entry => ({date:entry.date,time:entry.time,title:entry.title||'Live class'}))} />
+            <BatchDatePicker id={`new-${item.key}`} label="Date" required value={item.date} onChange={date => changeClass(item.key,{date})} events={classes.filter(entry => entry.date).map(entry => ({date:entry.date,time:entry.time,title:entry.title||'Live class'}))} />
             <TimeSelect id={`new-${item.key}-time`} label="Start time (IST)" required value={item.time} onChange={time => changeClass(item.key,{time})} />
             <label>Duration (minutes)<input type="number" required min={15} max={720} step={1} value={item.duration||''} onChange={event => changeClass(item.key,{duration:Number(event.target.value)})} /></label>
             {item.date && <small className={styles.weekday} aria-live="polite">{weekdayLabel(item.date)}</small>}
@@ -214,6 +232,7 @@ export default function NewLiveBatch({ drafts, ownerId, onSaved }: {
           const item = newClass(subject); changeForm({classes:[...classes,item]});
           requestAnimationFrame(() => document.getElementById(`new-class-${item.key}`)?.focus());
         }}>+ Add extra class</button>
+        {subject === 'full_course' && <p className={styles.extraNote}>For whole-programme classes such as orientation or group mocks, any subject works: Full Course students see all three.</p>}
         <div className={styles.footer}><p className={styles.help}>Next: review the saved schedule, then publish.</p><button className="btn btn-primary" type="submit" disabled={!selectedSources.length || (subject==='full_course' && selectedSources.length!==3) || !liveClasses.length}>Save batch draft</button></div>
         </div>
       </fieldset>

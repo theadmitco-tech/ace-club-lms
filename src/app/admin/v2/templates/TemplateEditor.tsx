@@ -1,5 +1,6 @@
 'use client';
 import { CourseSessionsEditor } from './CourseSessions';
+import { TimeSelect } from '../batches/TimeSelect';
 import type { V2CourseCode } from '@/lib/v2Templates';
 
 import { useRef, useState, type FormEvent } from 'react';
@@ -177,9 +178,7 @@ export default function TemplateEditor({ templates, ownerId, setupPending = fals
               <label htmlFor={`${event.key}-day`}>Day
                 <input id={`${event.key}-day`} className="form-input" type="number" min={1} max={draft.document.durationDays ?? 366} step={1} required value={(event.dayOffset ?? 0) + 1 || ''} onChange={(e) => updateEvent(event.key, { dayOffset: Number(e.target.value) - 1 })} />
               </label>
-              <label htmlFor={`${event.key}-start`}>Local start time
-                <input id={`${event.key}-start`} className="form-input" type="time" required value={event.localStartTime ?? ''} onChange={(e) => updateEvent(event.key, { localStartTime: e.target.value })} />
-              </label>
+              <TimeSelect id={`${event.key}-start`} label="Start time (IST)" required value={event.localStartTime ?? ''} onChange={localStartTime => updateEvent(event.key, { localStartTime })} />
               <label htmlFor={`${event.key}-duration`}>Duration in minutes
                 <input id={`${event.key}-duration`} className="form-input" type="number" min={15} max={720} step={1} required value={event.durationMinutes || ''} onChange={(e) => updateEvent(event.key, { durationMinutes: Number(e.target.value) })} />
               </label>

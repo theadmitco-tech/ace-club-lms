@@ -59,11 +59,11 @@ function AdminShellContent({ children, showCoursePublishing = false, workflowEna
     { href: '/admin/v2/access', label: 'Prices & purchase history' },
     { href: '/admin/users', label: 'Account management' },
     { href: '/admin/progress', label: 'Student progress' },
-    { href: '/admin/templates', label: 'Existing templates' },
-    { href: '/admin/curriculum', label: 'Master curriculum' },
-    { href: '/admin/resources', label: 'Existing resources' },
-    { href: '/admin/sessions', label: 'Existing sessions' },
-    { href: '/admin/courses', label: 'Existing batches' },
+    { href: '/admin/templates', label: 'Existing templates', legacy: true },
+    { href: '/admin/curriculum', label: 'Master curriculum', legacy: true },
+    { href: '/admin/resources', label: 'Existing resources', legacy: true },
+    { href: '/admin/sessions', label: 'Existing sessions', legacy: true },
+    { href: '/admin/courses', label: 'Existing batches', legacy: true },
   ];
   const navItems = workflowEnabled ? primaryItems : [
     { href: '/admin', label: 'Dashboard', icon: '📊' },
@@ -111,7 +111,7 @@ function AdminShellContent({ children, showCoursePublishing = false, workflowEna
             </button>
           ))}
         </nav>
-        {workflowEnabled && <details className="admin-more-tools"><summary>More tools</summary><nav aria-label="Additional Admin tools">{moreItems.map(item => <button key={item.href} type="button" aria-current={pathname === item.href ? 'page' : undefined} onClick={() => { if (confirmLeave()) { router.push(item.href); setSidebarOpen(false); } }}>{item.label}</button>)}</nav></details>}
+        {workflowEnabled && <details className="admin-more-tools"><summary>More tools</summary><nav aria-label="Additional Admin tools">{[false, true].map(legacy => <div key={String(legacy)} className="admin-more-group"><p className="admin-more-heading">{legacy ? 'Older screens · until content moves over' : 'Tools'}</p>{moreItems.filter(item => !!(item as { legacy?: boolean }).legacy === legacy).map(item => <button key={item.href} type="button" aria-current={pathname === item.href ? 'page' : undefined} onClick={() => { if (confirmLeave()) { router.push(item.href); setSidebarOpen(false); } }}>{item.label}</button>)}</div>)}</nav></details>}
 
         <div className="sidebar-footer">
           <div className="sidebar-user">
