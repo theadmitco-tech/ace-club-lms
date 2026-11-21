@@ -780,7 +780,8 @@ async function runTests() {
     await button(page, 'Restore edits').click();
     assert.equal(await page.getByLabel('Title', { exact: true }).inputValue(), 'Private user A draft');
     await dialog(page, () => page.reload(), true);
-    await button(page, 'Discard recovery').click();
+    await button(page, 'Start fresh').click();
+    await button(page, 'Discard edits').click();
     await page.reload();
     assert.equal(await button(page, 'Restore edits').count(), 0);
     await button(page, 'Full Course').click();
@@ -794,7 +795,7 @@ async function runTests() {
     await page.evaluate(() => { Storage.prototype.setItem = () => { throw new Error('Synthetic quota error'); }; });
     await button(page, 'Full Course').click();
     await page.getByLabel('Title', { exact: true }).fill('Storage unavailable');
-    await text(page, 'Recovery is unavailable in this tab.');
+    await text(page, 'This browser could not keep a recovery copy.');
     await button(page, 'Save draft').click();
     await text(page, 'Draft revision 1 saved.');
   });
@@ -874,7 +875,8 @@ async function runTests() {
     await text(page, 'The batch schedule changed.');
     assert.equal(await page.getByRole('textbox').inputValue(), '');
     assert.equal(state.calls.filter(c => c.method === 'saveV2MeetingDraft').length, 0);
-    await button(page, 'Discard recovery').click();
+    await button(page, 'Start fresh').click();
+    await button(page, 'Discard edits').click();
   });
   await test('Student saving disables overlapping bulk actions and malformed receipts retain edits', async (page) => {
     await page.goto(`${origin}/practice/fixture/${id(70)}`);
@@ -900,7 +902,8 @@ async function runTests() {
     await page.goto(`${origin}/practice/fixture/${id(70)}`);
     await visible(button(page, 'Restore edits'));
     assert.equal(await page.getByLabel('Comment for question 1').isDisabled(), true);
-    await button(page, 'Discard recovery').click();
+    await button(page, 'Start fresh').click();
+    await button(page, 'Discard edits').click();
     assert.equal(await page.getByLabel('Comment for question 1').isDisabled(), false);
     await page.goto(`${origin}/admin/v2/batches/${id(10)}/meeting`);
     await page.getByRole('textbox').fill('https://meet.google.com/abc-defg-hij');
@@ -914,7 +917,8 @@ async function runTests() {
     await dialog(page, () => page.reload(), true);
     await visible(button(page, 'Restore edits'));
     assert.equal(await button(page, 'Preview publication').isDisabled(), true);
-    await button(page, 'Discard recovery').click();
+    await button(page, 'Start fresh').click();
+    await button(page, 'Discard edits').click();
     assert.equal(await button(page, 'Preview publication').isDisabled(), false);
     assert.equal(state.publications.length, 0);
   });

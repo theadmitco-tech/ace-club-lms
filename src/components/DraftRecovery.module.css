@@ -1,0 +1,20 @@
+.panel { display: flex; align-items: flex-start; gap: 14px; padding: 20px; margin: 0 0 24px; background: #fff; border: 1px solid #d5ded8; border-radius: 12px; color: #293f36; }
+.icon { flex: none; box-sizing: content-box; padding: 9px; border-radius: 8px; background: #edf3ef; color: #37634e; }
+.copy { flex: 1; min-width: 0; }
+.copy h2 { margin: 0 0 5px; font-size: 15px; font-weight: 600; line-height: 1.5; }
+.copy p { margin: 0; color: #506559; font-size: 13px; line-height: 1.7; max-width: 65ch; }
+.actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.actions button { min-height: 44px; padding: 10px 14px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 8px; border: 1px solid transparent; white-space: nowrap; }
+.primary { background: #285b47; color: white; }
+.primary:hover { background: #204b3a; }
+.secondary { background: white; color: #355a48;  }
+.secondary:hover { background: #e2ebe5; }
+.discard { background: #fff; color: #923c2e; }
+.discard:hover { background: #fff4f0; }
+.actions button:focus-visible { outline: 2px solid #285b47; outline-offset: 3px; }
+.result { margin: 0 0 18px; color: #355a48; font-size: 13px; line-height: 1.6; }
+.warning { padding: 14px 18px; background: #fff7e8; color: #714c1f; border-radius: 8px; font-size: 14px; line-height: 1.6; }
+@media (max-width: 900px) { .panel { flex-wrap: wrap; } .actions { width: 100%; padding-left: 54px; } }
+@media (max-width: 500px) { .panel { padding: 16px; gap: 12px; } .actions { padding-left: 0; } }
+
+.actions .secondary { border-color: #d5ded8; }

@@ -60,3 +60,7 @@
 .dialog :where(button,input,select):focus-visible { outline:3px solid #397c60; outline-offset:2px; }
 @media(max-width:650px) { .dialog { width:min(420px,calc(100vw - 20px)); max-height:calc(100dvh - 20px); } .header { padding:18px 16px 14px; } .header h3 { font-size:18px; } .body { grid-template-columns:1fr; } .calendarPane { padding:12px 14px; } .details { border-left:0; border-top:1px solid #e3e9e5; padding:16px; } .selectedDate { margin-bottom:14px; } .agenda { margin-top:16px; padding-top:12px; } .agenda ul { max-height:110px; } .footer { padding:12px 16px; } .footer>span { display:none; } .footer>div { width:100%; } .footer button { flex:1; } }
 @media(prefers-reduced-motion:reduce) { .calendar { --rdp-animation_duration:0s; } .dialog * { animation:none!important; transition:none!important; scroll-behavior:auto!important; } }
+
+.dateLabel { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 24px; }
+.dateLabel .clearDate { min-height: 24px; background: transparent; border: 0; padding: 2px 0; font: inherit; font-size: 12px; color: #355f4d; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.clearDate:focus-visible { outline: 2px solid #285b47; outline-offset: 3px; }

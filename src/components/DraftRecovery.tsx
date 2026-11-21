@@ -1,7 +1,9 @@
 'use client';
 
-import { useCallback, useState, useSyncExternalStore } from 'react';
+import { useCallback, useId, useRef, useState, useSyncExternalStore } from 'react';
 import { readDraftRecovery, writeDraftRecovery, removeDraftRecovery } from '@/lib/draftRecovery';
+
+import styles from './DraftRecovery.module.css';
 
 const EVENT = 'ace:draft-recovery';
 const serverSnapshot = () => null;
@@ -43,12 +45,28 @@ export function useDraftRecovery<T>(ownerId: string, scope: string, isValid: (va
 export function DraftRecoveryNotice({ available, unavailable, onRestore, onDiscard }: {
   available: boolean; unavailable: boolean; onRestore: () => void; onDiscard: () => void;
 }) {
+  const titleId = useId();
+  const cancelButton = useRef<HTMLButtonElement>(null);
+  const discardButton = useRef<HTMLButtonElement>(null);
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
+  const [outcome, setOutcome] = useState('');
   return <>
-    {available && <aside role="status">
-      <p>Unsaved edits are available in this tab. Restore and review them before saving.</p>
-      <button type="button" className="btn btn-secondary" onClick={onRestore}>Restore edits</button>{' '}
-      <button type="button" className="btn btn-secondary" onClick={onDiscard}>Discard recovery</button>
+    {available && <aside className={styles.panel} aria-labelledby={titleId}>
+      <svg className={styles.icon} width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M3 10a9 9 0 1 1 2 8M3 4v6h6m3-3v5l3 2"/></svg>
+      <div className={styles.copy}><h2 id={titleId}>{confirmDiscard ? 'Discard the saved edits?' : 'Continue where you left off'}</h2>
+        <p>{confirmDiscard ? 'This removes the recovery copy in this tab. Changes already saved to the website stay unchanged.' : 'This tab has saved edits. Restore them to continue, or start with the current saved version.'}</p>
+      </div>
+      <div className={styles.actions}>
+        {confirmDiscard ? <>
+          <button ref={cancelButton} type="button" className={styles.primary} onClick={() => {setConfirmDiscard(false);requestAnimationFrame(() => discardButton.current?.focus());}}>Keep edits</button>
+          <button type="button" className={styles.discard} onClick={() => {onDiscard();setConfirmDiscard(false);setOutcome('Saved edits discarded. The current version is ready to edit.');}}>Discard edits</button>
+        </> : <>
+          <button type="button" className={styles.primary} onClick={() => {onRestore();setOutcome('Edits restored. Review them before saving.');}}>Restore edits</button>
+          <button ref={discardButton} type="button" className={styles.secondary} onClick={() => {setConfirmDiscard(true);requestAnimationFrame(() => cancelButton.current?.focus());}}>Start fresh</button>
+        </>}
+      </div>
     </aside>}
-    {unavailable && <p role="alert">Recovery is unavailable in this tab. Keep this page open until your changes are saved.</p>}
+    {!available && outcome && <p className={styles.result} role="status">{outcome}</p>}
+    {unavailable && <p className={styles.warning} role="alert">This browser could not keep a recovery copy. Save your changes before leaving this page.</p>}
   </>;
 }

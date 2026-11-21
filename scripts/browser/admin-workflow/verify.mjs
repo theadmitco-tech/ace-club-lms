@@ -111,6 +111,33 @@ try{
   const violations=await page.evaluate(async()=>{const r=await window.axe.run(document.querySelector('main'),{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}});return r.violations.map(v=>v.id);});assert.deepEqual(violations,[]);
   await page.screenshot({path:path.join(output,'batch-list-desktop.png'),fullPage:true});
  });
+ await test('Batch form keeps seven long curriculum titles and scheduling controls readable',async page=>{
+  const [library]=seedCurriculum();const lesson=structuredClone(library.sessions[1]);
+  library.sessions.splice(1,1,...Array.from({length:7},(_,index)=>({...structuredClone(lesson),key:id(910+index),title:`QA ${index+1}: Fractions + Percentages + Ratios & Mixtures + Simple and Compound Interest`})));
+  await page.goto(origin+'/admin/v2/batches');await button(page,'Create batch').click();
+  assert.equal(await page.getByLabel('Date',{exact:true}).count(),7);
+  assert.equal(await page.getByRole('button',{name:/^Remove class [1-7]$/}).count(),7);
+  await page.getByLabel('Date',{exact:true}).first().fill('2026-12-10');
+  await page.addScriptTag({path:path.join(repo,'node_modules/axe-core/axe.min.js')});
+  const violations=await page.evaluate(async()=>{const r=await window.axe.run(document.querySelector('main'),{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}});return r.violations.map(v=>v.id);});assert.deepEqual(violations,[]);
+  await page.screenshot({path:path.join(output,'batch-seven-classes.png'),fullPage:true});
+ });
+ await test('Schedule dates can be cleared and undone and recovery can be kept or discarded',async page=>{
+  seedCurriculum();await page.goto(origin+'/admin/v2/batches');await button(page,'Create batch').click();
+  await page.getByLabel('Batch name',{exact:true}).fill('Recovery walkthrough');
+  await page.getByLabel('Date',{exact:true}).fill('2026-12-10');
+  await button(page,'Clear date').click();assert.equal(await page.getByLabel('Date',{exact:true}).inputValue(),'');
+  await button(page,'Undo last change').click();assert.equal(await page.getByLabel('Date',{exact:true}).inputValue(),'2026-12-10');
+  await page.getByLabel('Start time (IST)',{exact:true}).fill('20:30');await button(page,'Undo last change').click();assert.equal(await page.getByLabel('Start time (IST)',{exact:true}).inputValue(),'19:00');
+  page.on('dialog',dialog=>dialog.accept());await page.reload();await button(page,'Create batch').click();
+  await page.getByRole('heading',{name:'Continue where you left off'}).waitFor();
+  await page.screenshot({path:path.join(output,'recovery-panel.png'),fullPage:true});
+  await button(page,'Restore edits').click();assert.equal(await page.getByLabel('Batch name',{exact:true}).inputValue(),'Recovery walkthrough');assert.equal(await page.getByLabel('Date',{exact:true}).inputValue(),'2026-12-10');
+  await page.screenshot({path:path.join(output,'schedule-undo.png'),fullPage:true});
+  await page.reload();await button(page,'Create batch').click();await button(page,'Start fresh').click();await button(page,'Keep edits').click();await button(page,'Restore edits').waitFor();
+  await button(page,'Start fresh').click();await button(page,'Discard edits').click();assert.equal(await page.getByLabel('Batch name',{exact:true}).inputValue(),'');assert.equal(await page.getByLabel('Date',{exact:true}).inputValue(),'');
+  await page.reload();await button(page,'Create batch').click();assert.equal(await button(page,'Restore edits').count(),0);assert.equal(state.calls.filter(call=>/saveV2/.test(call.method)).length,0);
+ });
  await test('Adding a class focuses its name and Undo restores removed class details',async page=>{
   seedCurriculum();await page.goto(origin+'/admin/v2/batches');await button(page,'Create batch').click();
   await page.getByLabel('Date',{exact:true}).fill('2026-12-10');await page.getByLabel('Start time (IST)',{exact:true}).fill('20:30');await button(page,'+ Add extra class').click();

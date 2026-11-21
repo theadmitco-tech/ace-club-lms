@@ -41,7 +41,7 @@ export function BatchDatePicker({ id, label, value, onChange, required = false, 
   const selected = validDate(selection)?asDate(selection):undefined;
   const canApply = !!selected && (!onDateTimeChange || /^([01]\d|2[0-3]):[0-5]\d$/.test(selectedTime));
   return <div className={styles.field}>
-    <label htmlFor={id}>{label}</label>
+    <div className={styles.dateLabel}><label htmlFor={id}>{label}</label>{value && <button type="button" className={styles.clearDate} aria-label={`Clear ${label.toLowerCase()}`} onClick={() => {onChange('');document.getElementById(id)?.focus();}}>Clear date</button>}</div>
     <div className={styles.inputRow}>
       <input id={id} type="date" required={required} min="2000-01-01" max="2099-12-31" value={value} onChange={event => onChange(event.target.value)} />
       <button ref={trigger} type="button" aria-label={`Open calendar for ${label}`} aria-haspopup="dialog" aria-expanded={isOpen} onClick={open}><CalendarIcon /></button>

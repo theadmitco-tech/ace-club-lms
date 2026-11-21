@@ -47,6 +47,7 @@ export const sources = [
   'src/app/admin/v2/batches/batchWorkspace.module.css',
   'src/components/AdminDraftNavigation.tsx',
   'src/components/DraftRecovery.tsx',
+  'src/components/DraftRecovery.module.css',
   'src/components/student/WorksheetLog.tsx',
   'src/lib/studentPractice.ts',
   'src/lib/worksheetRecovery.ts',
