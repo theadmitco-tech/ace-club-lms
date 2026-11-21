@@ -5,46 +5,46 @@ import type { V2Publication } from '@/lib/v2Publications';
 import type { BatchRoster } from './BatchWorkspace';
 import styles from './batchWorkspace.module.css';
 
-type Step = { key: string; title: string; status: string; done: boolean; optional?: boolean; action: { label: string; href?: string; onClick?: () => void } };
+type Step = { key: string; label: string; done: boolean; optional?: boolean; next: { title: string; detail: string; action: string; href?: string; onClick?: () => void } };
 
-/** The order follows the approved flow: schedule → private Meet links → publish → enroll → live seats. */
-export default function BatchSetupSteps({ batch, publication, roster, seatLimit, onEditSchedule, onPublish }: {
-  batch: V2BatchDraft; publication?: V2Publication; roster?: BatchRoster; seatLimit: number; onEditSchedule: () => void; onPublish: () => void;
-}) {
+/** Readiness in the approved order: schedule → private Meet links → publish → enroll → live seats. */
+export function batchSteps(batch: V2BatchDraft, publication: V2Publication | undefined, roster: BatchRoster | undefined, seatLimit: number, onEditSchedule: () => void, onPublish: () => void): Step[] {
   const live = batch.events.filter(event => event.kind !== 'outline');
   const dated = live.filter(event => event.startsAt).length;
   const linked = roster?.meetLinks ? live.filter(event => roster.meetLinks!.includes(event.key)).length : null;
   const published = publication?.state === 'published';
   const current = published && publication.batchRevision === batch.revision;
-  const steps: Step[] = [
-    { key: 'schedule', title: 'Schedule live classes', done: live.length > 0 && dated === live.length,
-      status: live.length ? `${dated} of ${live.length} ${live.length === 1 ? 'class' : 'classes'} dated` : 'No live classes yet',
-      action: { label: dated === live.length && live.length ? 'Adjust dates' : 'Set dates', onClick: onEditSchedule } },
-    { key: 'meet', title: 'Add Google Meet links', optional: true, done: linked !== null && live.length > 0 && linked === live.length,
-      status: linked === null ? 'Meeting links unavailable' : `${linked} of ${live.length} ${live.length === 1 ? 'class has' : 'classes have'} a link · visible only to registered students`,
-      action: { label: linked ? 'Edit links' : 'Add links', href: `/admin/v2/batches/${batch.id}/meeting` } },
-    { key: 'publish', title: 'Publish the schedule', done: current,
-      status: current ? 'Published · students with access can see it' : published ? 'Saved changes are not published yet' : 'Private until published',
-      action: { label: current ? 'View publication' : published ? 'Publish changes' : 'Publish now', onClick: onPublish } },
-    { key: 'enroll', title: 'Enroll students', done: !!roster?.enrolled,
-      status: roster?.enrolled == null ? 'Enrollment unavailable' : `${roster.enrolled} enrolled · each needs active ${batch.productCode === 'full_course' ? 'Full Course' : 'course'} access`,
-      action: { label: 'Manage students', href: `/admin/v2/batches/${batch.id}/students` } },
-    { key: 'seats', title: 'Register live attendees', done: !!roster?.liveSeats,
-      status: roster?.liveSeats == null ? 'Live seats unavailable' : roster.liveSeats >= seatLimit ? `Full · ${roster.liveSeats} of ${seatLimit} seats` : `${roster.liveSeats} of ${seatLimit} seats taken · attendance is optional`,
-      action: { label: 'Manage live seats', href: `/admin/v2/batches/${batch.id}/live` } },
+  const access = batch.productCode === 'full_course' ? 'Full Course' : 'course';
+  return [
+    { key: 'schedule', label: 'Schedule', done: live.length > 0 && dated === live.length,
+      next: { title: 'Set the class dates', detail: `${live.length - dated} of ${live.length} live ${live.length === 1 ? 'class needs' : 'classes need'} a date and time.`, action: 'Set dates', onClick: onEditSchedule } },
+    { key: 'meet', label: 'Meet links', optional: true, done: linked !== null && live.length > 0 && linked === live.length,
+      next: { title: 'Add Google Meet links', detail: linked === null ? 'Meeting links could not be loaded.' : `${linked} of ${live.length} ${live.length === 1 ? 'class has' : 'classes have'} a link. Only registered students can see them. You can publish without them and add links later.`, action: 'Add Meet links', href: `/admin/v2/batches/${batch.id}/meeting` } },
+    { key: 'publish', label: 'Publish', done: current,
+      next: { title: published ? 'Publish your changes' : 'Publish the schedule', detail: published ? 'Students still see the previous version until you publish the saved changes.' : 'The schedule stays private until you publish it. You will review everything first.', action: published ? 'Review changes' : 'Publish schedule', onClick: onPublish } },
+    { key: 'enroll', label: 'Students', done: !!roster?.enrolled,
+      next: { title: 'Enroll students', detail: `Add students who have active ${access} access. Enrolled students see this batch’s schedule.`, action: 'Enroll students', href: `/admin/v2/batches/${batch.id}/students` } },
+    { key: 'seats', label: 'Live seats', done: !!roster?.liveSeats,
+      next: { title: 'Register live attendees', detail: `Up to ${seatLimit} students can join the live classes. Attendance is optional; recordings stay available to everyone enrolled.`, action: 'Register attendees', href: `/admin/v2/batches/${batch.id}/live` } },
   ];
+}
+
+export default function BatchSetupSteps({ steps }: { steps: Step[] }) {
   const next = steps.find(step => !step.done && !step.optional) ?? steps.find(step => !step.done);
-  const completed = steps.filter(step => step.done).length;
-  return <section className={styles.setupSteps} aria-labelledby="batch-setup-title">
-    <header><div><h2 id="batch-setup-title">{next ? 'Get this batch ready' : 'This batch is ready'}</h2>
-      <p>{next ? `Next: ${next.title.toLowerCase()}.` : 'Classes are scheduled and published, and students are enrolled.'}</p></div>
-      <span className={styles.stepCount}>{completed} of {steps.length} done</span></header>
-    <ol>{steps.map((step, index) => <li key={step.key} data-state={step.done ? 'done' : step === next ? 'next' : 'todo'} aria-current={step === next ? 'step' : undefined}>
-      <span className={styles.stepMarker} aria-hidden="true">{step.done ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="m5 12 5 5 9-10"/></svg> : index + 1}</span>
-      <div className={styles.stepText}><h3>{step.title}{step.optional && <small> · optional</small>}</h3><p>{step.status}</p></div>
-      {step.action.href ? <Link className={step === next ? 'btn btn-primary' : styles.stepAction} href={step.action.href} prefetch={false}>{step.action.label}</Link>
-        : <button type="button" className={step === next ? 'btn btn-primary' : styles.stepAction} onClick={step.action.onClick}>{step.action.label}</button>}
-      <span className={styles.visuallyHiddenText}>{step.done ? 'Done' : step === next ? 'Next step' : 'To do'}</span>
+  const done = steps.filter(step => step.done).length;
+  return <section className={styles.readiness} aria-labelledby="batch-readiness-title">
+    <div className={styles.readinessHead}>
+      <h2 id="batch-readiness-title">{next ? 'Getting ready' : 'Ready for students'}</h2>
+      <span className={styles.stepCount}>{done} of {steps.length} steps</span>
+    </div>
+    <ol className={styles.stepper}>{steps.map((step, index) => <li key={step.key} data-state={step.done ? 'done' : step === next ? 'next' : 'todo'} aria-current={step === next ? 'step' : undefined}>
+      <span className={styles.stepMarker} aria-hidden="true">{step.done ? <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2"><path d="m5 12 5 5 9-10"/></svg> : index + 1}</span>
+      <span className={styles.stepLabel}>{step.label}{step.optional && <small> (optional)</small>}<span className={styles.visuallyHiddenText}>{step.done ? ', done' : step === next ? ', next step' : ', to do'}</span></span>
     </li>)}</ol>
+    {next ? <div className={styles.nextStep}>
+      <div><p className={styles.nextEyebrow}>Next step</p><h3>{next.next.title}</h3><p>{next.next.detail}</p></div>
+      {next.next.href ? <Link className="btn btn-primary" href={next.next.href} prefetch={false}>{next.next.action}</Link>
+        : <button type="button" className="btn btn-primary" onClick={next.next.onClick}>{next.next.action}</button>}
+    </div> : <p className={styles.readyNote}>Classes are scheduled and published, students are enrolled, and live seats are assigned. Changes to dates or links need another review before students see them.</p>}
   </section>;
 }
