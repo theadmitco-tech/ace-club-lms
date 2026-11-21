@@ -150,7 +150,7 @@ export default function NewLiveBatch({ drafts, ownerId, onSaved }: {
     if (!validCurriculumSources(linkedSources)) {setError('Keep at least one course session in this batch.');return;}
     void persist({ request, startDate, sources:linkedSources });
   }
-  return <section className={styles.setup} aria-label="New live batch setup">
+  return <section className={`${styles.setup} ${styles.setupWide}`} aria-label="New live batch setup">
     {!recovery.recovered && <DraftRecoveryNotice available={!!formRecovery.recovered} unavailable={formRecovery.unavailable} onRestore={() => { if(formRecovery.recovered){setFormChanged(true);setForm(formRecovery.recovered);formRecovery.acknowledge();} }} onDiscard={formRecovery.forget} />}
     <DraftRecoveryNotice available={!!recovery.recovered} unavailable={recovery.unavailable} onRestore={() => { if(recovery.recovered){setPrepared(recovery.recovered);formRecovery.acknowledge();recovery.acknowledge();} }} onDiscard={() => { recovery.forget();formRecovery.forget(); }} />
     {recoveryPending ? null : prepared ? <div className={styles.form} aria-busy={pending}>
@@ -159,6 +159,7 @@ export default function NewLiveBatch({ drafts, ownerId, onSaved }: {
       {!pending && <button type="button" className="btn btn-primary" onClick={() => void persist(prepared)}>Retry saving batch</button>}
     </div> : <form className={`${styles.form} ${styles.creationForm}`} onSubmit={save}>
       <fieldset disabled={recoveryPending || pending} className={styles.setupFields}>
+        <div className={styles.setupAside}>
         <div className={styles.creationSection}><span aria-hidden="true">01</span><div><h2>Batch details</h2><p>Name the group and choose what it will study.</p></div></div>
         <div className={`${styles.fields} ${styles.batchDetails}`}>
           <label>Batch name<input required maxLength={120} value={title} placeholder="e.g. August weekend batch" onChange={event => changeForm({title:event.target.value})} /></label>
@@ -183,8 +184,11 @@ export default function NewLiveBatch({ drafts, ownerId, onSaved }: {
         </div>}
         <p className={styles.undoMessage} role="status">{undoMessage}</p>
         <p className={styles.linkedMaterials}>Every session keeps its readings, recordings and worksheets in this batch, whether or not it has a live class.</p>
+        </div>
+        <div className={styles.setupMain}>
         {!selectedSources.length && <p role="status">No course sessions are available for this subject. <a href="/admin/v2/content">Add them in Course content</a> first.</p>}
-        {classes.map((item,index) => <fieldset className={`${styles.classRow} ${styles.scheduleRow}`} key={item.key}>
+        {classes.length > 0 && <div className={styles.classListHeader} aria-hidden="true"><span>Session</span><span>{liveClasses.length} live · {classes.length - liveClasses.length} no date</span></div>}
+        {classes.map((item,index) => <fieldset className={`${styles.classRow} ${styles.scheduleRow}`} data-off={!isLive(item) || undefined} key={item.key}>
           <legend>Class {index + 1}</legend>
           <span className={styles.classNumber} aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
           <div className={styles.classIdentity}>
@@ -210,6 +214,7 @@ export default function NewLiveBatch({ drafts, ownerId, onSaved }: {
           requestAnimationFrame(() => document.getElementById(`new-class-${item.key}`)?.focus());
         }}>+ Add extra class</button>
         <div className={styles.footer}><p className={styles.help}>Next: review the saved schedule, then publish.</p><button className="btn btn-primary" type="submit" disabled={!selectedSources.length || (subject==='full_course' && selectedSources.length!==3) || !liveClasses.length}>Save batch draft</button></div>
+        </div>
       </fieldset>
     </form>}
     {error && <p role="alert" className="workflow-error">{error}</p>}

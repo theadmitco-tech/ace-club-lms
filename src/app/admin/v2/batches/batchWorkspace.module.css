@@ -236,3 +236,69 @@
 .patternFill .weekdays label { flex-direction: row; padding: 5px 10px; min-height: 0; line-height: 1.2; }
 .patternFill .patternControls > label input { min-width: 150px; }
 .creationForm .scheduleRow label.liveToggle { display: inline-flex; flex-direction: row; align-items: center; gap: 8px; }
+
+/* ── Create-batch layout: full width, calmer surfaces ─────────────────── */
+.setupWide { max-width: none; }
+.setupWide .creationForm { background: transparent; border: 0; padding: 0; box-shadow: none; }
+.setupWide .setupFields { display: grid; gap: 24px; align-items: start; }
+.setupAside, .setupMain { background: #fff; border: 1px solid #e3e9e5; border-radius: 14px; padding: clamp(18px, 2vw, 26px); box-shadow: 0 1px 2px #1f3a2c08, 0 6px 24px #1f3a2c0a; min-width: 0; }
+@media (min-width: 1280px) {
+  .setupWide .setupFields { grid-template-columns: minmax(340px, 400px) minmax(0, 1fr); }
+  .setupAside { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); max-height: calc(100vh - 32px); overflow: auto; }
+  .setupAside .batchDetails { grid-template-columns: 1fr; }
+  .setupAside .scheduleIntro { flex-direction: column; align-items: flex-start; }
+}
+.setupAside .creationSection h2, .setupMain h2 { letter-spacing: -0.01em; }
+.setupAside .patternFill { background: #f6f9f7; border-color: #e3ebe6; }
+.setupAside .patternControls { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.setupAside .patternControls .weekdays { grid-column: 1 / -1; }
+.setupAside .patternControls > button { grid-column: 1 / -1; justify-self: stretch; }
+.setupAside .patternControls > button:not(:disabled) { background: #245d47; border-color: #245d47; color: #fff; }
+.setupAside .patternControls > button:not(:disabled):hover { background: #1d4c3a; }
+.setupAside .patternControls > label input { min-width: 0; width: 100%; }
+.setupAside .linkedMaterials { margin-bottom: 0; }
+
+/* Class list: one quiet list with aligned columns */
+.classListHeader { display: flex; justify-content: space-between; padding: 0 4px 10px; margin-bottom: 4px; border-bottom: 1px solid #edf1ee; font-size: 12px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; color: #6a7a70; }
+.setupWide .creationForm .scheduleRow { grid-template-columns: 32px minmax(180px, 1fr) auto minmax(380px, 1.5fr) 36px; gap: 18px; border: 0; border-bottom: 1px solid #edf1ee; border-radius: 0; padding: 16px 4px; margin: 0; background: transparent; transition: background-color 160ms ease; }
+.setupWide .creationForm .scheduleRow:hover { background: #fafcfb; }
+.setupWide .creationForm .scheduleRow:focus-within { background: #f6faf7; border-color: #edf1ee; }
+.setupWide .creationForm .scheduleRow[data-off] .curriculumTitle { color: #7b8a81; font-weight: 500; }
+.setupWide .creationForm .scheduleRow[data-off] .classNumber { background: #f1f3f2; color: #8a968f; }
+.setupWide .classNumber { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 999px; background: #eaf2ed; color: #2f5f49; font-size: 12px; font-weight: 600; }
+.setupWide .creationForm .scheduleRow .curriculumTitle { font-size: 14.5px; line-height: 1.5; }
+.setupWide .creationForm .scheduleRow .classFields { grid-template-columns: minmax(150px, 1.3fr) minmax(110px, 1fr) minmax(90px, .7fr); column-gap: 12px; row-gap: 4px; align-items: end; }
+/* Every field gets the same label row height so inputs line up */
+.setupWide .creationForm .scheduleRow .classFields > label { display: grid; grid-template-rows: 24px auto; gap: 4px; align-content: end; }
+.setupWide .creationForm .scheduleRow .classFields > div:first-child { display: grid; grid-template-rows: 24px auto; gap: 4px; }
+.setupWide .creationForm .scheduleRow .classFields > div:first-child > :first-child { align-self: end; }
+.setupWide .creationForm .scheduleRow .classFields label, .setupWide .creationForm .scheduleRow .classFields > div:first-child > :first-child { font-size: 12px; color: #5d6d63; }
+.setupWide .creationForm .scheduleRow :is(input, select) { min-height: 40px; }
+.setupWide .creationForm .scheduleRow .classFields [class*="inputRow"] input, .setupWide .creationForm .scheduleRow .classFields [class*="inputRow"] button { min-height: 40px; }
+.setupWide .weekday { grid-column: 1 / 2; padding-left: 2px; color: #2f5f49; font-weight: 500; }
+.setupWide .noDate { font-size: 13px; color: #7b8a81; font-style: italic; }
+.setupWide .creationForm .addClass { margin-top: 16px; }
+
+/* Live class switch (still a native checkbox for keyboard and screen readers) */
+.setupWide .creationForm .scheduleRow label.liveToggle { gap: 10px; font-size: 13px; color: #3d5246; cursor: pointer; user-select: none; }
+.setupWide .creationForm .liveToggle input { appearance: none; -webkit-appearance: none; position: relative; width: 36px; height: 20px; border-radius: 999px; background: #cdd7d1; border: 0; transition: background-color 160ms ease; cursor: pointer; }
+.setupWide .creationForm .liveToggle input::before { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 999px; background: #fff; box-shadow: 0 1px 2px #0003; transition: transform 160ms ease; }
+.setupWide .creationForm .liveToggle input:checked { background: #2f6b52; }
+.setupWide .creationForm .liveToggle input:checked::before { transform: translateX(16px); }
+.setupWide .creationForm .liveToggle input:focus-visible { outline: 2px solid #39765c; outline-offset: 2px; }
+
+@media (max-width: 1500px) {
+  .setupWide .creationForm .scheduleRow { grid-template-columns: 32px minmax(0, 1fr) auto 36px; }
+  .setupWide .creationForm .scheduleRow .classFields, .setupWide .creationForm .scheduleRow .noDate { grid-column: 2 / 4; grid-row: 2; }
+}
+@media (max-width: 640px) {
+  .setupWide .creationForm .scheduleRow { grid-template-columns: 28px minmax(0, 1fr) 36px; }
+  .setupWide .creationForm .scheduleRow .liveToggle { grid-column: 2 / -1; }
+  .setupWide .creationForm .scheduleRow .classFields, .setupWide .creationForm .scheduleRow .noDate { grid-column: 1 / -1; grid-row: auto; }
+  .setupWide .creationForm .scheduleRow .classFields { grid-template-columns: 1fr 1fr; }
+  .setupWide .creationForm .scheduleRow .classFields > div:first-child { grid-column: 1 / -1; }
+  .setupAside .patternControls { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .setupWide .creationForm .liveToggle input, .setupWide .creationForm .liveToggle input::before, .setupWide .creationForm .scheduleRow { transition: none; } }
+.setupWide .creationForm .scheduleRow .liveToggle input[type="checkbox"] { min-height: 0; height: 20px; width: 36px; padding: 0; margin: 0; flex: none; border-radius: 999px; }
+@media (max-width: 1500px) { .setupWide .creationForm .scheduleRow .classFields, .setupWide .creationForm .scheduleRow .noDate { grid-column: 2 / -1; } }
