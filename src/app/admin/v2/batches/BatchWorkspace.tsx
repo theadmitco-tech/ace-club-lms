@@ -168,7 +168,7 @@ export default function BatchWorkspace({ rosters = {}, archives = [], drafts, te
           <div className={styles.classInfo}><h3>{event.title}</h3><span>{V2_TEMPLATE_PRODUCTS[event.section].label}<span aria-hidden="true"> · </span><time dateTime={event.startsAt ?? undefined}>{event.startsAt ? dateLabel(event.startsAt, { hour: 'numeric', minute: '2-digit' }) : 'Time to be set'}</time>{event.durationMinutes ? ` · ${event.durationMinutes} min` : ''}{event.instructor ? ` · ${event.instructor}` : ''}</span></div>
           <ClassStatus batchId={current.id} eventKey={event.key} title={event.title} startsAt={event.startsAt} durationMinutes={event.durationMinutes} published={publication?.state === 'published'} roster={rosters[current.id]} now={now} />
         </li>)}</ol> : <p className={styles.help}>No live classes yet. Use Edit schedule to add them.</p>}
-      </section> : tab === 'edit' ? <BatchDraftEditor key={current.id} focused outlineOpen={outlineOpen} initialSessionKey={initialSessionKey} initialDraft={current} drafts={drafts} templates={templates} ownerId={ownerId} onSaved={saved} /> : <PublicationPanel key={current.id} focused onBack={() => setTab('schedule')} drafts={[current]} publications={publications} ownerId={ownerId} />}
+      </section> : tab === 'edit' ? <BatchDraftEditor key={current.id} focused outlineOpen={outlineOpen} initialSessionKey={initialSessionKey} initialDraft={current} drafts={drafts} templates={templates} ownerId={ownerId} onSaved={saved} /> : <PublicationPanel key={current.id} focused onBack={() => setTab('schedule')} drafts={[current]} publications={publications} ownerId={ownerId} meetLinks={rosters[current.id]?.meetLinks ?? null} enrolled={rosters[current.id]?.enrolled ?? null} />}
     </>}
   </div>;
 }

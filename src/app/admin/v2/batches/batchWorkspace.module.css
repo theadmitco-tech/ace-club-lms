@@ -432,3 +432,22 @@
 .setupWide > .creationForm { max-width: 1100px; }
 .setupWide .editForm .setupFields { grid-template-columns: minmax(0, 1fr); }
 .setupWide .creationForm .editRow .classIdentity { max-width: 640px; }
+
+/* ── Review & publish ──────────────────────────────────────────────────── */
+.publishPanel { max-width: 920px; }
+.publishFacts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin: 4px 0 18px; }
+.publishFacts > div { border: 1px solid #e3e9e5; border-radius: 10px; padding: 12px 14px; background: #fafcfb; }
+.publishFacts dt { font-size: 11.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #56665d; margin-bottom: 4px; }
+.publishFacts dd { margin: 0; font-size: 18px; font-weight: 650; color: #1f3a2d; }
+.publishFacts dd span { font-size: 12.5px; font-weight: 500; color: #56665d; }
+.publishTimeline { list-style: none; margin: 0 0 14px; padding: 0; border-top: 1px solid #eef2ef; }
+.publishTimeline li { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px solid #eef2ef; }
+.publishTimeline li > div:last-child { display: grid; gap: 2px; min-width: 0; }
+.publishTimeline li > div:last-child strong { font-size: 14.5px; color: #1f3a2d; }
+.publishTimeline li > div:last-child span { font-size: 13px; color: #56665d; }
+.publishWhen { display: grid; justify-items: center; gap: 1px; padding: 6px 4px; border-radius: 8px; background: #f4f7f5; }
+.publishWhen strong { font-size: 13.5px; color: #1f3a2d; }
+.publishWhen span { font-size: 11.5px; color: #56665d; }
+.publishWarn { margin: 14px 0 0; padding: 12px 14px; border-radius: 10px; background: #fbf3e2; border: 1px solid #f0dfb8; color: #6b4610; font-size: 13.5px; line-height: 1.55; }
+.publishWarn a { color: #6b4610; font-weight: 600; }
+.textLink { align-self: center; color: #245d47; font-size: 14px; font-weight: 600; text-underline-offset: 3px; }
