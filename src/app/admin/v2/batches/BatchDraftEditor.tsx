@@ -185,7 +185,7 @@ export default function BatchDraftEditor({ courseMode = false, drafts, templates
     <form className={batchStyles.form} onSubmit={saveFocused} aria-busy={!!pending}>
       <h2>Edit course draft</h2><p className={batchStyles.help}>Update the sessions and reading pages here. Students see the changes only after publication.</p>
       <fieldset disabled={!!pending || !!review || !!recovery.recovered} className={batchStyles.setupFields}>
-        <CourseSessionsEditor initialSessionKey={initialSessionKey} sessions={input.sessions ?? []} sections={V2_TEMPLATE_PRODUCTS[productCode].sections} onChange={sessions=>change({...input,sessions})}/>
+        <CourseSessionsEditor compact initialSessionKey={initialSessionKey} sessions={input.sessions ?? []} sections={V2_TEMPLATE_PRODUCTS[productCode].sections} onChange={sessions=>change({...input,sessions})}/>
       </fieldset>
       <div className={batchStyles.footer}><span>{dirty ? 'Unsaved changes' : 'Saved draft'}</span><button type="submit" className="btn btn-primary" disabled={!!pending || !!recovery.recovered || (!dirty && !review)}>{pending ? 'Saving…' : review ? 'Retry saving changes' : 'Save course draft'}</button></div>
       {error && <p role="alert">{error}</p>}
@@ -228,7 +228,7 @@ export default function BatchDraftEditor({ courseMode = false, drafts, templates
               change({...input,events:[...(input.events??[]),{key,kind:'live',title:'',section,localDate:'',localStartTime:'19:00',durationMinutes:60,instructor:'',capacity:8}]});
               requestAnimationFrame(()=>document.getElementById(`${key}-name`)?.focus());
             }}>+ Add class</button>
-            <details className={batchStyles.sessionsDisclosure} open={outlineOpen || undefined}><summary>Course sessions in this batch</summary><p className={batchStyles.help}>Readings, recordings and worksheets for this batch. They don’t need dates.</p><CourseSessionsEditor initialSessionKey={initialSessionKey} sessions={input.sessions ?? []} sections={V2_TEMPLATE_PRODUCTS[productCode].sections} onChange={sessions=>change({...input,sessions})} /></details>
+            <details className={batchStyles.sessionsDisclosure} open={outlineOpen || undefined}><summary>Course sessions in this batch</summary><p className={batchStyles.help}>Readings, recordings and worksheets for this batch. They don’t need dates.</p><CourseSessionsEditor compact initialSessionKey={initialSessionKey} sessions={input.sessions ?? []} sections={V2_TEMPLATE_PRODUCTS[productCode].sections} onChange={sessions=>change({...input,sessions})} /></details>
             <div className={batchStyles.footer}><p className={batchStyles.help} role="status">{message || (dirty ? 'Unsaved changes' : 'No unsaved changes')}</p><button type="submit" className="btn btn-primary" disabled={!!pending || !!recovery.recovered || (!dirty && !review)}>{pending ? 'Saving…' : review ? 'Retry saving changes' : 'Save changes'}</button></div>
             {review && !pending && <p className={batchStyles.help}>The last save wasn’t confirmed. Retry it, or <button type="button" className={batchStyles.inlineLink} onClick={()=>{if(window.confirm('Reload the latest saved batch? Unsaved edits stay available for recovery.'))window.location.reload();}}>reload the saved batch</button>.</p>}
             {error && <p role="alert" className="workflow-error">{error}</p>}
