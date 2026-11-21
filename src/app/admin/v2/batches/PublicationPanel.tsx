@@ -11,6 +11,7 @@ import type { V2BatchDraft } from '@/lib/v2Batches';
 import type { V2Publication, V2PublicationInput, V2PublicationProposal } from '@/lib/v2Publications';
 import { V2_TEMPLATE_PRODUCTS, v2CourseDeliveryLabel } from '@/lib/v2Templates';
 import { previewBatchPublicationAction, saveBatchPublicationAction } from './actions';
+import { courseReadmePosition } from '@/lib/v2CourseReadmes';
 import styles from '../templates/templates.module.css';
 import batchStyles from './batchWorkspace.module.css';
 
@@ -108,36 +109,43 @@ export default function PublicationPanel({ drafts, publications, ownerId, focuse
           {!courseMode && completionBatchId && enrolled === 0 && <a className="btn btn-secondary" href={`/admin/v2/batches/${completionBatchId}/students`}>Enroll students</a>}
           {completionBatchId && <a className={batchStyles.textLink} href={`/admin/v2/batches/${completionBatchId}/live`}>Set up class completion</a>}
         </div>
-      </> : review && document ? <>
-        <p className={batchStyles.publishHelp}>{unpublish ? 'Students will no longer see this batch’s schedule or content. Enrollments, purchases and history are kept, and you can publish it again later.'
-          : courseMode ? 'Check the sessions and reading pages below. Publishing updates this course for students with access.'
-          : published?.state === 'published' ? 'Students currently see the previous version. Publishing replaces it with the saved changes below.'
-          : `Enrolled students with active ${audience} access will see this schedule once you publish.`}</p>
-        {!unpublish && !courseMode && <dl className={batchStyles.publishFacts}>
-          <div><dt>Live classes</dt><dd>{liveClasses.length}<span> · All times IST</span></dd></div>
-          <div><dt>Course sessions</dt><dd>{sessions.length}<span> · no dates needed</span></dd></div>
-          <div><dt>Meet links</dt><dd>{linked === null ? '—' : `${linked} of ${liveClasses.length}`}<span>{linked !== null && linked < liveClasses.length ? ' · can be added later' : ''}</span></dd></div>
-        </dl>}
-        {!unpublish && <>
-          {!!liveClasses.length && <ol className={batchStyles.publishTimeline}>{liveClasses.map(event => { const start = when(event.startsAt); return <li key={event.key}>
-            <div className={batchStyles.publishWhen}>{start ? <><strong>{start.day}</strong><span>{start.weekday}</span></> : <span>No date</span>}</div>
-            <div><strong>{event.title}</strong><span>{V2_TEMPLATE_PRODUCTS[event.section].label}{start ? ` · ${start.time}` : ''}{event.endsAt && start ? `–${when(event.endsAt)!.time}` : ''}</span></div>
-          </li>; })}</ol>}
-          {reviewedDraft && courseMode && <section aria-label="Course changes to publish" className={batchStyles.courseReviewList}>
-            {(reviewedDraft.sessions ?? []).map(session => <details key={session.key}>
-              <summary><strong>{session.title}</strong><span>{Object.values(session.content).reduce((total,items)=>total+items.length,0)} resources</span></summary>
-              <CourseSessionsPreview sessions={[session]}/>
-            </details>)}
-          </section>}
-          {reviewedDraft && !courseMode && sessions.length > 0 && <details className={batchStyles.publishDetails}><summary>Included course content · {sessions.length} {sessions.length === 1 ? 'session' : 'sessions'}</summary><CourseSessionsPreview sessions={reviewedDraft.sessions ?? []} /></details>}
-          {!!liveClasses.length && missingSession && <p className={batchStyles.publishWarn} role="note">A live class has no course session in its subject, so its feedback can’t be linked yet. <a href={`/admin/v2/batches?batch=${review.input.batchId}&outline=1`}>Add a course session</a>. You can still publish.</p>}
-        </>}
-        {!reviewedDraft && <p role="alert" className="workflow-error">The saved batch changed. Cancel this review and review it again.</p>}
-        <div className={batchStyles.footer}>
-          <button type="button" className="btn btn-secondary" disabled={pending} onClick={cancel}>Cancel review</button>
-          <button type="button" className="btn btn-primary" disabled={pending || !reviewedDraft} onClick={confirm}>{pending ? 'Saving…' : unpublish ? courseMode ? 'Hide course' : 'Unpublish batch' : courseMode ? 'Publish course changes' : 'Publish batch'}</button>
+      </> : review && document ? <div className={batchStyles.publishLayout}>
+        <div className={batchStyles.publishMain}>
+          {!unpublish && !courseMode && <dl className={batchStyles.publishFacts}>
+            <div><dt>Live classes</dt><dd>{liveClasses.length}<span> · All times IST</span></dd></div>
+            <div><dt>Course sessions</dt><dd>{sessions.length}<span> · no dates needed</span></dd></div>
+            <div><dt>Meet links</dt><dd>{linked === null ? '—' : `${linked} of ${liveClasses.length}`}<span>{linked !== null && linked < liveClasses.length ? ' · can be added later' : ''}</span></dd></div>
+          </dl>}
+          {unpublish && <p className={batchStyles.publishHelp}>Students will no longer see this batch’s schedule or content. Enrollments, purchases and history are kept, and you can publish it again later.</p>}
+          {!unpublish && <>
+            {!!liveClasses.length && <section aria-labelledby="publish-classes"><h3 id="publish-classes" className={batchStyles.publishSection}>Live classes</h3>
+              <ol className={batchStyles.publishTimeline}>{liveClasses.map(event => { const start = when(event.startsAt); return <li key={event.key}>
+                <div className={batchStyles.publishWhen}>{start ? <><strong>{start.day}</strong><span>{start.weekday}</span></> : <span>No date</span>}</div>
+                <div><strong>{event.title}</strong><span>{V2_TEMPLATE_PRODUCTS[event.section].label}{start ? ` · ${start.time}` : ''}{event.endsAt && start ? `–${when(event.endsAt)!.time}` : ''}</span></div>
+              </li>; })}</ol></section>}
+            {reviewedDraft && (courseMode ? (reviewedDraft.sessions ?? []) : sessions).length > 0 && <section aria-label={courseMode ? 'Course changes to publish' : 'Included course content'}>
+              <h3 className={batchStyles.publishSection}>Course content <span>{(courseMode ? (reviewedDraft.sessions ?? []) : sessions).length} sessions · open one to preview it as a student</span></h3>
+              <ul className={batchStyles.contentList}>{(courseMode ? (reviewedDraft.sessions ?? []) : sessions).map(session => <li key={session.key}><details>
+                <summary><strong>{session.title || 'Untitled session'}</strong>
+                  <span className={batchStyles.contentMeta}>{session.section !== 'programme' && V2_TEMPLATE_PRODUCTS[session.section]?.label}</span>
+                  <span className={batchStyles.contentCounts}>{(courseReadmePosition(session.key) ? [['preSessionReads','Reading']] as const : [['preSessionReads','Pre-read'],['recordings','Recording'],['postSessionReads','Post-read'],['materials','Worksheet']] as const).map(([kind,label]) => <span key={kind} data-empty={!session.content[kind].length || undefined}>{label} {session.content[kind].length}</span>)}</span>
+                </summary>
+                <div className={batchStyles.contentPreview}><CourseSessionsPreview sessions={[session]} /></div>
+              </details></li>)}</ul>
+            </section>}
+          </>}
         </div>
-      </> : <>
+        <aside className={batchStyles.publishAside} aria-label="Confirm publication">
+          <p className={batchStyles.publishHelp}>{unpublish ? 'This hides the batch from students.'
+            : courseMode ? 'Publishing updates this course for students with access.'
+            : published?.state === 'published' ? 'Students currently see the previous version. Publishing replaces it with these saved changes.'
+            : `Enrolled students with active ${audience} access will see this schedule once you publish.`}</p>
+          {!unpublish && !!liveClasses.length && missingSession && <p className={batchStyles.publishWarn} role="note">A live class has no course session in its subject, so its feedback can’t be linked yet. <a href={`/admin/v2/batches?batch=${review.input.batchId}&outline=1`}>Add a course session</a>. You can still publish.</p>}
+          {!reviewedDraft && <p role="alert" className="workflow-error">The saved batch changed. Cancel this review and review it again.</p>}
+          <button type="button" className="btn btn-primary" disabled={pending || !reviewedDraft} onClick={confirm}>{pending ? 'Saving…' : unpublish ? courseMode ? 'Hide course' : 'Unpublish batch' : courseMode ? 'Publish course changes' : 'Publish batch'}</button>
+          <button type="button" className="btn btn-secondary" disabled={pending} onClick={cancel}>Cancel review</button>
+        </aside>
+      </div> : <>
         <p className={batchStyles.publishHelp}>{unchanged ? courseMode ? 'Students see the latest saved course content.' : 'Students see the latest saved version. When something changes, edit the schedule and publish again.' : courseMode ? 'Review the saved course changes, then publish when ready.' : 'The saved batch is private until published. Review it once, then publish when ready.'}</p>
         {selected ? <div className={batchStyles.actions}>
           {!unchanged && <button type="button" className="btn btn-primary" disabled={pending || !!recovery.recovered} onClick={() => preview(selected, 'publish')}>{pending ? 'Loading review…' : courseMode ? 'Review course changes' : 'Review batch'}</button>}
