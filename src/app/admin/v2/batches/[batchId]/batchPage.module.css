@@ -96,3 +96,12 @@
 .panel :is(.secondaryAction, .quietAction) { font-size: 13px; line-height: 1.2; min-height: 34px; }
 .panel .quietAction { padding: 6px 10px; }
 .studentMain span[data-tone="warn"] { color: #8a5a12; }
+.meetFields { border: 0; padding: 0; margin: 0; min-width: 0; }
+.meetInput { width: 100%; max-width: 460px; min-height: 40px; border: 1px solid #d5ded8; border-radius: 8px; padding: 8px 12px; font: inherit; font-size: 14px; color: #293f36; background: #fff; }
+.meetInput:focus-visible { outline: 2px solid #39765c; outline-offset: 2px; }
+.meetInput[aria-invalid="true"] { border-color: #b4472f; }
+.fieldError { margin: 0; font-size: 12.5px; color: #9a3a24; }
+.classMain label { display: block; }
+.linkButton { background: none; border: 0; padding: 6px 0; margin-top: 6px; font: inherit; font-size: 13.5px; font-weight: 600; color: #245d47; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.saveBar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #eef2ef; }
+.page form > .panel { max-width: 860px; }

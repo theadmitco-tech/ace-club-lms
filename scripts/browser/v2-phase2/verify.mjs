@@ -637,7 +637,7 @@ async function runTests() {
     await visible(button(page, 'Confirm publish'));
     await button(page, 'Cancel review').click();
     await page.getByRole('link', { name: 'Private meeting drafts for Synthetic batch' }).click();
-    await text(page, 'Private meeting drafts');
+    await page.getByRole('heading', { name: 'Meet links', exact: true }).waitFor();
   });
   await test('Publication stale and interrupted responses keep the confirmation safe', async (page) => {
     await page.goto(`${origin}/admin/v2/batches`);
@@ -664,23 +664,22 @@ async function runTests() {
     const input = page.getByRole('textbox');
     assert.equal(await input.count(), 1);
     await input.fill('https://example.test/unapproved');
-    await button(page, 'Review meeting changes').click();
+    await button(page, 'Save links').click();
     await until(async () => assert.ok((await page.locator('form [role="alert"]').textContent()).length > 0));
-    assert.equal(await button(page, 'Confirm and save private draft').count(), 0);
+    assert.equal(state.calls.filter((c) => c.method === 'saveV2MeetingDraft').length, 0);
     await input.fill('https://meet.google.com/abc-defg-hij');
-    await button(page, 'Review meeting changes').click();
-    state.faults.saveV2MeetingDraft = { error: 'Synthetic stale meeting. Reload the latest draft.' };
-    await button(page, 'Confirm and save private draft').click();
+        state.faults.saveV2MeetingDraft = { error: 'Synthetic stale meeting. Reload the latest draft.' };
+    await button(page, 'Save links').click();
     await text(page, 'Synthetic stale meeting.');
     state.faults.saveV2MeetingDraft = { interruptAfterSave: true };
-    await button(page, 'Confirm and save private draft').click();
+    await button(page, 'Save links').click();
     await text(page, 'Save confirmation was interrupted.');
-    await button(page, 'Confirm and save private draft').click();
+    await button(page, 'Save links').click();
     await text(page, 'Previous save recovered.');
     const calls = state.calls.filter((c) => c.method === 'saveV2MeetingDraft');
     assert.deepEqual(calls[0].args, calls[2].args);
-    await button(page, 'Reload current draft').click();
-    await until(async () => assert.equal(await input.inputValue(), 'https://meet.google.com/abc-defg-hij'));
+    await page.reload();
+    await until(async () => assert.equal(await page.getByRole('textbox').inputValue(), 'https://meet.google.com/abc-defg-hij'));
     await screenshot(page, 'meeting-desktop');
   });
   await test('Unsaved navigation cancellation, reload and sign-out', async (page) => {
@@ -737,14 +736,13 @@ async function runTests() {
   await test('Meeting recovery preserves private links and interrupted request across reload', async (page) => {
     await page.goto(`${origin}/admin/v2/batches/${id(10)}/meeting`);
     await page.getByRole('textbox').fill('https://meet.google.com/abc-defg-hij');
-    await button(page, 'Review meeting changes').click();
-    state.faults.saveV2MeetingDraft = { interruptAfterSave: true };
-    await button(page, 'Confirm and save private draft').click();
+        state.faults.saveV2MeetingDraft = { interruptAfterSave: true };
+    await button(page, 'Save links').click();
     await text(page, 'Save confirmation was interrupted.');
     await dialog(page, () => page.reload(), true);
     await button(page, 'Restore edits').click();
     assert.equal(await page.getByRole('textbox').inputValue(), 'https://meet.google.com/abc-defg-hij');
-    await button(page, 'Confirm and save private draft').click();
+    await button(page, 'Save links').click();
     await text(page, 'Previous save recovered.');
     const calls = state.calls.filter(c => c.method === 'saveV2MeetingDraft');
     assert.deepEqual(calls[0].args, calls[1].args);
@@ -912,7 +910,7 @@ async function runTests() {
     assert.equal(await page.getByRole('textbox').isDisabled(), true);
     await button(page, 'Restore edits').click();
     assert.equal(await page.getByRole('textbox').isDisabled(), false);
-    await dialog(page, () => button(page, 'Return to batch drafts').click(), true);
+    await dialog(page, () => page.getByRole('link', { name: '← Back to batch', exact: true }).click(), true);
     await button(page, 'Preview publication').click();
     await dialog(page, () => page.reload(), true);
     await visible(button(page, 'Restore edits'));
