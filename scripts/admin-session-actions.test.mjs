@@ -38,9 +38,10 @@ test('Unpublished, absent and Full Course records cannot be edited through subje
     { publications: { status: 'ready', publications: [{ ...published, state: 'unpublished' }] } },
   ]) assert.equal((await fixture(config).load(batchId)).status, 'error');
 });
-test('An unpublished newer draft requires explicit review instead of silent inclusion', async () => {
-  const f = fixture({ drafts: { status: 'ready', drafts: [{ ...draft, revision: 4 }] } });
-  assert.equal((await f.load(batchId)).status, 'pending');
+test('A newer saved draft is returned so several sessions can be prepared before publication', async () => {
+  const newer = { ...draft, revision: 4, sessions: [{ key: 'draft-session', title: 'Draft session', section: 'quant' }] };
+  const result = await fixture({ drafts: { status: 'ready', drafts: [newer] } }).load(batchId);
+  assert.equal(result.status, 'ready'); assert.equal(result.draft, newer);
 });
 test('Matching publication returns the complete existing draft unchanged', async () => {
   const result = await fixture().load(batchId); assert.equal(result.status, 'ready'); assert.equal(result.draft, draft);

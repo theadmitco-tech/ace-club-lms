@@ -33,7 +33,7 @@ function editorCourses() {
     ...['quant','verbal','di'].map((productCode,n)=>({batchId:n===0?batchId:id(10+n),title:`Synthetic ${productCode}`,productCode,publicationRevision:1,sessions:sourceSessions.filter(s=>s.section===productCode),anchors:sourceSessions.filter(s=>s.section===productCode).map(s=>({...s,title:state.editorItems.find(i=>i.visible&&i.document.kind==='heading'&&i.document.targets.some(t=>t.batchId===(n===0?batchId:id(10+n))&&t.sessionKey===s.key))?.document.title??s.title}))}))];
 }
 function initial() {
-  return { obligations: [], progress: [], lastSessionKey: null, liveRegistered: false, liveEvents: [], calls: [], submissions: [], interruptOnce: false, rejectProgress: false, noRecording: false, externalRecording: false, feedbackAlreadyComplete: false, extraSessions: [], placements: [], preview: false, placedItems: [], editorItems: [], editorCalls: [], failSave:false, conflictConfirm:false, sessionCalls:[], pendingSession:false, failSessionSave:false, staleSessionList:false };
+  return { obligations: [], progress: [], lastSessionKey: null, liveRegistered: false, liveEvents: [], calls: [], submissions: [], interruptOnce: false, rejectProgress: false, noRecording: false, externalRecording: false, feedbackAlreadyComplete: false, extraSessions: [], placements: [], preview: false, placedItems: [], editorItems: [], editorCalls: [], failSave:false, conflictConfirm:false, sessionCalls:[], pendingSession:false, failSessionSave:false, staleSessionList:false, courseDrafts:{} };
 }
 let state = initial();
 function view() {
@@ -51,7 +51,7 @@ function obligation(key = quant4, source = 'recording', count = 1) {
     section: sourceSessions.find(s => s.key === key).section, source, eventKey: source === 'live' ? id(900 + count) : null, createdAt: '2026-11-02T10:00:00Z' };
 }
 const backend = createServer((request, response) => {
-  if(request.url==='/workspace'){response.writeHead(200,{'Content-Type':'application/json'}).end(JSON.stringify({items:state.editorItems,courses:editorCourses()}));return;}
+  if(request.url==='/workspace'){response.writeHead(200,{'Content-Type':'application/json'}).end(JSON.stringify({items:state.editorItems,courses:editorCourses(),drafts:state.courseDrafts}));return;}
   if (request.url !== '/state') { response.writeHead(404).end(); return; }
   response.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); response.end(JSON.stringify(view()));
 });
@@ -89,7 +89,7 @@ await put('src/app/layout.tsx', `import './globals.css'; export default function
 await put('src/app/page.tsx', `import {V2LearningWorkspace} from '@/components/student/V2LearningWorkspace';
 export const dynamic='force-dynamic';
 export default async function Page(){const data=await(await fetch('http://127.0.0.1:${backend.address().port}/state',{cache:'no-store'})).json();return <main style={{maxWidth:1200,margin:'auto',padding:20}}><h1>Synthetic Full Course</h1><V2LearningWorkspace {...data}/></main>}`);
-await put('src/app/admin/v2/content/page.tsx',`import ContentEditor from '@/app/admin/v2/content/ContentEditor'; import AdminShell from '@/app/admin/AdminShell'; export const dynamic='force-dynamic'; export default async function Page(){const data=await(await fetch('http://127.0.0.1:${backend.address().port}/workspace',{cache:'no-store'})).json();return <AdminShell workflowEnabled><ContentEditor initial={data}/></AdminShell>}`);
+await put('src/app/admin/v2/content/page.tsx',`import ContentEditor from '@/app/admin/v2/content/ContentEditor'; import AdminShell from '@/app/admin/AdminShell'; export const dynamic='force-dynamic'; export default async function Page(){const data=await(await fetch('http://127.0.0.1:${backend.address().port}/workspace',{cache:'no-store'})).json();return <AdminShell workflowEnabled><ContentEditor initial={data} drafts={data.drafts}/></AdminShell>}`);
 const reservation = createServer(); await new Promise(resolve => reservation.listen(0, '127.0.0.1', resolve));
 const port = reservation.address().port; await new Promise(resolve => reservation.close(resolve));
 const origin = `http://127.0.0.1:${port}`, next = path.join(repo, 'node_modules/next/dist/bin/next');
@@ -409,6 +409,20 @@ async function runTests() {
  await test('Adding a session keeps existing content and retries the same private draft',async page=>{
   state.failSessionSave=true;await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'+ Add session',exact:true}).click();await page.getByLabel('New session name',{exact:true}).fill('Quant follow-up');await page.getByRole('button',{name:'Add session',exact:true}).click();await page.getByRole('alert').filter({hasText:/interruption|course scope changed|course changed/}).waitFor();await page.getByRole('button',{name:'Retry saving session',exact:true}).click();await page.getByRole('heading',{name:'Session draft saved',exact:true}).waitFor();const saves=state.sessionCalls.filter(c=>c.action==='save');assert.equal(saves.length,2);assert.deepEqual(saves[0],saves[1]);assert.deepEqual(saves[0].input.sessions.slice(0,2),sourceSessions.filter(s=>s.section==='quant'));assert.deepEqual(saves[0].input.events,[existingEvent]);assert.equal(saves[0].input.sessions[2].section,'quant');assert.equal(saves[0].input.sessions[2].title,'Quant follow-up');assert.equal(state.editorCalls.length,0);assert.equal(await page.getByRole('link',{name:'Review & publish session',exact:true}).getAttribute('href'),'/admin/v2/content/course/'+batchId);await page.screenshot({path:path.join(output,'add-session-mobile.png'),fullPage:true});await noOverflow(page);
  },true);
+ await test('Saved draft sessions appear in the outline and unpublished changes are flagged',async page=>{
+  const draftKey=id(4321),published=sourceSessions.filter(s=>s.section==='quant');
+  state.courseDrafts={[batchId]:{revision:4,unpublished:true,sessions:[...published,{key:draftKey,title:'Draft ratios',section:'quant',content:{materials:[{key:id(4322),title:'Ratios worksheet',url:'https://example.com/ratios.pdf'}],recordings:[],preSessionReads:[],postSessionReads:[]}}]}};
+  await page.goto(origin+'/admin/v2/content');
+  await page.getByRole('status').filter({hasText:'This course has unpublished changes'}).waitFor();
+  assert.equal(await page.getByRole('link',{name:'Review course changes',exact:true}).count(),0);
+  await page.getByRole('button',{name:'Open Draft ratios · Draft',exact:true}).click();
+  const panel=page.getByRole('region',{name:'Draft session: Draft ratios',exact:true});
+  await panel.getByText('Draft · not yet published',{exact:true}).waitFor();await panel.getByText('Ratios worksheet',{exact:true}).waitFor();
+  assert.equal(await panel.getByRole('link',{name:'Edit session & resources',exact:true}).getAttribute('href'),`/admin/v2/content/course/${batchId}?edit=1&session=${draftKey}`);
+  await page.getByRole('button',{name:`Open ${published[0].title}`,exact:true}).click();
+  await page.getByRole('region',{name:'Draft session: Draft ratios',exact:true}).waitFor({state:'detached'});
+  assert.equal(state.sessionCalls.length,0);
+ });
  await test('Existing course drafts must be reviewed before another session is added',async page=>{
   state.pendingSession=true;await page.goto(origin+'/admin/v2/content');await page.getByRole('button',{name:'+ Add session',exact:true}).click();await page.getByLabel('New session name',{exact:true}).fill('Another session');await page.getByRole('button',{name:'Add session',exact:true}).click();await page.getByRole('link',{name:'Review saved draft changes',exact:true}).waitFor();assert.deepEqual(state.sessionCalls.map(c=>c.action),['load']);
  });

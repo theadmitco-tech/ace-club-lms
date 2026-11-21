@@ -2,7 +2,7 @@
 import { courseReadmePosition } from '@/lib/v2CourseReadmes';
 import { useId, useRef, useState } from 'react';
 import { Button, Menu, MenuItem, MenuTrigger, Popover } from 'react-aria-components';
-import { CONTENT_PLACEMENTS, validContentDocument, type ContentDocument, type ContentItem, type ContentScope, type ContentWorkspace } from '@/lib/v2ContentPublishing';
+import { CONTENT_PLACEMENTS, validContentDocument, type ContentDocument, type ContentItem, type ContentScope, type ContentWorkspace, type CourseDraftSessions } from '@/lib/v2ContentPublishing';
 import { isV2ContentUrl, V2_SESSION_CONTENT_LABELS } from '@/lib/v2Templates';
 import { useAdminDraftGuard } from '@/components/AdminDraftNavigation';
 import { createClient } from '@/utils/supabase/client';
@@ -16,7 +16,7 @@ async function operation(action:string,input:Record<string,unknown>) {
   const response=await fetch('/api/admin/v2/content',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,input})});
   const value=await response.json();if(!response.ok)throw new RequestError(value.error||'The action could not be confirmed.',response.status);return value;
 }
-export default function ContentEditor({initial,initialItemId}:{initial:ContentWorkspace;initialItemId?:string}) {
+export default function ContentEditor({initial,initialItemId,drafts={}}:{initial:ContentWorkspace;initialItemId?:string;drafts?:CourseDraftSessions}) {
   const initialItem=initial.items.find(item=>item.id===initialItemId&&!item.deleted)??null;
   const [workspace,setWorkspace]=useState(initial),[selected,setSelected]=useState<ContentItem|null>(initialItem),[document,setDocument]=useState<ContentDocument>(()=>initialItem?structuredClone(initialItem.document):empty());
   const [location,setLocation]=useState({courseId:'',sessionId:'',subject:'quant'});
@@ -64,7 +64,7 @@ export default function ContentEditor({initial,initialItemId}:{initial:ContentWo
     <header className={styles.heading}><h1 ref={heading} tabIndex={-1}>{title}</h1><p>{screen==='browse'?'Readings, recordings and worksheets, organised by subject.':'Draft changes stay private until publication is confirmed.'}</p></header>
     {error&&<div role="alert" className={styles.error}><h2>{conflict?'A newer version needs review':'The action could not be completed'}</h2><p id={errorId}>{error}</p>{!conflict&&<p>Entered values remain available. The issue above needs attention before retrying.</p>}</div>}
     {message&&<p role="status" className={styles.notice}>{message}</p>}
-    {screen==='browse'&&<CourseResourceBrowser workspace={workspace} busy={busy} location={location} onLocation={setLocation} onUpdated={setWorkspace} onChoose={choose} onResource={manageOriginal} onAdd={(batch,session,kind)=>manageOriginal(batch,session,kind,null,true)}/>}
+    {screen==='browse'&&<CourseResourceBrowser workspace={workspace} drafts={drafts} busy={busy} location={location} onLocation={setLocation} onUpdated={setWorkspace} onChoose={choose} onResource={manageOriginal} onAdd={(batch,session,kind)=>manageOriginal(batch,session,kind,null,true)}/>}
     {screen==='edit'&&<><button className={styles.textButton} disabled={busy} onClick={()=>{if(canLeave()){setDirty(false);go('browse');}}}>← Course content</button>
       {conflict&&<section className={styles.card}><h2>Review the latest saved version</h2><p>Another administrator or browser tab changed this resource after it was opened. The entered edits remain below. Loading the latest version prevents one update from overwriting another.</p><button disabled={busy} onClick={()=>void run(async()=>setLatest(await operation('workspace',{}) as ContentWorkspace))}>Load latest version</button>
         {latest&&<><p>Latest saved title: <strong>{latest.items.find(item=>item.id===selected?.id)?.document.title??'New resource'}</strong></p><p>Latest saved source: {latest.items.find(item=>item.id===selected?.id)?.document.url??'No resource source'}</p><p>Continuing keeps the entered edits and updates the comparison version. Saving creates a new draft; publication still requires review.</p><button disabled={busy||!!latest.items.find(item=>item.id===selected?.id)?.deleted} onClick={()=>{const current=latest.items.find(item=>item.id===selected?.id)??null;setWorkspace(latest);setSelected(current);setDocument({...document,targets:document.targets.map(target=>({...target,publicationRevision:latest.courses.find(course=>course.batchId===target.batchId)?.publicationRevision??target.publicationRevision}))});setConflict(false);setLatest(null);setDirty(true);pending.current=null;setError('');setInvalidField(null);}}>Keep edits against this version</button><button disabled={busy} onClick={()=>{const current=latest.items.find(item=>item.id===selected?.id);if(dirty&&!window.confirm('Discard the entered edits and load the saved version?'))return;setWorkspace(latest);setSelected(current&&!current.deleted?current:null);setDocument(current&&!current.deleted?current.document:empty());setConflict(false);setLatest(null);setDirty(false);pending.current=null;setError('');setInvalidField(null);}}>Discard edits and load saved version</button></>}

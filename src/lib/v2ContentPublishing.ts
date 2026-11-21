@@ -11,6 +11,8 @@ export type ContentDocument = { title: string; kind: V2SessionContentKind | 'hea
 export type ContentItem = { id: string; draft_revision: number; published_revision: number | null; visible: boolean; deleted: boolean; publication_version: number; document: ContentDocument };
 export type ContentCourse = { batchId: string; title: string; productCode: string; publicationRevision: number; sessions: V2CourseSession[]; anchors: V2CourseSession[] };
 export type ContentWorkspace = { items: ContentItem[]; courses: ContentCourse[] };
+/** Latest saved course draft per published course, keyed by batch ID; `unpublished` marks saved changes students don't see yet. */
+export type CourseDraftSessions = Record<string, { revision: number; sessions: V2CourseSession[]; unpublished: boolean }>;
 export type ContentPlacementView = { key: string; sessionKey: string; placement: ContentPlacement; anchorKey: string | null; order: number };
 export type ContentScope = { id: string; revision: number; action: 'publish' | 'unpublish' | 'delete'; fingerprint: string; targets: (ContentTarget & { courseTitle: string | null; sessionTitle: string | null })[] };
 const object = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);

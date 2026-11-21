@@ -30,13 +30,13 @@ export default function SessionDraftResources({ content, onChange, invalidField,
           onChange={event => change(kind, item.key, 'title', event.target.value)} /></label>
         <label htmlFor={`${item.key}-url`}>Resource link<input id={`${item.key}-url`} required inputMode="url" maxLength={2048} value={item.url}
           aria-invalid={invalidField === `${item.key}-url` || undefined} aria-describedby={invalidField === `${item.key}-url` ? errorId : undefined}
-          onChange={event => change(kind, item.key, 'url', event.target.value)} /></label>
-        <button type="button" onClick={() => {
+          placeholder="https://…" onChange={event => change(kind, item.key, 'url', event.target.value)} /></label>
+        <button type="button" className={styles.remove} title="Remove" aria-label={`Remove ${title.toLowerCase()} ${index + 1}`} onClick={() => {
           onChange({ ...content, [kind]: content[kind].filter(resource => resource.key !== item.key) });
           requestAnimationFrame(() => document.getElementById(`add-session-${kind}`)?.focus());
-        }}>Remove {title.toLowerCase()} {index + 1}</button>
+        }}>✕</button>
       </fieldset>)}
-      <button type="button" id={`add-session-${kind}`} disabled={content[kind].length >= 50} onClick={() => add(kind)}>Add {title.toLowerCase()}</button>
+      <button type="button" id={`add-session-${kind}`} className={styles.addItem} aria-label={`Add ${title.toLowerCase()}`} disabled={content[kind].length >= 50} onClick={() => add(kind)}>+ Add {title.toLowerCase()}</button>
     </details>)}
   </section>;
 }
