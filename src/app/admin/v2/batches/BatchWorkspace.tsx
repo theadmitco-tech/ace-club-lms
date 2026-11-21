@@ -157,7 +157,7 @@ export default function BatchWorkspace({ rosters = {}, archives = [], drafts, te
         <button type="button" aria-current={tab === 'publish' ? 'page' : undefined} onClick={() => task('publish')}>Review &amp; publish</button>
         <span className={styles.tabDivider} aria-hidden="true" />
         <Link href={`/admin/v2/batches/${current.id}/students`}>Students</Link>
-        {!!classes.length && <><Link href={`/admin/v2/batches/${current.id}/meeting`}>Meeting links</Link><Link href={`/admin/v2/batches/${current.id}/live`}>Class completion</Link></>}
+        {!!classes.length && <><Link href={`/admin/v2/batches/${current.id}/meeting`}>Meeting links</Link><Link href={`/admin/v2/batches/${current.id}/live`}>Live seats &amp; completion</Link></>}
       </nav>
       {tab === 'schedule' && <OverviewTiles classes={classes} roster={rosters[current.id]} now={now} />}
       {tab === 'schedule' && <BatchSetupSteps steps={batchSteps(current, publication, rosters[current.id], LIVE_SEAT_LIMIT, () => task('edit'), () => task('publish'))} />}

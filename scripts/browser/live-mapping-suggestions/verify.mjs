@@ -15,7 +15,7 @@ const put = async (file, contents) => {
   await writeFile(path.join(root, file), contents);
 };
 const component = 'src/app/admin/v2/batches/[batchId]/live/LiveSessionMappings.tsx';
-for (const file of [component, 'src/lib/v2LiveMappingSuggestions.ts', 'src/app/admin/v2/templates/templates.module.css']) {
+for (const file of [component, 'src/lib/v2LiveMappingSuggestions.ts', 'src/app/admin/v2/templates/templates.module.css', 'src/app/admin/v2/batches/[batchId]/live/live.module.css']) {
   await put(file, await readFile(path.join(repo, file)));
 }
 await put('src/app/globals.css', (await readFile(path.join(repo, 'src/app/globals.css'), 'utf8')).replace(/^@import url\(.*\);\r?\n/gm, ''));

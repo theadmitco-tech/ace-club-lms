@@ -177,7 +177,7 @@ try{
   await page.getByRole('heading',{name:'Live classes',exact:true,level:2}).waitFor();await page.getByText('Synthetic live lesson',{exact:true}).waitFor();
   assert.equal(await page.getByLabel('Date',{exact:true}).count(),0);
   const management=page.getByRole('navigation',{name:'Manage this batch',exact:true});
-  for(const [name,suffix] of [['Students','students'],['Meeting links','meeting'],['Class completion','live']])assert.ok((await management.getByRole('link',{name,exact:true}).getAttribute('href')).endsWith('/'+suffix));
+  for(const [name,suffix] of [['Students','students'],['Meeting links','meeting'],['Live seats & completion','live']])assert.ok((await management.getByRole('link',{name,exact:true}).getAttribute('href')).endsWith('/'+suffix));
   await page.addScriptTag({path:path.join(repo,'node_modules/axe-core/axe.min.js')});
   const violations=await page.evaluate(async()=>{const r=await window.axe.run(document.querySelector('main'),{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}});return r.violations.map(v=>v.id);});assert.deepEqual(violations,[]);
   await page.screenshot({path:path.join(output,'batch-overview-desktop.png'),fullPage:true});

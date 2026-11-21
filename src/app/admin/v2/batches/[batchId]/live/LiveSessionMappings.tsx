@@ -1,17 +1,23 @@
 'use client';
-import { useRef, useState } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import type { V2Publication } from '@/lib/v2Publications';
 import { suggestV2LiveMappings, type V2LiveMapping } from '@/lib/v2LiveMappingSuggestions';
 import { setLiveMappingAction } from './actions';
-import styles from '../../../templates/templates.module.css';
+import styles from './live.module.css';
 
-type Props = { publication: V2Publication; mappings: V2LiveMapping[]; completedEventKeys?: string[] };
+/** `renderAction` lets the operations panel place completion controls in each class row. */
+type Props = { publication: V2Publication; mappings: V2LiveMapping[]; completedEventKeys?: string[]; heading?: string; intro?: string;
+  renderAction?: (eventKey: string, linked: boolean) => ReactNode };
+const when = (startsAt: string | null) => startsAt ? {
+  day: new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short' }).format(new Date(startsAt)),
+  detail: new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'short', hour: 'numeric', minute: '2-digit' }).format(new Date(startsAt)),
+} : null;
 export default function LiveSessionMappings(props: Props) {
   return <MappingEditor key={`${props.publication.batchId}:${props.publication.revision}:${props.publication.state}`} {...props} />;
 }
 
-function MappingEditor({ publication, mappings, completedEventKeys }: Props) {
+function MappingEditor({ publication, mappings, completedEventKeys, heading = 'Link live classes to course sessions', intro, renderAction }: Props) {
   const router = useRouter();
   const [choices, setChoices] = useState<Record<string, string>>({});
   const [confirmed, setConfirmed] = useState<Record<string, string>>({});
@@ -54,32 +60,44 @@ function MappingEditor({ publication, mappings, completedEventKeys }: Props) {
     } finally { saving.current = false; setBusy(false); }
   }
 
-  return <section className={styles.card} aria-busy={busy}>
-    <h2>Link live classes to course sessions</h2>
-    <p>Review the suggested feedback session for each class, then confirm the links. Suggestions use a previous link or a unique matching title in the same subject. Confirming a link does not mark a class complete.</p>
-    {!available && <p role="alert">{publication.state !== 'published' ? 'Publish the batch before confirming feedback links.' : 'Class completion status could not be loaded. Reload before confirming feedback links.'}</p>}
-    {message && <p role="status">{message}</p>}
-    {!!proposed.length && <div className="workflow-actions"><button className="btn btn-primary" type="button" disabled={busy || !available} onClick={() => save(proposed)}>{busy ? 'Confirming links…' : 'Confirm suggested links'}</button><span>{proposed.length} {proposed.length === 1 ? 'suggestion' : 'suggestions'} awaiting confirmation</span></div>}
-    <ul className={styles.list}>{rows.map(row => {
+  return <section className={styles.panel} aria-busy={busy} aria-labelledby="live-classes-heading">
+    <div className={styles.panelHead}><h2 id="live-classes-heading">{heading}</h2></div>
+    <p className={styles.panelIntro}>{intro ?? 'Review the suggested feedback session for each class, then confirm the links. Suggestions use a previous link or a unique matching title in the same subject. Confirming a link does not mark a class complete.'}</p>
+    {!available && <p role="alert" className={styles.alert}>{publication.state !== 'published' ? 'Publish the batch before confirming feedback links.' : 'Class completion status could not be loaded. Reload before confirming feedback links.'}</p>}
+    {message && <p role="status" className={styles.notice}>{message}</p>}
+    {!!proposed.length && <div className={styles.bulkBar}><span>{proposed.length} {proposed.length === 1 ? 'suggestion' : 'suggestions'} awaiting confirmation</span><button className="btn btn-primary" type="button" disabled={busy || !available} onClick={() => save(proposed)}>{busy ? 'Confirming links…' : 'Confirm suggested links'}</button></div>}
+    <ul className={styles.classList}>{rows.map(row => {
       const { event, suggestion, saved, value, completed, sessions } = row;
-      if (completed) return <li className={styles.event} key={event.key}><strong>{event.title}</strong><p>Class completed. Its confirmed feedback link cannot be changed.</p></li>;
-      if (!sessions.length) return <li className={styles.event} key={event.key}>
-        <strong>{event.title}</strong>
-        <p>No published course session is available in this class’s subject. Add a session, save and publish the batch, then return here to confirm its feedback session.</p>
-        <a className="btn btn-secondary" href={`/admin/v2/batches?batch=${publication.batchId}&outline=1`}>Add a course session</a>
+      const date = when(event.startsAt);
+      const head = <div className={styles.classWhen} aria-hidden={!date || undefined}>{date ? <><strong>{date.day}</strong><span>{date.detail}</span></> : <span>No date</span>}</div>;
+      const action = renderAction?.(event.key, !!saved);
+      if (completed) return <li className={styles.classRow} data-state="done" key={event.key}>{head}
+        <div className={styles.classMain}><strong>{event.title}</strong><p className={styles.muted}>Class completed. Its confirmed feedback link cannot be changed.</p></div>
+        <div className={styles.classAction}>{action}</div></li>;
+      if (!sessions.length) return <li className={styles.classRow} key={event.key}>{head}
+        <div className={styles.classMain}><strong>{event.title}</strong>
+          <p className={styles.muted}>No published course session is available in this class’s subject. Add a session, save and publish the batch, then return here to confirm its feedback session.</p></div>
+        <div className={styles.classAction}><a className={styles.secondaryAction} href={`/admin/v2/batches?batch=${publication.batchId}&outline=1`}>Add a course session</a></div>
       </li>;
       const hint = saved ? 'Link confirmed for this publication.' : value === suggestion.sessionKey && suggestion.source === 'previous'
         ? 'Previously confirmed for this batch. Review and confirm again for this publication.' : value === suggestion.sessionKey && suggestion.source === 'title'
           ? 'Suggested from a unique matching title. Review before confirming.' : 'Choose the session that should receive feedback for this class.';
-      return <li className={styles.event} key={event.key}>
-        <label htmlFor={`mapping-${event.key}`}>{event.title}</label>
-        <select className="form-input" id={`mapping-${event.key}`} value={value} disabled={busy || !available} aria-describedby={`mapping-help-${event.key}${errors[event.key] ? ` mapping-error-${event.key}` : ''}`} onChange={event => {
-          setChoices(current => ({ ...current, [row.event.key]: event.target.value }));
-          setErrors(current => ({ ...current, [row.event.key]: '' }));
-        }}><option value="">Choose the corresponding session</option>{sessions.map(session => <option key={session.key} value={session.key}>{session.title}</option>)}</select>
-        <p id={`mapping-help-${event.key}`}>{saved && value !== saved ? 'A different session is selected. Confirm to replace the saved link.' : hint}</p>
-        <button className="btn btn-secondary" type="button" disabled={busy || !available || !value || value === saved} onClick={() => save([row])}>Confirm session mapping</button>
-        {errors[event.key] && <p id={`mapping-error-${event.key}`} role="alert" className="workflow-error">{errors[event.key]}</p>}
+      const changed = !!value && value !== saved;
+      return <li className={styles.classRow} data-state={saved && !changed ? 'linked' : 'unlinked'} key={event.key}>{head}
+        <div className={styles.classMain}>
+          <strong>{event.title}</strong>
+          <div className={styles.mappingField}>
+            <span className={styles.fieldLabel} aria-hidden="true">Feedback session</span>
+            <select id={`mapping-${event.key}`} aria-label={event.title} value={value} disabled={busy || !available} aria-describedby={`mapping-help-${event.key}${errors[event.key] ? ` mapping-error-${event.key}` : ''}`} onChange={event => {
+              setChoices(current => ({ ...current, [row.event.key]: event.target.value }));
+              setErrors(current => ({ ...current, [row.event.key]: '' }));
+            }}><option value="">Choose the corresponding session</option>{sessions.map(session => <option key={session.key} value={session.key}>{session.title}</option>)}</select>
+            {changed && <button className={styles.secondaryAction} type="button" disabled={busy || !available} onClick={() => save([row])}>Confirm session mapping</button>}
+          </div>
+          <p id={`mapping-help-${event.key}`} className={styles.muted}>{saved && value !== saved ? 'A different session is selected. Confirm to replace the saved link.' : hint}</p>
+          {errors[event.key] && <p id={`mapping-error-${event.key}`} role="alert" className="workflow-error">{errors[event.key]}</p>}
+        </div>
+        <div className={styles.classAction}>{action}</div>
       </li>;
     })}</ul>
   </section>;

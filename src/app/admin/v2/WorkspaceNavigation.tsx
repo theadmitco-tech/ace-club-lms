@@ -19,7 +19,7 @@ export default function WorkspaceNavigation({ contentEnabled = false }: { conten
     const sections = [['/admin/v2/content', 'Course content'], ['/admin/v2/batches', 'Batches'], ['/admin/v2/students', 'Students']] as const;
     const section = sections.find(([href]) => pathname.startsWith(href + '/'));
     if (!section) return null;
-    const page = pathname.endsWith('/students') ? 'Students' : pathname.endsWith('/meeting') ? 'Meeting links' : pathname.endsWith('/live') ? 'Class completion'
+    const page = pathname.endsWith('/students') ? 'Students' : pathname.endsWith('/meeting') ? 'Meeting links' : pathname.endsWith('/live') ? 'Live classes'
       : pathname.includes('/preview/') ? 'Student preview' : pathname.includes('/course/') ? 'Course review' : section[0] === '/admin/v2/students' ? 'Student' : section[1];
     return <nav className={styles.navigation} aria-label="Breadcrumb"><AdminDraftLink href={section[0]} prefetch={false}>{section[1]}</AdminDraftLink><span aria-hidden="true">/</span><span aria-current="page">{page}</span></nav>;
   }
