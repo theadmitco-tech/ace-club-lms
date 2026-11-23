@@ -65,3 +65,4 @@
 .badgeInactive { background: #f0ece4; color: #655844; }
 @media (max-width: 900px) { .fullCourse { flex-wrap: wrap; }.accessGrid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media (max-width: 650px) { .tiers,.accessGrid { grid-template-columns: minmax(0,1fr); }.tier { min-height: 0; gap: 12px; }.selectionFooter { align-items: stretch; flex-direction: column; }.fullCourse { align-items: flex-start; flex-direction: column; gap: 18px; } }
+.historyLine { margin: 4px 0 0; font-size: 14px; color: #4d6157; font-variant-numeric: tabular-nums; }

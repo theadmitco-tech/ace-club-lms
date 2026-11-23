@@ -19,6 +19,10 @@ export function courseMoney(paise: number): string {
 export function courseDate(value: string): string {
   return new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' }).format(new Date(value)) + ' IST';
 }
+/** Date only (IST), for places where the time of day adds nothing. */
+export function courseDay(value: string): string {
+  return new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeZone: 'Asia/Kolkata' }).format(new Date(value));
+}
 export function courseNames(codes: V2ProductCode[]): string { return codes.map(v2ProductDisplayName).join(' + '); }
 export type PurchaseState = 'Active' | 'Expired' | 'Revoked' | 'Not started' | 'Account inactive';
 export function purchaseState(purchase: { confirmed_at: string; expires_at: string; revoked_at: string | null; accountActive: boolean }, now: number): PurchaseState {
