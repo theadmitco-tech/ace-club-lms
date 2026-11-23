@@ -11,6 +11,7 @@ import { StudentHeader } from '@/components/student/StudentHeader';
 import { getMyDisplayName } from '@/lib/server/studentProfile';
 import { V2CourseSessionView } from '@/components/student/V2CourseSessionView';
 import '../../../dashboard/dashboard.css';
+import styles from '@/components/student/v2Learning.module.css';
 
 export default async function PublishedCoursePage({params,searchParams}:{params:Promise<{batchId:string}>;searchParams:Promise<{view?:string}>}) {
   if (!isV2StudentScheduleEnabled()) notFound();
@@ -27,9 +28,9 @@ export default async function PublishedCoursePage({params,searchParams}:{params:
     outline.key === session.key && outline.section === session.section && !outline.locked)) } : course;
   return <div className="student-page"><StudentHeader studentName={studentName} />
     <main className="student-main"><div className="student-container">
-      <Link className="student-button" href="/schedule/v2">← My learning</Link>
-      <header className="student-intro"><div><h1>{course.title}</h1>
-        <p>Recordings, readings and worksheets. Choose sessions in any order.</p></div></header>
+      <Link className={styles.backLink} href="/schedule/v2">← My learning</Link>
+      <header className={styles.courseHeader}><h1>{course.title}</h1>
+        <p>Readings, recordings and worksheets for each session. Take them in any order. All times IST.</p></header>
       {learningEnabled ? learning && placements && learning.publicationRevision === course.publicationRevision ? <V2LearningWorkspace placements={placements} course={filteredCourse} learning={learning} initialView={view === 'live' ? 'live' : 'recordings'} /> : <section className="student-state student-state-error" role="alert"><h2>Learning status could not be verified</h2><p>Reload the course to check feedback and resource access before continuing.</p><Link className="student-button" href={`/schedule/v2/${batchId}`}>Retry</Link></section> : course.sessions.length ? course.sessions.map((session) => <V2CourseSessionView key={session.key} session={session} mode="student" batchId={batchId} readingEndpoint={`/api/v2/course-reading?batchId=${batchId}`} />)
         : <section className="student-state"><h2>No sessions published yet</h2><p>Course materials appear after the programme team publishes them.</p></section>}
     </div></main></div>;

@@ -150,8 +150,9 @@ async function runTests() {
     state.liveRegistered=true;await page.reload();await page.getByText('Live seat',{exact:true}).waitFor();assert.equal(await page.getByRole('link',{name:'Live classes',exact:true}).getAttribute('href'),`/schedule/v2/${batchId}?view=live`);assert.equal(state.calls.length,0);
   });
   await test('Subjects and collapsible outline leave a full-width reading area',async page=>{
-    await page.goto(origin);const outline=page.getByRole('complementary',{name:'Course outline'});assert.equal(await outline.getByRole('button').count(),2);const content=page.getByRole('region',{name:'Selected session'});const a=await outline.boundingBox(),b=await content.boundingBox();assert.ok(Math.abs(a.x-b.x)<2);assert.ok(b.width>900);
-    await outline.locator('summary').click();assert.equal(await page.getByRole('button',{name:'Open Quant 5',exact:true}).count(),0);await page.getByRole('article',{name:'Session content: Quant 4'}).waitFor();assert.equal(state.calls.length,0);await page.screenshot({path:path.join(output,'student-session.png'),fullPage:true});
+    await page.goto(origin);const outline=page.getByRole('complementary',{name:'Course outline'});assert.equal(await outline.getByRole('button').count(),2);const content=page.getByRole('region',{name:'Selected session'});const a=await outline.boundingBox(),b=await content.boundingBox();assert.ok(b.x>=a.x+a.width);assert.ok(b.width>700);
+    await page.screenshot({path:path.join(output,'student-course-sidebar.png'),fullPage:false});
+    await outline.locator('summary').click();assert.equal(await page.getByRole('button',{name:'Open Quant 5',exact:true}).count(),0);await until(async()=>assert.ok((await content.boundingBox()).width>900));await page.getByRole('article',{name:'Session content: Quant 4'}).waitFor();assert.equal(state.calls.length,0);await page.screenshot({path:path.join(output,'student-session.png'),fullPage:true});
   });
   await test('Quant 4 first and pre-read opening create only visual progress', async page => {
     await page.goto(origin); await page.getByRole('button', { name: 'Open Quant 4', exact: true }).click();
@@ -160,7 +161,7 @@ async function runTests() {
     assert.equal(state.obligations.length, 0); assert.equal(state.submissions.length, 0);
     assert.ok(state.calls.every(c => c.action === 'progress'));
     assert.equal(await page.getByRole('button', { name: 'Open Quant 5', exact: true }).isEnabled(), true);
-    await page.getByRole('heading', { name: 'Pick up where you left off' }).waitFor();
+    await page.getByRole('button', { name: 'Open Quant 4', exact: true }).getByText('Last opened', { exact: true }).waitFor();
     await noOverflow(page);
   });
   await test('Quant feedback greys other Quant while current resources and other subjects remain available', async page => {
@@ -264,7 +265,7 @@ async function runTests() {
     assert.equal(await page.getByRole('button',{name:'Open Quant 5',exact:true}).isEnabled(),true);
   });
   await test('Focus mode and larger text preserve keyboard navigation on a narrow screen', async page => {
-    await page.goto(origin); await page.getByText('Reading options',{exact:true}).click(); const focus = page.getByRole('button', { name: 'Focus mode', exact: true });
+    await page.goto(origin); const focus = page.getByRole('button', { name: 'Focus mode', exact: true });
     await focus.focus(); await page.keyboard.press('Enter'); await page.getByRole('button', { name: 'Exit focus', exact: true }).waitFor();
     await page.keyboard.press('Escape'); await focus.waitFor();
     await page.getByRole('button', { name: 'Larger text', exact: true }).click();
