@@ -1,1 +1,44 @@
-.main{max-width:980px;margin:0 auto;padding:40px 24px 72px;color:#253d34}.main h1{font-size:clamp(2rem,5vw,2.8rem);margin:12px 0}.main p{line-height:1.6}.main a{color:#215c49}.eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.12em;margin-top:30px}.panel{background:#fff;border:1px solid #d6dfd3;border-radius:14px;padding:26px;margin-top:24px}.panel h2{margin-top:0}.panel fieldset{border:0;padding:0;margin:24px 0}.panel legend{font-weight:600;line-height:1.5}.subjects{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}.subjects label{display:flex;gap:10px;align-items:center;padding:14px;border:1px solid #d6dfd3;border-radius:8px}.subjects input{width:18px;height:18px;accent-color:#215c49}.panel button{border:0;border-radius:8px;background:#215c49;color:white;padding:14px 20px;font-weight:600;cursor:pointer}.panel button:focus-visible,.main a:focus-visible,.subjects input:focus-visible{outline:3px solid #bd831b;outline-offset:4px}.panel dl>div{display:flex;justify-content:space-between;gap:20px;padding:12px 0}.panel dd{margin:0;white-space:nowrap;font-weight:600}.total{border-top:1px solid #d6dfd3;font-size:1.3rem}.panel [role=alert]{color:#8b4026}@media(max-width:560px){.main{padding:24px 16px 48px}.panel{padding:20px}.panel dl>div{flex-direction:column;gap:5px}.subjects{flex-direction:column}}
+.main { max-width: 720px; margin: 0 auto; padding: 32px 24px 72px; color: #293f36; }
+.main h1 { margin: 14px 0 0; font-size: clamp(26px, 3vw, 32px); letter-spacing: -.02em; color: #1f3a2d; }
+.lead { margin: 6px 0 24px; font-size: 15px; color: #4d6157; }
+.back { font-size: 14px; font-weight: 600; color: #245d47; text-decoration: none; }
+.back:hover { text-decoration: underline; }
+.muted { color: #56665d; font-size: 13.5px; }
+
+.panel { display: grid; gap: 14px; margin-bottom: 16px; padding: 22px 24px; border: 1px solid #e0e7e2; border-radius: 16px; background: #fff; box-shadow: 0 1px 2px #1f3a2c08; }
+.panel h2 { margin: 0; font-size: 18px; color: #1f3a2d; }
+.panel p { margin: 0; line-height: 1.55; }
+.panel [role="alert"] { color: #8a3423; }
+
+.current { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; padding: 12px 14px; border-radius: 10px; background: #f3f7f4; font-size: 14.5px; color: #4d6157; }
+.current strong { color: #1f3a2d; font-size: 15.5px; }
+
+.panel form { display: grid; gap: 16px; justify-items: start; }
+.panel fieldset { margin: 0; padding: 0; border: 0; width: 100%; }
+.panel legend { margin-bottom: 10px; font-weight: 700; font-size: 15px; color: #1f3a2d; }
+.subjects { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.subjects label { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; min-height: 52px; padding: 12px 14px; border: 1.5px solid #d6e0d9; border-radius: 12px; font-weight: 600; color: #1f3a2d; cursor: pointer; }
+.subjects label:has(input:checked:not(:disabled)) { border-color: #245d47; background: #eef5f0; }
+.subjects label[data-owned] { border-style: dashed; background: #f7f9f8; color: #56665d; cursor: default; }
+.subjects label small { flex-basis: 100%; padding-left: 28px; font-size: 12px; font-weight: 500; color: #56665d; }
+.subjects input { width: 18px; height: 18px; margin: 0; accent-color: #245d47; }
+.subjects label:has(input:focus-visible) { outline: 3px solid #2f6b52; outline-offset: 2px; }
+
+.panel button { min-height: 44px; padding: 10px 20px; border: 0; border-radius: 10px; background: #245d47; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+.panel button:hover { background: #1d4c3a; }
+.panel button:focus-visible, .back:focus-visible, .secondary:focus-visible { outline: 3px solid #2f6b52; outline-offset: 2px; }
+a.secondary { justify-self: start; display: inline-flex; align-items: center; min-height: 44px; padding: 10px 18px; border: 1px solid #cfdcd4; border-radius: 10px; background: #fff; color: #245d47; font-weight: 600; text-decoration: none; }
+
+.target { font-weight: 600; color: #1f3a2d; }
+.panel dl { margin: 0; }
+.panel dl > div { display: flex; justify-content: space-between; gap: 20px; padding: 9px 0; font-size: 15px; color: #4d6157; }
+.panel dd { margin: 0; white-space: nowrap; font-weight: 600; color: #1f3a2d; font-variant-numeric: tabular-nums; }
+.total { border-top: 1px solid #e0e7e2; margin-top: 4px; padding-top: 12px !important; font-size: 18px !important; }
+.total dt { color: #1f3a2d; font-weight: 700; }
+.total dd { color: #245d47; }
+
+@media (max-width: 560px) {
+  .main { padding: 24px 16px 48px; }
+  .panel { padding: 18px; }
+  .subjects { grid-template-columns: minmax(0, 1fr); }
+}

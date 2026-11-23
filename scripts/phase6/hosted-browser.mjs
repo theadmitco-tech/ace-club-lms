@@ -23,7 +23,7 @@ try{
  if(!continuation){
  await publicPage.goto(candidate.preview+'/qa/phase1',{waitUntil:'networkidle'});
  await publicPage.getByRole('button',{name:'Run read-only staging checks',exact:true}).click();await publicPage.locator('pre').waitFor();const diagnostic=JSON.parse(await publicPage.locator('pre').innerText());record('exact-preview-staging-and-commit',diagnostic.stagingProject===PROJECT&&diagnostic.commit===candidate.commit&&diagnostic.checks.find(c=>c.id==='environment')?.status==='pass');
- await publicPage.goto(candidate.preview+'/courses/v2',{waitUntil:'networkidle'});record('public-course-options-render',await publicPage.getByRole('heading',{name:'A complete curriculum. A package that fits you.',exact:true}).count()===1);
+ await publicPage.goto(candidate.preview+'/courses/v2',{waitUntil:'networkidle'});record('public-course-options-render',await publicPage.getByRole('heading',{name:'Explore courses',exact:true}).count()===1);
  }
  const contexts={};
  for(const user of state.users){

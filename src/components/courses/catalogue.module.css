@@ -1,0 +1,77 @@
+.page { min-height: 100vh; background: #f6f7f3; color: #24352f; font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; }
+.header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px max(16px, calc((100% - 1180px) / 2)); background: #ffffffeb; backdrop-filter: blur(8px); border-bottom: 1px solid #e3e9e5; }
+.header nav { display: flex; gap: 4px; flex-wrap: wrap; }
+.header nav a { padding: 9px 12px; border-radius: 8px; color: #3d5246; font-size: 14.5px; font-weight: 500; text-decoration: none; }
+.header nav a:hover { background: #f1f6f3; color: #1f3f31; }
+.brand { display: flex; align-items: center; width: 96px; height: 56px; overflow: hidden; flex-shrink: 0; }
+.logo { width: 90px; height: 90px; margin-block: -8px; transform: scale(1.3); }
+
+.main { max-width: 1040px; margin: 0 auto; padding: 40px 28px 72px; }
+.intro { max-width: 680px; margin-bottom: 20px; }
+.intro h1 { margin: 0; font-size: clamp(28px, 3.4vw, 36px); letter-spacing: -.025em; color: #1f3a2d; }
+.intro p { margin: 8px 0 0; font-size: 16px; color: #4d6157; }
+.notice { margin: 0 0 24px; padding: 10px 14px; border-radius: 10px; background: #eef4ef; color: #3d5246; font-size: 14px; }
+.notice strong { margin-right: 6px; color: #245d47; }
+.muted { margin: 0; color: #56665d; font-size: 14px; }
+
+.options { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; align-items: stretch; }
+.option { display: flex; flex-direction: column; gap: 14px; padding: 24px; border: 1px solid #e0e7e2; border-radius: 16px; background: #fff; box-shadow: 0 1px 2px #1f3a2c08, 0 6px 24px #1f3a2c0a; }
+.option[data-featured] { border-color: #cfe2d6; background: linear-gradient(180deg, #f5faf7, #fff 60%); }
+.option h2 { margin: 0; font-size: 21px; letter-spacing: -.015em; color: #1f3a2d; }
+.option > p { margin: -6px 0 0; font-size: 14.5px; color: #4d6157; }
+.pickForm { display: flex; flex-direction: column; gap: 14px; flex: 1; }
+
+.subjects { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; border: 0; }
+.subjects label { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 12px 14px; border: 1.5px solid #d6e0d9; border-radius: 12px; background: #fff; font-weight: 600; color: #1f3a2d; cursor: pointer; }
+.subjects label:hover { border-color: #9fbcab; }
+.subjects label:has(input:checked) { border-color: #245d47; background: #eef5f0; }
+.subjects input { width: 18px; height: 18px; margin: 0; accent-color: #245d47; }
+.subjects label:has(input:focus-visible) { outline: 3px solid #2f6b52; outline-offset: 2px; }
+
+.tierList { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.tierList li { display: flex; justify-content: space-between; gap: 12px; padding: 7px 12px; border-radius: 8px; font-size: 14px; color: #56665d; font-variant-numeric: tabular-nums; }
+.tierList li strong { font-weight: 600; color: #3d5246; }
+.tierList li[data-active] { background: #eef5f0; color: #1f3a2d; }
+.tierList li[data-active] strong { color: #245d47; }
+
+.points { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; align-content: start; flex: 1; }
+.points li { position: relative; padding-left: 24px; font-size: 14.5px; color: #3d5246; }
+.points li::before { content: "✓"; position: absolute; left: 0; color: #2f6b52; font-weight: 700; }
+
+.pickFooter { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: auto; padding-top: 14px; border-top: 1px solid #eef2ef; font-size: 15px; color: #3d5246; }
+.pickFooter strong { font-size: 20px; color: #1f3a2d; font-variant-numeric: tabular-nums; }
+.price { font-size: 24px; font-weight: 700; letter-spacing: -.02em; color: #1f3a2d; font-variant-numeric: tabular-nums; }
+
+a.primary, button.primary, a.secondary { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 20px; border-radius: 10px; font: inherit; font-size: 15px; font-weight: 600; text-decoration: none; cursor: pointer; }
+a.primary, button.primary { border: 0; background: #245d47; color: #fff; }
+a.primary:hover, button.primary:hover { background: #1d4c3a; color: #fff; }
+button.primary:disabled { background: #e4eae6; color: #6b7a71; cursor: not-allowed; }
+a.secondary { border: 1px solid #cfdcd4; background: #fff; color: #245d47; }
+a.primary:focus-visible, button.primary:focus-visible, a.secondary:focus-visible, .header a:focus-visible, .batches summary:focus-visible { outline: 3px solid #2f6b52; outline-offset: 2px; }
+
+.panel { display: grid; gap: 12px; justify-items: start; margin-top: 20px; padding: 22px 24px; border: 1px solid #e0e7e2; border-radius: 16px; background: #fff; }
+.panel h2 { margin: 0; font-size: 18px; color: #1f3a2d; }
+.panel p { margin: 0; color: #4d6157; }
+.panel [role="alert"] { color: #8a3423; }
+.quoteLine { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 20px; width: 100%; font-size: 17px; }
+
+.batches { display: grid; gap: 12px; justify-items: start; margin-top: 36px; }
+.batches h2 { margin: 0; font-size: 21px; color: #1f3a2d; }
+.batches > p { margin: -4px 0 0; color: #4d6157; }
+.batches > ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; width: 100%; }
+.batches > ul > li { display: grid; gap: 4px; padding: 16px 20px; border: 1px solid #e0e7e2; border-radius: 14px; background: #fff; }
+.batchHead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.batchHead h3 { margin: 0; font-size: 16.5px; color: #1f3a2d; }
+.subject { font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #2f6b52; }
+.batches > ul > li > p { margin: 0; font-size: 14px; color: #4d6157; }
+.batches summary { cursor: pointer; font-size: 14px; font-weight: 600; color: #245d47; }
+.batches details ol, .batches details ul { margin: 8px 0 0; padding-left: 20px; font-size: 14px; color: #3d5246; }
+
+.visuallyHidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (max-width: 640px) {
+  .main { padding: 28px 16px 56px; }
+  .option { padding: 20px; }
+  .subjects { grid-template-columns: minmax(0, 1fr); }
+  .header nav a { padding: 8px; font-size: 14px; }
+}
