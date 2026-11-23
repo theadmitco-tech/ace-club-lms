@@ -1,0 +1,49 @@
+.home { display: grid; gap: 28px; max-width: 1040px; margin: 0 auto; color: #293f36; }
+.intro h1 { margin: 0; font-size: clamp(26px, 3vw, 32px); letter-spacing: -0.02em; color: #1f3a2d; }
+.intro p { margin: 6px 0 0; font-size: 15px; color: #4d6157; }
+.intro .hello { margin: 0 0 2px; font-size: 15px; font-weight: 600; color: #2f6b52; }
+.sectionTitle { margin: 0 0 12px; font-size: 13px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #56665d; }
+.alert { margin: 0; padding: 12px 14px; border-radius: 10px; background: #fdf1ee; color: #8a3423; font-size: 14px; }
+
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.steps li { display: grid; gap: 6px; align-content: start; padding: 18px; border: 1px solid #e3e9e5; border-radius: 14px; background: #fff; box-shadow: 0 1px 2px #1f3a2c08; }
+.steps li[data-kind="feedback"] { border-color: #f0dfb8; background: #fffaf0; }
+.steps li[data-kind="live"] { border-color: #cfe2d6; background: #f5faf7; }
+.stepLabel { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #2f6b52; }
+.steps li[data-kind="feedback"] .stepLabel { color: #8a5a12; }
+.steps strong { font-size: 16px; line-height: 1.35; color: #1f3a2d; }
+.stepDetail { font-size: 13.5px; line-height: 1.5; color: #4d6157; }
+.steps li > a { justify-self: start; margin-top: 6px; }
+
+.courses { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.course { display: grid; gap: 10px; padding: 20px; border: 1px solid #e3e9e5; border-radius: 14px; background: #fff; box-shadow: 0 1px 2px #1f3a2c08, 0 6px 24px #1f3a2c0a; }
+.courseHead { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.product { font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #2f6b52; }
+.badge { font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: #e8f2ec; color: #2c6249; }
+.badge[data-tone="warn"] { background: #fbf3e2; color: #7a4f10; }
+.course h3 { margin: 0; font-size: 19px; letter-spacing: -0.01em; color: #1f3a2d; }
+.progress { display: grid; gap: 6px; font-size: 13.5px; color: #4d6157; }
+.progress meter { width: 100%; height: 8px; }
+.progress meter::-webkit-meter-bar { background: #e8eeea; border: 0; border-radius: 999px; height: 8px; }
+.progress meter::-webkit-meter-optimum-value, .progress meter::-webkit-meter-suboptimum-value, .progress meter::-webkit-meter-even-less-good-value { background: #2f6b52; border-radius: 999px; }
+.progress meter::-moz-meter-bar { background: #2f6b52; border-radius: 999px; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+.primary, .secondary { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 18px; border-radius: 10px; font-size: 15px; font-weight: 600; text-decoration: none; }
+.primary { background: #245d47; color: #fff; }
+.primary:hover { background: #1d4c3a; }
+.secondary { border: 1px solid #cfdcd4; background: #fff; color: #245d47; }
+.secondary:hover { background: #f1f6f3; }
+.primary:focus-visible, .secondary:focus-visible, .access a:focus-visible { outline: 3px solid #2f6b52; outline-offset: 2px; }
+.muted { margin: 0; font-size: 14px; color: #4d6157; }
+
+.access ul { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.access li { display: grid; gap: 2px; padding: 12px 16px; border: 1px solid #e3e9e5; border-radius: 12px; background: #fff; min-width: 180px; }
+.access li strong { font-size: 14.5px; color: #1f3a2d; }
+.access li span { font-size: 13px; color: #4d6157; }
+.access li[data-ending] { border-color: #f0dfb8; background: #fffaf0; }
+.access li[data-ending] span { color: #7a4f10; font-weight: 600; }
+.access a { font-size: 14px; font-weight: 600; color: #245d47; }
+
+.empty { padding: 24px; border: 1px solid #e3e9e5; border-radius: 14px; background: #fff; }
+.empty h2 { margin: 0 0 6px; font-size: 19px; }
+.empty p { margin: 0 0 14px; color: #4d6157; line-height: 1.6; }

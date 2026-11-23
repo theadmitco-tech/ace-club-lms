@@ -1,0 +1,31 @@
+.header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: #ffffffeb; backdrop-filter: saturate(1.2) blur(8px); border-bottom: 1px solid #e3e9e5; }
+.inner { display: flex; align-items: center; gap: 12px 24px; max-width: 1180px; margin: 0 auto; padding: 10px clamp(16px, 3vw, 32px); }
+.brand { display: inline-flex; flex: none; }
+.nav { display: flex; align-items: center; gap: 4px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.nav::-webkit-scrollbar { display: none; }
+.nav a { padding: 9px 12px; border-radius: 8px; color: #3d5246; font-size: 14.5px; font-weight: 500; text-decoration: none; white-space: nowrap; }
+.nav a:hover { background: #f1f6f3; color: #1f3f31; }
+.nav a:focus-visible, .account summary:focus-visible, .menu a:focus-visible { outline: 2px solid #2f6b52; outline-offset: 2px; }
+
+.account { position: relative; flex: none; }
+.account summary { display: flex; align-items: center; gap: 8px; padding: 4px 8px 4px 4px; border-radius: 999px; cursor: pointer; list-style: none; color: #3d5246; }
+.account summary::-webkit-details-marker { display: none; }
+.account summary:hover, .account[open] summary { background: #f1f6f3; }
+.avatar { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 999px; background: #2f6b52; color: #fff; font-size: 13px; font-weight: 700; }
+.name { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 600; }
+.menu { position: absolute; right: 0; top: calc(100% + 8px); width: 240px; padding: 8px; background: #fff; border: 1px solid #dbe3de; border-radius: 12px; box-shadow: 0 12px 32px #1f3a2c24; display: grid; gap: 2px; }
+.menuName { margin: 4px 10px 8px; font-weight: 600; color: #1f3a2d; display: grid; }
+.menuName small { font-weight: 400; color: #56665d; font-size: 12.5px; }
+.menu nav { display: grid; gap: 2px; padding-top: 6px; border-top: 1px solid #eef2ef; }
+.menu nav a { padding: 9px 10px; border-radius: 8px; color: #293f36; font-size: 14px; text-decoration: none; }
+.menu nav a:hover { background: #f1f6f3; }
+.menuGroup { margin: 8px 10px 2px; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #56665d; }
+.signOut { margin-top: 6px; padding-top: 8px; border-top: 1px solid #eef2ef; }
+.signOut button { width: 100%; }
+
+@media (max-width: 640px) {
+  .inner { flex-wrap: wrap; row-gap: 4px; }
+  .nav { order: 3; flex-basis: 100%; margin: 0 -8px; }
+  .account { margin-left: auto; }
+  .name { display: none; }
+}

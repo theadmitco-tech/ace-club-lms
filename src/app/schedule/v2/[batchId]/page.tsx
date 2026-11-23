@@ -8,6 +8,7 @@ import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { isV2StudentScheduleEnabled } from '@/lib/server/v2StudentScheduleFeature';
 import { getMyV2PublishedCourse } from '@/lib/server/v2StudentDelivery';
 import { StudentHeader } from '@/components/student/StudentHeader';
+import { getMyDisplayName } from '@/lib/server/studentProfile';
 import { V2CourseSessionView } from '@/components/student/V2CourseSessionView';
 import '../../../dashboard/dashboard.css';
 
@@ -17,14 +18,14 @@ export default async function PublishedCoursePage({params,searchParams}:{params:
   const {batchId} = await params;
   const {view} = await searchParams;
   const learningEnabled = isV2LearningEnabled();
-  const [course, learning, placements] = await Promise.all([getMyV2PublishedCourse(batchId), learningEnabled ? getMyV2LearningState(batchId) : Promise.resolve(null), readMyContentPlacements(batchId)]);
+  const [course, learning, placements, studentName] = await Promise.all([getMyV2PublishedCourse(batchId), learningEnabled ? getMyV2LearningState(batchId) : Promise.resolve(null), readMyContentPlacements(batchId), getMyDisplayName()]);
   if (!course) {
     if (!learningEnabled) notFound();
-    return <div className="student-page"><StudentHeader studentName="Student" /><main className="student-main"><div className="student-container"><section className="student-state"><h1>Course access is unavailable</h1><p>Access may have expired, the batch may be unpublished, or enrollment may be missing. Purchase history and access dates remain available in My access.</p><Link className="student-button" href="/account/access">Review access and expiry</Link></section></div></main></div>;
+    return <div className="student-page"><StudentHeader studentName={studentName} /><main className="student-main"><div className="student-container"><section className="student-state"><h1>Course access is unavailable</h1><p>Access may have expired, the batch may be unpublished, or enrollment may be missing. Purchase history and access dates remain available in My access.</p><Link className="student-button" href="/account/access">Review access and expiry</Link></section></div></main></div>;
   }
   const filteredCourse = learning ? { ...course, sessions: course.sessions.filter(session => learning.sessions.some(outline =>
     outline.key === session.key && outline.section === session.section && !outline.locked)) } : course;
-  return <div className="student-page"><StudentHeader studentName="Student" />
+  return <div className="student-page"><StudentHeader studentName={studentName} />
     <main className="student-main"><div className="student-container">
       <Link className="student-button" href="/schedule/v2">← My learning</Link>
       <header className="student-intro"><div><h1>{course.title}</h1>

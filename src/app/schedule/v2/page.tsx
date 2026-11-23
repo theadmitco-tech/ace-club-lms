@@ -8,6 +8,8 @@ import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { isV2StudentScheduleEnabled } from '@/lib/server/v2StudentScheduleFeature';
 import { getMyV2BatchSchedules } from '@/lib/server/v2StudentSchedules';
 import { V2_TEMPLATE_PRODUCTS } from '@/lib/v2Templates';
+import { getMyDisplayName, requestTime } from '@/lib/server/studentProfile';
+import { getMyV2Access } from '@/lib/server/v2Products';
 import '../../dashboard/dashboard.css';
 
 const time = (value: string) => new Intl.DateTimeFormat('en-GB', {
@@ -17,13 +19,17 @@ const time = (value: string) => new Intl.DateTimeFormat('en-GB', {
 export default async function EnrolledSchedulePage() {
   if (!isV2StudentScheduleEnabled()) notFound();
   await requirePortalRole('student');
-  const result = await getMyV2BatchSchedules();
+  const [result, studentName] = await Promise.all([getMyV2BatchSchedules(), getMyDisplayName()]);
   if (isV2LearningEnabled()) {
-    const batches = result.status === 'ready' ? await Promise.all(result.schedules.map(async publication => ({ publication, learning: await getMyV2LearningState(publication.batchId) }))) : null;
-    return <div className="student-page"><StudentHeader studentName="Student" /><main className="student-main"><div className="student-container">{batches ? <V2LearningLibrary batches={batches} /> : <section className="student-state student-state-error" role="alert"><h1>The learning library could not be loaded</h1><p>Please retry shortly.</p><Link className="student-button" href="/schedule/v2">Retry</Link></section>}</div></main></div>;
+    const [batches, access] = await Promise.all([
+      result.status === 'ready' ? Promise.all(result.schedules.map(async publication => ({ publication, learning: await getMyV2LearningState(publication.batchId) }))) : Promise.resolve(null),
+      getMyV2Access().catch(() => null),
+    ]);
+    const now = requestTime();
+    return <div className="student-page"><StudentHeader studentName={studentName} /><main className="student-main"><div className="student-container">{batches ? <V2LearningLibrary batches={batches} access={access} studentName={studentName} now={now} /> : <section className="student-state student-state-error" role="alert"><h1>The learning library could not be loaded</h1><p>Please retry shortly.</p><Link className="student-button" href="/schedule/v2">Retry</Link></section>}</div></main></div>;
   }
   return <div className="student-page">
-    <StudentHeader studentName="Student" />
+    <StudentHeader studentName={studentName} />
     <main className="student-main"><div className="student-container">
       <Link className="student-button" href="/schedule">Back to Schedule</Link>
       <header className="student-intro"><div><h1>Enrolled batch schedules</h1>

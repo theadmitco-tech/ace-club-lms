@@ -5,14 +5,15 @@ import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { isV2StudentScheduleEnabled } from '@/lib/server/v2StudentScheduleFeature';
 import { getMyV2Meeting } from '@/lib/server/v2StudentDelivery';
 import { StudentHeader } from '@/components/student/StudentHeader';
+import { getMyDisplayName } from '@/lib/server/studentProfile';
 import '../../../../../dashboard/dashboard.css';
 
 export default async function LiveClassPage({params}:{params:Promise<{batchId:string;eventKey:string}>}) {
   if (!isV2StudentScheduleEnabled()) notFound();
   await requirePortalRole('student');
   const {batchId,eventKey}=await params;
-  const meeting=await getMyV2Meeting(batchId,eventKey);
-  return <div className="student-page"><StudentHeader studentName="Student" /><main className="student-main"><div className="student-container">
+  const [meeting,studentName]=await Promise.all([getMyV2Meeting(batchId,eventKey),getMyDisplayName()]);
+  return <div className="student-page"><StudentHeader studentName={studentName} /><main className="student-main"><div className="student-container">
     <Link className="student-button" href="/schedule/v2">Back to enrolled batches</Link>
     <section className="student-state">{isV2LearningEnabled() && <Link className="student-button" href={`/schedule/v2/${batchId}?view=live`}>Course materials and session feedback</Link>}<span className="student-eyebrow">Live class</span><h1>{meeting ? 'The class is ready to join' : 'Meeting unavailable'}</h1>
       {meeting ? <><p>The meeting opens in Google Meet. Course access and registration are checked again when the join button is selected.</p>
