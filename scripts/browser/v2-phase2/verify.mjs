@@ -178,7 +178,7 @@ async function runTests() {
     await page.goto(`${origin}/admin/v2/batches`); await button(page, 'Preview publication').click();
     const session = page.getByRole('article', { name: 'Session content: Complete session preview' });
     await visible(session);
-    assert.deepEqual(await session.locator('summary strong').allTextContents(), ['Pre-class read', 'Recording', 'Post-class read', 'Worksheet']);
+    assert.deepEqual(await session.locator('h4 > span').allTextContents(), ['Pre-class read', 'Recording', 'Post-class read', 'Worksheet']);
     assert.equal(requests.length, 0);
     assert.equal(await session.locator('iframe').count(), 0);
     await button(session, 'Read here').first().click(); await text(session, 'Synthetic reading body');

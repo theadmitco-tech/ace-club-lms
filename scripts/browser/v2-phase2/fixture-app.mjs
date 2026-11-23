@@ -20,6 +20,8 @@ export const sources = [
   'src/components/student/V2LearningLibrary.tsx',
   'src/components/student/V2RecordingPlayer.tsx',
   'src/components/student/v2Learning.module.css',
+  'src/components/student/myLearning.module.css',
+  'src/components/student/studentHeader.module.css',
   'src/lib/v2Learning.ts',
   'src/lib/v2StudentDelivery.ts',
   'src/components/student/v2CourseSession.module.css',
@@ -156,6 +158,8 @@ export function isV2BatchAuthoringEnabled() { return true; }
   await put('src/lib/server/v2LearningFeature.ts', 'export function isV2LearningEnabled() { return false; }');
   await put('src/lib/server/v2Learning.ts', 'export async function getMyV2LearningState(_batchId: string) { return null; }');
   await put('src/lib/server/v2StudentScheduleFeature.ts', 'export function isV2StudentScheduleEnabled() { return true; }');
+  await put('src/lib/server/studentProfile.ts', "export async function getMyDisplayName() { return 'Synthetic Student'; }\nexport function requestTime() { return Date.now(); }");
+  await put('src/lib/server/v2Products.ts', "import type { V2ProductAccess } from '@/lib/v2Products';\nexport async function getMyV2Access(): Promise<V2ProductAccess[]> { return []; }");
   await put('src/lib/server/fixture.ts', `
 import 'server-only';
 // This module exists only inside the disposable browser fixture.

@@ -35,21 +35,34 @@ export function SessionResource({ item, kind, mode, readingEndpoint, sessionKey,
   const reading = kind === 'preSessionReads' || kind === 'postSessionReads' || (kind === 'materials' && pageId !== null);
   const recording = kind === 'recordings' && source ? getYoutubeEmbedUrl(source) : null;
   const nativeRecording = kind === 'recordings' && source && v2RecordingSource(source).kind === 'native';
-  return <div className={styles.resource}>
-    <h5>{item.title || 'Untitled resource'}</h5>
+  const read = !!learning?.progress.some(p => p.itemKey === item.key && p.status === 'read');
+  const opened = !!learning?.progress.some(p => p.itemKey === item.key);
+  const playable = reading || recording || nativeRecording || (learning && learning.feedbackTracking !== false && kind === 'recordings');
+  const markOpened = () => { if (learning && kind === 'preSessionReads') void learning.onProgress(item.key, 'opened'); };
+  const icon = kind === 'recordings' ? <path d="m10 8 6 4-6 4z M3 5h18v14H3z" /> : kind === 'materials' && !reading ? <path d="M6 3h9l4 4v14H6z M14 3v5h5 M9 12h7 M9 16h7" /> : <path d="M3 5h6a3 3 0 0 1 3 3v12a2.5 2.5 0 0 0-2.5-2.5H3z M21 5h-6a3 3 0 0 0-3 3v12a2.5 2.5 0 0 1 2.5-2.5H21z" />;
+  return <div className={styles.resource} data-open={open || undefined}>
+    <div className={styles.resourceRow}>
+      <span className={styles.icon} aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round">{icon}</svg></span>
+      <div className={styles.resourceText}>
+        <h5>{item.title || 'Untitled resource'}</h5>
+        {learning && kind === 'preSessionReads' && (read || opened) && <small className={styles.progress} data-read={read || undefined}>{read ? '✓ Read' : 'Opened'}</small>}
+      </div>
+      {source && <div className={styles.actions}>
+        {playable ? <button type="button" className={styles.primaryAction} aria-expanded={open} onClick={() => { setOpen(!open); if (!open) markOpened(); }}>
+          {open ? 'Close resource' : reading ? 'Read here' : learning && v2RecordingSource(source).kind === 'external' ? 'Recording options' : 'Watch here'}
+        </button> : <a className={styles.primaryAction} href={source} target="_blank" rel="noreferrer" aria-label={`Open ${item.title || 'resource'} in a new tab`}>{kind === 'materials' ? 'Open worksheet' : 'Open'} <span aria-hidden="true">↗</span></a>}
+        {playable && <a className={styles.newTab} onClick={markOpened} href={source} target="_blank" rel="noreferrer" aria-label={`Open ${item.title || 'resource'} in a new tab`} title="Open in a new tab"><span aria-hidden="true">↗</span></a>}
+      </div>}
+    </div>
     {!source ? <p role="alert">A valid resource source and authorized course context are required.</p> : <>
-      {(reading || recording || nativeRecording || learning && learning.feedbackTracking !== false && kind === 'recordings') && <button type="button" className={styles.button} aria-expanded={open} onClick={() => { setOpen(!open); if (!open && learning && kind === 'preSessionReads') void learning.onProgress(item.key, 'opened'); }}>
-        {open ? 'Close resource' : reading ? 'Read here' : learning && v2RecordingSource(source).kind === 'external' ? 'Recording options' : 'Watch here'}
-      </button>}
-      {open && <ContentBoundary key={`${source}:${mode}`}>
+      {open && <div className={styles.expanded}><ContentBoundary key={`${source}:${mode}`}>
         {reading ? pageId ? <div className="material-content"><NotionReader allowSourceEmbedFallback pageId={pageId} sourceUrl={source} title={item.title}
           mode={mode} readingType={kind === 'materials' ? 'material' : kind === 'preSessionReads' ? 'pre-read' : 'post-read'} endpoint={readingEndpoint} /></div>
-          : <p>Inline reading is available for Notion pages. This resource opens at its source.</p>
+          : <p className={styles.empty}>Inline reading is available for Notion pages. This resource opens at its source.</p>
           : learning && learning.feedbackTracking !== false && batchId && kind === 'recordings' ? <V2RecordingPlayer url={source} title={item.title || 'Session recording'} batchId={batchId} sessionKey={sessionKey} recordingKey={item.key} publicationRevision={learning.publicationRevision} onFeedbackDue={learning.onFeedbackDue} /> : nativeRecording ? <video controls preload="metadata" src={source} aria-label={item.title || 'Session recording'} style={{maxWidth:'100%'}} /> : recording && <div className={styles.video}><iframe src={recording} title={item.title || 'Session recording'}
             allow="encrypted-media; picture-in-picture; fullscreen" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen /></div>}
-      </ContentBoundary>}
-      {learning && kind === 'preSessionReads' && <div><small className={styles.progress}>{learning.progress.some(p => p.itemKey === item.key && p.status === 'read') ? '● Marked as read' : learning.progress.some(p => p.itemKey === item.key) ? '● Previously opened' : 'Ready to read'}</small><button type="button" className={styles.button} disabled={learning.progress.some(p => p.itemKey === item.key && p.status === 'read')} onClick={() => void learning.onProgress(item.key, 'read')}>Mark as read</button><p className={styles.empty}>A personal visual reminder; opening or reading does not trigger feedback.</p></div>}
-      <a className={styles.source} onClick={() => { if (learning && kind === 'preSessionReads') void learning.onProgress(item.key, 'opened'); }} href={source} target="_blank" rel="noreferrer">Open {item.title || 'resource'} in a new tab <span aria-hidden="true">↗</span></a>
+      </ContentBoundary></div>}
+      {learning && kind === 'preSessionReads' && !read && <button type="button" className={styles.markRead} onClick={() => void learning.onProgress(item.key, 'read')}>Mark as read</button>}
     </>}
   </div>;
 }
@@ -82,17 +95,19 @@ export function V2CourseSessionView({ session, mode, readingEndpoint, batchId, l
       <h3>{session.title || 'Untitled session'}</h3>
       {mode === 'admin-preview' && <p className={styles.notice}>Student-view preview · Viewing does not record progress, feedback or attendance.</p>}
     </header>
-    <ol className={styles.stages}>{v2SessionStages(session.key).map(({ kind, title, description }, index) => {
+    <ol className={styles.stages}>{v2SessionStages(session.key).map(({ kind, title, description }, _index, stages) => {
       const items = session.content[kind].filter(item => !outsideStage.has(item.key));
-      return <li key={kind}><details className={styles.stage} open={items.length === 0 ? undefined : true}>
-        <summary><span className={styles.number}>{index + 1}</span><span><strong>{title}</strong><small>{description}</small></span><span className={styles.count}>{items.length}</span></summary>
-        <div className={styles.resources}>{items.length === 0 ? <p className={styles.empty}>No {title.toLowerCase()} has been added.</p>
-          : items.map(item => <Fragment key={item.key}>
+      // Empty sections are hidden, except on single-section pages such as the course reading pages.
+      if (!items.length && stages.length > 1) return null;
+      return <li key={kind} className={styles.stage} aria-label={title}>
+        <h4 className={styles.stageTitle}><span>{title}</span><small>{description}</small></h4>
+        <div className={styles.resources}>{!items.length && <p className={styles.emptyRow}>Nothing has been added yet.</p>}{items.map(item => <Fragment key={item.key}>
             {kind === 'recordings' && batchId && <V2PlacedReadings sessions={[session]} placements={placements} placement="before_video" anchorKey={item.key} mode={mode} batchId={batchId} learningForSession={learning ? () => learning : undefined} />}
             <SessionResource item={item} kind={kind} mode={mode} readingEndpoint={readingEndpoint} sessionKey={session.key} batchId={batchId} learning={mode === 'student' ? learning : undefined} />
             {kind === 'recordings' && batchId && <V2PlacedReadings sessions={[session]} placements={placements} placement="after_video" anchorKey={item.key} mode={mode} batchId={batchId} learningForSession={learning ? () => learning : undefined} />}
           </Fragment>)}</div>
-      </details></li>;
+      </li>;
     })}</ol>
+    {v2SessionStages(session.key).length > 1 && v2SessionStages(session.key).every(({ kind }) => !session.content[kind].some(item => !outsideStage.has(item.key))) && <p className={styles.empty}>Nothing has been added to this session yet.</p>}
   </article>;
 }
