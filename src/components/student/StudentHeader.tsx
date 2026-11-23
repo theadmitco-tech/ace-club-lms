@@ -50,7 +50,7 @@ export function StudentHeader({ studentName }: { studentName: string }) {
           <div className={styles.menu}>
             <p className={styles.menuName}>{studentName}<small>Student</small></p>
             <nav aria-label="More pages">
-              <Link href="/dashboard">Mocks & practice</Link>
+              <Link href="/dashboard?view=practice">Mocks & practice</Link>
               <p className={styles.menuGroup}>Older course pages</p>
               <Link href="/schedule">Schedule</Link>
               <Link href="/resources">Resources</Link>

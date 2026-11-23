@@ -9,6 +9,8 @@ import { isV2StudentScheduleEnabled } from '@/lib/server/v2StudentScheduleFeatur
 import { getMyV2PublishedCourse } from '@/lib/server/v2StudentDelivery';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { getMyDisplayName } from '@/lib/server/studentProfile';
+import { getMyV2BatchSchedules } from '@/lib/server/v2StudentSchedules';
+import { V2_TEMPLATE_PRODUCTS } from '@/lib/v2Templates';
 import { V2CourseSessionView } from '@/components/student/V2CourseSessionView';
 import '../../../dashboard/dashboard.css';
 import styles from '@/components/student/v2Learning.module.css';
@@ -19,7 +21,8 @@ export default async function PublishedCoursePage({params,searchParams}:{params:
   const {batchId} = await params;
   const {view} = await searchParams;
   const learningEnabled = isV2LearningEnabled();
-  const [course, learning, placements, studentName] = await Promise.all([getMyV2PublishedCourse(batchId), learningEnabled ? getMyV2LearningState(batchId) : Promise.resolve(null), readMyContentPlacements(batchId), getMyDisplayName()]);
+  const [course, learning, placements, studentName, enrolled] = await Promise.all([getMyV2PublishedCourse(batchId), learningEnabled ? getMyV2LearningState(batchId) : Promise.resolve(null), readMyContentPlacements(batchId), getMyDisplayName(), learningEnabled ? getMyV2BatchSchedules().catch(() => null) : Promise.resolve(null)]);
+  const otherCourses = enrolled?.status === 'ready' ? enrolled.schedules : [];
   if (!course) {
     if (!learningEnabled) notFound();
     return <div className="student-page"><StudentHeader studentName={studentName} /><main className="student-main"><div className="student-container"><section className="student-state"><h1>Course access is unavailable</h1><p>Access may have expired, the batch may be unpublished, or enrollment may be missing. Purchase history and access dates remain available in My access.</p><Link className="student-button" href="/account/access">Review access and expiry</Link></section></div></main></div>;
@@ -28,7 +31,8 @@ export default async function PublishedCoursePage({params,searchParams}:{params:
     outline.key === session.key && outline.section === session.section && !outline.locked)) } : course;
   return <div className="student-page"><StudentHeader studentName={studentName} />
     <main className="student-main"><div className="student-container">
-      <Link className={styles.backLink} href="/schedule/v2">← My learning</Link>
+      {!learningEnabled ? <Link className={styles.backLink} href="/schedule/v2">← My learning</Link>
+        : otherCourses.length > 1 && <nav className={styles.courseSwitch} aria-label="Your courses">{otherCourses.map(item => <Link key={item.batchId} href={`/schedule/v2/${item.batchId}`} aria-current={item.batchId === batchId ? 'page' : undefined} prefetch={false}>{V2_TEMPLATE_PRODUCTS[item.productCode].label}</Link>)}</nav>}
       <header className={styles.courseHeader}><h1>{course.title}</h1>
         <p>Readings, recordings and worksheets for each session. Take them in any order. All times IST.</p></header>
       {learningEnabled ? learning && placements && learning.publicationRevision === course.publicationRevision ? <V2LearningWorkspace placements={placements} course={filteredCourse} learning={learning} initialView={view === 'live' ? 'live' : 'recordings'} /> : <section className="student-state student-state-error" role="alert"><h2>Learning status could not be verified</h2><p>Reload the course to check feedback and resource access before continuing.</p><Link className="student-button" href={`/schedule/v2/${batchId}`}>Retry</Link></section> : course.sessions.length ? course.sessions.map((session) => <V2CourseSessionView key={session.key} session={session} mode="student" batchId={batchId} readingEndpoint={`/api/v2/course-reading?batchId=${batchId}`} />)

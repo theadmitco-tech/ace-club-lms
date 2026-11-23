@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { isV2LearningEnabled } from '@/lib/server/v2LearningFeature';
 import { getMyV2LearningState } from '@/lib/server/v2Learning';
 import { V2LearningLibrary } from '@/components/student/V2LearningLibrary';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { isV2StudentScheduleEnabled } from '@/lib/server/v2StudentScheduleFeature';
@@ -25,6 +25,10 @@ export default async function EnrolledSchedulePage() {
       result.status === 'ready' ? Promise.all(result.schedules.map(async publication => ({ publication, learning: await getMyV2LearningState(publication.batchId) }))) : Promise.resolve(null),
       getMyV2Access().catch(() => null),
     ]);
+    // The course page is the landing page: open the course the student last worked in, else the first one.
+    const ready = batches?.filter(batch => batch.learning) ?? [];
+    const landing = ready.find(batch => batch.learning?.lastSessionKey) ?? ready[0];
+    if (landing && ready.length === batches?.length) redirect(`/schedule/v2/${landing.publication.batchId}`);
     const now = requestTime();
     return <div className="student-page"><StudentHeader studentName={studentName} /><main className="student-main"><div className="student-container">{batches ? <V2LearningLibrary batches={batches} access={access} studentName={studentName} now={now} /> : <section className="student-state student-state-error" role="alert"><h1>The learning library could not be loaded</h1><p>Please retry shortly.</p><Link className="student-button" href="/schedule/v2">Retry</Link></section>}</div></main></div>;
   }

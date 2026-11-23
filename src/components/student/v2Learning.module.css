@@ -172,3 +172,8 @@
 .liveUnavailable { margin-top: 6px; padding: 14px 16px; border-radius: 12px; background: #f6f9f7; }
 .liveUnavailable h2 { margin: 0 0 6px; font-size: 16px; }
 .liveUnavailable ul { margin: 0 0 12px; padding-left: 18px; font-size: 14px; color: #3d5246; line-height: 1.6; }
+.courseSwitch { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.courseSwitch a { padding: 7px 14px; border: 1px solid #d6e0d9; border-radius: 999px; background: #fff; color: #3d5246; font-size: 14px; font-weight: 600; text-decoration: none; }
+.courseSwitch a:hover { background: #f1f6f3; }
+.courseSwitch a[aria-current="page"] { border-color: #245d47; background: #245d47; color: #fff; }
+.courseSwitch a:focus-visible { outline: 3px solid #2f6b52; outline-offset: 2px; }

@@ -6,6 +6,8 @@ import { ResourceCard } from '@/components/student/ResourceCard';
 import { LearningResume } from '@/components/student/LearningResume';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { requirePortalRole } from '@/lib/server/portalAuthorization';
+import { isV2LearningEnabled } from '@/lib/server/v2LearningFeature';
+import { redirect } from 'next/navigation';
 import { loadStudentTimeline } from '@/lib/server/studentTimeline';
 import {
   formatProgrammeDateTime,
@@ -20,9 +22,11 @@ import {
 } from '@/lib/studentTimeline';
 import './dashboard.css';
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
   const preview = isV2Phase1PreviewEnabled();
   const identity = await requirePortalRole('student');
+  // With the learning library on, students land on their course; the older dashboard stays reachable for mocks and practice.
+  if (isV2LearningEnabled() && (await searchParams).view !== 'practice') redirect('/schedule/v2');
   const result = await loadStudentTimeline(identity.id);
 
   if (result.status === 'failed') {
