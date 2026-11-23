@@ -27,7 +27,7 @@ export function CoursePackagePicker({ subjects, tiers, initialSelection }: {
         </label>)}
       </fieldset>
       <ul className={styles.tierList} aria-label="Package prices">{tiers.map((item) => <li key={item.count} data-active={item.count === selected.length || undefined}>
-        <span>{item.count} {item.count === 1 ? 'subject' : 'subjects'}</span>
+        <span>{item.count} {item.count === 1 ? 'subject' : 'subjects'}{item.count > 1 && item.amountPaise !== null && <small> · {courseMoney(Math.round(item.amountPaise / item.count / 100) * 100)} each</small>}</span>
         <strong>{item.amountPaise === null ? 'Price unavailable' : courseMoney(item.amountPaise)}</strong>
       </li>)}</ul>
       <div className={styles.pickFooter} aria-live="polite">

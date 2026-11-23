@@ -10,6 +10,7 @@ import { getMyV2BatchSchedules } from '@/lib/server/v2StudentSchedules';
 import { V2_TEMPLATE_PRODUCTS } from '@/lib/v2Templates';
 import { getMyDisplayName, requestTime } from '@/lib/server/studentProfile';
 import { getMyV2Access } from '@/lib/server/v2Products';
+import type { V2LearningState } from '@/lib/v2Learning';
 import '../../dashboard/dashboard.css';
 
 const time = (value: string) => new Intl.DateTimeFormat('en-GB', {
@@ -26,7 +27,7 @@ export default async function EnrolledSchedulePage() {
       getMyV2Access().catch(() => null),
     ]);
     // The course page is the landing page: open the course the student last worked in, else the first one.
-    const ready = batches?.filter(batch => batch.learning) ?? [];
+    const ready: { publication: { batchId: string }; learning: V2LearningState | null }[] = batches?.filter(batch => batch.learning) ?? [];
     const landing = ready.find(batch => batch.learning?.lastSessionKey) ?? ready[0];
     if (landing && ready.length === batches?.length) redirect(`/schedule/v2/${landing.publication.batchId}`);
     const now = requestTime();

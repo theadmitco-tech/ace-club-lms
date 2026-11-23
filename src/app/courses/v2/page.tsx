@@ -61,6 +61,11 @@ export default async function CourseCataloguePage({ searchParams }: { searchPara
                 </div>
               </section>}
             </div>
+            {fullCourse && individualProducts.length === 3 && <aside className={styles.callout} aria-labelledby="compare-heading">
+              <h2 id="compare-heading">All three subjects or Full Course?</h2>
+              <p>Both include Quant, Verbal and DI for six months. <strong>Three subjects</strong> run as separate courses, each on its own schedule. <strong>Full Course</strong> is one programme with all three subjects together, and its live classes are spaced out over a longer period.</p>
+              {checkoutEnabled && sales?.batches.length ? <a href="#published-courses">See the published schedule for class dates</a> : <p className={styles.muted}>Class dates for each batch appear here once registration opens.</p>}
+            </aside>}
 
             {(quote || quoteError) && <section id="quote" className={styles.panel} aria-labelledby="quote-heading">
               <h2 id="quote-heading">Your selection</h2>
