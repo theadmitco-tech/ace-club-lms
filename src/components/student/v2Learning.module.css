@@ -177,3 +177,27 @@
 .courseSwitch a:hover { background: #f1f6f3; }
 .courseSwitch a[aria-current="page"] { border-color: #245d47; background: #245d47; color: #fff; }
 .courseSwitch a:focus-visible { outline: 3px solid #2f6b52; outline-offset: 2px; }
+
+/* ── Course page v3: mocks tab, feedback gate, subjects not bought, last opened ── */
+.tabs > a { display: inline-flex; align-items: center; min-height: 44px; padding: 9px 14px; border-radius: 7px; color: #365244; font-weight: 500; text-decoration: none; }
+.tabs > a:hover { background: #f1f6f3; }
+.subjects > a { display: inline-flex; align-items: center; min-height: 40px; padding: 8px 18px; border: 1px solid #d5dfd5; border-radius: 999px; background: #fff; color: #365244; text-decoration: none; }
+.subjects .lockedSubject { gap: 6px; border-style: dashed; background: #f7f8f6; color: #6b7a71; }
+.subjects .lockedSubject span { font-size: 12px; }
+.subjects .lockedSubject[aria-pressed="true"] { background: #fff7e6; border-color: #d8bc7d; color: #6b4a12; }
+.gate { align-items: center; gap: 22px; padding: 26px 30px; border: 1px solid #e3c98a; background: linear-gradient(180deg, #fff8e8, #fdf1d8); box-shadow: 0 6px 24px #8a5a120f; }
+.gate h2 { font-size: 21px; margin: 0 0 6px; color: #3f2f0c; }
+.gate p { font-size: 15px; color: #5c4a22; max-width: 760px; }
+.gateIcon { display: inline-grid; place-items: center; flex: none; width: 56px; height: 56px; border-radius: 16px; background: #fbe6b6; color: #7a4f10; }
+.gate ul { margin-top: 16px; }
+.gate ul button { min-height: 48px; padding: 12px 22px; font-size: 15.5px; border-radius: 12px; box-shadow: 0 2px 8px #245d4733; }
+.upsell { display: flex; gap: 22px; align-items: center; margin: 8px 0 20px; padding: 26px 30px; border: 1px solid #d8bc7d; border-radius: 14px; background: #fffaf0; }
+.upsell h2 { margin: 0 0 6px; font-size: 20px; color: #3f2f0c; }
+.upsell p { margin: 0 0 14px; font-size: 15px; color: #5c4a22; max-width: 680px; }
+.upsell .row { justify-content: flex-start; gap: 10px; }
+.outline li[data-last] button { background: #fff7e6; box-shadow: inset 3px 0 #d39b2a; }
+.outline li[data-last] button small { color: #8a5a12; font-weight: 600; }
+.outline li[data-last].current button { background: #fdf0d2; }
+@media (max-width: 640px) { .gate, .upsell { flex-direction: column; align-items: flex-start; padding: 20px; } .gateIcon { width: 44px; height: 44px; } }
+.tabs button, .tabs > a { white-space: nowrap; }
+@media (max-width: 480px) { .tabs { overflow-x: auto; } .tabs button, .tabs > a { padding: 9px 10px; font-size: 14px; } }

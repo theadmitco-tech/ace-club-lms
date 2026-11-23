@@ -40,7 +40,7 @@ export function SessionResource({ item, kind, mode, readingEndpoint, sessionKey,
   const playable = reading || recording || nativeRecording || (learning && learning.feedbackTracking !== false && kind === 'recordings');
   const markOpened = () => { if (learning && kind === 'preSessionReads') void learning.onProgress(item.key, 'opened'); };
   const icon = kind === 'recordings' ? <path d="m10 8 6 4-6 4z M3 5h18v14H3z" /> : kind === 'materials' && !reading ? <path d="M6 3h9l4 4v14H6z M14 3v5h5 M9 12h7 M9 16h7" /> : <path d="M3 5h6a3 3 0 0 1 3 3v12a2.5 2.5 0 0 0-2.5-2.5H3z M21 5h-6a3 3 0 0 0-3 3v12a2.5 2.5 0 0 1 2.5-2.5H21z" />;
-  return <div className={styles.resource} data-open={open || undefined}>
+  return <div className={styles.resource} data-open={open || undefined} data-read={read || undefined}>
     <div className={styles.resourceRow}>
       <span className={styles.icon} aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round">{icon}</svg></span>
       <div className={styles.resourceText}>

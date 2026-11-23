@@ -281,12 +281,10 @@ async function runTests() {
     assert.equal(state.obligations.length,0); assert.equal(state.submissions.length,0);
     assert.equal(await page.getByRole('button',{name:'Open Quant 5',exact:true}).isEnabled(),true);
   });
-  await test('Focus mode and larger text preserve keyboard navigation on a narrow screen', async page => {
-    await page.goto(origin); const focus = page.getByRole('button', { name: 'Focus mode', exact: true });
-    await focus.focus(); await page.keyboard.press('Enter'); await page.getByRole('button', { name: 'Exit focus', exact: true }).waitFor();
-    await page.keyboard.press('Escape'); await focus.waitFor();
-    await page.getByRole('button', { name: 'Larger text', exact: true }).click();
-    assert.equal(await page.getByRole('button', { name: 'Larger text', exact: true }).getAttribute('aria-pressed'), 'true');
+  await test('Course page offers Mocks next to the learning routes and fits a narrow screen', async page => {
+    await page.goto(origin);
+    assert.equal(await page.getByRole('link', { name: 'Mocks', exact: true }).getAttribute('href'), '/dashboard?view=practice');
+    assert.equal(await page.getByRole('button', { name: 'Focus mode' }).count(), 0);
     await noOverflow(page);
   }, true);
   await test('Long mobile outline stays bounded and supports keyboard selection of the last session', async page => {

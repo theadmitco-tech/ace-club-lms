@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { courseReadmePosition, withCourseReadmes, pinCourseReadmes } from '@/lib/v2CourseReadmes';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { V2PublishedCourse } from '@/lib/v2StudentDelivery';
 import type { V2LearningState, V2LearningObligation, V2FeedbackResponse, V2LearningProgress } from '@/lib/v2Learning';
@@ -66,7 +66,9 @@ function FeedbackForm({ obligation, onSaved }: { obligation: V2LearningObligatio
     <button className={styles.primary} type="submit" disabled={busy}>{busy ? 'Sending…' : 'Send feedback'}</button>
   </form>;
 }
-export function V2LearningWorkspace({ course, learning, initialView = 'recordings', placements = [], preview = false }: { course: V2PublishedCourse; learning: V2LearningState; initialView?: 'recordings' | 'live'; placements?: ContentPlacementView[]; preview?: boolean }) {
+/** A subject outside this course: either another enrolled course to switch to, or one the student hasn't bought. */
+export type V2OtherSubject = { section: 'quant' | 'verbal' | 'di'; href: string | null };
+export function V2LearningWorkspace({ course, learning, initialView = 'recordings', placements = [], preview = false, otherSubjects = [] }: { course: V2PublishedCourse; learning: V2LearningState; initialView?: 'recordings' | 'live'; placements?: ContentPlacementView[]; preview?: boolean; otherSubjects?: V2OtherSubject[] }) {
   const router = useRouter();
   const courseSessions = course.productCode === 'full_course' ? course.sessions : withCourseReadmes(course.batchId, course.productCode, course.sessions);
   const outlineSessions = pinCourseReadmes([...learning.sessions, ...courseSessions.filter(session => courseReadmePosition(session.key) && !learning.sessions.some(item => item.key === session.key)).map(session => ({ key: session.key, title: session.title, section: session.section, locked: false }))]);
@@ -76,7 +78,7 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
   const subjects = ['quant', 'verbal', 'di', 'programme'].filter(section => outlineSessions.some(session => session.section === section));
   const subjectSessions = outlineSessions.filter(session => session.section === subject);
   const [message, setMessage] = useState(''), [feedbackId, setFeedbackId] = useState<string | null>(null);
-  const [focus, setFocus] = useState(false), [largeText, setLargeText] = useState(false);
+  const [lockedSubject, setLockedSubject] = useState<string | null>(null);
   // Captured once per page load; live-class states are recalculated when the page refreshes.
   const [now] = useState(() => Date.now());
   const upcoming = learning.liveEvents.filter(event => !event.completedAt && Date.parse(event.endsAt) > now).toSorted((a, b) => Date.parse(a.startsAt) - Date.parse(b.startsAt));
@@ -87,11 +89,6 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
     `${item.batchId}:${item.sessionKey}`, learning.obligations.find(other => other.batchId === item.batchId && other.sessionKey === item.sessionKey && other.source === 'live') ?? item,
   ])).values());
   const obligation = feedbackSessions.find(o => o.id === feedbackId);
-  useEffect(() => {
-    if (!focus) return;
-    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') setFocus(false); };
-    window.addEventListener('keydown', escape); return () => window.removeEventListener('keydown', escape);
-  }, [focus]);
   async function progress(sessionKey: string, itemKey: string | null, state: 'opened' | 'read') {
     if (preview || !learning.sessions.some(session => session.key === sessionKey)) return;
     try {
@@ -107,7 +104,7 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
     setSelected(key); setTab('recordings'); setMessage(''); void progress(key, null, 'opened');
   }
   function chooseSubject(section: string) {
-    setSubject(section);
+    setSubject(section); setLockedSubject(null);
     const next = outlineSessions.find(s => s.section === section && s.key === learning.lastSessionKey && !s.locked)
       ?? outlineSessions.find(s => s.section === section && !s.locked);
     setSelected(next?.key ?? null);
@@ -115,28 +112,38 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
   }
   function showFeedback(item: V2LearningObligation) {
     const current = feedbackSessions.find(other => other.batchId === item.batchId && other.sessionKey === item.sessionKey) ?? item;
-    setFeedbackId(current.id); setFocus(false);
+    setFeedbackId(current.id);
     requestAnimationFrame(() => { feedbackRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }); feedbackRef.current?.focus(); });
   }
   function feedbackSaved() { setFeedbackId(null); setMessage('Thanks, your feedback was sent. Your sessions are opening again.'); router.refresh(); }
-  return <div className={`${styles.workspace} ${focus ? styles.focus : ''} ${largeText ? styles.large : ''}`}>
+  const dueSessions = feedbackSessions.filter(item => item.batchId === course.batchId);
+  return <div className={styles.workspace}>
     <div className={styles.toolbar}><div className={styles.tabs} aria-label="Learning routes">
       <button className={tab === 'recordings' ? styles.activeTab : ''} type="button" aria-pressed={tab === 'recordings'} onClick={() => setTab('recordings')}>Recordings & materials</button>
       <button className={tab === 'live' ? styles.activeTab : ''} type="button" aria-pressed={tab === 'live'} onClick={() => setTab('live')}>Live classes</button>
-    </div><div className={styles.preferences} role="group" aria-label="Reading preferences"><button type="button" aria-pressed={largeText} onClick={() => setLargeText(!largeText)}><span aria-hidden="true">A</span>Larger text</button><button type="button" aria-pressed={focus} onClick={() => setFocus(!focus)}>{focus ? 'Exit focus' : 'Focus mode'}</button></div></div>
+      {!preview && <Link href="/dashboard?view=practice" prefetch={false}>Mocks</Link>}
+    </div></div>
     {preview && <p className={styles.notice}>Read-only Student preview. No progress, feedback or attendance is recorded.</p>}
     {message && <p role="status" className={styles.notice}>{message}</p>}
-    {!preview && learning.obligations.length > 0 && <section className={styles.gate} aria-labelledby="feedback-due-heading"><span className={styles.gateIcon} aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><div>
-      <h2 id="feedback-due-heading">Quick feedback to continue</h2><p>Other {Array.from(new Set(learning.obligations.map(o => sectionName(o.section)))).join(' and ')} sessions open again once you send it. Your other subjects stay open.</p>
+    {!preview && learning.obligations.length > 0 && <section className={styles.gate} aria-labelledby="feedback-due-heading"><span className={styles.gateIcon} aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><div>
+      <h2 id="feedback-due-heading">Quick feedback to continue</h2><p>{(dueSessions[0] ?? feedbackSessions[0]) ? <>Tell us how <strong>{(dueSessions[0] ?? feedbackSessions[0]).sessionTitle}</strong> went. </> : null}Your other {Array.from(new Set(learning.obligations.map(o => sectionName(o.section)))).join(' and ')} sessions open again as soon as you send it. It takes under a minute, and your other subjects stay open.</p>
       <ul>{feedbackSessions.map(item => <li key={item.id}><button type="button" onClick={() => showFeedback(item)}>Give feedback for {item.sessionTitle}</button></li>)}</ul>
     </div></section>}
     {!preview && obligation && <section tabIndex={-1} ref={feedbackRef} className={styles.feedbackPanel} aria-label="Required session feedback"><div className={styles.row}><h2 className={styles.visuallyHidden}>Session feedback</h2><button type="button" className={styles.closeFeedback} onClick={() => setFeedbackId(null)}>Close feedback</button></div><FeedbackForm key={obligation.id} obligation={obligation} onSaved={feedbackSaved} /></section>}
     {tab === 'recordings' ? <>
       <V2PlacedReadings sessions={course.sessions} placements={placements} placement="before_course" mode={mode} batchId={course.batchId} learningForSession={learningForSession} />
-      {!focus && <div className={styles.subjects} role="group" aria-label="Course subjects">{subjects.map(section => <button key={section} type="button" aria-label={sectionName(section)} aria-pressed={subject === section} onClick={() => chooseSubject(section)}>{sectionName(section)}{learning.obligations.some(o => o.section === section) && <small>Feedback due</small>}</button>)}</div>}
+      <div className={styles.subjects} role="group" aria-label="Course subjects">{subjects.map(section => <button key={section} type="button" aria-label={sectionName(section)} aria-pressed={!lockedSubject && subject === section} onClick={() => chooseSubject(section)}>{sectionName(section)}{learning.obligations.some(o => o.section === section) && <small>Feedback due</small>}</button>)}
+        {!preview && otherSubjects.filter(item => !subjects.includes(item.section)).map(item => item.href
+          ? <Link key={item.section} href={item.href} prefetch={false}>{sectionName(item.section)}</Link>
+          : <button key={item.section} type="button" className={styles.lockedSubject} aria-pressed={lockedSubject === item.section} aria-label={`${sectionName(item.section)}, not in your package`} onClick={() => setLockedSubject(item.section)}><span aria-hidden="true">🔒</span>{sectionName(item.section)}</button>)}</div>
+      {lockedSubject ? <section className={styles.upsell} aria-labelledby="locked-subject-heading"><span className={styles.gateIcon} aria-hidden="true">🔒</span><div>
+        <h2 id="locked-subject-heading">{sectionName(lockedSubject)} isn’t in your package yet</h2>
+        <p>Add it to get every {sectionName(lockedSubject)} session, recording and worksheet. You pay only the price difference, and your access end date stays the same.</p>
+        <div className={styles.row}><Link className={styles.primary} href="/account/access/upgrade" prefetch={false}>See upgrade options</Link><button type="button" className={styles.secondary} onClick={() => setLockedSubject(null)}>Back to {sectionName(subject)}</button></div>
+      </div></section> : <>
       <div className={styles.layout}>
         <aside className={styles.outline} aria-label="Course outline"><details open><summary><span>{sectionName(subject)} sessions</span><small>{subjectSessions.filter(session => !courseReadmePosition(session.key)).length} · any order</small></summary>
-          <ol>{subjectSessions.map(item => { const visited = learning.progress.some(p => p.sessionKey === item.key); return <li key={item.key} className={`${item.locked ? styles.locked : ''} ${item.key === selected ? styles.current : ''}`}>
+          <ol>{subjectSessions.map(item => { const visited = learning.progress.some(p => p.sessionKey === item.key); return <li key={item.key} className={`${item.locked ? styles.locked : ''} ${item.key === selected ? styles.current : ''}`} data-last={item.key === learning.lastSessionKey && !item.locked || undefined}>
             <button type="button" disabled={item.locked} aria-current={item.key === selected ? 'step' : undefined} aria-label={`Open ${item.title}`} onClick={() => select(item.key)}><span>{courseReadmePosition(item.key) ? 'Course README' : sectionName(item.section)}</span><strong>{item.title}</strong><small data-status={item.locked ? 'locked' : learning.obligations.some(o => o.batchId === course.batchId && o.sessionKey === item.key) ? 'feedback' : visited ? 'opened' : undefined}>{item.locked ? 'Paused until feedback is sent' : learning.obligations.some(o => o.batchId === course.batchId && o.sessionKey === item.key) ? 'Feedback due' : item.key === learning.lastSessionKey ? 'Last opened' : visited ? 'Opened' : courseReadmePosition(item.key) ? 'Reading page' : ''}</small></button>
           </li>; })}</ol></details>
         </aside>
@@ -150,6 +157,7 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
         </section>
       </div>
       <V2PlacedReadings sessions={course.sessions} placements={placements} placement="after_course" mode={mode} batchId={course.batchId} learningForSession={learningForSession} />
+      </>}
     </> : <section className={styles.livePanel} aria-labelledby="live-classes-heading"><h2 id="live-classes-heading">Your live classes</h2>
       {!learning.liveRegistered ? <div className={styles.empty}><h3>You don’t have a live seat</h3><p>Live classes are optional. Every session’s recording and materials stay open to you. Each batch has eight live seats; the programme team can tell you if one is available.</p><Link href="/account/access">Check my access</Link></div>
         : !learning.liveEvents.length ? <div className={styles.empty}><h3>No live classes yet</h3><p>Class dates appear here once they’re published. Recordings and materials are open meanwhile.</p></div>

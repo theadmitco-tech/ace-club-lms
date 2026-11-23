@@ -27,6 +27,12 @@ export default async function PublishedCoursePage({params,searchParams}:{params:
     if (!learningEnabled) notFound();
     return <div className="student-page"><StudentHeader studentName={studentName} /><main className="student-main"><div className="student-container"><section className="student-state"><h1>Course access is unavailable</h1><p>Access may have expired, the batch may be unpublished, or enrollment may be missing. Purchase history and access dates remain available in My access.</p><Link className="student-button" href="/account/access">Review access and expiry</Link></section></div></main></div>;
   }
+  // Subjects outside this course: link to another enrolled course, or show as locked with an upgrade option.
+  const ownSections = V2_TEMPLATE_PRODUCTS[course.productCode].sections;
+  const otherSubjects = (['quant', 'verbal', 'di'] as const).filter(section => !ownSections.includes(section)).map(section => {
+    const other = otherCourses.find(item => item.batchId !== batchId && V2_TEMPLATE_PRODUCTS[item.productCode].sections.includes(section));
+    return { section, href: other ? `/schedule/v2/${other.batchId}` : null };
+  });
   const filteredCourse = learning ? { ...course, sessions: course.sessions.filter(session => learning.sessions.some(outline =>
     outline.key === session.key && outline.section === session.section && !outline.locked)) } : course;
   return <div className="student-page"><StudentHeader studentName={studentName} />
@@ -35,7 +41,7 @@ export default async function PublishedCoursePage({params,searchParams}:{params:
         : otherCourses.length > 1 && <nav className={styles.courseSwitch} aria-label="Your courses">{otherCourses.map(item => <Link key={item.batchId} href={`/schedule/v2/${item.batchId}`} aria-current={item.batchId === batchId ? 'page' : undefined} prefetch={false}>{V2_TEMPLATE_PRODUCTS[item.productCode].label}</Link>)}</nav>}
       <header className={styles.courseHeader}><h1>{course.title}</h1>
         <p>Readings, recordings and worksheets for each session. Take them in any order. All times IST.</p></header>
-      {learningEnabled ? learning && placements && learning.publicationRevision === course.publicationRevision ? <V2LearningWorkspace placements={placements} course={filteredCourse} learning={learning} initialView={view === 'live' ? 'live' : 'recordings'} /> : <section className="student-state student-state-error" role="alert"><h2>Learning status could not be verified</h2><p>Reload the course to check feedback and resource access before continuing.</p><Link className="student-button" href={`/schedule/v2/${batchId}`}>Retry</Link></section> : course.sessions.length ? course.sessions.map((session) => <V2CourseSessionView key={session.key} session={session} mode="student" batchId={batchId} readingEndpoint={`/api/v2/course-reading?batchId=${batchId}`} />)
+      {learningEnabled ? learning && placements && learning.publicationRevision === course.publicationRevision ? <V2LearningWorkspace placements={placements} course={filteredCourse} learning={learning} initialView={view === 'live' ? 'live' : 'recordings'} otherSubjects={enrolled ? otherSubjects : []} /> : <section className="student-state student-state-error" role="alert"><h2>Learning status could not be verified</h2><p>Reload the course to check feedback and resource access before continuing.</p><Link className="student-button" href={`/schedule/v2/${batchId}`}>Retry</Link></section> : course.sessions.length ? course.sessions.map((session) => <V2CourseSessionView key={session.key} session={session} mode="student" batchId={batchId} readingEndpoint={`/api/v2/course-reading?batchId=${batchId}`} />)
         : <section className="student-state"><h2>No sessions published yet</h2><p>Course materials appear after the programme team publishes them.</p></section>}
     </div></main></div>;
 }
