@@ -17,6 +17,17 @@ async function saveLearning(body: Record<string, unknown>) {
   if (!response.ok) throw new Error(result.error || 'The update could not be confirmed.');
   return result;
 }
+const SCALE = [1, 2, 3, 4, 5] as const;
+function RatingScale({ name, label, low, high, value, disabled, onChange }: { name: string; label: string; low: string; high: string; value: string; disabled: boolean; onChange: (value: string) => void }) {
+  return <fieldset className={styles.scale} disabled={disabled} role="radiogroup" aria-label={label}>
+    <legend>{label}</legend>
+    <div className={styles.scaleOptions}>{SCALE.map(option => <label key={option} data-checked={value === String(option) || undefined}>
+      <input type="radio" name={name} value={option} required checked={value === String(option)} aria-label={`${option} out of 5`} onChange={() => onChange(String(option))} />
+      <span aria-hidden="true">{option}</span>
+    </label>)}</div>
+    <div className={styles.scaleEnds} aria-hidden="true"><span>{low}</span><span>{high}</span></div>
+  </fieldset>;
+}
 function FeedbackForm({ obligation, onSaved }: { obligation: V2LearningObligation; onSaved: () => void }) {
   const [usefulness, setUsefulness] = useState(''), [clarity, setClarity] = useState(''), [comment, setComment] = useState('');
   const [attendance, setAttendance] = useState<V2FeedbackResponse['attendance'] | ''>(obligation.source === 'recording' ? 'recording' : '');
@@ -32,24 +43,25 @@ function FeedbackForm({ obligation, onSaved }: { obligation: V2LearningObligatio
     } catch (failure) { setError(failure instanceof Error ? failure.message : 'Feedback confirmation is pending.'); }
     finally { setBusy(false); }
   }
+  // Changing an answer starts a new request; retrying an unchanged answer reuses the same one.
   function edit(callback: () => void) { requestId.current = null; callback(); }
+  const missed = attendance === 'missed';
   return <form onSubmit={submit} className={styles.feedbackForm} aria-label={`Feedback for ${obligation.sessionTitle}`}>
-    <h3>{obligation.sessionTitle}</h3><p>{sectionName(obligation.section)} · {obligation.source === 'live' ? 'Completed live class' : 'Recording feedback'}</p>
-    {obligation.source === 'live' && <fieldset disabled={busy}><legend>Did you attend this live class?</legend>
-      <label><input type="radio" name={`attendance-${obligation.id}`} value="attended" checked={attendance === 'attended'} required onChange={() => edit(() => setAttendance('attended'))} />I attended</label>
-      <label><input type="radio" name={`attendance-${obligation.id}`} value="missed" checked={attendance === 'missed'} required onChange={() => edit(() => setAttendance('missed'))} />I didn’t attend</label>
-      <small>This is a self-report, not verified attendance. A missed class does not remove recording access.</small>
+    <div className={styles.feedbackHead}><h3>How was {obligation.sessionTitle}?</h3><p>{sectionName(obligation.section)} · {obligation.source === 'live' ? 'Live class' : 'Recording'} · takes under a minute</p></div>
+    {obligation.source === 'live' && <fieldset className={styles.choice} disabled={busy}><legend>Did you attend the live class?</legend>
+      <div>
+        <label data-checked={attendance === 'attended' || undefined}><input type="radio" name={`attendance-${obligation.id}`} value="attended" checked={attendance === 'attended'} required onChange={() => edit(() => setAttendance('attended'))} />I attended</label>
+        <label data-checked={missed || undefined}><input type="radio" name={`attendance-${obligation.id}`} value="missed" checked={missed} required onChange={() => edit(() => setAttendance('missed'))} />I didn’t attend</label>
+      </div>
+      {missed && <small>No ratings needed. You can still watch the recording whenever you like.</small>}
     </fieldset>}
-    {attendance !== 'missed' && (['usefulness', 'clarity'] as const).map(field => <label className={styles.field} key={field}>
-      {field === 'usefulness' ? 'How useful was this session?' : 'How clear was this session?'}
-      <select required disabled={busy} value={field === 'usefulness' ? usefulness : clarity} onChange={event => edit(() => (field === 'usefulness' ? setUsefulness : setClarity)(event.target.value))}>
-        <option value="">Choose a rating</option>{[1, 2, 3, 4, 5].map(value => <option key={value} value={value}>{value} — {value === 1 ? 'Low' : value === 5 ? 'High' : 'Moderate'}</option>)}
-      </select>
-    </label>)}
+    {!missed && <>
+      <RatingScale name={`usefulness-${obligation.id}`} label="How useful was this session?" low="Not useful" high="Very useful" value={usefulness} disabled={busy} onChange={value => edit(() => setUsefulness(value))} />
+      <RatingScale name={`clarity-${obligation.id}`} label="How clear was this session?" low="Unclear" high="Very clear" value={clarity} disabled={busy} onChange={value => edit(() => setClarity(value))} />
+    </>}
     <label className={styles.field}>Anything to add? <span>Optional</span><textarea rows={3} maxLength={4000} disabled={busy} value={comment} onChange={event => edit(() => setComment(event.target.value))} /></label>
-    {error && <p role="alert">{error}</p>}
-    <button className={styles.primary} type="submit" disabled={busy}>{busy ? 'Confirming feedback…' : 'Send feedback'}</button>
-    <small>Other pending feedback in the same subject remains due. The section unlocks after all applicable responses are confirmed.</small>
+    {error && <p role="alert" className={styles.formError}>{error}</p>}
+    <button className={styles.primary} type="submit" disabled={busy}>{busy ? 'Sending…' : 'Send feedback'}</button>
   </form>;
 }
 export function V2LearningWorkspace({ course, learning, initialView = 'recordings', placements = [], preview = false }: { course: V2PublishedCourse; learning: V2LearningState; initialView?: 'recordings' | 'live'; placements?: ContentPlacementView[]; preview?: boolean }) {
@@ -100,7 +112,7 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
     setFeedbackId(current.id); setFocus(false);
     requestAnimationFrame(() => { feedbackRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }); feedbackRef.current?.focus(); });
   }
-  function feedbackSaved() { setFeedbackId(null); setMessage('Feedback confirmed. The latest subject access is being loaded.'); router.refresh(); }
+  function feedbackSaved() { setFeedbackId(null); setMessage('Thanks, your feedback was sent. Your sessions are opening again.'); router.refresh(); }
   return <div className={`${styles.workspace} ${focus ? styles.focus : ''} ${largeText ? styles.large : ''}`}>
     <div className={styles.toolbar}><div className={styles.tabs} aria-label="Learning routes">
       <button className={tab === 'recordings' ? styles.activeTab : ''} type="button" aria-pressed={tab === 'recordings'} onClick={() => setTab('recordings')}>Recordings & materials</button>
@@ -109,10 +121,10 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
     {preview && <p className={styles.notice}>Read-only Student preview. No progress, feedback or attendance is recorded.</p>}
     {message && <p role="status" className={styles.notice}>{message}</p>}
     {!preview && learning.obligations.length > 0 && <section className={styles.gate} aria-labelledby="feedback-due-heading"><span className={styles.gateIcon} aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><div>
-      <h2 id="feedback-due-heading">Feedback needed to continue</h2><p>Other sessions are paused in {Array.from(new Set(learning.obligations.map(o => sectionName(o.section)))).join(', ')}. Current feedback sessions remain open; other purchased subjects are available.</p>
+      <h2 id="feedback-due-heading">Quick feedback to continue</h2><p>Other {Array.from(new Set(learning.obligations.map(o => sectionName(o.section)))).join(' and ')} sessions open again once you send it. Your other subjects stay open.</p>
       <ul>{feedbackSessions.map(item => <li key={item.id}><button type="button" onClick={() => showFeedback(item)}>Give feedback for {item.sessionTitle}</button></li>)}</ul>
     </div></section>}
-    {!preview && obligation && <section tabIndex={-1} ref={feedbackRef} className={styles.feedbackPanel} aria-label="Required session feedback"><div className={styles.row}><h2>Session feedback</h2><button type="button" onClick={() => setFeedbackId(null)}>Close feedback</button></div><FeedbackForm key={obligation.id} obligation={obligation} onSaved={feedbackSaved} /></section>}
+    {!preview && obligation && <section tabIndex={-1} ref={feedbackRef} className={styles.feedbackPanel} aria-label="Required session feedback"><div className={styles.row}><h2 className={styles.visuallyHidden}>Session feedback</h2><button type="button" className={styles.closeFeedback} onClick={() => setFeedbackId(null)}>Close feedback</button></div><FeedbackForm key={obligation.id} obligation={obligation} onSaved={feedbackSaved} /></section>}
     {tab === 'recordings' ? <>
       <V2PlacedReadings sessions={course.sessions} placements={placements} placement="before_course" mode={mode} batchId={course.batchId} learningForSession={learningForSession} />
       {!focus && <div className={styles.subjects} role="group" aria-label="Course subjects">{subjects.map(section => <button key={section} type="button" aria-label={sectionName(section)} aria-pressed={subject === section} onClick={() => chooseSubject(section)}>{sectionName(section)}{learning.obligations.some(o => o.section === section) && <small>Feedback due</small>}</button>)}</div>}

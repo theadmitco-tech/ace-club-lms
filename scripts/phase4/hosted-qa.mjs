@@ -133,7 +133,7 @@ if(mode==='prepare'){
   const anon=await publicContext.request.get(`${state.preview}/api/v2/meeting?batchId=${full.batchId}&eventKey=${full.document.events[0].key}`);ok('anonymous-meeting-route-denied',[401,403,404].includes(anon.status()),['P4-03','P4-11']);
   }else{await page.goto(`${state.preview}/schedule/v2/${full.batchId}`,{waitUntil:'domcontentloaded'});}
   await page.getByRole('button',{name:`Give feedback for ${f4.title}`,exact:true}).click();
-  const form=page.getByRole('form',{name:`Feedback for ${f4.title}`,exact:true});await form.getByLabel('How useful was this session?').selectOption('4');await form.getByLabel('How clear was this session?').selectOption('5');await form.getByRole('button',{name:'Send feedback',exact:true}).click();
+  const form=page.getByRole('form',{name:`Feedback for ${f4.title}`,exact:true});await form.getByRole('radiogroup',{name:'How useful was this session?'}).getByRole('radio',{name:'4 out of 5',exact:true}).check();await form.getByRole('radiogroup',{name:'How clear was this session?'}).getByRole('radio',{name:'5 out of 5',exact:true}).check();await form.getByRole('button',{name:'Send feedback',exact:true}).click();
   await page.getByRole('button',{name:`Open ${f5.title}`,exact:true}).waitFor();await page.waitForFunction(title=>{const b=document.querySelector(`button[aria-label="Open ${title}"]`);return b&&!b.disabled;},f5.title);
   ok('browser-feedback-confirmed-unlock',(await learning('full',full)).obligations.length===0,['P4-09']);
   await admin.page.goto(`${state.preview}/admin/v2/batches/${full.batchId}/live`,{waitUntil:'domcontentloaded'});
@@ -147,8 +147,8 @@ if(mode==='prepare'){
   ok('admin-mapped-live-completion',Boolean(completion?.completedAt),['P4-10']);
   await page.reload({waitUntil:'domcontentloaded'});await page.getByRole('button',{name:'Live classes',exact:true}).click();
   await page.getByRole('button',{name:'Give feedback or report a missed class',exact:true}).click();
-  const missed=page.getByRole('form',{name:`Feedback for ${f5.title}`,exact:true});await missed.getByLabel('I didn’t attend',{exact:true}).check();ok('missed-live-does-not-request-invented-ratings',await missed.getByRole('combobox').count()===0,['P4-10']);
-  await missed.getByRole('button',{name:'Send feedback',exact:true}).click();await page.getByText('Feedback confirmed. The latest subject access is being loaded.',{exact:true}).waitFor();
+  const missed=page.getByRole('form',{name:`Feedback for ${f5.title}`,exact:true});await missed.getByLabel('I didn’t attend',{exact:true}).check();ok('missed-live-does-not-request-invented-ratings',await missed.getByRole('radiogroup').count()===0,['P4-10']);
+  await missed.getByRole('button',{name:'Send feedback',exact:true}).click();await page.getByText('Thanks, your feedback was sent. Your sessions are opening again.',{exact:true}).waitFor();
   ok('missed-live-unlocks-with-recording-preserved',(await learning('full',full)).obligations.length===0&&(await course('full',full)).sessions.some(s=>s.key===f5.key&&s.content.recordings.length===1),['P4-09','P4-10']);
   ok('completed-live-meeting-closed',await meeting('full',full,full.document.events[1])===null,['P4-03']);
   const current=await rpc(admin.client,'list_v2_batch_publications');const revision=current.find(p=>p.batchId===quant.batchId).revision;

@@ -104,3 +104,43 @@
 .backLink:hover { text-decoration: underline; text-underline-offset: 3px; }
 .courseHeader h1 { margin: 2px 0 4px; font-size: clamp(24px, 3vw, 30px); letter-spacing: -0.02em; color: #1f3a2d; }
 .courseHeader p { margin: 0; font-size: 14.5px; color: #4d6157; }
+
+/* ── Feedback v2: friendly prompt, tap-to-choose ratings ─────────────── */
+.visuallyHidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.gate { border-radius: 14px; }
+.gate h2 { font-size: 17px; margin: 0 0 4px; }
+.gate p { font-size: 14px; line-height: 1.55; }
+.gate ul { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 10px 0 0; }
+.gate ul button { min-height: 42px; padding: 8px 16px; border-radius: 10px; border: 0; background: #245d47; color: #fff; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.gate ul button:hover { background: #1d4c3a; }
+.feedbackPanel { border-radius: 16px; }
+.feedbackPanel > .row { justify-content: flex-end; }
+.closeFeedback { background: none; border: 0; color: #3d5246; font: inherit; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; min-height: 40px; }
+.feedbackForm { display: grid; gap: 18px; max-width: 560px; }
+.feedbackHead h3 { margin: 0; font-size: 20px; letter-spacing: -0.01em; color: #1f3a2d; }
+.feedbackHead p { margin: 4px 0 0; font-size: 13.5px; color: #56665d; }
+.scale, .choice { border: 0; margin: 0; padding: 0; min-width: 0; }
+.scale legend, .choice legend { padding: 0; margin-bottom: 8px; font-size: 15px; font-weight: 600; color: #1f3a2d; }
+.scaleOptions { display: grid; grid-template-columns: repeat(5, minmax(44px, 1fr)); gap: 8px; }
+.scaleOptions label, .choice label { position: relative; display: grid; place-items: center; min-height: 48px; border: 1px solid #cfdcd4; border-radius: 12px; background: #fff; font-size: 16px; font-weight: 600; color: #2f4a3c; cursor: pointer; transition: background-color 120ms ease, border-color 120ms ease; }
+.scaleOptions label:hover, .choice label:hover { border-color: #7fa591; }
+.scaleOptions label[data-checked], .choice label[data-checked] { background: #245d47; border-color: #245d47; color: #fff; }
+.scaleOptions input, .choice input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.scaleOptions label:has(input:focus-visible), .choice label:has(input:focus-visible) { outline: 3px solid #2f6b52; outline-offset: 2px; }
+.scaleEnds { display: flex; justify-content: space-between; margin-top: 6px; font-size: 12.5px; color: #56665d; }
+.choice > div { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.choice label { font-size: 15px; padding: 0 12px; }
+.choice small { display: block; margin-top: 8px; font-size: 13px; color: #2f6b52; }
+.formError { margin: 0; padding: 10px 12px; border-radius: 10px; background: #fdf1ee; color: #8a3423; font-size: 14px; }
+.feedbackForm > button[type="submit"] { justify-self: start; min-height: 46px; padding: 10px 22px; font-size: 15px; }
+@media (prefers-reduced-motion: reduce) { .scaleOptions label, .choice label { transition: none; } }
+/* Override global form styles inside the feedback form */
+.feedbackForm fieldset.scale, .feedbackForm fieldset.choice { border: 0; padding: 0; margin: 0; }
+.feedbackForm .scale legend, .feedbackForm .choice legend { float: left; width: 100%; padding: 0; }
+.feedbackForm .scaleOptions, .feedbackForm .choice > div { clear: both; }
+.feedbackForm .scaleOptions label, .feedbackForm .choice label { display: flex; align-items: center; justify-content: center; text-align: center; margin: 0; }
+.feedbackForm .field { display: grid; gap: 6px; font-size: 15px; font-weight: 600; color: #1f3a2d; }
+.feedbackForm .field span { font-size: 12.5px; font-weight: 400; color: #56665d; }
+.feedbackForm textarea { border: 1px solid #cfdcd4; border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 14.5px; }
+.subjects button { flex-direction: row; white-space: nowrap; }
+.subjects button small { font-size: 11px; }

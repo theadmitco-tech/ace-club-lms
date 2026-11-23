@@ -136,8 +136,8 @@ async function test(name, run, mobile = false) {
 }
 async function noOverflow(page) { assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true); }
 async function rating(page) {
-  await page.getByLabel('How useful was this session?').selectOption('4');
-  await page.getByLabel('How clear was this session?').selectOption('4');
+  await page.getByRole('radiogroup', { name: 'How useful was this session?' }).getByRole('radio', { name: '4 out of 5', exact: true }).check();
+  await page.getByRole('radiogroup', { name: 'How clear was this session?' }).getByRole('radio', { name: '4 out of 5', exact: true }).check();
 }
 async function runTests() {
   await test('Student navigation keeps learning prominent and preserves secondary destinations on mobile',async page=>{
@@ -179,6 +179,7 @@ async function runTests() {
   await test('Confirmed feedback releases the applicable subject gate', async page => {
     state.obligations = [obligation()]; await page.goto(origin);
     await page.getByRole('button', { name: 'Give feedback for Quant 4', exact: true }).click(); await rating(page);
+    await page.screenshot({ path: path.join(output, 'student-feedback-form.png'), fullPage: true });
     await page.getByRole('button', { name: 'Send feedback', exact: true }).click();
     await until(async () => assert.equal(await page.getByRole('button', { name: 'Open Quant 5', exact: true }).isEnabled(), true));
     assert.equal(state.submissions.length, 1); assert.equal(state.submissions[0].response.attendance, 'recording');
