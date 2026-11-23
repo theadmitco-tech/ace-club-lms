@@ -201,10 +201,26 @@ async function runTests() {
     assert.equal(await page.getByRole('button', { name: 'Open Quant 5', exact: true }).isEnabled(), true);
     await until(async () => assert.equal(await page.getByRole('button', { name: 'Open Quant 4', exact: true }).isDisabled(), true));
   });
+  await test('Registered live classes separate what is on now, coming up and past', async page => {
+    const at = minutes => new Date(Date.now() + minutes * 60000).toISOString();
+    state.liveRegistered = true;
+    state.liveEvents = [
+      { key: id(951), title: 'Quant live now', section: 'quant', startsAt: at(-10), endsAt: at(110), completedAt: null, sessionKey: quant4 },
+      { key: id(952), title: 'Verbal next week', section: 'verbal', startsAt: at(7 * 1440), endsAt: at(7 * 1440 + 120), completedAt: null, sessionKey: null },
+      { key: id(953), title: 'Earlier DI class', section: 'di', startsAt: at(-3 * 1440), endsAt: at(-3 * 1440 + 120), completedAt: at(-3 * 1440 + 130), sessionKey: null },
+    ];
+    await page.goto(origin); await page.getByRole('button', { name: 'Live classes', exact: true }).click();
+    for (const heading of ['Coming up', 'Past classes']) await page.getByRole('heading', { name: heading, exact: true }).waitFor();
+    assert.equal(await page.getByRole('link', { name: 'Join class', exact: true }).getAttribute('href'), `/schedule/v2/${batchId}/live/${id(951)}`);
+    assert.equal(await page.getByRole('link', { name: 'Class details', exact: true }).count(), 1);
+    assert.equal(await page.getByRole('listitem').filter({ hasText: 'Earlier DI class' }).getByRole('link').count(), 0);
+    await page.screenshot({ path: path.join(output, 'student-live-classes.png'), fullPage: true });
+    assert.equal(state.calls.length, 0);
+  });
   await test('Unregistered live route shows no meeting action and retains recording navigation', async page => {
     await page.goto(origin); await page.getByRole('button', { name: 'Live classes', exact: true }).click();
-    await page.getByRole('heading', { name: 'Live registration is separate' }).waitFor();
-    assert.equal(await page.getByRole('link', { name: 'Open live class', exact: true }).count(), 0);
+    await page.getByRole('heading', { name: 'You don’t have a live seat' }).waitFor();
+    for (const name of ['Join class', 'Class details']) assert.equal(await page.getByRole('link', { name, exact: true }).count(), 0);
     await page.getByRole('button', { name: 'Recordings & materials', exact: true }).click();
     await page.getByRole('button', { name: 'Open Quant 4', exact: true }).waitFor();
   });
@@ -212,7 +228,7 @@ async function runTests() {
     state.liveRegistered = true; state.noRecording = true; const due = obligation(quant4, 'live'); state.obligations = [due];
     state.liveEvents = [{ key: due.eventKey, title: 'Quant live class', section: 'quant', startsAt: '2026-11-02T08:00:00Z', endsAt: '2026-11-02T09:00:00Z', completedAt: '2026-11-02T10:00:00Z', sessionKey: quant4 }];
     await page.goto(origin); await page.getByRole('button', { name: 'Live classes', exact: true }).click();
-    assert.equal(await page.getByRole('link', { name: 'Open live class', exact: true }).count(), 0);
+    for (const name of ['Join class', 'Class details']) assert.equal(await page.getByRole('link', { name, exact: true }).count(), 0);
     await page.getByRole('button', { name: 'Give feedback or report a missed class', exact: true }).click();
     await page.getByRole('radio', { name: 'I didn’t attend', exact: true }).check();
     assert.equal(await page.getByLabel('How useful was this session?').count(), 0);

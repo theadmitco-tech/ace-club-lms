@@ -10,7 +10,9 @@ import type { ContentPlacementView } from '@/lib/v2ContentPublishing';
 import { V2CourseSessionView, V2PlacedReadings } from './V2CourseSessionView';
 import styles from './v2Learning.module.css';
 const sectionName = (value: string) => value === 'di' ? 'DI' : value === 'quant' ? 'Quant' : value === 'verbal' ? 'Verbal' : 'Programme';
-const time = (value: string) => new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
+const dayLabel = (value: string) => new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short' }).format(new Date(value));
+const weekdayLabel = (value: string) => new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'short' }).format(new Date(value));
+const clockLabel = (value: string) => new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', hour: 'numeric', minute: '2-digit' }).format(new Date(value));
 async function saveLearning(body: Record<string, unknown>) {
   const response = await fetch('/api/v2/learning', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
   const result = await response.json();
@@ -75,6 +77,10 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
   const subjectSessions = outlineSessions.filter(session => session.section === subject);
   const [message, setMessage] = useState(''), [feedbackId, setFeedbackId] = useState<string | null>(null);
   const [focus, setFocus] = useState(false), [largeText, setLargeText] = useState(false);
+  // Captured once per page load; live-class states are recalculated when the page refreshes.
+  const [now] = useState(() => Date.now());
+  const upcoming = learning.liveEvents.filter(event => !event.completedAt && Date.parse(event.endsAt) > now).toSorted((a, b) => Date.parse(a.startsAt) - Date.parse(b.startsAt));
+  const past = learning.liveEvents.filter(event => !upcoming.includes(event)).toSorted((a, b) => Date.parse(b.startsAt) - Date.parse(a.startsAt));
   const feedbackRef = useRef<HTMLElement>(null);
   const active = courseSessions.find(s => s.key === selected && outlineSessions.some(item => item.key === s.key && item.section === s.section && !item.locked));
   const feedbackSessions = Array.from(new Map(learning.obligations.map(item => [
@@ -145,15 +151,30 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
       </div>
       <V2PlacedReadings sessions={course.sessions} placements={placements} placement="after_course" mode={mode} batchId={course.batchId} learningForSession={learningForSession} />
     </> : <section className={styles.livePanel} aria-labelledby="live-classes-heading"><h2 id="live-classes-heading">Your live classes</h2>
-      {!learning.liveRegistered ? <div className={styles.empty}><h3>Live registration is separate</h3><p>Live-session details and meeting links are available to eligible registered students. Recordings and course materials remain available with active course access.</p><Link href="/account/access">Review course access</Link></div>
-        : !learning.liveEvents.length ? <div className={styles.empty}><p>No live classes are published for this batch. The recording route is available independently.</p></div>
-          : <ol className={styles.liveList}>{learning.liveEvents.map(event => { const locked = event.sessionKey !== null && learning.sessions.some(s => s.key === event.sessionKey && s.locked); const due = learning.obligations.find(o => o.eventKey === event.key && o.batchId === course.batchId); return <li key={event.key}><span className={styles.label}>{sectionName(event.section)} · {event.completedAt ? 'Class completed' : 'Live class'}</span><h3>{event.title}</h3><p>{time(event.startsAt)} – {time(event.endsAt)} IST</p>
-            {event.completedAt ? <p>The class has ended. Feedback can also report a missed class; the recording remains optional.</p> : locked ? <p>Complete the pending feedback in this subject before opening another session.</p> : <Link className={styles.primary} href={`/schedule/v2/${course.batchId}/live/${event.key}`} prefetch={false}>Open live class</Link>}
-            {due && <button className={styles.secondary} type="button" onClick={() => showFeedback(due)}>Give feedback or report a missed class</button>}
-            {event.sessionKey && !locked && <button className={styles.secondary} type="button" onClick={() => select(event.sessionKey!)}>Open session materials</button>}
-          </li>; })}</ol>}
+      {!learning.liveRegistered ? <div className={styles.empty}><h3>You don’t have a live seat</h3><p>Live classes are optional. Every session’s recording and materials stay open to you. Each batch has eight live seats; the programme team can tell you if one is available.</p><Link href="/account/access">Check my access</Link></div>
+        : !learning.liveEvents.length ? <div className={styles.empty}><h3>No live classes yet</h3><p>Class dates appear here once they’re published. Recordings and materials are open meanwhile.</p></div>
+        : <>
+          {upcoming.length > 0 && <><h3 className={styles.liveGroup}>Coming up</h3><ol className={styles.liveList}>{upcoming.map(event => <LiveRow key={event.key} event={event} learning={learning} batchId={course.batchId} now={now} onFeedback={showFeedback} onMaterials={select} />)}</ol></>}
+          {past.length > 0 && <><h3 className={styles.liveGroup}>Past classes</h3><ol className={styles.liveList}>{past.map(event => <LiveRow key={event.key} event={event} learning={learning} batchId={course.batchId} now={now} onFeedback={showFeedback} onMaterials={select} />)}</ol></>}
+        </>}
     </section>}
   </div>;
+}
+/** One live class: date, time and the single action that fits its state. */
+function LiveRow({ event, learning, batchId, now, onFeedback, onMaterials }: { event: V2LearningState['liveEvents'][number]; learning: V2LearningState; batchId: string; now: number; onFeedback: (item: V2LearningObligation) => void; onMaterials: (sessionKey: string) => void }) {
+  const locked = event.sessionKey !== null && learning.sessions.some(s => s.key === event.sessionKey && s.locked);
+  const due = learning.obligations.find(o => o.eventKey === event.key && o.batchId === batchId);
+  const joinable = !event.completedAt && Date.parse(event.startsAt) - 15 * 60000 <= now && Date.parse(event.endsAt) > now;
+  return <li className={styles.liveRow} data-now={joinable || undefined}>
+    <div className={styles.liveDate}><strong>{dayLabel(event.startsAt)}</strong><span>{weekdayLabel(event.startsAt)}</span></div>
+    <div className={styles.liveInfo}><span className={styles.label}>{sectionName(event.section)}{joinable ? ' · On now' : event.completedAt ? ' · Completed' : ''}</span><h3>{event.title}</h3><p>{clockLabel(event.startsAt)}–{clockLabel(event.endsAt)} IST</p>
+      {locked && !event.completedAt && <p className={styles.liveNote}>Send the feedback that’s due in {sectionName(event.section)} to open this class.</p>}</div>
+    <div className={styles.liveActions}>
+      {!event.completedAt && !locked && <Link className={joinable ? styles.primary : styles.secondary} href={`/schedule/v2/${batchId}/live/${event.key}`} prefetch={false}>{joinable ? 'Join class' : 'Class details'}</Link>}
+      {due && <button className={styles.primary} type="button" onClick={() => onFeedback(due)}>Give feedback or report a missed class</button>}
+      {event.sessionKey && !locked && <button className={styles.secondary} type="button" onClick={() => onMaterials(event.sessionKey!)}>Session materials</button>}
+    </div>
+  </li>;
 }
 export type V2ResourceLearning = {
   publicationRevision: number; feedbackTracking?: boolean; progress: V2LearningProgress[];

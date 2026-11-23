@@ -144,3 +144,31 @@
 .feedbackForm textarea { border: 1px solid #cfdcd4; border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 14.5px; }
 .subjects button { flex-direction: row; white-space: nowrap; }
 .subjects button small { font-size: 11px; }
+
+/* ── Live classes v2 ───────────────────────────────────────────────────── */
+.livePanel h2 { font-size: 18px; margin: 0 0 14px; }
+.liveGroup { margin: 18px 0 8px; font-size: 12.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #56665d; }
+.liveList { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.liveList .liveRow { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 14px 16px; border: 1px solid #e3e9e5; border-radius: 14px; background: #fff; }
+.liveList .liveRow[data-now] { border-color: #9cc0ab; background: #f3f9f5; box-shadow: 0 0 0 3px #e3efe8; }
+.liveDate { display: grid; justify-items: center; gap: 1px; padding: 8px 4px; border-radius: 10px; background: #f4f7f5; }
+.liveDate strong { font-size: 14px; color: #1f3a2d; }
+.liveDate span { font-size: 12px; color: #56665d; }
+.liveInfo { display: grid; gap: 2px; min-width: 0; }
+.liveInfo h3 { margin: 0; font-size: 15.5px; color: #1f3a2d; }
+.liveInfo p { margin: 0; font-size: 13.5px; color: #4d6157; }
+.liveNote { color: #7a4f10 !important; }
+.liveActions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.liveActions :is(a, button) { min-height: 42px; padding: 8px 14px; border-radius: 10px; font-size: 14px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+@media (max-width: 640px) { .liveList .liveRow { grid-template-columns: 56px minmax(0, 1fr); } .liveActions { grid-column: 1 / -1; justify-content: flex-start; } }
+
+.liveCard { max-width: 640px; margin: 8px 0 24px; padding: clamp(20px, 3vw, 28px); border: 1px solid #e3e9e5; border-radius: 16px; background: #fff; box-shadow: 0 1px 2px #1f3a2c08, 0 6px 24px #1f3a2c0a; display: grid; gap: 10px; }
+.liveCard h1 { margin: 0; font-size: clamp(22px, 3vw, 28px); letter-spacing: -0.02em; color: #1f3a2d; }
+.liveWhen { margin: 0; font-size: 15px; color: #3d5246; }
+.joinButton { justify-self: start; display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; min-height: 52px; padding: 12px 24px; border-radius: 12px; background: #245d47; color: #fff; font-size: 16px; font-weight: 700; text-decoration: none; }
+.joinButton:hover { background: #1d4c3a; }
+.joinButton:focus-visible { outline: 3px solid #2f6b52; outline-offset: 3px; }
+.liveHint { margin: 0; font-size: 13.5px; color: #56665d; }
+.liveUnavailable { margin-top: 6px; padding: 14px 16px; border-radius: 12px; background: #f6f9f7; }
+.liveUnavailable h2 { margin: 0 0 6px; font-size: 16px; }
+.liveUnavailable ul { margin: 0 0 12px; padding-left: 18px; font-size: 14px; color: #3d5246; line-height: 1.6; }
