@@ -202,3 +202,29 @@
 .tabs button, .tabs > a { white-space: nowrap; }
 @media (max-width: 480px) { .tabs { overflow-x: auto; } .tabs button, .tabs > a { padding: 9px 10px; font-size: 14px; } }
 .courseSwitch a { max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Course page v4: underline route tabs and a compact subject switch ── */
+.toolbar { margin: 12px 0 16px; border-bottom: 1px solid #e3e9e5; }
+.tabs { gap: 4px; border: 0; border-radius: 0; padding: 0; background: transparent; box-shadow: none; }
+.tabs button, .tabs > a { position: relative; min-height: 46px; padding: 10px 14px; border-radius: 0; background: transparent; color: #5b6b62; font-size: 15px; font-weight: 600; }
+.tabs button:hover, .tabs > a:hover { background: transparent; color: #1f3a2d; }
+.tabs .activeTab { background: transparent; color: #1f3a2d; }
+.tabs .activeTab::after { content: ''; position: absolute; left: 12px; right: 12px; bottom: -1px; height: 3px; border-radius: 3px 3px 0 0; background: #245d47; }
+.tabs button:focus-visible, .tabs > a:focus-visible { outline-offset: -3px; }
+
+.subjects { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 4px; margin: 0 0 18px; border: 1px solid #e0e7e2; border-radius: 12px; background: #f2f5f3; }
+.subjects button, .subjects > a { min-height: 38px; padding: 7px 18px; border: 0; border-radius: 9px; background: transparent; color: #3d5246; font-size: 14.5px; font-weight: 600; box-shadow: none; }
+.subjects button:hover, .subjects > a:hover { background: #e6ece8; }
+.subjects button[aria-pressed="true"] { background: #fff; color: #1f3a2d; box-shadow: 0 1px 3px #1f3a2c29; }
+.subjects button small { margin-left: 6px; padding: 1px 7px; border-radius: 999px; background: #fbe9c4; color: #7a4f10; font-size: 11px; font-weight: 700; }
+.subjects button[aria-pressed="true"] small { color: #7a4f10; }
+.subjects .lockedSubject { border: 0; background: transparent; color: #8a978f; }
+.subjects .lockedSubject:hover { background: #e6ece8; color: #56665d; }
+.subjects .lockedSubject[aria-pressed="true"] { background: #fff7e6; color: #6b4a12; box-shadow: none; }
+
+@media (max-width: 480px) {
+  .tabs button, .tabs > a { padding: 10px 10px; font-size: 14px; }
+  .tabs .activeTab::after { left: 8px; right: 8px; }
+  .subjects { display: flex; }
+  .subjects button, .subjects > a { flex: 1; justify-content: center; padding: 7px 10px; }
+}

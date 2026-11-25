@@ -27,7 +27,7 @@ export default async function LiveClassPage({ params }: { params: Promise<{ batc
   return <div className="student-page"><StudentHeader studentName={studentName} /><main className="student-main"><div className="student-container">
     <Link className={styles.backLink} href={back}>← Live classes</Link>
     <section className={styles.liveCard} aria-labelledby="live-class-title">
-      <span className={styles.label}>Live class{event ? ` · ${event.section === 'di' ? 'DI' : event.section === 'quant' ? 'Quant' : event.section === 'verbal' ? 'Verbal' : 'Programme'}` : ''}</span>
+      <span className={styles.label}>Live class{event && event.section !== 'programme' ? ` · ${event.section === 'di' ? 'DI' : event.section === 'quant' ? 'Quant' : 'Verbal'}` : ''}</span>
       <h1 id="live-class-title">{event?.title ?? 'Live class'}</h1>
       {event && <p className={styles.liveWhen}>{when(event.startsAt, event.endsAt)}</p>}
       {meeting ? <>

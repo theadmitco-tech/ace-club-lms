@@ -71,11 +71,12 @@ export type V2OtherSubject = { section: 'quant' | 'verbal' | 'di'; href: string 
 export function V2LearningWorkspace({ course, learning, initialView = 'recordings', placements = [], preview = false, otherSubjects = [] }: { course: V2PublishedCourse; learning: V2LearningState; initialView?: 'recordings' | 'live'; placements?: ContentPlacementView[]; preview?: boolean; otherSubjects?: V2OtherSubject[] }) {
   const router = useRouter();
   const courseSessions = course.productCode === 'full_course' ? course.sessions : withCourseReadmes(course.batchId, course.productCode, course.sessions);
-  const outlineSessions = pinCourseReadmes([...learning.sessions, ...courseSessions.filter(session => courseReadmePosition(session.key) && !learning.sessions.some(item => item.key === session.key)).map(session => ({ key: session.key, title: session.title, section: session.section, locked: false }))]);
+  // Students see subject sessions only; non-subject schedule items (breaks and similar) are not shown.
+  const outlineSessions = pinCourseReadmes([...learning.sessions, ...courseSessions.filter(session => courseReadmePosition(session.key) && !learning.sessions.some(item => item.key === session.key)).map(session => ({ key: session.key, title: session.title, section: session.section, locked: false }))]).filter(session => session.section !== 'programme');
   const initial = outlineSessions.find(s => s.key === learning.lastSessionKey && !s.locked)?.key ?? outlineSessions.find(s => !s.locked)?.key ?? null;
   const [selected, setSelected] = useState<string | null>(initial), [tab, setTab] = useState<'recordings' | 'live'>(initialView);
   const [subject, setSubject] = useState<string>(() => outlineSessions.find(s => s.key === initial)?.section ?? 'quant');
-  const subjects = ['quant', 'verbal', 'di', 'programme'].filter(section => outlineSessions.some(session => session.section === section));
+  const subjects = ['quant', 'verbal', 'di'].filter(section => outlineSessions.some(session => session.section === section));
   const subjectSessions = outlineSessions.filter(session => session.section === subject);
   const [message, setMessage] = useState(''), [feedbackId, setFeedbackId] = useState<string | null>(null);
   const [lockedSubject, setLockedSubject] = useState<string | null>(null);
@@ -162,25 +163,25 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
       {!learning.liveRegistered ? <div className={styles.empty}><h3>You don’t have a live seat</h3><p>Live classes are optional. Every session’s recording and materials stay open to you. Each batch has eight live seats; the programme team can tell you if one is available.</p><Link href="/account/access">Check my access</Link></div>
         : !learning.liveEvents.length ? <div className={styles.empty}><h3>No live classes yet</h3><p>Class dates appear here once they’re published. Recordings and materials are open meanwhile.</p></div>
         : <>
-          {upcoming.length > 0 && <><h3 className={styles.liveGroup}>Coming up</h3><ol className={styles.liveList}>{upcoming.map(event => <LiveRow key={event.key} event={event} learning={learning} batchId={course.batchId} now={now} onFeedback={showFeedback} onMaterials={select} />)}</ol></>}
-          {past.length > 0 && <><h3 className={styles.liveGroup}>Past classes</h3><ol className={styles.liveList}>{past.map(event => <LiveRow key={event.key} event={event} learning={learning} batchId={course.batchId} now={now} onFeedback={showFeedback} onMaterials={select} />)}</ol></>}
+          {upcoming.length > 0 && <><h3 className={styles.liveGroup}>Coming up</h3><ol className={styles.liveList}>{upcoming.map(event => <LiveRow key={event.key} event={event} learning={learning} batchId={course.batchId} now={now} onFeedback={showFeedback} onMaterials={select} hasMaterials={key => outlineSessions.some(item => item.key === key)} />)}</ol></>}
+          {past.length > 0 && <><h3 className={styles.liveGroup}>Past classes</h3><ol className={styles.liveList}>{past.map(event => <LiveRow key={event.key} event={event} learning={learning} batchId={course.batchId} now={now} onFeedback={showFeedback} onMaterials={select} hasMaterials={key => outlineSessions.some(item => item.key === key)} />)}</ol></>}
         </>}
     </section>}
   </div>;
 }
 /** One live class: date, time and the single action that fits its state. */
-function LiveRow({ event, learning, batchId, now, onFeedback, onMaterials }: { event: V2LearningState['liveEvents'][number]; learning: V2LearningState; batchId: string; now: number; onFeedback: (item: V2LearningObligation) => void; onMaterials: (sessionKey: string) => void }) {
+function LiveRow({ event, learning, batchId, now, onFeedback, onMaterials, hasMaterials }: { event: V2LearningState['liveEvents'][number]; learning: V2LearningState; batchId: string; now: number; onFeedback: (item: V2LearningObligation) => void; onMaterials: (sessionKey: string) => void; hasMaterials: (sessionKey: string) => boolean }) {
   const locked = event.sessionKey !== null && learning.sessions.some(s => s.key === event.sessionKey && s.locked);
   const due = learning.obligations.find(o => o.eventKey === event.key && o.batchId === batchId);
   const joinable = !event.completedAt && Date.parse(event.startsAt) - 15 * 60000 <= now && Date.parse(event.endsAt) > now;
   return <li className={styles.liveRow} data-now={joinable || undefined}>
     <div className={styles.liveDate}><strong>{dayLabel(event.startsAt)}</strong><span>{weekdayLabel(event.startsAt)}</span></div>
-    <div className={styles.liveInfo}><span className={styles.label}>{sectionName(event.section)}{joinable ? ' · On now' : event.completedAt ? ' · Completed' : ''}</span><h3>{event.title}</h3><p>{clockLabel(event.startsAt)}–{clockLabel(event.endsAt)} IST</p>
+    <div className={styles.liveInfo}><span className={styles.label}>{[event.section !== 'programme' ? sectionName(event.section) : '', joinable ? 'On now' : event.completedAt ? 'Completed' : ''].filter(Boolean).join(' · ') || 'Live class'}</span><h3>{event.title}</h3><p>{clockLabel(event.startsAt)}–{clockLabel(event.endsAt)} IST</p>
       {locked && !event.completedAt && <p className={styles.liveNote}>Send the feedback that’s due in {sectionName(event.section)} to open this class.</p>}</div>
     <div className={styles.liveActions}>
       {!event.completedAt && !locked && <Link className={joinable ? styles.primary : styles.secondary} href={`/schedule/v2/${batchId}/live/${event.key}`} prefetch={false}>{joinable ? 'Join class' : 'Class details'}</Link>}
       {due && <button className={styles.primary} type="button" onClick={() => onFeedback(due)}>Give feedback or report a missed class</button>}
-      {event.sessionKey && !locked && <button className={styles.secondary} type="button" onClick={() => onMaterials(event.sessionKey!)}>Session materials</button>}
+      {event.sessionKey && !locked && hasMaterials(event.sessionKey) && <button className={styles.secondary} type="button" onClick={() => onMaterials(event.sessionKey!)}>Session materials</button>}
     </div>
   </li>;
 }
