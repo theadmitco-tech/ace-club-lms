@@ -1,0 +1,19 @@
+.page { display: grid; gap: 26px; max-width: 860px; margin: 0 auto; color: #293f36; }
+.intro h1 { margin: 0; font-size: clamp(28px, 3.2vw, 36px); letter-spacing: -.02em; color: #1f3a2d; }
+.intro p { margin: 6px 0 0; font-size: 15.5px; color: #4d6157; }
+.sectionTitle { margin: 0 0 12px; font-size: 13px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #56665d; }
+.questions { display: grid; gap: 8px; }
+.questions details { border: 1px solid #e3e9e5; border-radius: 14px; background: #fff; }
+.questions summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; cursor: pointer; list-style: none; font-size: 15.5px; font-weight: 600; color: #1f3a2d; }
+.questions summary::-webkit-details-marker { display: none; }
+.questions summary::after { content: '+'; flex: none; font-size: 20px; font-weight: 400; color: #2f6b52; }
+.questions details[open] summary::after { content: '–'; }
+.questions summary:focus-visible { outline: 3px solid #2f6b52; outline-offset: 2px; border-radius: 14px; }
+.questions p { margin: 0; padding: 0 20px 18px; font-size: 14.5px; line-height: 1.65; color: #3d5246; }
+.questions a, .contact a { font-weight: 600; color: #245d47; }
+.contact { padding: 24px; border: 1px solid #cfe2d6; border-radius: 16px; background: linear-gradient(180deg, #f1f8f3, #fff); }
+.contact h2 { margin: 0 0 6px; font-size: 19px; color: #1f3a2d; }
+.contact p { margin: 0 0 14px; color: #4d6157; line-height: 1.6; }
+.contact ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.contact li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; font-size: 15px; }
+.contact li span { min-width: 80px; font-size: 13px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: #56665d; }

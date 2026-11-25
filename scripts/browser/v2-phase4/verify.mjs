@@ -148,7 +148,7 @@ async function runTests() {
     assert.equal(await nav.getByRole('link',{name:'My learning'}).count(),0);
     await page.locator('summary[aria-label^="Account menu"]').focus();await page.keyboard.press('Enter');
     const account=page.getByRole('navigation',{name:'Account'});
-    assert.equal(await page.getByRole('navigation',{name:'More pages'}).count(),0);assert.deepEqual(await account.getByRole('link').allTextContents(),['My access','Explore courses']);
+    assert.equal(await page.getByRole('navigation',{name:'More pages'}).count(),0);assert.deepEqual(await account.getByRole('link').allTextContents(),['My access','Explore courses','Help']);
     for(const [area,label] of [[account,'My access'],[account,'Explore courses']]){const link=area.getByRole('link',{name:label,exact:true});await link.waitFor();assert.equal(await link.evaluate(el=>{const r=el.getBoundingClientRect();const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return el.contains(hit);}),true);}
     await noOverflow(page);await page.screenshot({path:path.join(output,'student-navigation-mobile.png'),fullPage:true});
   },true);

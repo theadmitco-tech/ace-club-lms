@@ -53,6 +53,7 @@ export function StudentHeader({ studentName }: { studentName: string }) {
             <p className={styles.menuName}>{studentName}</p>
             <nav aria-label="Account">
               {preview && <><Link href="/account/access" prefetch={false}>My access</Link><Link href="/courses/v2" prefetch={false}>Explore courses</Link></>}
+              <Link href="/help" prefetch={false}>Help</Link>
             </nav>
             <div className={styles.signOut}><SignOutButton /></div>
           </div>
