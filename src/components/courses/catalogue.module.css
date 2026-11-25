@@ -90,3 +90,35 @@ a.primary:focus-visible, button.primary:focus-visible, a.secondary:focus-visible
 .addActions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
 a.textLink { font-size: 14px; font-weight: 600; color: #245d47; text-decoration: none; }
 a.textLink:hover { text-decoration: underline; }
+
+/* ── Explore courses v3: what every course includes, then four offers ── */
+.howItWorks { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin: 0 0 22px; }
+.howItWorks > div { position: relative; padding: 18px 20px 18px 66px; border-radius: 14px; background: #fff; border: 1px solid #e0e7e2; }
+.howItWorks h3 { margin: 0 0 4px; display: flex; align-items: center; gap: 8px; font-size: 16.5px; color: #1f3a2d; }
+.howItWorks p { margin: 0; font-size: 14.5px; line-height: 1.55; color: #3d5246; }
+.howIcon { position: absolute; left: 18px; top: 18px; display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: #e8f2ec; color: #245d47; font-size: 14px; }
+.howItWorks > div:last-child .howIcon { background: #fdecea; color: #c2402a; font-size: 12px; }
+.included { padding: 2px 9px; border-radius: 999px; background: #e8f2ec; color: #245d47; font-size: 11.5px; font-weight: 700; letter-spacing: .02em; }
+
+.offers { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; align-items: stretch; }
+.offer { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 22px 20px 20px; border: 1px solid #e0e7e2; border-radius: 16px; background: #fff; box-shadow: 0 1px 2px #1f3a2c08, 0 6px 24px #1f3a2c0a; }
+.offer[data-featured] { border: 2px solid #245d47; padding: 21px 19px 19px; background: linear-gradient(180deg, #eef6f1, #fff 55%); }
+.ribbon { position: absolute; top: -12px; left: 18px; padding: 3px 11px; border-radius: 999px; background: #245d47; color: #fff; font-size: 11.5px; font-weight: 700; letter-spacing: .03em; }
+.offer h2 { margin: 0; font-size: 19px; letter-spacing: -.01em; color: #1f3a2d; }
+.offerLead { margin: 0; font-size: 14px; line-height: 1.5; color: #4d6157; }
+.offerPrice { margin: 4px 0 2px; display: grid; font-size: 26px; font-weight: 700; letter-spacing: -.02em; color: #1f3a2d; font-variant-numeric: tabular-nums; }
+.offerPrice small { margin-top: 2px; font-size: 13px; font-weight: 600; letter-spacing: 0; color: #2f6b52; }
+.offer .points { flex: 1; }
+.offer .points li { font-size: 14px; }
+.offer > button { margin-top: auto; width: 100%; }
+button.secondary { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 20px; border: 1px solid #cfdcd4; border-radius: 10px; background: #fff; color: #245d47; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
+button.secondary:hover { background: #f1f6f3; }
+button.secondary:disabled { color: #8a978f; background: #f6f8f7; cursor: not-allowed; }
+button.secondary:focus-visible { outline: 3px solid #2f6b52; outline-offset: 2px; }
+.pick { flex: 1; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 6px; margin: 0; padding: 0; border: 0; }
+.pick legend { margin-bottom: 6px; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: #56665d; }
+.pick label { display: inline-flex; align-items: center; gap: 7px; min-height: 38px; padding: 6px 12px; border: 1.5px solid #d6e0d9; border-radius: 999px; font-size: 14px; font-weight: 600; color: #1f3a2d; cursor: pointer; }
+.pick label:has(input:checked) { border-color: #245d47; background: #eef5f0; }
+.pick label:has(input:disabled) { opacity: .5; cursor: default; }
+.pick label:has(input:focus-visible) { outline: 3px solid #2f6b52; outline-offset: 2px; }
+.pick input { margin: 0; accent-color: #245d47; }

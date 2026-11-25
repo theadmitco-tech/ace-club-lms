@@ -1,12 +1,11 @@
 import Link from 'next/link';
-import { isV2CheckoutEnabled, loadV2Sales } from '@/lib/server/v2Checkout';
-import { SalesOutlines } from '@/components/courses/SalesOutlines';
+import { isV2CheckoutEnabled } from '@/lib/server/v2Checkout';
 import { notFound } from 'next/navigation';
 import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
 import { loadCourseCatalogue } from '@/lib/server/v2CourseWorkspace';
 import { quoteV2Products } from '@/lib/server/v2Products';
 import { courseIdentity, courseMoney, courseNames, parseCourseSelection } from '@/lib/v2CoursePresentation';
-import { CoursePackagePicker } from '@/components/courses/CoursePackagePicker';
+import { CourseOffers } from '@/components/courses/CourseOffers';
 import { BrandLogo } from '@/components/BrandLogo';
 import styles from '@/components/courses/catalogue.module.css';
 
@@ -15,7 +14,6 @@ export default async function CourseCataloguePage({ searchParams }: { searchPara
   if (!isV2Phase1PreviewEnabled()) notFound();
   const params = await searchParams;
   const checkoutEnabled = isV2CheckoutEnabled();
-  const sales = checkoutEnabled ? await loadV2Sales().catch(() => null) : null;
   const products = await loadCourseCatalogue();
   const selection = parseCourseSelection(params.course);
   // Arriving from a subject the student hasn't bought: explain why, and pre-select that subject.
@@ -45,11 +43,16 @@ export default async function CourseCataloguePage({ searchParams }: { searchPara
     <main className={styles.main}>
       <div className={styles.intro}>
         <h1>Explore courses</h1>
-        <p>GMAT preparation in Quant, Verbal and DI. Every course includes six months of access to sessions, recordings and materials, plus live classes while seats last.</p>
+        <p>GMAT preparation in Quant, Verbal and DI. Pick the full programme or just the subjects you need.</p>
       </div>
+      <section className={styles.howItWorks} aria-labelledby="how-heading">
+        <h2 id="how-heading" className={styles.visuallyHidden}>What every course includes</h2>
+        <div><span className={styles.howIcon} aria-hidden="true">▶</span><h3>Learn anytime</h3><p>Every session’s recording, readings and worksheets, open for six months. Study in any order, at your own pace.</p></div>
+        <div><span className={styles.howIcon} aria-hidden="true">●</span><h3>Join live classes <span className={styles.included}>Included</span></h3><p>Each course has a small live batch of eight seats at no extra cost. If seats run out, you still get every recording.</p></div>
+      </section>
       {addSubject && <section className={styles.addNotice} aria-labelledby="add-subject-heading">
         <div><h2 id="add-subject-heading">Want to study {addSubject.name} too?</h2>
-          <p>{addSubject.name} isn’t part of your package yet. It’s ticked below so you can see the price. If you already have a course, adding a subject costs only the difference and keeps your end date.</p></div>
+          <p>{addSubject.name} isn’t part of your package yet. It’s selected below so you can see the price. If you already have a course, adding a subject costs only the difference and keeps your end date.</p></div>
         <div className={styles.addActions}><Link className={styles.secondary} href="/account/access/upgrade" prefetch={false}>See upgrade price</Link><Link className={styles.textLink} href="/schedule/v2" prefetch={false}>← Back to my course</Link></div>
       </section>}
       {!checkoutEnabled && <p className={styles.notice}><strong>Preview</strong> Prices are live, but online purchase isn’t open yet.</p>}
@@ -57,22 +60,11 @@ export default async function CourseCataloguePage({ searchParams }: { searchPara
       {products === null ? <section className={styles.panel} role="alert"><h2>Courses couldn’t be loaded</h2><p>No sample prices or courses are shown instead.</p><Link className={styles.secondary} href="/courses/v2" prefetch={false}>Retry catalogue</Link></section>
         : products.length === 0 ? <section className={styles.panel}><h2>No courses are open right now</h2><p>Your existing purchases are still listed in My access.</p></section>
           : <>
-            <div className={styles.options}>
-              {individualProducts.length > 0 && <CoursePackagePicker key={selection?.join(',') ?? addSubject?.code ?? 'empty'} subjects={individualProducts.map((product) => ({ identity: courseIdentity(product.code), name: product.name }))} tiers={tiers} initialSelection={(selection ?? (addSubject ? [addSubject.code] : [])).filter((code) => individualProducts.some((product) => product.code === code)).map(courseIdentity)} />}
-              {fullCourse && <section className={styles.option} data-featured aria-labelledby="full-course-heading">
-                <h2 id="full-course-heading">Full Course</h2>
-                <p>Quant, Verbal and DI together as one complete programme.</p>
-                <ul className={styles.points}><li>All three subjects in one course</li><li>Six months of access</li><li>Live classes while seats last</li></ul>
-                <div className={styles.pickFooter}>
-                  <strong className={styles.price}>{fullCourse.amountPaise === null ? 'Price unavailable' : courseMoney(fullCourse.amountPaise)}</strong>
-                  <Link className={styles.primary} href="/courses/v2?course=full_course#quote" prefetch={false}>Review Full Course</Link>
-                </div>
-              </section>}
-            </div>
+            <CourseOffers key={selection?.join(',') ?? addSubject?.code ?? 'empty'} subjects={individualProducts.map((product) => ({ identity: courseIdentity(product.code), name: product.name }))} tiers={tiers}
+              fullCoursePaise={fullCourse ? fullCourse.amountPaise : undefined} preselected={addSubject ? courseIdentity(addSubject.code) : undefined} />
             {fullCourse && individualProducts.length === 3 && <aside className={styles.callout} aria-labelledby="compare-heading">
-              <h2 id="compare-heading">All three subjects or Full Course?</h2>
-              <p>Both include Quant, Verbal and DI for six months. <strong>Three subjects</strong> run as separate courses, each on its own schedule. <strong>Full Course</strong> is one programme with all three subjects together, and its live classes are spaced out over a longer period.</p>
-              {checkoutEnabled && sales?.batches.length ? <a href="#published-courses">See the published schedule for class dates</a> : <p className={styles.muted}>Class dates for each batch appear here once registration opens.</p>}
+              <h2 id="compare-heading">Full Course or all three subjects?</h2>
+              <p>They cost the same and cover the same subjects. <strong>Full Course</strong> teaches Quant, Verbal and DI together as one programme, with classes spread out over a longer period. <strong>All three subjects</strong> are three separate, shorter courses that you take one after another.</p>
             </aside>}
 
             {(quote || quoteError) && <section id="quote" className={styles.panel} aria-labelledby="quote-heading">
@@ -85,7 +77,6 @@ export default async function CourseCataloguePage({ searchParams }: { searchPara
             </section>}
           </>}
 
-      {checkoutEnabled && (sales ? <SalesOutlines {...sales} /> : <section className={styles.panel}><h2>Batch details are unavailable</h2><p>Registration needs the published course details. Please try again shortly.</p></section>)}
     </main>
   </div>;
 }
