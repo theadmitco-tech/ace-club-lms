@@ -19,7 +19,9 @@ export default async function CourseCataloguePage({ searchParams }: { searchPara
   // Arriving from a subject the student hasn't bought: explain why, and pre-select that subject.
   const addable = { quant: { code: 'quant_crash', name: 'Quant' }, verbal: { code: 'verbal_crash', name: 'Verbal' }, di: { code: 'di_crash', name: 'DI' } } as const;
   const addSubject = typeof params.add === 'string' && Object.hasOwn(addable, params.add) ? addable[params.add as keyof typeof addable] : null;
-  const individualProducts = (products ?? []).filter((product) => product.code !== 'full_batch');
+  const SUBJECT_ORDER = ['quant_crash', 'verbal_crash', 'di_crash'];
+  const individualProducts = (products ?? []).filter((product) => product.code !== 'full_batch')
+    .toSorted((a, b) => SUBJECT_ORDER.indexOf(a.code) - SUBJECT_ORDER.indexOf(b.code));
   const fullCourse = products?.find((product) => product.code === 'full_batch');
   const tiers = await Promise.all([1, 2, 3].filter((count) => count <= individualProducts.length).map(async (count) => {
     try { return { count, amountPaise: (await quoteV2Products(individualProducts.slice(0, count).map((product) => product.code))).amount_paise }; }
@@ -42,9 +44,13 @@ export default async function CourseCataloguePage({ searchParams }: { searchPara
         <p>GMAT preparation in Quant, Verbal and DI. Pick the full programme or just the subjects you need.</p>
       </div>
       <section className={styles.howItWorks} aria-labelledby="how-heading">
-        <h2 id="how-heading" className={styles.visuallyHidden}>What every course includes</h2>
-        <div><span className={styles.howIcon} aria-hidden="true">▶</span><h3>Learn anytime</h3><p>Every session’s recording, readings and worksheets, open for six months. Study in any order, at your own pace.</p></div>
-        <div><span className={styles.howIcon} aria-hidden="true">●</span><h3>Join live classes <span className={styles.included}>Included</span></h3><p>Each course has a small live batch of eight seats at no extra cost. If seats run out, you still get every recording.</p></div>
+        <h2 id="how-heading">Every course includes</h2>
+        <div className={styles.howItems}>
+          <div><span className={styles.howIcon} aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="3" /><path d="m10 9 5 3-5 3z" fill="currentColor" /></svg></span>
+            <div><h3>Learn anytime</h3><p>Every session’s recording, readings and worksheets, open for six months. Study in any order, at your own pace.</p></div></div>
+          <div><span className={styles.howIcon} data-live aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="9" cy="8" r="3" /><path d="M3.5 19a5.5 5.5 0 0 1 11 0" /><circle cx="17.5" cy="9.5" r="2.3" /><path d="M15.5 14.6a4.5 4.5 0 0 1 5.5 4.4" /></svg></span>
+            <div><h3>Live classes <span className={styles.included}>Included</span></h3><p>A small live batch of eight seats at no extra cost. If seats run out, you still get every recording.</p></div></div>
+        </div>
       </section>
       {addSubject && <section className={styles.addNotice} aria-labelledby="add-subject-heading">
         <div><h2 id="add-subject-heading">Want to study {addSubject.name} too?</h2>

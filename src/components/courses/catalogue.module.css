@@ -170,3 +170,64 @@ a.backLink:hover { text-decoration: underline; }
   .stageList li { flex-wrap: wrap; }
   .lockTag { margin-left: 52px; }
 }
+
+/* ── Explore courses v4: aligned offer cards, segmented subject choice, one includes band ── */
+.header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; padding-block: 10px; background: #ffffffee; backdrop-filter: blur(8px); box-shadow: 0 1px 0 #e3e9e5; }
+.header nav a { border-radius: 8px; }
+
+.intro { margin-bottom: 22px; }
+.intro h1 { font-size: clamp(30px, 3.6vw, 40px); }
+.intro p { font-size: 17px; }
+
+.howItWorks { display: grid; gap: 14px; margin: 0 0 28px; padding: 22px 24px; border: 1px solid #d9e8de; border-radius: 18px; background: linear-gradient(135deg, #f1f8f3, #fafcfb); }
+.howItWorks h2 { margin: 0; font-size: 12.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: #2f6b52; }
+.howItems { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px 32px; }
+.howItems > div { display: flex; align-items: flex-start; gap: 14px; }
+.howItems h3 { margin: 0 0 3px; display: flex; align-items: center; gap: 8px; font-size: 16.5px; color: #1f3a2d; }
+.howItems p { margin: 0; font-size: 14.5px; line-height: 1.55; color: #3d5246; }
+.howItWorks .howIcon { position: static; flex: none; display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: #fff; color: #245d47; box-shadow: 0 1px 3px #1f3a2c1f; }
+.howItWorks .howIcon[data-live] { color: #b4532a; }
+
+.offers { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 18px; align-items: stretch; }
+.offer { display: grid; grid-row: span 5; grid-template-rows: subgrid; row-gap: 12px; margin-bottom: 18px; padding: 28px 22px 22px; border-radius: 18px; transition: box-shadow .15s ease, transform .15s ease; }
+.offer:hover { box-shadow: 0 2px 4px #1f3a2c0d, 0 14px 34px #1f3a2c14; }
+.offer[data-featured] { padding: 27px 21px 21px; }
+.offer h2 { align-self: end; font-size: 20px; }
+.offerLead { font-size: 14.5px; }
+.offerPrice { margin: 2px 0 0; padding-bottom: 12px; border-bottom: 1px solid #eef2ef; font-size: 30px; }
+.offerPrice small { min-height: 1.3em; font-size: 13px; }
+.offer .points { align-self: start; gap: 9px; }
+.offer .points li { font-size: 14px; line-height: 1.45; }
+.offer > button { align-self: end; min-height: 46px; }
+
+.pick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-self: start; gap: 6px; padding: 4px; border: 1px solid #e0e7e2; border-radius: 12px; background: #f3f6f4; }
+.pick legend { float: left; width: 100%; grid-column: 1 / -1; margin: 0 0 8px; padding: 0; }
+.pick label { position: relative; justify-content: center; min-height: 40px; padding: 8px 6px; border: 0; border-radius: 9px; background: transparent; font-size: 14.5px; color: #3d5246; text-align: center; }
+.pick label:hover { background: #e7eee9; }
+.pick input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.pick label:has(input:checked) { border: 0; background: #245d47; color: #fff; box-shadow: 0 1px 3px #1f3a2c33; }
+.pick label:has(input:disabled:not(:checked)) { opacity: .45; }
+.pick label:has(input:focus-visible) { outline: 3px solid #2f6b52; outline-offset: 2px; }
+
+.callout { margin-top: 6px; border-left-width: 1px; border-color: #d2e1f0; background: #f4f8fc; }
+.callout h2 { font-size: 17px; }
+
+@media (max-width: 1100px) { .offers { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  .offers { grid-template-columns: minmax(0, 1fr); }
+  .howItWorks { padding: 18px; }
+}
+/* The includes band holds one inner grid; reset the earlier two-box rules on it. */
+.howItWorks { grid-template-columns: minmax(0, 1fr); }
+.howItWorks > div { position: static; padding: 0; border: 0; border-radius: 0; background: none; }
+.howItems { grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); }
+/* Subject choice: label above, then three even, clearly clickable options. */
+.pick { display: block; padding: 0; border: 0; background: none; }
+.pick legend { float: none; margin: 0 0 8px; font-size: 12px; }
+.pickRow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.pick label { border: 1.5px solid #d6e0d9; background: #fff; color: #1f3a2d; }
+.pick label:hover { border-color: #9fbcab; background: #f6faf7; }
+.pick label:has(input:checked) { border-color: #245d47; }
+/* Icons in the includes band: green for learning, warm for live. */
+.howItWorks > div.howItems .howIcon { background: #fff; color: #245d47; }
+.howItWorks > div.howItems .howIcon[data-live] { background: #fff; color: #b4532a; }
