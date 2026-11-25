@@ -147,8 +147,9 @@ async function runTests() {
     for(const [label,href] of [['Quant','/schedule/v2?subject=quant'],['Verbal','/schedule/v2?subject=verbal'],['DI','/schedule/v2?subject=di'],['Live classes','/schedule/v2?view=live'],['Mocks','/dashboard?view=practice']])assert.equal(await nav.getByRole('link',{name:label,exact:true}).getAttribute('href'),href);
     assert.equal(await nav.getByRole('link',{name:'My learning'}).count(),0);
     await page.locator('summary[aria-label^="Account menu"]').focus();await page.keyboard.press('Enter');
-    const account=page.getByRole('navigation',{name:'Account'}),more=page.getByRole('navigation',{name:'More pages'});
-    for(const [area,label] of [[account,'My access'],[account,'Explore courses'],[more,'Schedule'],[more,'Resources'],[more,'Practice log']]){const link=area.getByRole('link',{name:label,exact:true});await link.waitFor();assert.equal(await link.evaluate(el=>{const r=el.getBoundingClientRect();const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return el.contains(hit);}),true);}
+    const account=page.getByRole('navigation',{name:'Account'});
+    assert.equal(await page.getByRole('navigation',{name:'More pages'}).count(),0);assert.deepEqual(await account.getByRole('link').allTextContents(),['My access','Explore courses']);
+    for(const [area,label] of [[account,'My access'],[account,'Explore courses']]){const link=area.getByRole('link',{name:label,exact:true});await link.waitFor();assert.equal(await link.evaluate(el=>{const r=el.getBoundingClientRect();const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return el.contains(hit);}),true);}
     await noOverflow(page);await page.screenshot({path:path.join(output,'student-navigation-mobile.png'),fullPage:true});
   },true);
   await test('Library separates recordings from registered live classes without granting access',async page=>{

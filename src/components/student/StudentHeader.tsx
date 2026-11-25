@@ -50,15 +50,9 @@ export function StudentHeader({ studentName }: { studentName: string }) {
             <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6 9 6 6 6-6" /></svg>
           </summary>
           <div className={styles.menu}>
-            <p className={styles.menuName}>{studentName}<small>Student</small></p>
+            <p className={styles.menuName}>{studentName}</p>
             <nav aria-label="Account">
               {preview && <><Link href="/account/access" prefetch={false}>My access</Link><Link href="/courses/v2" prefetch={false}>Explore courses</Link></>}
-            </nav>
-            <nav aria-label="More pages">
-              <p className={styles.menuGroup}>Older course pages</p>
-              <Link href="/schedule">Schedule</Link>
-              <Link href="/resources">Resources</Link>
-              <Link href="/practice">Practice log</Link>
             </nav>
             <div className={styles.signOut}><SignOutButton /></div>
           </div>
