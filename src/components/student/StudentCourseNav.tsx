@@ -21,10 +21,10 @@ export function StudentCourseNav({ className }: { className?: string }) {
   const params = useSearchParams();
   const match = pathname.match(COURSE_PATH);
   const base = match ? match[1] : '/schedule/v2';
-  const active = pathname === '/dashboard' && params?.get('view') === 'practice' ? 'mocks'
+  const active = pathname === '/mocks' ? 'mocks'
     : match?.[2] || (match && params?.get('view') === 'live') ? 'live'
       : match ? params?.get('subject') ?? null : null;
-  const href = (key: string) => key === 'mocks' ? '/dashboard?view=practice' : key === 'live' ? `${base}?view=live` : `${base}?subject=${key}`;
+  const href = (key: string) => key === 'mocks' ? '/mocks' : key === 'live' ? `${base}?view=live` : `${base}?subject=${key}`;
   return <nav className={className} aria-label="Student navigation">
     {ITEMS.map(item => <Link key={item.key} href={href(item.key)} aria-current={active === item.key ? 'page' : undefined} prefetch={false}>{item.label}</Link>)}
   </nav>;

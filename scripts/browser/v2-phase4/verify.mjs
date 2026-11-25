@@ -144,7 +144,7 @@ async function runTests() {
   await test('Student navigation leads with study destinations and keeps account pages in the menu',async page=>{
     await page.goto(origin+'/header');const nav=page.getByRole('navigation',{name:'Student navigation'});
     assert.deepEqual(await nav.getByRole('link').allTextContents(),['Quant','Verbal','DI','Live classes','Mocks']);
-    for(const [label,href] of [['Quant','/schedule/v2?subject=quant'],['Verbal','/schedule/v2?subject=verbal'],['DI','/schedule/v2?subject=di'],['Live classes','/schedule/v2?view=live'],['Mocks','/dashboard?view=practice']])assert.equal(await nav.getByRole('link',{name:label,exact:true}).getAttribute('href'),href);
+    for(const [label,href] of [['Quant','/schedule/v2?subject=quant'],['Verbal','/schedule/v2?subject=verbal'],['DI','/schedule/v2?subject=di'],['Live classes','/schedule/v2?view=live'],['Mocks','/mocks']])assert.equal(await nav.getByRole('link',{name:label,exact:true}).getAttribute('href'),href);
     assert.equal(await nav.getByRole('link',{name:'My learning'}).count(),0);
     await page.locator('summary[aria-label^="Account menu"]').focus();await page.keyboard.press('Enter');
     const account=page.getByRole('navigation',{name:'Account'});
@@ -295,7 +295,7 @@ async function runTests() {
   });
   await test('Course page offers Mocks next to the learning routes and fits a narrow screen', async page => {
     await page.goto(origin);
-    assert.equal(await page.getByRole('link', { name: 'Mocks', exact: true }).getAttribute('href'), '/dashboard?view=practice');
+    assert.equal(await page.getByRole('link', { name: 'Mocks', exact: true }).getAttribute('href'), '/mocks');
     assert.equal(await page.getByRole('button', { name: 'Focus mode' }).count(), 0);
     await noOverflow(page);
   }, true);

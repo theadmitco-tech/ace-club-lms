@@ -154,7 +154,7 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
     {!headerNavigation && <div className={styles.toolbar}><div className={styles.tabs} aria-label="Learning routes">
       <button className={tab === 'recordings' ? styles.activeTab : ''} type="button" aria-pressed={tab === 'recordings'} onClick={() => setTab('recordings')}>Recordings & materials</button>
       <button className={tab === 'live' ? styles.activeTab : ''} type="button" aria-pressed={tab === 'live'} onClick={() => setTab('live')}>Live classes</button>
-      {!preview && <Link href="/dashboard?view=practice" prefetch={false}>Mocks</Link>}
+      {!preview && <Link href="/mocks" prefetch={false}>Mocks</Link>}
     </div></div>}
     {preview && <p className={styles.notice}>Read-only Student preview. No progress, feedback or attendance is recorded.</p>}
     {message && <p role="status" className={styles.notice}>{message}</p>}

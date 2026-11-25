@@ -41,7 +41,7 @@ export function StudentHeader({ studentName }: { studentName: string }) {
         <Link className={styles.brand} href="/schedule/v2" aria-label="Ace Club, my learning"><BrandLogo variant="light" className="student-brand-logo" preload /></Link>
         <Suspense fallback={<nav className={styles.nav} aria-label="Student navigation">
           {[['quant', 'Quant'], ['verbal', 'Verbal'], ['di', 'DI']].map(([key, label]) => <Link key={key} href={`/schedule/v2?subject=${key}`} prefetch={false}>{label}</Link>)}
-          <Link href="/schedule/v2?view=live" prefetch={false}>Live classes</Link><Link href="/dashboard?view=practice" prefetch={false}>Mocks</Link>
+          <Link href="/schedule/v2?view=live" prefetch={false}>Live classes</Link><Link href="/mocks" prefetch={false}>Mocks</Link>
         </nav>}><StudentCourseNav className={styles.nav} /></Suspense>
         <details className={styles.account}>
           <summary aria-label={`Account menu for ${studentName}`}>

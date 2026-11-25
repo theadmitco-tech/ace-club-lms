@@ -1,0 +1,32 @@
+.page { display: grid; gap: 24px; max-width: 980px; margin: 0 auto; color: #293f36; }
+.intro h1 { margin: 0; font-size: clamp(28px, 3.2vw, 36px); letter-spacing: -.02em; color: #1f3a2d; }
+.intro p { margin: 6px 0 0; font-size: 15.5px; color: #4d6157; }
+.sectionTitle { margin: 0 0 12px; font-size: 13px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #56665d; }
+.muted { margin: 0; font-size: 14px; color: #56665d; }
+
+.next { display: grid; gap: 8px; padding: 26px 28px; border: 2px solid #245d47; border-radius: 18px; background: linear-gradient(180deg, #eef6f1, #fff 60%); box-shadow: 0 10px 30px #1f3a2c14; }
+.label { justify-self: start; padding: 3px 11px; border-radius: 999px; background: #245d47; color: #fff; font-size: 12px; font-weight: 700; letter-spacing: .03em; }
+.next h2 { margin: 4px 0 0; font-size: 24px; letter-spacing: -.01em; color: #1f3a2d; }
+.when { margin: 0; font-size: 16px; font-weight: 600; color: #245d47; }
+.detail { margin: 0; font-size: 14.5px; color: #3d5246; }
+.instructions { margin: 4px 0 0; padding: 12px 14px; border-radius: 10px; background: #f6f8f7; font-size: 14.5px; line-height: 1.55; color: #3d5246; white-space: pre-line; }
+.next .materials { margin-top: 8px; }
+
+.materials { display: flex; flex-wrap: wrap; gap: 8px; }
+a.materialLink { display: inline-flex; align-items: center; min-height: 42px; padding: 9px 16px; border-radius: 10px; background: #245d47; color: #fff; font-size: 14.5px; font-weight: 600; text-decoration: none; }
+a.materialLink:hover { background: #1d4c3a; }
+.list a.materialLink { background: #fff; border: 1px solid #cfdcd4; color: #245d47; min-height: 38px; padding: 7px 13px; font-size: 14px; }
+.list a.materialLink:hover { background: #f1f6f3; }
+a.materialLink:focus-visible, a.secondary:focus-visible { outline: 3px solid #2f6b52; outline-offset: 2px; }
+
+.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.list li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; padding: 16px 20px; border: 1px solid #e3e9e5; border-radius: 14px; background: #fff; }
+.list li > div:first-child { display: grid; gap: 2px; }
+.list strong { font-size: 16px; color: #1f3a2d; }
+.list span { font-size: 14px; color: #56665d; }
+
+.card, .empty { display: grid; gap: 8px; justify-items: start; padding: 24px; border: 1px solid #e3e9e5; border-radius: 16px; background: #fff; }
+.card h2, .empty h2 { margin: 0; font-size: 19px; color: #1f3a2d; }
+.card p, .empty p { margin: 0; color: #4d6157; line-height: 1.6; }
+a.secondary { display: inline-flex; align-items: center; min-height: 42px; padding: 9px 16px; border: 1px solid #cfdcd4; border-radius: 10px; background: #fff; color: #245d47; font-weight: 600; text-decoration: none; }
+@media (max-width: 560px) { .next { padding: 20px; } .list li { padding: 14px 16px; } }

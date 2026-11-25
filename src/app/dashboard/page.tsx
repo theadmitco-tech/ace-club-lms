@@ -22,11 +22,11 @@ import {
 } from '@/lib/studentTimeline';
 import './dashboard.css';
 
-export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
+export default async function DashboardPage() {
   const preview = isV2Phase1PreviewEnabled();
   const identity = await requirePortalRole('student');
-  // With the learning library on, students land on their course; the older dashboard stays reachable for mocks and practice.
-  if (isV2LearningEnabled() && (await searchParams).view !== 'practice') redirect('/schedule/v2');
+  // With the learning library on, students land on their course; mocks have their own page.
+  if (isV2LearningEnabled()) redirect('/schedule/v2');
   const result = await loadStudentTimeline(identity.id);
 
   if (result.status === 'failed') {
