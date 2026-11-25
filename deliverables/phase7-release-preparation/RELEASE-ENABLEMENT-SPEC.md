@@ -1,5 +1,7 @@
 # Production enablement implementation specification
 
+> **Update 2026-11-25:** the engineering items below are implemented on `intern/v2-phase-3-integration-review`; see the [implementation handoff](PRODUCTION-ENABLEMENT-HANDOFF.md). Activation, hosted acceptance and every Production operation remain owner-controlled and unauthorized. The original text is kept unchanged below.
+
 Status: **planned implementation; not implemented or authorized for activation**. The current source remains staging-only and Razorpay Test Mode only. Completion of the owner-managed Preview handoff does not enable Production. This specification makes the remaining engineering dependency explicit; it changes no runtime guard, credential, migration or deployment.
 
 Provider-backed Phase 3 acceptance and final combined Phase 6 acceptance precede this implementation. Production credentials, content and schema must be independently verified. The final source commit requires fresh tests and separate release authorization.

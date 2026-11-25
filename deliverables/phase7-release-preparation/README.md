@@ -10,6 +10,7 @@ The source inventory is pinned to `c593d2de13c563b72adbaf216cf37ed30a038cc7` on 
 
 - [Release plan](RELEASE-PLAN.md) covers the remaining environment, database, content and release decisions.
 - [Production enablement specification](RELEASE-ENABLEMENT-SPEC.md) identifies the remaining source modules, proposed flags, Live Mode adapter, environment matrix and rollback compatibility work. It is not implemented by this preparation update.
+- [Production enablement handoff](PRODUCTION-ENABLEMENT-HANDOFF.md) (2026-11-25) records the implemented environment policy, key checks, private-file boundary, Test/Live payment mode and checkout pause, with the Production configuration reference and the remaining owner steps.
 - [Ordered source inventory](migration-inventory.json) records 20 exact migration hashes against the previously observed `main` commit. [The staging sequence](STAGING-MIGRATION-SEQUENCE.md) includes Phase 3 after the Phase 6 repair. Neither file authorizes replay or establishes the current Production missing set.
 - [Metadata preflight](READ-ONLY-PREFLIGHT.sql) includes payment tables, callable permissions, PUBLIC execution and payment/sign-up triggers. [Local evidence](local-preflight-results.json) records disposable PostgreSQL checks for absent and combined installed schemas, preserving ledger/product/bucket metadata.
 - [Recovery and rollback](RECOVERY-AND-ROLLBACK.md) distinguishes application rollback, database/Storage recovery and payment reconciliation. Production restore and old-application compatibility still require rehearsal.
