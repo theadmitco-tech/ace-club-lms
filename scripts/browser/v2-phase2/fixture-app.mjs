@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 export const repo = fileURLToPath(new URL('../../../', import.meta.url));
 export const sources = [
+  'src/lib/v2Environment.ts',
   'src/lib/v2BatchCurriculum.ts',
   'src/app/admin/v2/content/course/[batchId]/page.tsx',
   'src/app/admin/v2/content/course/[batchId]/CourseDraftReview.tsx',

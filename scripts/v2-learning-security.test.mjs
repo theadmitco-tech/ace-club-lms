@@ -30,7 +30,7 @@ const learning = {
 function harness() {
   const state = { enabled: true, identity: { id: randomUUID(), role: 'student' }, data: null, error: null, fault: null, calls: [], clients: 0 };
   const api = load('src/lib/server/v2Learning.ts', {
-    'server-only': {}, '@/lib/v2Meetings': { isV2MeetingBatchId: uuid }, '@/lib/v2Learning': contracts,
+    'server-only': {}, '@/lib/v2Environment': v2Env(), '@/lib/v2Meetings': { isV2MeetingBatchId: uuid }, '@/lib/v2Learning': contracts,
     './v2LearningFeature': { isV2LearningEnabled: () => state.enabled },
     './portalAuthorization': { getPortalIdentity: async () => { if (state.fault === 'identity') throw Error('private diagnostic'); return state.identity; } },
     '@/utils/supabase/server': { createClient: async () => {
@@ -43,7 +43,7 @@ function harness() {
 
 test('learning feature is disabled outside explicit staging Preview or local development', () => {
   const env = { V2_LEARNING_DELIVERY_ENABLED: 'true', VERCEL_ENV: 'preview', NEXT_PUBLIC_SUPABASE_URL: 'https://eyphkkginlgoaxflauog.supabase.co' };
-  const feature = load('src/lib/server/v2LearningFeature.ts', { 'server-only': {} }, { process: { env } });
+  const feature = load('src/lib/server/v2LearningFeature.ts', { 'server-only': {}, '@/lib/v2Environment': v2Env() }, { process: { env } });
   assert.equal(feature.isV2LearningEnabled(), true);
   for (const patch of [
     { VERCEL_ENV: 'production' }, { VERCEL_ENV: 'other' }, { V2_LEARNING_DELIVERY_ENABLED: 'false' },
@@ -51,10 +51,10 @@ test('learning feature is disabled outside explicit staging Preview or local dev
     { NEXT_PUBLIC_SUPABASE_URL: 'https://eyphkkginlgoaxflauog.supabase.co.evil.invalid' },
     { NEXT_PUBLIC_SUPABASE_URL: 'https://user:password@eyphkkginlgoaxflauog.supabase.co' },
   ]) {
-    const denied = load('src/lib/server/v2LearningFeature.ts', { 'server-only': {} }, { process: { env: { ...env, ...patch } } });
+    const denied = load('src/lib/server/v2LearningFeature.ts', { 'server-only': {}, '@/lib/v2Environment': v2Env() }, { process: { env: { ...env, ...patch } } });
     assert.equal(denied.isV2LearningEnabled(), false);
   }
-  const local = load('src/lib/server/v2LearningFeature.ts', { 'server-only': {} }, { process: { env: { ...env, VERCEL_ENV: undefined, NODE_ENV: 'development' } } });
+  const local = load('src/lib/server/v2LearningFeature.ts', { 'server-only': {}, '@/lib/v2Environment': v2Env() }, { process: { env: { ...env, VERCEL_ENV: undefined, NODE_ENV: 'development' } } });
   assert.equal(local.isV2LearningEnabled(), true);
 });
 
@@ -247,7 +247,10 @@ test('course page never serializes stale resource URLs against newer gates or mi
     '@/lib/server/v2StudentDelivery': { getMyV2PublishedCourse: async () => privateCourse },
     '@/lib/server/v2ContentPublishing': {readMyContentPlacements:async()=>[]},
     '@/components/student/StudentHeader': { StudentHeader: 'Header' }, '@/components/student/V2CourseSessionView': { V2CourseSessionView: 'LegacySession' },
-    '../../../dashboard/dashboard.css': {},
+    '../../../dashboard/dashboard.css': {}, '@/components/student/v2Learning.module.css': { default: {} },
+    '@/lib/server/studentProfile': { getMyDisplayName: async () => 'Student' },
+    '@/lib/server/v2StudentSchedules': { getMyV2BatchSchedules: async () => ({ status: 'ready', schedules: [] }) },
+    '@/lib/v2Templates': { V2_TEMPLATE_PRODUCTS: new Proxy({}, { get: () => ({ label: 'Course', sections: ['quant', 'verbal', 'di'] }) }) },
   });
   const find = (node, type) => {
     if (!node || typeof node !== 'object') return null;
@@ -281,3 +284,6 @@ test('recording observations reject forged identities, malformed durations and f
   assert.ok(h.state.calls.every(([name]) => !name.includes('feedback')));
   assert.ok(h.state.calls.every(([, args]) => !Object.hasOwn(args, 'p_student_id')));
 });
+
+// The real shared V2 environment policy, so gate tests exercise it rather than a stub.
+function v2Env() { return load('src/lib/v2Environment.ts', {}, { URL }); }

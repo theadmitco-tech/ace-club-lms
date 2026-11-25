@@ -95,20 +95,20 @@ test('batch authoring needs both explicit flags and remains disabled on Vercel P
   for (const env of [{}, { V2_BATCH_AUTHORING_ENABLED: 'true' },{ V2_TEMPLATE_AUTHORING_ENABLED: 'true' },
     { V2_BATCH_AUTHORING_ENABLED: 'TRUE',V2_TEMPLATE_AUTHORING_ENABLED: 'true' },
     { V2_BATCH_AUTHORING_ENABLED: 'true',V2_TEMPLATE_AUTHORING_ENABLED: 'true',VERCEL_ENV: 'production' }]) {
-    const base = load('src/lib/server/v2TemplateFeature.ts',{ 'server-only': {} },{ process: { env } });
-    const feature = load('src/lib/server/v2BatchFeature.ts',{ 'server-only': {},'./v2TemplateFeature': base },{ process: { env } });
+    const base = load('src/lib/server/v2TemplateFeature.ts',{ 'server-only': {}, '@/lib/v2Environment': v2Env() },{ process: { env } });
+    const feature = load('src/lib/server/v2BatchFeature.ts',{ 'server-only': {}, '@/lib/v2Environment': v2Env(),'./v2TemplateFeature': base },{ process: { env } });
     assert.equal(feature.isV2BatchAuthoringEnabled(),false);
   }
   const env = { V2_BATCH_AUTHORING_ENABLED: 'true',V2_TEMPLATE_AUTHORING_ENABLED: 'true',VERCEL_ENV: 'preview' };
-  const base = load('src/lib/server/v2TemplateFeature.ts',{ 'server-only': {} },{ process: { env } });
-  assert.equal(load('src/lib/server/v2BatchFeature.ts',{ 'server-only': {},'./v2TemplateFeature': base },{ process: { env } }).isV2BatchAuthoringEnabled(),true);
+  const base = load('src/lib/server/v2TemplateFeature.ts',{ 'server-only': {}, '@/lib/v2Environment': v2Env() },{ process: { env } });
+  assert.equal(load('src/lib/server/v2BatchFeature.ts',{ 'server-only': {}, '@/lib/v2Environment': v2Env(),'./v2TemplateFeature': base },{ process: { env } }).isV2BatchAuthoringEnabled(),true);
 });
 
 function harness() {
   const state = { enabled: true,identity: { role: 'admin' },identityCalls: 0,clients: 0,calls: [],fault: '',result: { data: [],error: null } };
   const api = load('src/lib/server/v2Batches.ts', {
     '@/lib/v2CurriculumLinks': load('src/lib/v2CurriculumLinks.ts'),
-    'server-only': {},'@/lib/v2Batches': domain, '@/lib/v2CourseReadmes': load('src/lib/v2CourseReadmes.ts'), '@/lib/v2Templates': templates,
+    'server-only': {}, '@/lib/v2Environment': v2Env(),'@/lib/v2Batches': domain, '@/lib/v2CourseReadmes': load('src/lib/v2CourseReadmes.ts'), '@/lib/v2Templates': templates,
     '@/lib/server/v2BatchFeature': { isV2BatchAuthoringEnabled: () => state.enabled },
     '@/lib/server/portalAuthorization': { getPortalIdentity: async () => {
       state.identityCalls++;
@@ -270,6 +270,7 @@ test('the batch page authorizes before loading either templates or batches and h
     '@/lib/server/v2Batches': { listV2BatchDrafts: async () => { calls.push('batches'); return { status: 'ready',drafts: [] }; } },
     '@/lib/server/v2Enrollments': { listV2EnrollmentOptions: async () => { calls.push('enrollments'); return { status: 'ready',options: [] }; } },
     '@/lib/server/v2StudentDelivery': { readV2LiveOperations: async () => { calls.push('live'); return { registrations: [], classes: [] }; } },
+    '@/lib/server/v2Meetings': { readV2MeetingDraft: async () => { calls.push('meetings'); return null; } },
   }, { process: { env: { VERCEL_ENV: 'development' } } });
   await assert.rejects(page.default({searchParams:Promise.resolve({})}),/Not found/);
   assert.equal(calls.length,0);
@@ -305,3 +306,6 @@ test('curriculum creation uses one atomic save and rejects malformed links', asy
  app.state.result={data:null,error:{code:'PGRST202'}};
  assert.match((await app.saveV2BatchDraft(input,fingerprint,sources)).message,/Shared curriculum setup/);
 });
+
+// The real shared V2 environment policy, so gate tests exercise it rather than a stub.
+function v2Env() { return load('src/lib/v2Environment.ts', {}, { URL }); }

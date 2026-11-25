@@ -40,6 +40,7 @@ function harness() {
       }];
     },
     useCallback: (callback) => callback,
+    useEffectEvent: (callback) => callback,
     useMemo: (factory) => factory(),
     useEffect: (setup, dependencies) => {
       const slot = index++;
@@ -62,6 +63,12 @@ function harness() {
     './BatchDatePicker': { BatchDatePicker: 'batch-date-picker' },
     '@/components/DraftRecovery': { DraftRecoveryNotice: 'recovery-notice', useDraftRecovery: () => ({ recovered: null, remember() {}, forget() {}, acknowledge() {}, unavailable: false }) },
     '@/lib/v2WorkspaceRecovery': {},
+    '@/lib/draftRecovery': load('src/lib/draftRecovery.ts'),
+    './TimeSelect': { TimeSelect: 'time-select' }, '../batches/TimeSelect': { TimeSelect: 'time-select' },
+    '../batchPage.module.css': { default: {} },
+    './batchWorkspace.module.css': { default: {} },
+    '@/lib/v2CourseReadmes': load('src/lib/v2CourseReadmes.ts'),
+    '@/lib/v2LiveBatchSetup': load('src/lib/v2LiveBatchSetup.ts', {}, { Date, Intl }),
     'next/navigation': { useRouter: () => router, usePathname: () => '/admin/v2/templates' } };
   const component = (path, extra = {}) => load(path, { ...dependencies, ...extra }, {
     window, crypto: { randomUUID }, structuredClone,
@@ -381,7 +388,7 @@ test('course publishing entry enforces Admin authorization, Production exclusion
   let calls = 0, authorized = true, enabled = false;
   const env = { VERCEL_ENV: 'preview' };
   const page = load('src/app/admin/v2/page.tsx', {
-    '@/lib/server/v2ContentPublishing': { isV2ContentPublishingEnabled: () => false },
+    '@/lib/server/v2ContentPublishing': { isV2ContentPublishingEnabled: () => false }, '@/lib/v2Environment': v2Env(),
     'react/jsx-runtime': { jsx, jsxs: jsx },
     'next/navigation': { notFound: () => { throw Error('Not found'); } },
     '@/components/AdminDraftNavigation': { AdminDraftLink: 'link' },
@@ -435,3 +442,6 @@ test('Preview course editor keeps Admin authorization and Production denial with
   authorized=false; await assert.rejects(page,/Unauthorized/);
   env.VERCEL_ENV='production'; authorized=true; await assert.rejects(page,/Not found/);
 });
+
+// The real shared V2 environment policy, so gate tests exercise it rather than a stub.
+function v2Env() { return load('src/lib/v2Environment.ts', {}, { URL }); }

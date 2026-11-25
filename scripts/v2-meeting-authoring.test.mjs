@@ -160,6 +160,8 @@ test('private page gates role and batch identity before loading meeting details'
     '@/lib/server/v2BatchFeature': { isV2BatchAuthoringEnabled: () => enabled },
     '@/lib/server/portalAuthorization': { requirePortalRole: async (role) => { calls.push(role); if (deny) throw new Error('Denied'); return { id: 'synthetic-admin', role }; } },
     '@/lib/server/v2Meetings': { readV2MeetingDraft: async (id) => { calls.push(id); return { status: 'unavailable' }; } },
+    '@/lib/server/v2Publications': { listV2BatchPublications: async () => ({ status: 'ready', publications: [] }) },
+    '../batchPage.module.css': { default: {} },
   });
   const params=Promise.resolve({ batchId: randomUUID() });
   await assert.rejects(page.default({ params }),/Not found/); assert.equal(calls.length,0);

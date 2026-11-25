@@ -99,11 +99,25 @@ if (deploymentEnvironment !== 'production') {
     console.error('Enabled V2 Test Mode checkout requires its dedicated API and webhook configuration.');
     process.exit(1);
   }
-} else if (['V2_PRODUCTION_RELEASE_ENABLED', 'V2_CHECKOUT_LIVE_ENABLED', 'V2_CHECKOUT_TEST_ENABLED',
-  'V2_TEMPLATE_AUTHORING_ENABLED', 'V2_BATCH_AUTHORING_ENABLED', 'V2_STUDENT_SCHEDULE_ENABLED',
-  'V2_LEARNING_DELIVERY_ENABLED', 'V2_CONTENT_PUBLISHING_ENABLED'].some(key => process.env[key] === 'true')) {
-  console.error('V2 Production enablement is not implemented or accepted; Preview flags cannot authorize a release.');
-  process.exit(1);
+} else {
+  const releaseFlag = process.env.V2_PRODUCTION_RELEASE_ENABLED;
+  const featureFlags = ['V2_TEMPLATE_AUTHORING_ENABLED', 'V2_BATCH_AUTHORING_ENABLED', 'V2_STUDENT_SCHEDULE_ENABLED',
+    'V2_LEARNING_DELIVERY_ENABLED', 'V2_CONTENT_PUBLISHING_ENABLED'];
+  if (releaseFlag !== undefined && releaseFlag !== '' && releaseFlag !== 'true' && releaseFlag !== 'false') {
+    console.error('V2_PRODUCTION_RELEASE_ENABLED must be exactly true or false.');
+    process.exit(1);
+  }
+  // Test Mode checkout never runs in Production. Live checkout is refused until its reviewed implementation exists.
+  if (process.env.V2_CHECKOUT_TEST_ENABLED === 'true' || process.env.V2_CHECKOUT_LIVE_ENABLED === 'true'
+    || Object.entries(process.env).some(([key, value]) => key.startsWith('V2_RAZORPAY_TEST_') && value?.trim())) {
+    console.error('V2 Test Mode checkout is excluded from Production, and V2 Live Mode checkout is not yet implemented.');
+    process.exit(1);
+  }
+  // Feature flags alone cannot authorize a release; they take effect only with the master release flag.
+  if (releaseFlag !== 'true' && featureFlags.some(key => process.env[key] === 'true')) {
+    console.error('V2 feature flags require V2_PRODUCTION_RELEASE_ENABLED=true in Production; Preview flags cannot authorize a release.');
+    process.exit(1);
+  }
 }
 
 console.log(

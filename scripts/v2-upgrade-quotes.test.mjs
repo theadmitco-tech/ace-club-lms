@@ -16,6 +16,7 @@ function load(file, deps = {}, globals = {}) {
 }
 const products = load('src/lib/v2Products.ts');
 const domain = load('src/lib/v2UpgradeQuotes.ts', { './v2Products': products });
+const environment = load('src/lib/v2Environment.ts');
 const own = '10000000-0000-4000-8000-000000000001';
 const other = '10000000-0000-4000-8000-000000000002';
 const now = Date.parse('2026-11-01T12:00:00Z');
@@ -27,7 +28,7 @@ const row = codes => ({ id: other, student_id: own, amount_paise: 1000000, curre
   confirmed_at: '2026-10-01T00:00:00Z', expires_at: '2027-04-01T00:00:00Z', revoked_at: null,
   v2_product_grants: codes.map(product_code => ({ product_code })) });
 function harness(codes = ['quant_crash']) {
-  const state = { enabled: true, env: { V2_INDIVIDUAL_UPGRADE_POLICY: domain.INDIVIDUAL_UPGRADE_POLICY,
+  const state = { enabled: true, env: { VERCEL_ENV: 'preview', V2_INDIVIDUAL_UPGRADE_POLICY: domain.INDIVIDUAL_UPGRADE_POLICY,
     NEXT_PUBLIC_SUPABASE_URL: 'https://eyphkkginlgoaxflauog.supabase.co' },
   identity: { id: own, role: 'student' }, rows: [row(codes)], error: null, calls: [], quoteCalls: [],
   access: codes.map(product_code => ({ product_code, expires_at: '2027-04-01T00:00:00Z' })),
@@ -36,7 +37,7 @@ function harness(codes = ['quant_crash']) {
   for (const key of ['select', 'eq', 'is', 'lte', 'gt', 'order']) query[key] = (...args) => { state.calls.push([key, ...args]); return query; };
   query.limit = async (...args) => { state.calls.push(['limit', ...args]); return { data: state.rows, error: state.error }; };
   const app = load('src/lib/server/v2UpgradeQuotes.ts', {
-    'server-only': {}, '@/lib/v2UpgradeQuotes': domain,
+    'server-only': {}, '@/lib/v2UpgradeQuotes': domain, '@/lib/v2Environment': environment,
     './portalAuthorization': { getPortalIdentity: async () => state.identity },
     './v2Phase1Feature': { isV2Phase1PreviewEnabled: () => state.enabled },
     '@/utils/supabase/server': { createClient: async () => ({ from(table) { state.calls.push(['from', table]); return query; } }) },

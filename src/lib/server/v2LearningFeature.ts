@@ -1,7 +1,7 @@
 import 'server-only';
+import { v2Project } from '@/lib/v2Environment';
 
+// Staging in Preview/local development, or the approved Production project when released.
 export function isV2LearningEnabled(): boolean {
-  if (process.env.V2_LEARNING_DELIVERY_ENABLED !== 'true' || process.env.VERCEL_ENV === 'production') return false;
-  if (process.env.VERCEL_ENV !== 'preview' && !(process.env.NODE_ENV === 'development' && !process.env.VERCEL_ENV)) return false;
-  return process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://eyphkkginlgoaxflauog.supabase.co';
+  return process.env.V2_LEARNING_DELIVERY_ENABLED === 'true' && v2Project(process.env) !== null;
 }

@@ -18,7 +18,7 @@ function harness() {
   const state = { enabled: true, identity: { id, role: 'student' }, data: [row()], error: null, calls: [], products: [{ code: 'quant_crash', name: 'Quant', product_kind: 'crash_course', sections: ['quant'] }], quoteFails: false, listFails: false };
   const query = { select(value) { state.calls.push(['select', value]); return this; }, eq(...args) { state.calls.push(['eq', ...args]); return this; }, order(...args) { state.calls.push(['order', ...args]); return this; }, async range(...args) { state.calls.push(['range', ...args]); return { data: state.data, error: state.error }; } };
   const workspace = load('src/lib/server/v2CourseWorkspace.ts', {
-    'server-only': {}, '@/lib/v2Products': domain,
+    'server-only': {}, '@/lib/v2Environment': v2Env(), '@/lib/v2Products': domain,
     './v2Products': { listV2Products: async () => { if (state.listFails) throw Error('private'); return state.products; }, quoteV2Products: async (codes) => { state.calls.push(['quote', ...codes]); if (state.quoteFails) throw Error('private'); return { amount_paise: 1234500 }; } },
     './portalAuthorization': { getPortalIdentity: async () => state.identity },
     './v2Phase1Feature': { isV2Phase1PreviewEnabled: () => state.enabled },
@@ -34,7 +34,7 @@ test('all eight canonical course selections preserve distinct Full Course identi
 });
 test('Preview exposure is denied in Production and unset production builds', () => {
   for (const [env, expected] of [[{VERCEL_ENV:'production',NODE_ENV:'development'},false],[{VERCEL_ENV:'preview',NODE_ENV:'production'},true],[{NODE_ENV:'production'},false],[{NODE_ENV:'development'},true]]) {
-    const feature = load('src/lib/server/v2Phase1Feature.ts', {'server-only':{}}, {process:{env}}); assert.equal(feature.isV2Phase1PreviewEnabled(), expected);
+    const feature = load('src/lib/server/v2Phase1Feature.ts', {'server-only': {}, '@/lib/v2Environment': v2Env()}, {process:{env}}); assert.equal(feature.isV2Phase1PreviewEnabled(), expected);
   }
 });
 test('purchase display uses start-inclusive and expiry-exclusive boundaries and preserves revoked history', () => {
@@ -79,3 +79,6 @@ test('all new pages deny Production before authentication or data access', async
     await assert.rejects(load(file,deps).default({searchParams:Promise.resolve({})}),/NOT_FOUND/);
   }
 });
+
+// The real shared V2 environment policy, so gate tests exercise it rather than a stub.
+function v2Env() { return load('src/lib/v2Environment.ts', {}, { URL }); }

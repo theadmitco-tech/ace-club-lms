@@ -25,7 +25,7 @@ for(const [module,method,args,message] of cases)test(`${module}.${method} preser
   '@/utils/supabase/server':{createClient:async()=>({rpc:async()=>{calls++;return {data:null,error:{code,message:'Private database detail'}};}})},
   '@/lib/server/v2TemplateFeature':{isV2TemplateAuthoringEnabled:()=>true},
   '@/lib/server/v2BatchFeature':{isV2BatchAuthoringEnabled:()=>true},
-  ...Object.fromEntries(['v2Templates','v2Batches','v2Meetings','v2PublicationScopes','v2Publications'].map(name=>['@/lib/'+name,helpers])),
+  ...Object.fromEntries(['v2Templates','v2Batches','v2Meetings','v2PublicationScopes','v2Publications','v2CurriculumLinks','v2CourseReadmes'].map(name=>['@/lib/'+name,helpers])),
  };
  const source=readFileSync(new URL(`../../src/lib/server/${module}.ts`,import.meta.url),'utf8');
  runInNewContext(ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,{exports,require:name=>{assert(Object.hasOwn(dependencies,name),name);return dependencies[name];}});

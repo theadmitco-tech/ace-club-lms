@@ -43,8 +43,14 @@ test('checkout requires dedicated complete Test Mode configuration', () => {
   for (const key of ['V2_RAZORPAY_TEST_KEY_ID', 'V2_RAZORPAY_TEST_KEY_SECRET', 'V2_RAZORPAY_TEST_WEBHOOK_SECRET']) assert.equal(run({ ...preview, ...payment, [key]: '' }).status, 1);
   assert.equal(run({ ...preview, ...payment, V2_RAZORPAY_TEST_WEBHOOK_SECRET: 'short' }).status, 1);
 });
-test('Production flags cannot silently enable the staging-only implementation', () => {
-  for (const key of ['V2_PRODUCTION_RELEASE_ENABLED', 'V2_CHECKOUT_LIVE_ENABLED', 'V2_CHECKOUT_TEST_ENABLED', 'V2_TEMPLATE_AUTHORING_ENABLED', 'V2_BATCH_AUTHORING_ENABLED', 'V2_STUDENT_SCHEDULE_ENABLED', 'V2_LEARNING_DELIVERY_ENABLED', 'V2_CONTENT_PUBLISHING_ENABLED']) assert.equal(run({ ...production, [key]: 'true' }).status, 1);
+test('Production enables V2 features only with the master release flag, and never Test or unimplemented Live checkout', () => {
+  const features = ['V2_TEMPLATE_AUTHORING_ENABLED', 'V2_BATCH_AUTHORING_ENABLED', 'V2_STUDENT_SCHEDULE_ENABLED', 'V2_LEARNING_DELIVERY_ENABLED', 'V2_CONTENT_PUBLISHING_ENABLED'];
+  for (const key of features) assert.equal(run({ ...production, [key]: 'true' }).status, 1);
+  const released = { ...production, V2_PRODUCTION_RELEASE_ENABLED: 'true', ...Object.fromEntries(features.map(key => [key, 'true'])) };
+  assert.equal(run(released).status, 0);
+  assert.equal(run({ ...production, V2_PRODUCTION_RELEASE_ENABLED: 'true' }).status, 0);
+  for (const value of ['yes', '1', 'TRUE']) assert.equal(run({ ...production, V2_PRODUCTION_RELEASE_ENABLED: value }).status, 1);
+  for (const change of [{ V2_CHECKOUT_TEST_ENABLED: 'true' }, { V2_CHECKOUT_LIVE_ENABLED: 'true' }, { V2_RAZORPAY_TEST_KEY_ID: 'rzp_test_synthetic' }]) assert.equal(run({ ...released, ...change }).status, 1);
 });
 test('diagnostics do not expose configured credentials or rejected URL values', () => {
   const secret = 'PRIVATE_SENTINEL_VALUE';

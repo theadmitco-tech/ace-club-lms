@@ -91,11 +91,11 @@ test('bounded event lists support 100 distinct planned events and reject 101', (
 test('the feature defaults off and cannot be enabled on a Vercel Production deployment', () => {
   for (const env of [{}, { V2_TEMPLATE_AUTHORING_ENABLED: 'false' }, { V2_TEMPLATE_AUTHORING_ENABLED: 'TRUE' },
     { V2_TEMPLATE_AUTHORING_ENABLED: 'true', VERCEL_ENV: 'production' }]) {
-    const feature = load('src/lib/server/v2TemplateFeature.ts', { 'server-only': {} }, { process: { env } });
+    const feature = load('src/lib/server/v2TemplateFeature.ts', { 'server-only': {}, '@/lib/v2Environment': v2Env() }, { process: { env } });
     assert.equal(feature.isV2TemplateAuthoringEnabled(), false);
   }
   for (const VERCEL_ENV of ['preview', undefined]) {
-    const feature = load('src/lib/server/v2TemplateFeature.ts', { 'server-only': {} }, { process: { env: { V2_TEMPLATE_AUTHORING_ENABLED: 'true', VERCEL_ENV } } });
+    const feature = load('src/lib/server/v2TemplateFeature.ts', { 'server-only': {}, '@/lib/v2Environment': v2Env() }, { process: { env: { V2_TEMPLATE_AUTHORING_ENABLED: 'true', VERCEL_ENV } } });
     assert.equal(feature.isV2TemplateAuthoringEnabled(), true);
   }
 });
@@ -104,7 +104,7 @@ function harness() {
   const state = { enabled: true, identity: { role: 'admin' }, identityCalls: 0, clients: 0, calls: [],
     result: { data: [], error: null }, fault: '' };
   const api = load('src/lib/server/v2Templates.ts', {
-    'server-only': {}, '@/lib/v2Templates': domain,
+    'server-only': {}, '@/lib/v2Environment': v2Env(), '@/lib/v2Templates': domain,
     '@/lib/server/v2TemplateFeature': { isV2TemplateAuthoringEnabled: () => state.enabled },
     '@/lib/server/portalAuthorization': { getPortalIdentity: async () => {
       state.identityCalls++;
@@ -302,3 +302,6 @@ test('course sessions are separate from optional live events and cannot carry da
   value.document.events=[{...input().document.events[0],kind:'outline',dayOffset:null,localStartTime:null,durationMinutes:null}];
   assert.equal(typeof domain.validateV2TemplateSave(value),'string');
 });
+
+// The real shared V2 environment policy, so gate tests exercise it rather than a stub.
+function v2Env() { return load('src/lib/v2Environment.ts', {}, { URL }); }

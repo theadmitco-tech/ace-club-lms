@@ -1,4 +1,5 @@
 import 'server-only';
+import { v2Project } from '@/lib/v2Environment';
 
 import { createClient } from '@/utils/supabase/server';
 import { getPortalIdentity } from './portalAuthorization';
@@ -24,11 +25,7 @@ const instant = (value: unknown): value is string => typeof value === 'string'
 
 export function isIndividualUpgradePolicyEnabled(): boolean {
   if (!isV2Phase1PreviewEnabled() || process.env.V2_INDIVIDUAL_UPGRADE_POLICY !== INDIVIDUAL_UPGRADE_POLICY) return false;
-  try {
-    const url = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || '');
-    return url.origin === 'https://eyphkkginlgoaxflauog.supabase.co'
-      && url.pathname === '/' && !url.username && !url.password && !url.search && !url.hash;
-  } catch { return false; }
+  return v2Project(process.env) !== null;
 }
 
 /** Caller-session reads only. No service key, payment call or grant mutation. */

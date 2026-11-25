@@ -1,7 +1,7 @@
 import 'server-only';
+import { v2Phase1SurfacesAllowed } from '@/lib/v2Environment';
 
-// A Preview integration, independent of the Phase 2 authoring flags.
+// Catalogue and My access: Preview, local development, or an approved Production release.
 export function isV2Phase1PreviewEnabled(): boolean {
-  if (process.env.VERCEL_ENV === 'production') return false;
-  return process.env.VERCEL_ENV === 'preview' || process.env.NODE_ENV === 'development';
+  return v2Phase1SurfacesAllowed(process.env);
 }

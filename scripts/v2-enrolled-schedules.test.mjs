@@ -18,7 +18,7 @@ const batchId=randomUUID(),studentId=randomUUID();
 const schedule={batchId,batchRevision:1,revision:1,state:'published',productCode:'quant',title:'Synthetic batch',sections:['quant'],timeZone:'Asia/Kolkata',liveRegistrationLimit:null,events:[]};
 function harness(role='student') {
   const state={role,enabled:true,calls:[],clients:0,result:{data:[],error:null},fault:''};
-  const deps={'server-only':{},'@/lib/v2Publications':publication,'@/lib/v2Enrollments':enrollment,'@/lib/v2Meetings':meetings,
+  const deps={'server-only': {}, '@/lib/v2Environment': v2Env(),'@/lib/v2Publications':publication,'@/lib/v2Enrollments':enrollment,'@/lib/v2Meetings':meetings,
     '@/lib/server/v2StudentScheduleFeature':{isV2StudentScheduleEnabled:()=>state.enabled},
     '@/lib/server/portalAuthorization':{getPortalIdentity:async()=>{if(state.fault==='auth')throw Error('private');return state.role?{id:studentId,role:state.role}:null;}},
     '@/utils/supabase/server':{createClient:async()=>{state.clients++;if(state.fault==='client')throw Error('private');return {rpc:async(...args)=>{state.calls.push(args);if(state.fault==='rpc')throw Error('private');return state.result;}};}}};
@@ -62,10 +62,10 @@ test('enrollment confirmations must match the requested identity, state and revi
 });
 test('Student schedule flag is off by default and cannot bypass authoring or Production gates',()=>{
   for(const [env,batchEnabled,expected] of [[{},true,false],[{V2_STUDENT_SCHEDULE_ENABLED:'true'},true,true],[{V2_STUDENT_SCHEDULE_ENABLED:'true'},false,false]]){
-    const api=load('src/lib/server/v2StudentScheduleFeature.ts',{'server-only':{},'./v2BatchFeature':{isV2BatchAuthoringEnabled:()=>batchEnabled}},{process:{env}});
+    const api=load('src/lib/server/v2StudentScheduleFeature.ts',{'server-only': {}, '@/lib/v2Environment': v2Env(),'./v2BatchFeature':{isV2BatchAuthoringEnabled:()=>batchEnabled}},{process:{env}});
     assert.equal(api.isV2StudentScheduleEnabled(),expected);
   }
-  const feature=load('src/lib/server/v2TemplateFeature.ts',{'server-only':{}},{process:{env:{V2_TEMPLATE_AUTHORING_ENABLED:'true',VERCEL_ENV:'production'}}});
+  const feature=load('src/lib/server/v2TemplateFeature.ts',{'server-only': {}, '@/lib/v2Environment': v2Env()},{process:{env:{V2_TEMPLATE_AUTHORING_ENABLED:'true',VERCEL_ENV:'production'}}});
   assert.equal(feature.isV2TemplateAuthoringEnabled(),false);
 });
 
@@ -80,6 +80,8 @@ test('Student schedule route hides when disabled and authorizes before loading',
     '@/lib/server/v2StudentScheduleFeature':{isV2StudentScheduleEnabled:()=>enabled},
     '@/lib/server/portalAuthorization':{requirePortalRole:async(role)=>{calls.push(role);if(deny)throw Error('Denied');}},
     '@/lib/server/v2StudentSchedules':{getMyV2BatchSchedules:async()=>{calls.push('read');return {status:'ready',schedules:[]};}},
+    '@/lib/server/studentProfile':{getMyDisplayName:async()=>'Student',requestTime:()=>0},
+    '@/lib/server/v2Products':{getMyV2Access:async()=>{throw Error('Disabled learning must not read access');}},
   });
   await assert.rejects(page.default(),/Not found/);assert.equal(calls.length,0);
   enabled=true;deny=true;await assert.rejects(page.default(),/Denied/);assert.deepEqual(calls,['student']);
@@ -94,3 +96,6 @@ test('enrollment action delegates authorization and refreshes views only after c
   await action.setEnrollmentAction(studentId);assert.equal(calls.length,0);
   status='success';await action.setEnrollmentAction(studentId);assert.deepEqual(calls,[['/admin/v2/batches','layout'],['/schedule/v2']]);
 });
+
+// The real shared V2 environment policy, so gate tests exercise it rather than a stub.
+function v2Env() { return load('src/lib/v2Environment.ts', {}, { URL }); }
