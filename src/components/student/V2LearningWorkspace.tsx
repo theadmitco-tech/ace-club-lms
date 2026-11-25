@@ -68,18 +68,29 @@ function FeedbackForm({ obligation, onSaved }: { obligation: V2LearningObligatio
 }
 /** A subject outside this course: either another enrolled course to switch to, or one the student hasn't bought. */
 export type V2OtherSubject = { section: 'quant' | 'verbal' | 'di'; href: string | null };
-export function V2LearningWorkspace({ course, learning, initialView = 'recordings', placements = [], preview = false, otherSubjects = [] }: { course: V2PublishedCourse; learning: V2LearningState; initialView?: 'recordings' | 'live'; placements?: ContentPlacementView[]; preview?: boolean; otherSubjects?: V2OtherSubject[] }) {
+/**
+ * `navigation="header"`: the student header drives the subject and view through the URL, so the
+ * in-page tabs and subject switch are hidden. `inline` keeps them (Admin preview, fixtures).
+ */
+export function V2LearningWorkspace({ course, learning, initialView = 'recordings', placements = [], preview = false, otherSubjects = [], navigation = 'inline', initialSubject, initialSession }: { course: V2PublishedCourse; learning: V2LearningState; initialView?: 'recordings' | 'live'; placements?: ContentPlacementView[]; preview?: boolean; otherSubjects?: V2OtherSubject[]; navigation?: 'inline' | 'header'; initialSubject?: string; initialSession?: string }) {
+  const headerNavigation = navigation === 'header' && !preview;
   const router = useRouter();
   const courseSessions = course.productCode === 'full_course' ? course.sessions : withCourseReadmes(course.batchId, course.productCode, course.sessions);
   // Students see subject sessions only; non-subject schedule items (breaks and similar) are not shown.
   const outlineSessions = pinCourseReadmes([...learning.sessions, ...courseSessions.filter(session => courseReadmePosition(session.key) && !learning.sessions.some(item => item.key === session.key)).map(session => ({ key: session.key, title: session.title, section: session.section, locked: false }))]).filter(session => session.section !== 'programme');
-  const initial = outlineSessions.find(s => s.key === learning.lastSessionKey && !s.locked)?.key ?? outlineSessions.find(s => !s.locked)?.key ?? null;
-  const [selected, setSelected] = useState<string | null>(initial), [tab, setTab] = useState<'recordings' | 'live'>(initialView);
-  const [subject, setSubject] = useState<string>(() => outlineSessions.find(s => s.key === initial)?.section ?? 'quant');
   const subjects = ['quant', 'verbal', 'di'].filter(section => outlineSessions.some(session => session.section === section));
+  // A subject requested through the header: open a specific session, else the last opened one in that subject.
+  const requested = initialSubject && subjects.includes(initialSubject) ? initialSubject : null;
+  const initial = requested
+    ? (outlineSessions.find(s => s.key === initialSession && s.section === requested && !s.locked)
+      ?? outlineSessions.find(s => s.key === learning.lastSessionKey && s.section === requested && !s.locked)
+      ?? outlineSessions.find(s => s.section === requested && !s.locked))?.key ?? null
+    : outlineSessions.find(s => s.key === learning.lastSessionKey && !s.locked)?.key ?? outlineSessions.find(s => !s.locked)?.key ?? null;
+  const [selected, setSelected] = useState<string | null>(initial), [tab, setTab] = useState<'recordings' | 'live'>(initialView);
+  const [subject, setSubject] = useState<string>(() => requested ?? outlineSessions.find(s => s.key === initial)?.section ?? subjects[0] ?? 'quant');
   const subjectSessions = outlineSessions.filter(session => session.section === subject);
   const [message, setMessage] = useState(''), [feedbackId, setFeedbackId] = useState<string | null>(null);
-  const [lockedSubject, setLockedSubject] = useState<string | null>(null);
+  const [lockedSubject, setLockedSubject] = useState<string | null>(() => initialSubject && !subjects.includes(initialSubject) && otherSubjects.some(item => item.section === initialSubject && !item.href) ? initialSubject : null);
   // Captured once per page load; live-class states are recalculated when the page refreshes.
   const [now] = useState(() => Date.now());
   const upcoming = learning.liveEvents.filter(event => !event.completedAt && Date.parse(event.endsAt) > now).toSorted((a, b) => Date.parse(a.startsAt) - Date.parse(b.startsAt));
@@ -101,6 +112,9 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
   const learningForSession = (sessionKey: string): V2ResourceLearning => ({ publicationRevision: learning.publicationRevision, feedbackTracking: course.sessions.find(s => s.key === sessionKey)?.section !== 'programme', progress: learning.progress.filter(p => p.sessionKey === sessionKey), onProgress: (itemKey,state) => progress(sessionKey,itemKey,state), onFeedbackDue: () => router.refresh() });
   function select(key: string) {
     if (!outlineSessions.some(s => s.key === key && !s.locked)) return;
+    const section = outlineSessions.find(s => s.key === key)!.section;
+    // From Live classes or another subject, go through the URL so the header stays in step.
+    if (headerNavigation && (section !== subject || tab !== 'recordings')) { router.push(`?subject=${section}&session=${key}`); return; }
     setSubject(outlineSessions.find(s => s.key === key)!.section);
     setSelected(key); setTab('recordings'); setMessage(''); void progress(key, null, 'opened');
   }
@@ -119,11 +133,11 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
   function feedbackSaved() { setFeedbackId(null); setMessage('Thanks, your feedback was sent. Your sessions are opening again.'); router.refresh(); }
   const dueSessions = feedbackSessions.filter(item => item.batchId === course.batchId);
   return <div className={styles.workspace}>
-    <div className={styles.toolbar}><div className={styles.tabs} aria-label="Learning routes">
+    {!headerNavigation && <div className={styles.toolbar}><div className={styles.tabs} aria-label="Learning routes">
       <button className={tab === 'recordings' ? styles.activeTab : ''} type="button" aria-pressed={tab === 'recordings'} onClick={() => setTab('recordings')}>Recordings & materials</button>
       <button className={tab === 'live' ? styles.activeTab : ''} type="button" aria-pressed={tab === 'live'} onClick={() => setTab('live')}>Live classes</button>
       {!preview && <Link href="/dashboard?view=practice" prefetch={false}>Mocks</Link>}
-    </div></div>
+    </div></div>}
     {preview && <p className={styles.notice}>Read-only Student preview. No progress, feedback or attendance is recorded.</p>}
     {message && <p role="status" className={styles.notice}>{message}</p>}
     {!preview && learning.obligations.length > 0 && <section className={styles.gate} aria-labelledby="feedback-due-heading"><span className={styles.gateIcon} aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><div>
@@ -133,14 +147,14 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
     {!preview && obligation && <section tabIndex={-1} ref={feedbackRef} className={styles.feedbackPanel} aria-label="Required session feedback"><div className={styles.row}><h2 className={styles.visuallyHidden}>Session feedback</h2><button type="button" className={styles.closeFeedback} onClick={() => setFeedbackId(null)}>Close feedback</button></div><FeedbackForm key={obligation.id} obligation={obligation} onSaved={feedbackSaved} /></section>}
     {tab === 'recordings' ? <>
       <V2PlacedReadings sessions={course.sessions} placements={placements} placement="before_course" mode={mode} batchId={course.batchId} learningForSession={learningForSession} />
-      <div className={styles.subjects} role="group" aria-label="Course subjects">{subjects.map(section => <button key={section} type="button" aria-label={sectionName(section)} aria-pressed={!lockedSubject && subject === section} onClick={() => chooseSubject(section)}>{sectionName(section)}{learning.obligations.some(o => o.section === section) && <small>Feedback due</small>}</button>)}
+      {!headerNavigation && <div className={styles.subjects} role="group" aria-label="Course subjects">{subjects.map(section => <button key={section} type="button" aria-label={sectionName(section)} aria-pressed={!lockedSubject && subject === section} onClick={() => chooseSubject(section)}>{sectionName(section)}{learning.obligations.some(o => o.section === section) && <small>Feedback due</small>}</button>)}
         {!preview && otherSubjects.filter(item => !subjects.includes(item.section)).map(item => item.href
           ? <Link key={item.section} href={item.href} prefetch={false}>{sectionName(item.section)}</Link>
-          : <button key={item.section} type="button" className={styles.lockedSubject} aria-pressed={lockedSubject === item.section} aria-label={`${sectionName(item.section)}, not in your package`} onClick={() => setLockedSubject(item.section)}><span aria-hidden="true">🔒</span>{sectionName(item.section)}</button>)}</div>
+          : <button key={item.section} type="button" className={styles.lockedSubject} aria-pressed={lockedSubject === item.section} aria-label={`${sectionName(item.section)}, not in your package`} onClick={() => setLockedSubject(item.section)}><span aria-hidden="true">🔒</span>{sectionName(item.section)}</button>)}</div>}
       {lockedSubject ? <section className={styles.upsell} aria-labelledby="locked-subject-heading"><span className={styles.gateIcon} aria-hidden="true">🔒</span><div>
         <h2 id="locked-subject-heading">{sectionName(lockedSubject)} isn’t in your package yet</h2>
         <p>Add it to get every {sectionName(lockedSubject)} session, recording and worksheet. You pay only the price difference, and your access end date stays the same.</p>
-        <div className={styles.row}><Link className={styles.primary} href="/account/access/upgrade" prefetch={false}>See upgrade options</Link><button type="button" className={styles.secondary} onClick={() => setLockedSubject(null)}>Back to {sectionName(subject)}</button></div>
+        <div className={styles.row}><Link className={styles.primary} href="/account/access/upgrade" prefetch={false}>See upgrade options</Link>{headerNavigation ? <Link className={styles.secondary} href={`?subject=${subject}`}>Back to {sectionName(subject)}</Link> : <button type="button" className={styles.secondary} onClick={() => setLockedSubject(null)}>Back to {sectionName(subject)}</button>}</div>
       </div></section> : <>
       <div className={styles.layout}>
         <aside className={styles.outline} aria-label="Course outline"><details open><summary><span>{sectionName(subject)} sessions</span><small>{subjectSessions.filter(session => !courseReadmePosition(session.key)).length} · any order</small></summary>

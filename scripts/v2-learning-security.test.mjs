@@ -239,7 +239,7 @@ test('course page never serializes stale resource URLs against newer gates or mi
   let state = { ...learning, obligations: [], sessions: [{ key: blockedKey, title: 'Quant 5', section: 'quant', locked: true }, { key: allowedKey, title: 'Verbal 1', section: 'verbal', locked: false }] };
   const jsx = (type, props) => ({ type, props });
   const page = load('src/app/schedule/v2/[batchId]/page.tsx', {
-    'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'Link' }, 'next/navigation': { notFound: () => { throw Error('notFound'); } },
+    'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'Link' }, 'next/navigation': { notFound: () => { throw Error('notFound'); }, redirect: url => { throw Error(`redirect:${url}`); } },
     '@/lib/server/v2LearningFeature': { isV2LearningEnabled: () => true }, '@/lib/server/v2Learning': { getMyV2LearningState: async () => state },
     '@/components/student/V2LearningWorkspace': { V2LearningWorkspace: 'LearningWorkspace' },
     '@/lib/server/portalAuthorization': { requirePortalRole: async () => ({ role: 'student' }) },
@@ -263,6 +263,12 @@ test('course page never serializes stale resource URLs against newer gates or mi
   const current = find(await render(), 'LearningWorkspace');
   assert.ok(current); assert.equal(current.props.course.sessions.length, 1); assert.equal(current.props.course.sessions[0].key, allowedKey);
   assert.doesNotMatch(JSON.stringify(current), /private\.invalid\/blocked/); assert.equal(current.props.initialView, 'live');
+  // Header navigation: a course page always names its subject; a requested subject reaches the workspace.
+  await assert.rejects(page.default({ params: Promise.resolve({ batchId }), searchParams: Promise.resolve({}) }), new RegExp(`redirect:/schedule/v2/${batchId}\\?subject=verbal`));
+  const verbal = find(await page.default({ params: Promise.resolve({ batchId }), searchParams: Promise.resolve({ subject: 'verbal', session: allowedKey }) }), 'LearningWorkspace');
+  assert.equal(verbal.props.navigation, 'header'); assert.equal(verbal.props.initialSubject, 'verbal'); assert.equal(verbal.props.initialSession, allowedKey);
+  const ignored = find(await page.default({ params: Promise.resolve({ batchId }), searchParams: Promise.resolve({ subject: 'verbal', view: ['live', 'x'] }) }), 'LearningWorkspace');
+  assert.equal(ignored.props.initialView, 'recordings');
   state = { ...state, publicationRevision: 2 };
   const mismatch = await render(); assert.equal(find(mismatch, 'LearningWorkspace'), null); assert.doesNotMatch(JSON.stringify(mismatch), /private\.invalid/);
   state = null; const unavailable = await render(); assert.equal(find(unavailable, 'LearningWorkspace'), null); assert.doesNotMatch(JSON.stringify(unavailable), /private\.invalid/);

@@ -5,12 +5,15 @@ import styles from './studentHeader.module.css';
 import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
 import { BrandLogo } from '@/components/BrandLogo';
 import { SignOutButton } from './SignOutButton';
+import { StudentCourseNav } from './StudentCourseNav';
+import { Suspense } from 'react';
 
 function getInitials(name: string) {
   return name.split(/\s+/).filter(Boolean).map((part) => part[0]).join('').slice(0, 2).toUpperCase();
 }
 
-export function StudentHeader({ studentName }: { studentName: string }) {
+/** `courses` lists the student's enrolled courses for switching from the account menu (shown when there is more than one). */
+export function StudentHeader({ studentName, courses = [] }: { studentName: string; courses?: { href: string; title: string; current: boolean }[] }) {
   const preview = isV2Phase1PreviewEnabled();
   const learning = isV2LearningEnabled();
   if (!learning) {
@@ -37,10 +40,10 @@ export function StudentHeader({ studentName }: { studentName: string }) {
     <header className={styles.header}>
       <div className={styles.inner}>
         <Link className={styles.brand} href="/schedule/v2" aria-label="Ace Club, my learning"><BrandLogo variant="light" className="student-brand-logo" preload /></Link>
-        <nav className={styles.nav} aria-label="Student navigation">
-          <Link href="/schedule/v2">My learning</Link>
-          {preview && <><Link href="/account/access" prefetch={false}>My access</Link><Link href="/courses/v2" prefetch={false}>Explore courses</Link></>}
-        </nav>
+        <Suspense fallback={<nav className={styles.nav} aria-label="Student navigation">
+          {[['quant', 'Quant'], ['verbal', 'Verbal'], ['di', 'DI']].map(([key, label]) => <Link key={key} href={`/schedule/v2?subject=${key}`} prefetch={false}>{label}</Link>)}
+          <Link href="/schedule/v2?view=live" prefetch={false}>Live classes</Link><Link href="/dashboard?view=practice" prefetch={false}>Mocks</Link>
+        </nav>}><StudentCourseNav className={styles.nav} /></Suspense>
         <details className={styles.account}>
           <summary aria-label={`Account menu for ${studentName}`}>
             <span className={styles.avatar} aria-hidden="true">{getInitials(studentName)}</span>
@@ -49,8 +52,14 @@ export function StudentHeader({ studentName }: { studentName: string }) {
           </summary>
           <div className={styles.menu}>
             <p className={styles.menuName}>{studentName}<small>Student</small></p>
+            {courses.length > 1 && <nav aria-label="Your courses">
+              <p className={styles.menuGroup}>Your courses</p>
+              {courses.map(item => <Link key={item.href} href={item.href} aria-current={item.current ? 'page' : undefined} prefetch={false}>{item.title}</Link>)}
+            </nav>}
+            <nav aria-label="Account">
+              {preview && <><Link href="/account/access" prefetch={false}>My access</Link><Link href="/courses/v2" prefetch={false}>Explore courses</Link></>}
+            </nav>
             <nav aria-label="More pages">
-              <Link href="/dashboard?view=practice">Mocks & practice</Link>
               <p className={styles.menuGroup}>Older course pages</p>
               <Link href="/schedule">Schedule</Link>
               <Link href="/resources">Resources</Link>

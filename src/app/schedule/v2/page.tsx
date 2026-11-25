@@ -17,7 +17,7 @@ const time = (value: string) => new Intl.DateTimeFormat('en-GB', {
   timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short',
 }).format(new Date(value));
 
-export default async function EnrolledSchedulePage() {
+export default async function EnrolledSchedulePage(props: { searchParams?: Promise<{ subject?: string | string[]; view?: string | string[] }> }) {
   if (!isV2StudentScheduleEnabled()) notFound();
   await requirePortalRole('student');
   const [result, studentName] = await Promise.all([getMyV2BatchSchedules(), getMyDisplayName()]);
@@ -27,9 +27,16 @@ export default async function EnrolledSchedulePage() {
       getMyV2Access().catch(() => null),
     ]);
     // The course page is the landing page: open the course the student last worked in, else the first one.
-    const ready: { publication: { batchId: string }; learning: V2LearningState | null }[] = batches?.filter(batch => batch.learning) ?? [];
-    const landing = ready.find(batch => batch.learning?.lastSessionKey) ?? ready[0];
-    if (landing && ready.length === batches?.length) redirect(`/schedule/v2/${landing.publication.batchId}`);
+    // A header link asks for a subject or Live classes: open the course that holds that subject.
+    const query = await props?.searchParams;
+    const subject = (['quant', 'verbal', 'di'] as const).find(item => item === (typeof query?.subject === 'string' ? query.subject : undefined));
+    const live = query?.view === 'live';
+    const ready: { publication: { batchId: string; productCode: keyof typeof V2_TEMPLATE_PRODUCTS }; learning: V2LearningState | null }[] = batches?.filter(batch => batch.learning) ?? [];
+    const holding = subject ? ready.filter(batch => (V2_TEMPLATE_PRODUCTS[batch.publication.productCode].sections as readonly string[]).includes(subject)) : ready;
+    const candidates = holding.length ? holding : ready;
+    const landing = (live ? candidates.find(batch => batch.learning?.liveRegistered) : undefined) ?? candidates.find(batch => batch.learning?.lastSessionKey) ?? candidates[0];
+    const suffix = live ? '?view=live' : subject ? `?subject=${subject}` : '';
+    if (landing && ready.length === batches?.length) redirect(`/schedule/v2/${landing.publication.batchId}${suffix}`);
     const now = requestTime();
     return <div className="student-page"><StudentHeader studentName={studentName} /><main className="student-main"><div className="student-container">{batches ? <V2LearningLibrary batches={batches} access={access} studentName={studentName} now={now} /> : <section className="student-state student-state-error" role="alert"><h1>The learning library could not be loaded</h1><p>Please retry shortly.</p><Link className="student-button" href="/schedule/v2">Retry</Link></section>}</div></main></div>;
   }

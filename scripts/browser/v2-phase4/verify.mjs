@@ -69,6 +69,7 @@ async function copySource(file) {
 await copySource('src/components/student/V2LearningWorkspace.tsx');
 await copySource('src/components/student/V2LearningLibrary.tsx');
 await copySource('src/components/student/StudentHeader.tsx');
+await copySource('src/components/student/StudentCourseNav.tsx');
 await copySource('src/app/dashboard/dashboard.css');
 await copySource('public/5.svg');await copySource('public/6.svg');
 await put('src/lib/server/v2LearningFeature.ts','export function isV2LearningEnabled(){return true;}');
@@ -140,8 +141,15 @@ async function rating(page) {
   await page.getByRole('radiogroup', { name: 'How clear was this session?' }).getByRole('radio', { name: '4 out of 5', exact: true }).check();
 }
 async function runTests() {
-  await test('Student navigation keeps learning prominent and preserves secondary destinations on mobile',async page=>{
-    await page.goto(origin+'/header');const nav=page.getByRole('navigation',{name:'Student navigation'});assert.equal(await nav.getByRole('link').count(),3);await nav.getByRole('link',{name:'My learning',exact:true}).waitFor();await page.locator('summary[aria-label^="Account menu"]').focus();await page.keyboard.press('Enter');const more=page.getByRole('navigation',{name:'More pages'});for(const label of ['Mocks & practice','Schedule','Resources','Practice log']){const link=more.getByRole('link',{name:label,exact:true});await link.waitFor();assert.equal(await link.evaluate(el=>{const r=el.getBoundingClientRect();const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return el.contains(hit);}),true);}await noOverflow(page);await page.screenshot({path:path.join(output,'student-navigation-mobile.png'),fullPage:true});
+  await test('Student navigation leads with study destinations and keeps account pages in the menu',async page=>{
+    await page.goto(origin+'/header');const nav=page.getByRole('navigation',{name:'Student navigation'});
+    assert.deepEqual(await nav.getByRole('link').allTextContents(),['Quant','Verbal','DI','Live classes','Mocks']);
+    for(const [label,href] of [['Quant','/schedule/v2?subject=quant'],['Verbal','/schedule/v2?subject=verbal'],['DI','/schedule/v2?subject=di'],['Live classes','/schedule/v2?view=live'],['Mocks','/dashboard?view=practice']])assert.equal(await nav.getByRole('link',{name:label,exact:true}).getAttribute('href'),href);
+    assert.equal(await nav.getByRole('link',{name:'My learning'}).count(),0);
+    await page.locator('summary[aria-label^="Account menu"]').focus();await page.keyboard.press('Enter');
+    const account=page.getByRole('navigation',{name:'Account'}),more=page.getByRole('navigation',{name:'More pages'});
+    for(const [area,label] of [[account,'My access'],[account,'Explore courses'],[more,'Schedule'],[more,'Resources'],[more,'Practice log']]){const link=area.getByRole('link',{name:label,exact:true});await link.waitFor();assert.equal(await link.evaluate(el=>{const r=el.getBoundingClientRect();const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return el.contains(hit);}),true);}
+    await noOverflow(page);await page.screenshot({path:path.join(output,'student-navigation-mobile.png'),fullPage:true});
   },true);
   await test('Library separates recordings from registered live classes without granting access',async page=>{
     await page.goto(origin+'/library');await page.getByRole('heading',{name:'My learning',exact:true}).waitFor();await page.screenshot({path:path.join(output,'student-library.png'),fullPage:true});

@@ -29,3 +29,6 @@
   .account { margin-left: auto; }
   .name { display: none; }
 }
+.nav a { font-weight: 600; }
+.nav a[aria-current="page"] { background: #e8f2ec; color: #1f4a37; }
+.menu nav a[aria-current="page"] { background: #e8f2ec; color: #1f4a37; font-weight: 600; }
