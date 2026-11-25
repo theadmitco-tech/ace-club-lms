@@ -117,8 +117,7 @@ if(mode==='prepare'){
   await page.setViewportSize({width:390,height:844});ok('student-mobile-fit',await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1));await page.setViewportSize({width:1280,height:900});
   const before=(await learning('full',full));ok('session-open-not-feedback',before.obligations.length===0,['P4-06']);
   await page.getByRole('button',{name:'Recording options',exact:true}).click();
-  await page.getByLabel('The recording has been watched.',{exact:true}).check();
-  await page.getByRole('button',{name:'Confirm watched · self-report',exact:true}).click();
+  await page.getByRole('button',{name:'I’ve watched this recording',exact:true}).click();
   await page.getByRole('button',{name:`Give feedback for ${f4.title}`,exact:true}).waitFor({timeout:30000});
   const gated=await learning('full',full),obligation=gated.obligations.find(o=>o.sessionKey===f4.key);
   ok('recording-self-report-created-obligation',Boolean(obligation),['P4-07']);

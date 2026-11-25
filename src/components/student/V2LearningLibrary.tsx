@@ -51,9 +51,8 @@ export function V2LearningLibrary({ batches, access = null, studentName = '', no
     {unverified && <p role="alert" className={styles.alert}>Some course details couldn’t be loaded. Reload the page before opening a session.</p>}
 
     {!batches.length ? <section className={styles.empty}>
-      <h2>No active courses yet</h2>
-      <p>A course appears here once your access is active, you’re enrolled and its content is published. Expired purchases are listed in My access.</p>
-      <div className={styles.actions}><Link className={styles.primary} href="/account/access">Check my access</Link><Link className={styles.secondary} href="/courses/v2">Explore courses</Link></div>
+      <h2>Your course access isn’t active</h2>
+      <p>If you bought a course, its access may have ended or it may not be open yet. Your purchases and their dates are in <Link href="/account/access">My access</Link>.</p>
     </section> : <>
       {!!steps.length && <section aria-labelledby="up-next-heading">
         <h2 id="up-next-heading" className={styles.sectionTitle}>Up next</h2>

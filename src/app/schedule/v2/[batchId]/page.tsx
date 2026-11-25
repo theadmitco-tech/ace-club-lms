@@ -29,7 +29,7 @@ export default async function PublishedCoursePage({params,searchParams}:{params:
   const otherCourses = enrolled?.status === 'ready' ? enrolled.schedules : [];
   if (!course) {
     if (!learningEnabled) notFound();
-    return <div className="student-page"><StudentHeader studentName={studentName} /><main className="student-main"><div className="student-container"><section className="student-state"><h1>Course access is unavailable</h1><p>Access may have expired, the batch may be unpublished, or enrollment may be missing. Purchase history and access dates remain available in My access.</p><Link className="student-button" href="/account/access">Review access and expiry</Link></section></div></main></div>;
+    return <div className="student-page"><StudentHeader studentName={studentName} /><main className="student-main"><div className="student-container"><section className="student-state"><h1>Your course access isn’t active</h1><p>If you bought this course, its access may have ended or it may not be open yet. Your purchases and their dates are in <Link href="/account/access">My access</Link>.</p></section></div></main></div>;
   }
   // Subjects outside this course: link to another enrolled course, or show as locked with an upgrade option.
   const ownSections = V2_TEMPLATE_PRODUCTS[course.productCode].sections;

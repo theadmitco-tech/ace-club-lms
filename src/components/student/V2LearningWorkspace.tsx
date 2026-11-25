@@ -127,7 +127,7 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
     } catch { setMessage('The learning reminder could not be saved. Course access remains available; progress is not treated as completion.'); }
   }
   const mode = preview ? 'admin-preview' : 'student';
-  const learningForSession = (sessionKey: string): V2ResourceLearning => ({ publicationRevision: learning.publicationRevision, feedbackTracking: course.sessions.find(s => s.key === sessionKey)?.section !== 'programme', progress: learning.progress.filter(p => p.sessionKey === sessionKey), onProgress: (itemKey,state) => progress(sessionKey,itemKey,state), onFeedbackDue: () => router.refresh() });
+  const learningForSession = (sessionKey: string): V2ResourceLearning => ({ publicationRevision: learning.publicationRevision, feedbackTracking: course.sessions.find(s => s.key === sessionKey)?.section !== 'programme', progress: learning.progress.filter(p => p.sessionKey === sessionKey), onProgress: (itemKey,state) => progress(sessionKey,itemKey,state), onFeedbackDue: () => router.refresh(), feedbackDue: learning.obligations.some(o => o.batchId === course.batchId && o.sessionKey === sessionKey) });
   function select(key: string) {
     if (!outlineSessions.some(s => s.key === key && !s.locked)) return;
     const section = outlineSessions.find(s => s.key === key)!.section;
@@ -225,4 +225,6 @@ export type V2ResourceLearning = {
   publicationRevision: number; feedbackTracking?: boolean; progress: V2LearningProgress[];
   onProgress: (itemKey: string, state: 'opened' | 'read') => Promise<void>;
   onFeedbackDue: () => void;
+  /** Feedback is owed for this session, for example after a live class, even if no recording exists yet. */
+  feedbackDue?: boolean;
 };

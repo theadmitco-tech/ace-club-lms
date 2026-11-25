@@ -68,3 +68,16 @@
 .resource[data-read] { background: #eef6f0; border-radius: 10px; }
 .resource[data-read] h5 { color: #245d47; }
 .resource[data-read] .icon { background: #d7eadd; color: #245d47; }
+
+/* Recordings hosted on another site: open there, then mark as watched. */
+.selfReport { display: grid; gap: 10px; }
+.selfReport p { margin: 0; font-size: 14px; line-height: 1.55; color: #3d5246; }
+.selfReportActions { display: flex; flex-wrap: wrap; gap: 10px; }
+.selfReportActions a.button { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+.watchedButton { min-height: 42px; padding: .65rem 1.1rem; border: 0; border-radius: 8px; background: #245d47; color: #fff; font: inherit; font-size: .9rem; font-weight: 650; cursor: pointer; }
+.watchedButton:hover { background: #1d4c3a; }
+.watchedButton:disabled { background: #e4eae6; color: #56665d; cursor: default; }
+.watchedButton:focus-visible, .selfReportActions a:focus-visible { outline: 3px solid #2f6b52; outline-offset: 2px; }
+.pendingRecording { display: grid; gap: 4px; padding: 14px 16px; border: 1px dashed #d8bc7d; border-radius: 12px; background: #fffaf0; }
+.pendingRecording strong { font-size: 14.5px; color: #5d4824; }
+.pendingRecording span { font-size: 13.5px; line-height: 1.5; color: #6b5a33; }

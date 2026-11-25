@@ -236,7 +236,11 @@ async function runTests() {
   await test('Missed live feedback requires no ratings or recording and makes no attendance claim', async page => {
     state.liveRegistered = true; state.noRecording = true; const due = obligation(quant4, 'live'); state.obligations = [due];
     state.liveEvents = [{ key: due.eventKey, title: 'Quant live class', section: 'quant', startsAt: '2026-11-02T08:00:00Z', endsAt: '2026-11-02T09:00:00Z', completedAt: '2026-11-02T10:00:00Z', sessionKey: quant4 }];
-    await page.goto(origin); await page.getByRole('button', { name: 'Live classes', exact: true }).click();
+    await page.goto(origin);
+    const pending = page.getByRole('listitem', { name: 'Recording' }).getByRole('status');
+    await pending.getByText('The recording isn’t available yet', { exact: true }).waitFor();
+    await pending.getByText(/If you missed the live class, choose “I didn’t attend”/).waitFor();
+    await page.getByRole('button', { name: 'Live classes', exact: true }).click();
     for (const name of ['Join class', 'Class details']) assert.equal(await page.getByRole('link', { name, exact: true }).count(), 0);
     await page.getByRole('button', { name: 'Give feedback or report a missed class', exact: true }).click();
     await page.getByRole('radio', { name: 'I didn’t attend', exact: true }).check();
@@ -250,9 +254,9 @@ async function runTests() {
   await test('Unsupported recording uses an explicit self-report and only confirmed feedback state', async page => {
     state.externalRecording = true; await page.goto(origin);
     await page.getByRole('button', { name: 'Recording options', exact: true }).click();
-    const confirm = page.getByRole('button', { name: 'Confirm watched · self-report', exact: true });
-    assert.equal(await confirm.isDisabled(), true); assert.equal(state.obligations.length, 0);
-    await page.getByRole('checkbox', { name: 'The recording has been watched.', exact: true }).check(); await confirm.click();
+    const confirm = page.getByRole('button', { name: 'I’ve watched this recording', exact: true });
+    assert.equal(state.obligations.length, 0, 'opening the recording alone creates no feedback obligation');
+    await confirm.click();
     await page.getByRole('button', { name: 'Give feedback for Quant 4', exact: true }).waitFor();
     assert.equal(state.calls.filter(c=>c.action==='watch-report').length,1);
     assert.equal(await page.getByRole('button', { name: 'Open Quant 5', exact: true }).isDisabled(),true);
@@ -284,9 +288,8 @@ async function runTests() {
   await test('Repeated watched self-report with completed feedback never creates a false gate', async page => {
     state.externalRecording=true; state.feedbackAlreadyComplete=true;
     await page.goto(origin); await page.getByRole('button',{name:'Recording options',exact:true}).click();
-    await page.getByRole('checkbox',{name:'The recording has been watched.',exact:true}).check();
-    await page.getByRole('button',{name:'Confirm watched · self-report',exact:true}).click();
-    await page.getByText('The watched self-report is confirmed. Feedback for this session was already completed.').waitFor();
+    await page.getByRole('button',{name:'I’ve watched this recording',exact:true}).click();
+    await page.getByText('Marked as watched. You’ve already given feedback for this session.').waitFor();
     assert.equal(state.obligations.length,0); assert.equal(state.submissions.length,0);
     assert.equal(await page.getByRole('button',{name:'Open Quant 5',exact:true}).isEnabled(),true);
   });

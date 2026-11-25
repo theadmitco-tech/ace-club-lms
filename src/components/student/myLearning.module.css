@@ -47,3 +47,4 @@
 .empty { padding: 24px; border: 1px solid #e3e9e5; border-radius: 14px; background: #fff; }
 .empty h2 { margin: 0 0 6px; font-size: 19px; }
 .empty p { margin: 0 0 14px; color: #4d6157; line-height: 1.6; }
+.empty p a { font-weight: 600; color: #245d47; }

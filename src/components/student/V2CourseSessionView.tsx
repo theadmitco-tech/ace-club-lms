@@ -98,10 +98,13 @@ export function V2CourseSessionView({ session, mode, readingEndpoint, batchId, l
     <ol className={styles.stages}>{v2SessionStages(session.key).map(({ kind, title, description }, _index, stages) => {
       const items = session.content[kind].filter(item => !outsideStage.has(item.key));
       // Empty sections are hidden, except on single-section pages such as the course reading pages.
-      if (!items.length && stages.length > 1) return null;
+      // A missing recording is explained to students, since a missed live class depends on it.
+      const recordingPending = kind === 'recordings' && !items.length && mode === 'student' && !!learning && stages.length > 1;
+      if (!items.length && stages.length > 1 && !recordingPending) return null;
       return <li key={kind} className={styles.stage} aria-label={title}>
         <h4 className={styles.stageTitle}><span>{title}</span><small>{description}</small></h4>
-        <div className={styles.resources}>{!items.length && <p className={styles.emptyRow}>Nothing has been added yet.</p>}{items.map(item => <Fragment key={item.key}>
+        <div className={styles.resources}>{recordingPending ? <div className={styles.pendingRecording} role="status"><strong>The recording isn’t available yet</strong><span>{learning?.feedbackDue ? 'You can still give feedback now. If you missed the live class, choose “I didn’t attend”. The recording will appear here once it’s added.' : 'It will appear here once it’s added. Everything else in this session is ready.'}</span></div>
+          : !items.length && <p className={styles.emptyRow}>Nothing has been added yet.</p>}{items.map(item => <Fragment key={item.key}>
             {kind === 'recordings' && batchId && <V2PlacedReadings sessions={[session]} placements={placements} placement="before_video" anchorKey={item.key} mode={mode} batchId={batchId} learningForSession={learning ? () => learning : undefined} />}
             <SessionResource item={item} kind={kind} mode={mode} readingEndpoint={readingEndpoint} sessionKey={session.key} batchId={batchId} learning={mode === 'student' ? learning : undefined} />
             {kind === 'recordings' && batchId && <V2PlacedReadings sessions={[session]} placements={placements} placement="after_video" anchorKey={item.key} mode={mode} batchId={batchId} learningForSession={learning ? () => learning : undefined} />}
