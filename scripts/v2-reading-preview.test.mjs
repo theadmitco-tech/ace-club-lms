@@ -9,14 +9,14 @@ function load(file, dependencies = {}) {
   const source = ts.transpileModule(readFileSync(new URL(`../${file}`, import.meta.url), 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText;
-  runInNewContext(source, { exports, URL, require(name) {
+  runInNewContext(source, { exports, URL, process: { env: {} }, require(name) {
     assert.ok(Object.hasOwn(dependencies, name), `Unexpected dependency: ${name}`);
     return dependencies[name];
   } });
   return exports;
 }
 const helpers = load('src/lib/v2ReadingPreview.ts');
-const presentation = load('src/lib/v2SessionPresentation.ts', { './v2CourseReadmes':load('src/lib/v2CourseReadmes.ts'), './v2Templates': load('src/lib/v2Templates.ts'), './v2ContentAssets':load('src/lib/v2ContentAssets.ts') });
+const presentation = load('src/lib/v2SessionPresentation.ts', { './v2CourseReadmes':load('src/lib/v2CourseReadmes.ts'), './v2Templates': load('src/lib/v2Templates.ts'), './v2ContentAssets':load('src/lib/v2ContentAssets.ts', { './v2Environment': load('src/lib/v2Environment.ts') }) });
 const pageId = '123456781234123412341234567890ab';
 const uuid = '12345678-1234-1234-1234-1234567890ab';
 const paragraph = '22345678-1234-1234-1234-1234567890ab';
