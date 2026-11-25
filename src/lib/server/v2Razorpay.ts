@@ -1,15 +1,17 @@
 import 'server-only';
 import { createHmac, timingSafeEqual } from 'node:crypto';
+import { v2PaymentConfig } from '@/lib/v2PaymentMode';
 
 type ProviderEntity = Record<string, unknown>;
 export function validPaymentSignature(secret: string, message: string, signature: unknown): boolean {
   if (typeof signature !== 'string' || !/^[a-f0-9]{64}$/.test(signature)) return false;
   return timingSafeEqual(createHmac('sha256', secret).update(message).digest(), Buffer.from(signature, 'hex'));
 }
-export function testPaymentConfiguration(env: Record<string, string | undefined>) {
-  const key = env.V2_RAZORPAY_TEST_KEY_ID, secret = env.V2_RAZORPAY_TEST_KEY_SECRET;
-  if (!key || !/^rzp_test_[A-Za-z0-9]+$/.test(key) || !secret || secret.length < 8) throw new Error('Test payment configuration unavailable');
-  return { key, secret };
+/** The mode-matched Razorpay credentials for this deployment; throws when checkout is not configured. */
+export function paymentConfiguration(env: Record<string, string | undefined>) {
+  const config = v2PaymentConfig(env);
+  if (!config) throw new Error('Payment configuration unavailable');
+  return { mode: config.mode, key: config.keyId, secret: config.keySecret, webhookSecret: config.webhookSecret };
 }
 export function capturedPaymentMatches(payment: ProviderEntity, order: ProviderEntity,
   expected: { order: string; amount: number; receipt: string }): boolean {
@@ -21,7 +23,7 @@ export function capturedPaymentMatches(payment: ProviderEntity, order: ProviderE
     && order.amount_due === 0 && order.currency === 'INR';
 }
 export async function razorpayRequest(path: string, body?: Record<string, unknown>): Promise<ProviderEntity> {
-  const { key, secret } = testPaymentConfiguration(process.env);
+  const { key, secret } = paymentConfiguration(process.env);
   if (!/^\/(orders|payments)(\/[A-Za-z0-9_]+)?(\/payments)?$/.test(path)) throw new Error('Invalid provider operation');
   const response = await fetch(`https://api.razorpay.com/v1${path}`, {
     method: body ? 'POST' : 'GET', cache: 'no-store', signal: AbortSignal.timeout(15000),

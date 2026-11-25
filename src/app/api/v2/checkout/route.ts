@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { checkoutUuid } from '@/lib/v2Checkout';
 import { isV2ProductSelection } from '@/lib/v2Products';
-import { isV2CheckoutEnabled, serviceRpc, startProviderOrder, reconcileV2Payment } from '@/lib/server/v2Checkout';
-import { validPaymentSignature, testPaymentConfiguration, razorpayRequest } from '@/lib/server/v2Razorpay';
+import { isV2CheckoutEnabled, isV2NewCheckoutOpen, serviceRpc, startProviderOrder, reconcileV2Payment } from '@/lib/server/v2Checkout';
+import { validPaymentSignature, paymentConfiguration, razorpayRequest } from '@/lib/server/v2Razorpay';
 import { CheckoutRequestError, readCheckoutRequestText, parseCheckoutRequestJson } from '@/lib/server/v2CheckoutRequest';
 export const runtime = 'nodejs';
 export async function POST(request: Request) {
@@ -23,11 +23,12 @@ export async function POST(request: Request) {
       const { data: profile } = await client.from('profiles').select('role,is_active').eq('id', user.id).maybeSingle();
       if (profile?.role !== 'admin' || !profile.is_active) return NextResponse.json({ error: 'Admin access required.' }, { status: 403 });
     }
+    if ((body.action === 'prepare' || body.action === 'resume') && !isV2NewCheckoutOpen()) return NextResponse.json({ error: 'New registrations are paused. Payments already made are still being confirmed; check your checkout history.' }, { status: 503 });
     if (body.action === 'prepare') {
       if (!isV2ProductSelection(body.products) || !Array.isArray(body.batchIds) || !body.batchIds.every(checkoutUuid)
         || !Array.isArray(body.liveIds) || !body.liveIds.every(checkoutUuid) || typeof body.name !== 'string'
         || typeof body.whatsapp !== 'string' || typeof body.upgrade !== 'boolean' || body.acceptTerms !== true) return NextResponse.json({ error: 'Review the course selection and registration details.' }, { status: 400 });
-      testPaymentConfiguration(process.env);
+      paymentConfiguration(process.env);
       const prepared = await client.rpc('prepare_v2_checkout', { p_id: body.id, p_products: body.products, p_batch_ids: body.batchIds,
         p_live_ids: body.liveIds, p_name: body.name, p_whatsapp: body.whatsapp, p_upgrade: body.upgrade });
       if (prepared.error) return NextResponse.json({ error: 'Checkout could not be prepared. Check eligibility, live availability and any unfinished checkout.' }, { status: 409 });
@@ -48,7 +49,7 @@ export async function POST(request: Request) {
     if (body.action === 'resume') return NextResponse.json(await startProviderOrder(body.id, user.id));
     if (body.action === 'verify') {
       if (body.orderId !== intent.provider_order_id || typeof body.paymentId !== 'string' || !/^pay_[A-Za-z0-9]+$/.test(body.paymentId)
-        || !validPaymentSignature(testPaymentConfiguration(process.env).secret, `${intent.provider_order_id}|${body.paymentId}`, body.signature)) return NextResponse.json({ error: 'Payment signature could not be verified.' }, { status: 400 });
+        || !validPaymentSignature(paymentConfiguration(process.env).secret, `${intent.provider_order_id}|${body.paymentId}`, body.signature)) return NextResponse.json({ error: 'Payment signature could not be verified.' }, { status: 400 });
       return NextResponse.json(await reconcileV2Payment(body.id, body.paymentId));
     }
     if (body.action === 'reconcile') return NextResponse.json(await reconcileV2Payment(body.id));

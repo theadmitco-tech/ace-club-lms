@@ -2,11 +2,14 @@ import { createHash } from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { isV2CheckoutEnabled, serviceRpc, reconcileV2Payment } from '@/lib/server/v2Checkout';
 import { validPaymentSignature } from '@/lib/server/v2Razorpay';
+import { v2PaymentConfig } from '@/lib/v2PaymentMode';
 import { CheckoutRequestError, readCheckoutRequestText, parseCheckoutRequestJson } from '@/lib/server/v2CheckoutRequest';
 export const runtime = 'nodejs';
 export async function POST(request: Request) {
-  const secret = process.env.V2_RAZORPAY_TEST_WEBHOOK_SECRET;
-  if (!isV2CheckoutEnabled() || !secret || secret.length < 24) return NextResponse.json({ error: 'Unavailable' }, { status: 404 });
+  // Only the signing secret of this deployment's payment mode is accepted. Webhooks keep
+  // reconciling paid orders while new checkouts are paused.
+  const secret = v2PaymentConfig(process.env)?.webhookSecret;
+  if (!isV2CheckoutEnabled() || !secret) return NextResponse.json({ error: 'Unavailable' }, { status: 404 });
   try {
     const raw = await readCheckoutRequestText(request, 100000);
     if (!validPaymentSignature(secret, raw, request.headers.get('x-razorpay-signature'))) return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });

@@ -18,9 +18,10 @@ async function post(body: Record<string, unknown>) {
   if (!response.ok) throw new Error(result.error || 'Checkout unavailable.');
   return result;
 }
-export default function CheckoutForm({ batches, availability, email, checkouts, packages, prices, upgradeRequested, renderedAt, signInFailed = false }: {
+export default function CheckoutForm({ batches, availability, email, checkouts, packages, prices, upgradeRequested, renderedAt, signInFailed = false, mode = 'test', newCheckoutOpen = true }: {
   batches: SalesBatch[]; availability: { batchId: string; placesRemaining: number }[]; email: string | null;
   checkouts: CheckoutSummary[]; packages: PurchasePackage[]; prices: Record<string, number | null>; upgradeRequested: boolean; renderedAt: number; signInFailed?: boolean;
+  /** Validated server payment mode: Live wording never claims that no money is charged. */ mode?: 'test' | 'live'; newCheckoutOpen?: boolean;
 }) {
   const router = useRouter();
   const [selected, setSelected] = useState<V2ProductCode[]>([]), [chosen, setChosen] = useState<Record<string, string>>({});
@@ -49,7 +50,7 @@ export default function CheckoutForm({ batches, availability, email, checkouts, 
   async function openPayment(order: { id: string; key: string; orderId: string; amountPaise: number; currency: string; name: string; email: string; contact: string }) {
     const Razorpay = (window as unknown as { Razorpay?: RazorpayCheckoutConstructor }).Razorpay;
     if (!Razorpay) throw new Error('The payment form could not load. Resume this checkout from its history.');
-    const checkout = new Razorpay({ key: order.key, amount: order.amountPaise, currency: order.currency, name: 'Ace Club', description: 'Course registration · Test Mode', order_id: order.orderId,
+    const checkout = new Razorpay({ key: order.key, amount: order.amountPaise, currency: order.currency, name: 'Ace Club', description: mode === 'test' ? 'Course registration · Test Mode' : 'Course registration', order_id: order.orderId,
       prefill: { name: order.name, email: order.email, contact: order.contact }, theme: { color: '#205848' },
       handler: async result => {
         try {
@@ -112,7 +113,7 @@ export default function CheckoutForm({ batches, availability, email, checkouts, 
         {!validUpgrade && <p role="alert">An upgrade must include every current subject and at least one additional subject.</p>}
         <label className={form.check}><input type="checkbox" required checked={terms} disabled={busy} onChange={e => setTerms(e.target.checked)} />The selection and price have been reviewed. New purchases provide six calendar months of access from verified payment; upgrades retain the existing expiry. Live places are confirmed only after payment verification.</label>
         <p>A checkout holds selected live places for 15 minutes. There are no per-session bookings or waitlists.</p>
-        <button className={styles.button} disabled={busy || !email || !scriptReady || !terms || !selected.length || selectedBatches.length !== selected.length || estimate == null || estimate <= 0 || !validUpgrade}>{busy ? 'Checking…' : 'Continue to test payment'}</button>
+        <button className={styles.button} disabled={busy || !newCheckoutOpen || !email || !scriptReady || !terms || !selected.length || selectedBatches.length !== selected.length || estimate == null || estimate <= 0 || !validUpgrade}>{busy ? 'Checking…' : mode === 'test' ? 'Continue to test payment' : 'Continue to payment'}</button>
       </section>
     </form>
     <p role="status" aria-live="polite" className={styles.notice}>{message || 'Payment status is verified securely before course access is granted.'}</p>
@@ -122,7 +123,7 @@ export default function CheckoutForm({ batches, availability, email, checkouts, 
         <h3>{courseNames(c.products)}{c.upgrade ? ' · Upgrade' : ''}</h3><p>{courseMoney(c.amountPaise)} · {c.state === 'fulfilled' ? 'Confirmed' : c.state === 'review' ? 'Programme-team review required' : 'Payment not yet confirmed'}</p>
         <small>Reference: {c.id}</small>
         {c.state === 'fulfilled' ? <><p>Access expires {c.expiresAt ? `${date(c.expiresAt)} IST` : 'as shown in My access'}. Sign in with the same Google account to continue learning. {c.liveBatches.length ? 'Selected live registrations are confirmed; schedules are shown in My learning.' : 'No live place was requested with this purchase.'}</p><div className={styles.row}><Link href="/account/access">My access</Link><Link href="/schedule/v2">Open learning schedule</Link></div></> : <><p>{c.state === 'review' ? 'A captured payment needs review before access can be granted. Contact the programme team with this reference; do not pay again.' : 'If a payment was attempted, check its status before starting another checkout.'}</p><div className={styles.row}>
-          {['prepared', 'ready'].includes(c.state) && Date.parse(c.holdUntil) > renderedAt && <button type="button" className={styles.button} disabled={busy || !scriptReady} onClick={() => historyAction(c.id, 'resume')}>Resume checkout</button>}
+          {['prepared', 'ready'].includes(c.state) && Date.parse(c.holdUntil) > renderedAt && <button type="button" className={styles.button} disabled={busy || !scriptReady || !newCheckoutOpen} onClick={() => historyAction(c.id, 'resume')}>Resume checkout</button>}
           {['ready', 'review'].includes(c.state) && <button type="button" className={styles.button} disabled={busy} onClick={() => historyAction(c.id, 'reconcile')}>Check payment</button>}
           {c.state === 'creating' && <p>Order creation needs programme-team recovery. Provide the reference above.</p>}
         </div></>}

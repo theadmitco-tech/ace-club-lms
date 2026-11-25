@@ -133,11 +133,26 @@ if (deploymentEnvironment !== 'production') {
     console.error('V2_PRODUCTION_RELEASE_ENABLED must be exactly true or false.');
     process.exit(1);
   }
-  // Test Mode checkout never runs in Production. Live checkout is refused until its reviewed implementation exists.
-  if (process.env.V2_CHECKOUT_TEST_ENABLED === 'true' || process.env.V2_CHECKOUT_LIVE_ENABLED === 'true'
+  // Test Mode checkout and its credentials never run in Production.
+  if (process.env.V2_CHECKOUT_TEST_ENABLED === 'true'
     || Object.entries(process.env).some(([key, value]) => key.startsWith('V2_RAZORPAY_TEST_') && value?.trim())) {
-    console.error('V2 Test Mode checkout is excluded from Production, and V2 Live Mode checkout is not yet implemented.');
+    console.error('V2 Test Mode checkout and its credentials are excluded from Production.');
     process.exit(1);
+  }
+  // Live checkout needs the master release flag and its complete dedicated Live Mode configuration.
+  if (process.env.V2_CHECKOUT_LIVE_ENABLED === 'true' && (releaseFlag !== 'true'
+    || !/^rzp_live_[A-Za-z0-9]+$/.test(process.env.V2_RAZORPAY_LIVE_KEY_ID ?? '')
+    || (process.env.V2_RAZORPAY_LIVE_KEY_SECRET?.trim().length ?? 0) < 16
+    || (process.env.V2_RAZORPAY_LIVE_WEBHOOK_SECRET?.trim().length ?? 0) < 32)) {
+    console.error('V2 Live Mode checkout requires V2_PRODUCTION_RELEASE_ENABLED=true and its dedicated Live API and webhook configuration.');
+    process.exit(1);
+  }
+  for (const key of ['V2_CHECKOUT_LIVE_ENABLED', 'V2_CHECKOUT_NEW_ORDERS_PAUSED']) {
+    const value = process.env[key];
+    if (value !== undefined && value !== '' && value !== 'true' && value !== 'false') {
+      console.error(`${key} must be exactly true or false.`);
+      process.exit(1);
+    }
   }
   // Feature flags alone cannot authorize a release; they take effect only with the master release flag.
   if (releaseFlag !== 'true' && featureFlags.some(key => process.env[key] === 'true')) {

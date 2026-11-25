@@ -10,7 +10,7 @@ import {createHash} from 'node:crypto';
 import {chromium} from 'playwright-core';
 const repo=fileURLToPath(new URL('../../../',import.meta.url)),root=await mkdtemp(path.join(tmpdir(),'ace-checkout-browser-'));
 const output=process.env.PHASE3_BROWSER_OUTPUT||path.join(tmpdir(),'ace-phase3-browser');await mkdir(output,{recursive:true});
-const files=['src/app/auth/v2/callback/route.ts','src/app/courses/v2/checkout/CheckoutForm.tsx','src/app/courses/v2/checkout/checkout.module.css','src/components/courses/courses.module.css','src/lib/v2CoursePresentation.ts','src/lib/v2Products.ts','src/lib/v2Checkout.ts','src/lib/razorpayCheckout.ts','src/app/admin/v2/payments/PaymentRecovery.tsx'];
+const files=['src/app/auth/v2/callback/route.ts','src/lib/v2Environment.ts','src/lib/v2PaymentMode.ts','src/lib/server/v2ServiceClient.ts','src/app/courses/v2/checkout/CheckoutForm.tsx','src/app/courses/v2/checkout/checkout.module.css','src/components/courses/courses.module.css','src/lib/v2CoursePresentation.ts','src/lib/v2Products.ts','src/lib/v2Checkout.ts','src/lib/razorpayCheckout.ts','src/app/admin/v2/payments/PaymentRecovery.tsx'];
 const put=async(f,s)=>{await mkdir(path.dirname(path.join(root,f)),{recursive:true});await writeFile(path.join(root,f),s);};
 for(const f of files){await mkdir(path.dirname(path.join(root,f)),{recursive:true});await copyFile(path.join(repo,f),path.join(root,f));}
 await symlink(path.join(repo,'node_modules'),path.join(root,'node_modules'),'dir');await copyFile(path.join(repo,'package.json'),path.join(root,'package.json'));await copyFile(path.join(repo,'tsconfig.json'),path.join(root,'tsconfig.json'));

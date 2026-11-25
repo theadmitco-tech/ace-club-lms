@@ -1,20 +1,22 @@
 import 'server-only';
-import { createClient as createServiceClient } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/server';
-import { checkoutPreviewEnabled, type SalesBatch, type CheckoutSummary, type PurchasePackage } from '@/lib/v2Checkout';
-import { capturedPaymentMatches, razorpayRequest, testPaymentConfiguration } from './v2Razorpay';
+import { type SalesBatch, type CheckoutSummary, type PurchasePackage } from '@/lib/v2Checkout';
+import { capturedPaymentMatches, razorpayRequest, paymentConfiguration } from './v2Razorpay';
+import { v2PaymentConfig, v2NewCheckoutsPaused, type V2PaymentMode } from '@/lib/v2PaymentMode';
+import { createV2ServiceClient } from './v2ServiceClient';
 
-export function isV2CheckoutEnabled() { return checkoutPreviewEnabled(process.env); }
+/** Checkout and paid-order reconciliation are available in this deployment's payment mode. */
+export function isV2CheckoutEnabled() { return v2PaymentConfig(process.env) !== null; }
+/** The validated payment mode, for wording that must match whether money is charged. */
+export function v2CheckoutMode(): V2PaymentMode | null { return v2PaymentConfig(process.env)?.mode ?? null; }
+/** New checkouts and payment attempts; already-paid reconciliation stays available while paused. */
+export function isV2NewCheckoutOpen() { return isV2CheckoutEnabled() && !v2NewCheckoutsPaused(process.env); }
 export function checkoutService() {
   if (!isV2CheckoutEnabled()) throw new Error('Checkout unavailable');
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!key) throw new Error('Checkout service unavailable');
-  // Legacy JWT service credentials must belong to the verified staging project.
-  if (key.split('.').length === 3) {
-    const claims = JSON.parse(Buffer.from(key.split('.')[1], 'base64url').toString());
-    if (claims.ref !== 'eyphkkginlgoaxflauog' || claims.role !== 'service_role') throw new Error('Staging service configuration mismatch');
-  }
-  return createServiceClient('https://eyphkkginlgoaxflauog.supabase.co', key, { auth: { persistSession: false, autoRefreshToken: false } });
+  // The deployment's approved project only; mismatched or cross-project keys are refused.
+  const client = createV2ServiceClient();
+  if (!client) throw new Error('Checkout service unavailable');
+  return client;
 }
 export async function serviceRpc(name: string, args: Record<string, unknown> = {}) {
   const { data, error } = await checkoutService().rpc(name, args);
@@ -37,9 +39,11 @@ export async function loadV2CheckoutAccount() {
   return { email: user.email ?? null, checkouts: orders.data as CheckoutSummary[], packages: packages.data as PurchasePackage[] };
 }
 export async function startProviderOrder(id: string, studentId: string) {
+  // A paused checkout creates no provider order and opens no payment form.
+  if (!isV2NewCheckoutOpen()) throw new Error('New checkouts are paused');
   let intent = await serviceRpc('read_v2_checkout_service', { p_id: id });
   if (!intent || intent.student_id !== studentId) throw new Error('Checkout unavailable');
-  const { key } = testPaymentConfiguration(process.env);
+  const { key } = paymentConfiguration(process.env);
   if (intent.state === 'prepared' && await serviceRpc('claim_v2_checkout_order', { p_id: id })) {
     // An ambiguous provider response leaves the claim in place for Admin recovery; no blind POST retry.
     const order = await razorpayRequest('/orders', { amount: intent.amount_paise, currency: 'INR', receipt: id, partial_payment: false });

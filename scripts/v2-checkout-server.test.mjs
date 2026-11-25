@@ -6,14 +6,18 @@ import crypto from 'node:crypto';
 import ts from 'typescript';
 function load(file,deps={},globals={}){const exports={};runInNewContext(ts.transpileModule(readFileSync(new URL('../'+file,import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,{exports,Buffer,URL,Date,AbortSignal,TextDecoder,process:{env:{}},...globals,require(name){assert.ok(Object.hasOwn(deps,name),name);return deps[name];}});return exports;}
 const env={V2_CHECKOUT_TEST_ENABLED:'true',VERCEL_ENV:'preview',NEXT_PUBLIC_SUPABASE_URL:'https://eyphkkginlgoaxflauog.supabase.co'};
+const testKeys={V2_RAZORPAY_TEST_KEY_ID:'rzp_test_synthetic',V2_RAZORPAY_TEST_KEY_SECRET:'synthetic-api-secret',V2_RAZORPAY_TEST_WEBHOOK_SECRET:'synthetic-webhook-secret-for-local-tests'};
 const domain=load('src/lib/v2Checkout.ts');
-const provider=load('src/lib/server/v2Razorpay.ts',{'server-only':{},'node:crypto':crypto});
+const environment=load('src/lib/v2Environment.ts',{},{atob});
+const paymentMode=load('src/lib/v2PaymentMode.ts',{'./v2Checkout':domain,'./v2Environment':environment});
+const provider=load('src/lib/server/v2Razorpay.ts',{'server-only':{},'node:crypto':crypto,'@/lib/v2PaymentMode':paymentMode});
 const requestBody=load('src/lib/server/v2CheckoutRequest.ts',{'server-only':{}});
 test('checkout environment fails closed in Production and on any non-staging project',()=>{
  assert.equal(domain.checkoutPreviewEnabled(env),true);
  for(const patch of [{VERCEL_ENV:'production'},{VERCEL_ENV:'other'},{V2_CHECKOUT_TEST_ENABLED:undefined},{NEXT_PUBLIC_SUPABASE_URL:'https://owmlxsnzogfapotmjrqk.supabase.co'},{NEXT_PUBLIC_SUPABASE_URL:env.NEXT_PUBLIC_SUPABASE_URL+'.evil.invalid'}])assert.equal(domain.checkoutPreviewEnabled({...env,...patch}),false);
- assert.throws(()=>provider.testPaymentConfiguration({V2_RAZORPAY_TEST_KEY_ID:'rzp_live_abc',V2_RAZORPAY_TEST_KEY_SECRET:'testsecret'}));
- assert.throws(()=>provider.testPaymentConfiguration({RAZORPAY_KEY_ID:'rzp_test_abc',RAZORPAY_KEY_SECRET:'testsecret'}));
+ assert.equal(provider.paymentConfiguration({...env,...testKeys}).mode,'test');
+ assert.throws(()=>provider.paymentConfiguration({...env,...testKeys,V2_RAZORPAY_TEST_KEY_ID:'rzp_live_abc'}));
+ assert.throws(()=>provider.paymentConfiguration({...env,RAZORPAY_KEY_ID:'rzp_test_abc',RAZORPAY_KEY_SECRET:'testsecret'}));
 });
 test('callback and webhook signatures require exact content and valid hexadecimal encoding',()=>{
  const secret='synthetic-test-secret',raw='order_1|pay_1',sig=crypto.createHmac('sha256',secret).update(raw).digest('hex');
@@ -37,8 +41,8 @@ function routeHarness(){
   'next/server':{NextResponse:{json:(body,options={})=>({body,status:options.status??200})}},
   '@/lib/v2Checkout':domain,'@/lib/v2Products':{isV2ProductSelection:()=>true},
   '@/utils/supabase/server':{createClient:async()=>({auth:{getUser:async()=>({data:{user:state.user}})},from:()=>({select:()=>({eq:()=>({maybeSingle:async()=>({data:{role:state.admin?'admin':'student',is_active:true}})})})}),rpc:async(name)=>{calls.push(name);return {data:{}};}})},
-  '@/lib/server/v2Checkout':{isV2CheckoutEnabled:()=>state.enabled,serviceRpc:async(name)=>{calls.push(name);return state.intent;},startProviderOrder:async()=>{calls.push('create');return {};},reconcileV2Payment:async(...args)=>{calls.push(['reconcile',...args]);return {state:'fulfilled'};}},
-  '@/lib/server/v2Razorpay':{...provider,testPaymentConfiguration:()=>({secret:'testsecret'}),razorpayRequest:async()=>{throw Error('unexpected provider call');}},
+  '@/lib/server/v2Checkout':{isV2CheckoutEnabled:()=>state.enabled,isV2NewCheckoutOpen:()=>state.enabled&&!state.paused,serviceRpc:async(name)=>{calls.push(name);return state.intent;},startProviderOrder:async()=>{calls.push('create');return {};},reconcileV2Payment:async(...args)=>{calls.push(['reconcile',...args]);return {state:'fulfilled'};}},
+  '@/lib/server/v2Razorpay':{...provider,paymentConfiguration:()=>({secret:'testsecret'}),razorpayRequest:async()=>{throw Error('unexpected provider call');}},
  });
  const request=(body,origin='https://preview.example.test')=>new Request('https://preview.example.test/api/v2/checkout',{method:'POST',headers:{origin},body:JSON.stringify({id,...body})});
  return {state,calls,route,request,id};
@@ -66,9 +70,9 @@ function webhookHarness(){
  const route=load('src/app/api/v2/checkout/webhook/route.ts',{
   'node:crypto':crypto,'@/lib/server/v2CheckoutRequest':requestBody,
   'next/server':{NextResponse:{json:(body,options={})=>({body,status:options.status??200})}},
-  '@/lib/server/v2Razorpay':provider,
+  '@/lib/server/v2Razorpay':provider,'@/lib/v2PaymentMode':paymentMode,
   '@/lib/server/v2Checkout':{isV2CheckoutEnabled:()=>state.enabled,serviceRpc:async(name,args)=>{calls.push([name,args]);return state.checkout;},reconcileV2Payment:async id=>{calls.push(['reconcile',id]);if(state.fail)throw Error('temporary provider failure');return {state:'fulfilled'};}},
- },{process:{env:{V2_RAZORPAY_TEST_WEBHOOK_SECRET:secret}}});
+ },{process:{env:{...env,...testKeys,V2_RAZORPAY_TEST_WEBHOOK_SECRET:secret}}});
  const request=(event='payment.captured',signatureValid=true,eventId='evt_synthetic')=>{
   const raw=JSON.stringify({event,payload:{payment:{entity:{order_id:'order_saved',status:'captured',amount:1}}}});
   return new Request('https://preview.example.test/api/v2/checkout/webhook',{method:'POST',headers:{'x-razorpay-signature':signatureValid?crypto.createHmac('sha256',secret).update(raw).digest('hex'):'0'.repeat(64),'x-razorpay-event-id':eventId},body:raw});
@@ -97,11 +101,11 @@ test('webhook provider failure is retryable and unknown or unsupported events gr
 test('ambiguous provider order creation cannot issue a second order on retry',async()=>{
  const id='10000000-0000-4000-8000-000000000001',student='10000000-0000-4000-8000-000000000002';
  const intent={id,student_id:student,state:'prepared',amount_paise:1000000};let providerCalls=0;
- const server=load('src/lib/server/v2Checkout.ts',{'server-only':{},'@supabase/supabase-js':{createClient:()=>({rpc:async name=>{
+ const server=load('src/lib/server/v2Checkout.ts',{'server-only':{},'@/lib/v2PaymentMode':paymentMode,'./v2ServiceClient':{createV2ServiceClient:()=>({rpc:async name=>{
   if(name==='read_v2_checkout_service')return {data:{...intent}};
   if(name==='claim_v2_checkout_order'){intent.state='creating';return {data:true};}
   throw Error('unexpected database transition');
- }})},'@/utils/supabase/server':{},'@/lib/v2Checkout':domain,'./v2Razorpay':{...provider,testPaymentConfiguration:()=>({key:'rzp_test_synthetic'}),razorpayRequest:async()=>{providerCalls++;throw Error('ambiguous timeout');}}},{process:{env:{...env,SUPABASE_SERVICE_ROLE_KEY:'synthetic-service-key'}}});
+ }})},'@/utils/supabase/server':{},'@/lib/v2Checkout':domain,'./v2Razorpay':{...provider,paymentConfiguration:()=>({key:'rzp_test_synthetic'}),razorpayRequest:async()=>{providerCalls++;throw Error('ambiguous timeout');}}},{process:{env:{...env,...testKeys,SUPABASE_SERVICE_ROLE_KEY:'synthetic-service-key'}}});
  await assert.rejects(server.startProviderOrder(id,student),/ambiguous timeout/);
  await assert.rejects(server.startProviderOrder(id,student),/requires review/);
  assert.equal(providerCalls,1);assert.equal(intent.state,'creating');
@@ -138,7 +142,7 @@ function reconciliationHarness(){
  const payment={entity:'payment',id:'pay_saved',order_id:'order_saved',status:'captured',captured:true,amount:1000000,currency:'INR',amount_refunded:0};
  const order={entity:'order',id:'order_saved',receipt:id,status:'paid',amount:1000000,amount_paid:1000000,amount_due:0,currency:'INR'};
  const state={payment,order,items:[payment],fail:false};const calls=[];
- const server=load('src/lib/server/v2Checkout.ts',{'server-only':{},'@supabase/supabase-js':{createClient:()=>({rpc:async(name,args)=>{
+ const server=load('src/lib/server/v2Checkout.ts',{'server-only':{},'@/lib/v2PaymentMode':paymentMode,'./v2ServiceClient':{createV2ServiceClient:()=>({rpc:async(name,args)=>{
   calls.push({name,args});
   if(name==='read_v2_checkout_service')return {data:{id,provider_order_id:'order_saved',amount_paise:1000000}};
   if(name==='fulfill_v2_checkout')return {data:{state:'fulfilled'}};
@@ -149,7 +153,7 @@ function reconciliationHarness(){
   if(path==='/orders/order_saved/payments')return {items:state.items};
   if(path==='/payments/pay_saved')return state.payment;
   throw Error('unexpected provider path');
- }}},{process:{env:{...env,SUPABASE_SERVICE_ROLE_KEY:'synthetic-service-key'}}});
+ }}},{process:{env:{...env,...testKeys,SUPABASE_SERVICE_ROLE_KEY:'synthetic-service-key'}}});
  return {id,state,calls,server};
 }
 test('server reconciliation fetches authoritative provider state before forwarding an exact capture',async()=>{
@@ -233,4 +237,21 @@ test('successful checkout signup returns to checkout while a disabled feature re
  h.state.enabled=false;
  assert.equal((await h.route.GET(h.request('?code=another'))).status,404);
  assert.deepEqual(h.calls,['synthetic-valid']);
+});
+test('paused checkout refuses new registrations and payment attempts but still reconciles paid orders',async()=>{
+ const h=routeHarness();h.state.paused=true;
+ const prepare=await h.route.POST(h.request({action:'prepare',products:['quant_crash'],batchIds:[],liveIds:[],name:'Student',whatsapp:'+911234567890',upgrade:false,acceptTerms:true}));
+ assert.equal(prepare.status,503);assert.match(prepare.body.error,/paused/);
+ assert.equal((await h.route.POST(h.request({action:'resume'}))).status,503);
+ assert.equal(h.calls.includes('create'),false);assert.equal(h.calls.includes('prepare_v2_checkout'),false);
+ const reconcile=await h.route.POST(h.request({action:'reconcile'}));
+ assert.equal(reconcile.status,200);assert.ok(h.calls.some(c=>Array.isArray(c)&&c[0]==='reconcile'));
+});
+test('paused server refuses to create a provider order',async()=>{
+ const id='10000000-0000-4000-8000-000000000001',student='10000000-0000-4000-8000-000000000002';let providerCalls=0;
+ const server=load('src/lib/server/v2Checkout.ts',{'server-only':{},'@/lib/v2PaymentMode':paymentMode,'./v2ServiceClient':{createV2ServiceClient:()=>({rpc:async()=>{throw Error('no database call expected');}})},
+  '@/utils/supabase/server':{},'@/lib/v2Checkout':domain,'./v2Razorpay':{...provider,razorpayRequest:async()=>{providerCalls++;return {};}}},
+  {process:{env:{...env,...testKeys,V2_CHECKOUT_NEW_ORDERS_PAUSED:'true'}}});
+ assert.equal(server.isV2CheckoutEnabled(),true);assert.equal(server.isV2NewCheckoutOpen(),false);
+ await assert.rejects(server.startProviderOrder(id,student),/paused/);assert.equal(providerCalls,0);
 });

@@ -51,6 +51,11 @@ test('Production enables V2 features only with the master release flag, and neve
   assert.equal(run({ ...production, V2_PRODUCTION_RELEASE_ENABLED: 'true' }).status, 0);
   for (const value of ['yes', '1', 'TRUE']) assert.equal(run({ ...production, V2_PRODUCTION_RELEASE_ENABLED: value }).status, 1);
   for (const change of [{ V2_CHECKOUT_TEST_ENABLED: 'true' }, { V2_CHECKOUT_LIVE_ENABLED: 'true' }, { V2_RAZORPAY_TEST_KEY_ID: 'rzp_test_synthetic' }]) assert.equal(run({ ...released, ...change }).status, 1);
+  const live = { V2_CHECKOUT_LIVE_ENABLED: 'true', V2_RAZORPAY_LIVE_KEY_ID: 'rzp_live_synthetic', V2_RAZORPAY_LIVE_KEY_SECRET: 'synthetic-live-api-secret', V2_RAZORPAY_LIVE_WEBHOOK_SECRET: 'synthetic-live-webhook-secret-for-tests' };
+  assert.equal(run({ ...released, ...live }).status, 0);
+  assert.equal(run({ ...released, ...live, V2_CHECKOUT_NEW_ORDERS_PAUSED: 'true' }).status, 0);
+  for (const change of [{ V2_PRODUCTION_RELEASE_ENABLED: 'false' }, { V2_RAZORPAY_LIVE_KEY_ID: 'rzp_test_synthetic' }, { V2_RAZORPAY_LIVE_KEY_SECRET: '' },
+    { V2_RAZORPAY_LIVE_WEBHOOK_SECRET: 'short' }, { V2_CHECKOUT_TEST_ENABLED: 'true' }, { V2_CHECKOUT_NEW_ORDERS_PAUSED: 'yes' }]) assert.equal(run({ ...released, ...live, ...change }).status, 1, JSON.stringify(change));
 });
 test('diagnostics do not expose configured credentials or rejected URL values', () => {
   const secret = 'PRIVATE_SENTINEL_VALUE';
