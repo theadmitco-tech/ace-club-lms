@@ -72,3 +72,59 @@ export function v2Phase1SurfacesAllowed(env: Env): boolean {
   const context = v2DeploymentContext(env);
   return context === 'preview' || context === 'development' || isV2ProductionReleaseApproved(env);
 }
+
+// ── Supabase key consistency ───────────────────────────────────────────────
+// A local consistency check, not provider authentication: Supabase itself
+// still rejects a key used against another project. It catches keys pasted
+// into the wrong slot or from the wrong project before any request is made.
+
+export type SupabaseKeyRole = 'anon' | 'service_role';
+
+/** Project ref of a `https://<ref>.supabase.co` origin, or null. */
+export function supabaseProjectRef(origin: string | null): string | null {
+  const match = origin?.match(/^https:\/\/([a-z0-9]{20})\.supabase\.co$/);
+  return match ? match[1] : null;
+}
+
+function jwtClaims(key: string): { ref?: unknown; role?: unknown } | null {
+  const parts = key.split('.');
+  if (parts.length !== 3) return null;
+  try {
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(base64 + '='.repeat((4 - base64.length % 4) % 4)));
+  } catch { return null; }
+}
+
+/**
+ * 'mismatch' when the key is provably for another project or the wrong role
+ * (including a secret key in the public slot); 'match' when it names this
+ * project and role; 'unverifiable' for formats that carry no project.
+ */
+export function checkSupabaseKey(key: string | undefined, projectRef: string, role: SupabaseKeyRole): 'match' | 'mismatch' | 'unverifiable' {
+  const value = key?.trim();
+  if (!value) return 'mismatch';
+  if (value.startsWith('sb_secret_')) return role === 'service_role' ? 'unverifiable' : 'mismatch';
+  if (value.startsWith('sb_publishable_')) return role === 'anon' ? 'unverifiable' : 'mismatch';
+  const claims = jwtClaims(value);
+  if (!claims) return 'unverifiable';
+  return claims.ref === projectRef && claims.role === role ? 'match' : 'mismatch';
+}
+
+/**
+ * Configuration for a privileged V2 server client, or null when it must not be created.
+ * Approved Production uses only the Production project. Other contexts use the configured
+ * project but never the Production one. Both keys must not provably mismatch that project.
+ */
+export function v2ServiceConfig(env: Env): { supabaseOrigin: string; serviceKey: string } | null {
+  const context = v2DeploymentContext(env);
+  const origin = context === 'production'
+    ? (isV2ProductionReleaseApproved(env) ? V2_PRODUCTION_PROJECT.supabaseOrigin : null)
+    : exactHttpsOrigin(env.NEXT_PUBLIC_SUPABASE_URL);
+  if (!origin || (context !== 'production' && origin === V2_PRODUCTION_PROJECT.supabaseOrigin)) return null;
+  const ref = supabaseProjectRef(origin);
+  const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  if (!ref || !serviceKey) return null;
+  if (checkSupabaseKey(serviceKey, ref, 'service_role') === 'mismatch') return null;
+  if (env.NEXT_PUBLIC_SUPABASE_ANON_KEY && checkSupabaseKey(env.NEXT_PUBLIC_SUPABASE_ANON_KEY, ref, 'anon') === 'mismatch') return null;
+  return { supabaseOrigin: origin, serviceKey };
+}

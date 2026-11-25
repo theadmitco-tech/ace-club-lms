@@ -10,7 +10,7 @@ function load(path) {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText;
   const exports = {};
-  runInNewContext(compiled, { exports, URL }, { filename: path });
+  runInNewContext(compiled, { exports, URL, atob }, { filename: path });
   return exports;
 }
 const policy = load('src/lib/v2Environment.ts');
@@ -70,4 +70,41 @@ test('Unknown contexts fail closed', () => {
     assert.equal(policy.v2Project(env), null);
     assert.equal(policy.v2Phase1SurfacesAllowed(env), false);
   }
+});
+
+const jwt = (claims) => ['e30', Buffer.from(JSON.stringify(claims)).toString('base64url'), 'signature'].join('.');
+const stagingRef = 'eyphkkginlgoaxflauog', productionRef = 'owmlxsnzogfapotmjrqk';
+
+test('Supabase keys are checked against their project and slot', () => {
+  assert.equal(policy.checkSupabaseKey(jwt({ ref: stagingRef, role: 'anon' }), stagingRef, 'anon'), 'match');
+  assert.equal(policy.checkSupabaseKey(jwt({ ref: stagingRef, role: 'service_role' }), stagingRef, 'service_role'), 'match');
+  assert.equal(policy.checkSupabaseKey(jwt({ ref: productionRef, role: 'anon' }), stagingRef, 'anon'), 'mismatch');
+  assert.equal(policy.checkSupabaseKey(jwt({ ref: stagingRef, role: 'service_role' }), stagingRef, 'anon'), 'mismatch');
+  assert.equal(policy.checkSupabaseKey(jwt({ ref: stagingRef, role: 'anon' }), stagingRef, 'service_role'), 'mismatch');
+  assert.equal(policy.checkSupabaseKey('sb_secret_' + 'x'.repeat(32), stagingRef, 'anon'), 'mismatch');
+  assert.equal(policy.checkSupabaseKey('sb_publishable_' + 'x'.repeat(32), stagingRef, 'service_role'), 'mismatch');
+  assert.equal(policy.checkSupabaseKey('sb_secret_' + 'x'.repeat(32), stagingRef, 'service_role'), 'unverifiable');
+  assert.equal(policy.checkSupabaseKey('sb_publishable_' + 'x'.repeat(32), stagingRef, 'anon'), 'unverifiable');
+  assert.equal(policy.checkSupabaseKey('', stagingRef, 'anon'), 'mismatch');
+  assert.equal(policy.checkSupabaseKey('opaque-format', stagingRef, 'anon'), 'unverifiable');
+  assert.equal(policy.supabaseProjectRef(staging), stagingRef);
+  assert.equal(policy.supabaseProjectRef('https://example.invalid'), null);
+});
+
+test('the privileged V2 client uses only this deployment\'s project with matching keys', () => {
+  const stagingKeys = { NEXT_PUBLIC_SUPABASE_ANON_KEY: jwt({ ref: stagingRef, role: 'anon' }), SUPABASE_SERVICE_ROLE_KEY: jwt({ ref: stagingRef, role: 'service_role' }) };
+  const productionKeys = { NEXT_PUBLIC_SUPABASE_ANON_KEY: jwt({ ref: productionRef, role: 'anon' }), SUPABASE_SERVICE_ROLE_KEY: jwt({ ref: productionRef, role: 'service_role' }) };
+  assert.equal(policy.v2ServiceConfig({ ...preview, ...stagingKeys }).supabaseOrigin, staging);
+  assert.equal(policy.v2ServiceConfig({ ...released, ...productionKeys }).supabaseOrigin, production);
+  // Unapproved Production, a staging key in Production, or Production from a non-Production deployment are refused.
+  const { V2_PRODUCTION_RELEASE_ENABLED, ...unreleased } = released; void V2_PRODUCTION_RELEASE_ENABLED;
+  for (const env of [
+    { ...unreleased, ...productionKeys },
+    { ...released, ...stagingKeys },
+    { ...released, ...productionKeys, SUPABASE_SERVICE_ROLE_KEY: jwt({ ref: productionRef, role: 'anon' }) },
+    { ...released, ...productionKeys, NEXT_PUBLIC_SUPABASE_ANON_KEY: 'sb_secret_' + 'x'.repeat(32) },
+    { ...preview, ...productionKeys, NEXT_PUBLIC_SUPABASE_URL: production },
+    { ...preview, ...stagingKeys, SUPABASE_SERVICE_ROLE_KEY: '' },
+    { ...preview, ...stagingKeys, NEXT_PUBLIC_SUPABASE_URL: 'https://example.invalid' },
+  ]) assert.equal(policy.v2ServiceConfig(env), null, JSON.stringify(Object.keys(env)));
 });

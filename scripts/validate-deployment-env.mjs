@@ -80,6 +80,32 @@ if (expected) {
   }
 }
 
+// Supabase keys must not provably belong to another project or slot. A secret key in the
+// public slot would ship to every browser. Formats that carry no project cannot be checked
+// here; Supabase still rejects them against another project.
+const keyProject = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname.split('.')[0];
+const keyClaims = (key) => {
+  const parts = key.trim().split('.');
+  if (parts.length !== 3) return null;
+  try {
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(base64 + '='.repeat((4 - base64.length % 4) % 4)));
+  } catch { return null; }
+};
+const keyMismatch = (key, role) => {
+  const value = key.trim();
+  if (value.startsWith('sb_secret_')) return role !== 'service_role';
+  if (value.startsWith('sb_publishable_')) return role !== 'anon';
+  const claims = keyClaims(value);
+  return !!claims && (claims.ref !== keyProject || claims.role !== role);
+};
+if (keyMismatch(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, 'anon')
+  || keyMismatch(process.env.SUPABASE_SERVICE_ROLE_KEY, 'service_role')
+  || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.trim() === process.env.SUPABASE_SERVICE_ROLE_KEY.trim()) {
+  console.error('Supabase keys do not match NEXT_PUBLIC_SUPABASE_URL or are in the wrong slot; a server key must never be public.');
+  process.exit(1);
+}
+
 const productionSite = expectedProjects.production.siteOrigin;
 if (deploymentEnvironment !== 'production') {
   if (new URL(process.env.NEXT_PUBLIC_SITE_URL).origin === productionSite

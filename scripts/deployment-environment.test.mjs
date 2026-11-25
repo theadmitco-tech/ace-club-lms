@@ -9,7 +9,7 @@ const production = { ...preview, VERCEL_ENV: 'production', NEXT_PUBLIC_SUPABASE_
 const payment = { V2_CHECKOUT_TEST_ENABLED: 'true', V2_RAZORPAY_TEST_KEY_ID: 'rzp_test_synthetic', V2_RAZORPAY_TEST_KEY_SECRET: 'synthetic-api-secret', V2_RAZORPAY_TEST_WEBHOOK_SECRET: 'synthetic-webhook-secret-for-local-tests' };
 function run(env) {
   const messages = [], stopped = Symbol('exit'); let status = 0;
-  try { runInNewContext(source, { URL, process: { env, exit(code) { status = code; throw stopped; } }, console: { log: s => messages.push(s), error: s => messages.push(s) } }); }
+  try { runInNewContext(source, { URL, atob, process: { env, exit(code) { status = code; throw stopped; } }, console: { log: s => messages.push(s), error: s => messages.push(s) } }); }
   catch (error) { if (error !== stopped) throw error; }
   return { status, output: messages.join('\n') };
 }
@@ -56,4 +56,24 @@ test('diagnostics do not expose configured credentials or rejected URL values', 
   const secret = 'PRIVATE_SENTINEL_VALUE';
   const result = run({ ...preview, NEXT_PUBLIC_SITE_URL: 'https://user:' + secret + '@example.invalid' });
   assert.equal(result.status, 1); assert(!result.output.includes(secret));
+});
+
+const jwt = (claims) => ['e30', Buffer.from(JSON.stringify(claims)).toString('base64url'), 'signature'].join('.');
+test('Supabase keys must match the configured project and never put a server key in the public slot', () => {
+  const stagingKeys = { NEXT_PUBLIC_SUPABASE_ANON_KEY: jwt({ ref: 'eyphkkginlgoaxflauog', role: 'anon' }), SUPABASE_SERVICE_ROLE_KEY: jwt({ ref: 'eyphkkginlgoaxflauog', role: 'service_role' }) };
+  const productionKeys = { NEXT_PUBLIC_SUPABASE_ANON_KEY: jwt({ ref: 'owmlxsnzogfapotmjrqk', role: 'anon' }), SUPABASE_SERVICE_ROLE_KEY: jwt({ ref: 'owmlxsnzogfapotmjrqk', role: 'service_role' }) };
+  assert.equal(run({ ...preview, ...stagingKeys }).status, 0);
+  assert.equal(run({ ...production, ...productionKeys }).status, 0);
+  assert.equal(run({ ...preview, NEXT_PUBLIC_SUPABASE_ANON_KEY: 'sb_publishable_' + 'x'.repeat(24), SUPABASE_SERVICE_ROLE_KEY: 'sb_secret_' + 'y'.repeat(24) }).status, 0);
+  for (const change of [
+    { NEXT_PUBLIC_SUPABASE_ANON_KEY: productionKeys.NEXT_PUBLIC_SUPABASE_ANON_KEY },
+    { SUPABASE_SERVICE_ROLE_KEY: productionKeys.SUPABASE_SERVICE_ROLE_KEY },
+    { NEXT_PUBLIC_SUPABASE_ANON_KEY: stagingKeys.SUPABASE_SERVICE_ROLE_KEY },
+    { NEXT_PUBLIC_SUPABASE_ANON_KEY: 'sb_secret_' + 'x'.repeat(24) },
+    { SUPABASE_SERVICE_ROLE_KEY: 'sb_publishable_' + 'x'.repeat(24) },
+    { SUPABASE_SERVICE_ROLE_KEY: stagingKeys.NEXT_PUBLIC_SUPABASE_ANON_KEY },
+  ]) assert.equal(run({ ...preview, ...stagingKeys, ...change }).status, 1, JSON.stringify(Object.keys(change)));
+  assert.equal(run({ ...production, ...stagingKeys }).status, 1);
+  const leaked = run({ ...preview, ...stagingKeys, NEXT_PUBLIC_SUPABASE_ANON_KEY: stagingKeys.SUPABASE_SERVICE_ROLE_KEY });
+  assert(!leaked.output.includes(stagingKeys.SUPABASE_SERVICE_ROLE_KEY));
 });

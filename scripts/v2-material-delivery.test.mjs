@@ -12,16 +12,19 @@ const material=load('src/lib/materialFiles.ts');
 const batchId=randomUUID(),sessionKey=randomUUID(),itemKey=randomUUID();
 const path=`worksheets/${randomUUID()}/${randomUUID()}.pdf`,ref=material.createProtectedMaterialUrl(path);
 function harness(){
-  const state={enabled:true,role:'student',course:null,templates:[],batches:[],signs:[],fetches:[],signedUrl:`https://staging.example.test/storage/v1/object/sign/course-materials/${path}?token=private-token`};
+  const state={enabled:true,role:'student',course:null,templates:[],batches:[],signs:[],fetches:[],clientOrigins:[],signedUrl:`https://eyphkkginlgoaxflauog.supabase.co/storage/v1/object/sign/course-materials/${path}?token=private-token`};
+  const env={VERCEL_ENV:'preview',NEXT_PUBLIC_SUPABASE_URL:'https://eyphkkginlgoaxflauog.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'private-key'};
+  const supabase={createClient:(origin)=>{state.clientOrigins.push(origin);return {storage:{from:bucket=>({createSignedUrl:async(p,seconds)=>{state.signs.push({bucket,path:p,seconds});return {data:{signedUrl:state.signedUrl},error:null};}})}};}};
+  const serviceClient=load('src/lib/server/v2ServiceClient.ts',{'server-only':{},'@supabase/supabase-js':supabase,'@/lib/v2Environment':load('src/lib/v2Environment.ts',{},{atob})},{process:{env}});
   const api=load('src/lib/server/v2MaterialFiles.ts',{'server-only':{},'@/lib/materialFiles':material,'./v2ContentPublishing':{readContentWorkspace:async()=>null},
-    '@supabase/supabase-js':{createClient:()=>({storage:{from:bucket=>({createSignedUrl:async(p,seconds)=>{state.signs.push({bucket,path:p,seconds});return {data:{signedUrl:state.signedUrl},error:null};}})}})},
+    './v2ServiceClient':serviceClient,
     '@/lib/server/v2TemplateFeature':{isV2TemplateAuthoringEnabled:()=>state.enabled},
     '@/lib/server/portalAuthorization':{getPortalIdentity:async()=>state.role?{role:state.role}:null},
     '@/lib/server/v2Templates':{listV2TemplateDrafts:async()=>({status:'ready',templates:state.templates})},
     '@/lib/server/v2Batches':{listV2BatchDrafts:async()=>({status:'ready',drafts:state.batches})},
     '@/lib/server/v2StudentDelivery':{getMyV2PublishedCourse:async(id)=>id===batchId?state.course:null},
     '@/lib/v2Meetings':{isV2MeetingBatchId:v=>typeof v==='string'&&/^[0-9a-f-]{36}$/.test(v)},
-  },{process:{env:{NEXT_PUBLIC_SUPABASE_URL:'https://staging.example.test',SUPABASE_SERVICE_ROLE_KEY:'private-key'}},fetch:async(url,options)=>{state.fetches.push({url:String(url),options});return new Response('%PDF-fixture',{status:options.headers.Range?206:200,headers:{'Content-Type':'application/pdf','content-length':'12'}});}});
+  },{process:{env},fetch:async(url,options)=>{state.fetches.push({url:String(url),options});return new Response('%PDF-fixture',{status:options.headers.Range?206:200,headers:{'Content-Type':'application/pdf','content-length':'12'}});}});
   return {state,api};
 }
 const session={key:sessionKey,content:{materials:[{key:itemKey,title:'Worksheet',url:ref}],preSessionReads:[],postSessionReads:[],recordings:[]}};
@@ -51,7 +54,7 @@ test('private PDF streaming keeps storage tokens server-side and disables shared
   assert.equal(state.fetches[0].options.redirect,'error');assert.equal(state.fetches[0].options.headers.Range,'bytes=0-11');
 });
 test('streaming rejects alternate signing origins, path substitution and invalid byte ranges',async()=>{
-  const {api,state}=harness();for(const url of ['https://evil.example.test/storage/v1/object/sign/course-materials/x.pdf','https://staging.example.test/storage/v1/object/sign/course-materials/secret.pdf','http://staging.example.test/storage/v1/object/sign/course-materials/x.pdf']){state.signedUrl=url;assert.equal(await api.streamV2Material(path,null),null);}
+  const {api,state}=harness();for(const url of ['https://evil.example.test/storage/v1/object/sign/course-materials/x.pdf','https://eyphkkginlgoaxflauog.supabase.co/storage/v1/object/sign/course-materials/secret.pdf','http://staging.example.test/storage/v1/object/sign/course-materials/x.pdf']){state.signedUrl=url;assert.equal(await api.streamV2Material(path,null),null);}
   assert.equal(state.fetches.length,0);assert.equal(await api.streamV2Material(path,'bytes=0-1,2-3'),null);assert.equal(await api.streamV2Material('../secret.pdf',null),null);
 });
 test('Student route rejects arbitrary path, duplicate IDs and denied authorization before streaming',async()=>{

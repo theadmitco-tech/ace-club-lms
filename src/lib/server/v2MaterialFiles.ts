@@ -1,6 +1,6 @@
 import 'server-only';
 import { readContentWorkspace } from './v2ContentPublishing';
-import { createClient as createAdminClient } from '@supabase/supabase-js';
+import { createV2ServiceClient, v2ServiceOrigin } from './v2ServiceClient';
 import { COURSE_MATERIALS_BUCKET, createProtectedMaterialUrl, getProtectedMaterialPath, isSupportedProtectedMaterialPath } from '@/lib/materialFiles';
 import { isV2TemplateAuthoringEnabled } from '@/lib/server/v2TemplateFeature';
 import { getPortalIdentity } from '@/lib/server/portalAuthorization';
@@ -38,12 +38,11 @@ export async function getV2AdminMaterialPath(value: unknown): Promise<string | n
 // each file request rechecks the current course or Admin boundary before streaming.
 export async function streamV2Material(path: string, range: string | null): Promise<Response | null> {
   if (!isV2TemplateAuthoringEnabled() || !isSupportedProtectedMaterialPath(path)) return null;
-  const origin = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!origin || !key) return null;
+  const origin = v2ServiceOrigin();
+  const admin = createV2ServiceClient();
+  if (!origin || !admin) return null;
   if (range && !/^bytes=\d+-\d*$/.test(range)) return null;
   try {
-    const admin = createAdminClient(origin,key,{auth:{persistSession:false,autoRefreshToken:false}});
     const {data,error} = await admin.storage.from(COURSE_MATERIALS_BUCKET).createSignedUrl(path,60);
     if (error || !data?.signedUrl) return null;
     const signed = new URL(data.signedUrl), expected = new URL(origin);
