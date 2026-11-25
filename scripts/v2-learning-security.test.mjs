@@ -237,6 +237,7 @@ test('course page never serializes stale resource URLs against newer gates or mi
     { key: allowedKey, section: 'verbal', content: { recordings: [{ url: 'https://private.invalid/allowed' }] } },
   ] };
   let state = { ...learning, obligations: [], sessions: [{ key: blockedKey, title: 'Quant 5', section: 'quant', locked: true }, { key: allowedKey, title: 'Verbal 1', section: 'verbal', locked: false }] };
+  let accessState = [];
   const jsx = (type, props) => ({ type, props });
   const page = load('src/app/schedule/v2/[batchId]/page.tsx', {
     'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'Link' }, 'next/navigation': { notFound: () => { throw Error('notFound'); }, redirect: url => { throw Error(`redirect:${url}`); } },
@@ -248,8 +249,9 @@ test('course page never serializes stale resource URLs against newer gates or mi
     '@/lib/server/v2ContentPublishing': {readMyContentPlacements:async()=>[]},
     '@/components/student/StudentHeader': { StudentHeader: 'Header' }, '@/components/student/V2CourseSessionView': { V2CourseSessionView: 'LegacySession' },
     '../../../dashboard/dashboard.css': {}, '@/components/student/v2Learning.module.css': { default: {} },
-    '@/lib/server/studentProfile': { getMyDisplayName: async () => 'Student' },
+    '@/lib/server/studentProfile': { getMyDisplayName: async () => 'Student', requestTime: () => Date.now() },
     '@/lib/server/v2TallyFeedback': { tallyFeedbackConfig: () => null, feedbackLinkToken: () => '', tallyFormUrl: () => '' },
+    '@/lib/server/v2Products': { getMyV2Access: async () => accessState }, '@/lib/v2CoursePresentation': { courseDay: value => value },
     '@/lib/server/v2StudentSchedules': { getMyV2BatchSchedules: async () => ({ status: 'ready', schedules: [] }) },
     '@/lib/v2Templates': { V2_TEMPLATE_PRODUCTS: new Proxy({}, { get: (_target, code) => ({ label: 'Course', sections: code === 'quant-only' ? ['quant'] : ['quant', 'verbal', 'di'] }) }) },
   });
@@ -274,6 +276,11 @@ test('course page never serializes stale resource URLs against newer gates or mi
   privateCourse.productCode = 'quant-only';
   await assert.rejects(page.default({ params: Promise.resolve({ batchId }), searchParams: Promise.resolve({ subject: 'di' }) }), /redirect:\/courses\/v2\?add=di/);
   privateCourse.productCode = undefined;
+  // In the last 30 days of access the page says when it ends; earlier it says nothing.
+  const accessIn = days => [{ product_code: 'full_batch', sections: ['quant', 'verbal', 'di'], expires_at: new Date(Date.now() + days * 86400000).toISOString() }];
+  accessState = accessIn(10); assert.match(JSON.stringify(await render()), /Your access ends on/);
+  accessState = accessIn(60); assert.doesNotMatch(JSON.stringify(await render()), /Your access ends on/);
+  accessState = [];
   state = { ...state, publicationRevision: 2 };
   const mismatch = await render(); assert.equal(find(mismatch, 'LearningWorkspace'), null); assert.doesNotMatch(JSON.stringify(mismatch), /private\.invalid/);
   state = null; const unavailable = await render(); assert.equal(find(unavailable, 'LearningWorkspace'), null); assert.doesNotMatch(JSON.stringify(unavailable), /private\.invalid/);

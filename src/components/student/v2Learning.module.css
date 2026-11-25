@@ -235,3 +235,5 @@
 .confirming h3 { margin: 0; font-size: 18px; color: #1f3a2d; }
 .confirming p { margin: 0; color: #4d6157; }
 @media (max-width: 560px) { .tallyFrame { min-height: 720px; } }
+.accessEnding { margin: 0 0 14px; padding: 12px 16px; border: 1px solid #f0dfb8; border-radius: 12px; background: #fffaf0; color: #5d4824; font-size: 14.5px; line-height: 1.5; }
+.accessEnding a { margin-left: 4px; font-weight: 600; color: #245d47; }
