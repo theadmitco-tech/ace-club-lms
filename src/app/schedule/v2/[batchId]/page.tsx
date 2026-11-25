@@ -49,14 +49,14 @@ export default async function PublishedCoursePage({params,searchParams}:{params:
     if (elsewhere) redirect(`${elsewhere.href}?subject=${subject}`);
     if (enrolled && !(ownSections as readonly string[]).includes(subject)) redirect(`/courses/v2?add=${subject}`);
   }
-  const headerCourses = otherCourses.map(item => ({ href: `/schedule/v2/${item.batchId}`, title: item.title, current: item.batchId === batchId }));
   const filteredCourse = learning ? { ...course, sessions: course.sessions.filter(session => learning.sessions.some(outline =>
     outline.key === session.key && outline.section === session.section && !outline.locked)) } : course;
-  return <div className="student-page"><StudentHeader studentName={studentName} courses={headerCourses} />
+  return <div className="student-page"><StudentHeader studentName={studentName} />
     <main className="student-main"><div className="student-container">
       {!learningEnabled && <Link className={styles.backLink} href="/schedule/v2">← My learning</Link>}
-      <header className={styles.courseHeader}><h1>{course.title}</h1>
-        {!learningEnabled && <p>Readings, recordings and worksheets for each session. Take them in any order. All times IST.</p>}</header>
+      {/* Students study by subject from the header; batch names stay out of their way. */}
+      {learningEnabled ? <h1 className={styles.visuallyHidden}>My course</h1> : <header className={styles.courseHeader}><h1>{course.title}</h1>
+        <p>Readings, recordings and worksheets for each session. Take them in any order. All times IST.</p></header>}
       {learningEnabled ? learning && placements && learning.publicationRevision === course.publicationRevision ? <V2LearningWorkspace key={`${view ?? ''}:${subject ?? ''}:${session ?? ''}`} navigation="header" initialSubject={subject} initialSession={session} placements={placements} course={filteredCourse} learning={learning} initialView={view === 'live' ? 'live' : 'recordings'} otherSubjects={enrolled ? otherSubjects : []} /> : <section className="student-state student-state-error" role="alert"><h2>Learning status could not be verified</h2><p>Reload the course to check feedback and resource access before continuing.</p><Link className="student-button" href={`/schedule/v2/${batchId}`}>Retry</Link></section> : course.sessions.length ? course.sessions.map((session) => <V2CourseSessionView key={session.key} session={session} mode="student" batchId={batchId} readingEndpoint={`/api/v2/course-reading?batchId=${batchId}`} />)
         : <section className="student-state"><h2>No sessions published yet</h2><p>Course materials appear after the programme team publishes them.</p></section>}
     </div></main></div>;

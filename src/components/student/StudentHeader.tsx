@@ -12,8 +12,7 @@ function getInitials(name: string) {
   return name.split(/\s+/).filter(Boolean).map((part) => part[0]).join('').slice(0, 2).toUpperCase();
 }
 
-/** `courses` lists the student's enrolled courses for switching from the account menu (shown when there is more than one). */
-export function StudentHeader({ studentName, courses = [] }: { studentName: string; courses?: { href: string; title: string; current: boolean }[] }) {
+export function StudentHeader({ studentName }: { studentName: string }) {
   const preview = isV2Phase1PreviewEnabled();
   const learning = isV2LearningEnabled();
   if (!learning) {
@@ -52,10 +51,6 @@ export function StudentHeader({ studentName, courses = [] }: { studentName: stri
           </summary>
           <div className={styles.menu}>
             <p className={styles.menuName}>{studentName}<small>Student</small></p>
-            {courses.length > 1 && <nav aria-label="Your courses">
-              <p className={styles.menuGroup}>Your courses</p>
-              {courses.map(item => <Link key={item.href} href={item.href} aria-current={item.current ? 'page' : undefined} prefetch={false}>{item.title}</Link>)}
-            </nav>}
             <nav aria-label="Account">
               {preview && <><Link href="/account/access" prefetch={false}>My access</Link><Link href="/courses/v2" prefetch={false}>Explore courses</Link></>}
             </nav>
