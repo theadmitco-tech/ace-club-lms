@@ -4,9 +4,10 @@ import { isV2CheckoutEnabled, isV2NewCheckoutOpen, loadV2Sales, loadV2CheckoutAc
 import { quoteV2Products } from '@/lib/server/v2Products';
 import type { V2ProductCode } from '@/lib/v2Products';
 import CheckoutForm from './CheckoutForm';
+import { parseCourseSelection } from '@/lib/v2CoursePresentation';
 import styles from '@/components/courses/courses.module.css';
 export const dynamic = 'force-dynamic';
-export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ upgrade?: string; auth?: string }> }) {
+export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ upgrade?: string; auth?: string; course?: string | string[] }> }) {
   if (!isV2CheckoutEnabled()) notFound();
   const params = await searchParams;
   const upgradeRequested = params.upgrade === '1';
@@ -22,6 +23,6 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
       <div className={styles.intro}><span className={styles.eyebrow}>YOUR NEXT CHAPTER</span><h1>Choose your course. Start learning.</h1><p>One account for the curriculum, recordings and live classes.</p></div>
       {mode === 'test' && <div className={styles.notice}><strong>Test checkout</strong><p>This Preview uses simulated payments. No real money is charged.</p></div>}
       {!newCheckoutOpen && <div className={styles.notice} role="status"><strong>Registration is paused</strong><p>New registrations are temporarily closed. Payments already made are still confirmed; check your history below.</p></div>}
-      <CheckoutForm {...sales} {...account} prices={prices} upgradeRequested={upgradeRequested} signInFailed={params.auth === 'failed'} mode={mode ?? 'test'} newCheckoutOpen={newCheckoutOpen} />
+      <CheckoutForm {...sales} {...account} prices={prices} upgradeRequested={upgradeRequested} initialProducts={parseCourseSelection(params.course) ?? []} signInFailed={params.auth === 'failed'} mode={mode ?? 'test'} newCheckoutOpen={newCheckoutOpen} />
     </main>;
 }

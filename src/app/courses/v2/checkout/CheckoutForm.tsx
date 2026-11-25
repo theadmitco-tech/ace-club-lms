@@ -18,13 +18,14 @@ async function post(body: Record<string, unknown>) {
   if (!response.ok) throw new Error(result.error || 'Checkout unavailable.');
   return result;
 }
-export default function CheckoutForm({ batches, availability, email, checkouts, packages, prices, upgradeRequested, renderedAt, signInFailed = false, mode = 'test', newCheckoutOpen = true }: {
+export default function CheckoutForm({ batches, availability, email, checkouts, packages, prices, upgradeRequested, renderedAt, signInFailed = false, mode = 'test', newCheckoutOpen = true, initialProducts = [] }: {
   batches: SalesBatch[]; availability: { batchId: string; placesRemaining: number }[]; email: string | null;
   checkouts: CheckoutSummary[]; packages: PurchasePackage[]; prices: Record<string, number | null>; upgradeRequested: boolean; renderedAt: number; signInFailed?: boolean;
   /** Validated server payment mode: Live wording never claims that no money is charged. */ mode?: 'test' | 'live'; newCheckoutOpen?: boolean;
+  /** The offer chosen on the course page, already checked against the catalogue rules. */ initialProducts?: V2ProductCode[];
 }) {
   const router = useRouter();
-  const [selected, setSelected] = useState<V2ProductCode[]>([]), [chosen, setChosen] = useState<Record<string, string>>({});
+  const [selected, setSelected] = useState<V2ProductCode[]>(initialProducts), [chosen, setChosen] = useState<Record<string, string>>({});
   const [live, setLive] = useState<string[]>([]), [upgrade, setUpgrade] = useState(upgradeRequested);
   const [name, setName] = useState(''), [phone, setPhone] = useState(''), [terms, setTerms] = useState(false);
   const [busy, setBusy] = useState(false), [scriptReady, setScriptReady] = useState(false), [message, setMessage] = useState('');

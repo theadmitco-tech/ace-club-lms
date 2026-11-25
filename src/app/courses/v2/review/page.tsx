@@ -5,7 +5,7 @@ import { isV2CheckoutEnabled } from '@/lib/server/v2Checkout';
 import { loadCourseCatalogue } from '@/lib/server/v2CourseWorkspace';
 import { quoteV2Products } from '@/lib/server/v2Products';
 import { loadCourseOutline, type OutlineSection } from '@/lib/server/v2CourseOutline';
-import { courseMoney, courseNames, parseCourseSelection } from '@/lib/v2CoursePresentation';
+import { courseIdentity, courseMoney, courseNames, parseCourseSelection } from '@/lib/v2CoursePresentation';
 import type { V2ProductCode } from '@/lib/v2Products';
 import { BrandLogo } from '@/components/BrandLogo';
 import styles from '@/components/courses/catalogue.module.css';
@@ -97,7 +97,7 @@ export default async function CourseReviewPage({ searchParams }: { searchParams:
               <li>A seat in a live batch of eight, while seats last</li>
             </ul>
             {!full && <p className={styles.muted}>You get the subjects you picked. Selecting all three does not create a Full Course purchase.</p>}
-            {checkoutEnabled ? <Link className={styles.primary} href="/courses/v2/checkout">Register</Link> : <p className={styles.soon}>Online purchase opens soon.</p>}
+            {checkoutEnabled ? <Link className={styles.primary} href={`/courses/v2/checkout?${new URLSearchParams(codes.map(code => ['course', full ? 'full_course' : courseIdentity(code)]))}`}>Register</Link> : <p className={styles.soon}>Online purchase opens soon.</p>}
           </aside>
         </div>
       </>}
