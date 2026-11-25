@@ -23,7 +23,7 @@ export function CourseOffers({ subjects, tiers, fullCoursePaise, preselected }: 
   const togglePair = (identity: CourseIdentity) => setPair(current => current.includes(identity) ? current.filter(item => item !== identity) : current.length < 2 ? [...current, identity] : current);
 
   return <div className={styles.offers}>
-    {fullCoursePaise !== undefined && <form action="/courses/v2#quote" method="get" className={styles.offer} data-featured aria-labelledby="offer-full">
+    {fullCoursePaise !== undefined && <form action="/courses/v2/review" method="get" className={styles.offer} data-featured aria-labelledby="offer-full">
       <span className={styles.ribbon}>Most complete</span>
       <h2 id="offer-full">Full Course</h2>
       <p className={styles.offerLead}>Quant, Verbal and DI taught together as one programme.</p>
@@ -33,7 +33,7 @@ export function CourseOffers({ subjects, tiers, fullCoursePaise, preselected }: 
       <button className={styles.primary} type="submit" disabled={fullCoursePaise === null}>Choose Full Course</button>
     </form>}
 
-    {one && <form action="/courses/v2#quote" method="get" className={styles.offer} aria-labelledby="offer-one">
+    {one && <form action="/courses/v2/review" method="get" className={styles.offer} aria-labelledby="offer-one">
       <h2 id="offer-one">One subject</h2>
       <p className={styles.offerLead}>Focus on the subject you need most.</p>
       <p className={styles.offerPrice}>{price(one.amountPaise)}</p>
@@ -43,7 +43,7 @@ export function CourseOffers({ subjects, tiers, fullCoursePaise, preselected }: 
       <button className={styles.secondary} type="submit" disabled={!single || one.amountPaise === null}>Choose one subject</button>
     </form>}
 
-    {two && subjects.length >= 2 && <form action="/courses/v2#quote" method="get" className={styles.offer} aria-labelledby="offer-two">
+    {two && subjects.length >= 2 && <form action="/courses/v2/review" method="get" className={styles.offer} aria-labelledby="offer-two">
       <h2 id="offer-two">Two subjects</h2>
       <p className={styles.offerLead}>Strengthen two areas together.</p>
       <p className={styles.offerPrice}>{price(two.amountPaise)}{each(two) && <small>{each(two)}</small>}</p>
@@ -53,7 +53,7 @@ export function CourseOffers({ subjects, tiers, fullCoursePaise, preselected }: 
       <button className={styles.secondary} type="submit" disabled={pair.length !== 2 || two.amountPaise === null}>Choose two subjects</button>
     </form>}
 
-    {three && subjects.length >= 3 && <form action="/courses/v2#quote" method="get" className={styles.offer} aria-labelledby="offer-three">
+    {three && subjects.length >= 3 && <form action="/courses/v2/review" method="get" className={styles.offer} aria-labelledby="offer-three">
       <h2 id="offer-three">All three subjects</h2>
       <p className={styles.offerLead}>Quant, Verbal and DI as three separate courses.</p>
       <p className={styles.offerPrice}>{price(three.amountPaise)}{each(three) && <small>{each(three)}</small>}</p>

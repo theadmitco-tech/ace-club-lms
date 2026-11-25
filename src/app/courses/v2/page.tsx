@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { isV2CheckoutEnabled } from '@/lib/server/v2Checkout';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { isV2Phase1PreviewEnabled } from '@/lib/server/v2Phase1Feature';
 import { loadCourseCatalogue } from '@/lib/server/v2CourseWorkspace';
 import { quoteV2Products } from '@/lib/server/v2Products';
-import { courseIdentity, courseMoney, courseNames, parseCourseSelection } from '@/lib/v2CoursePresentation';
+import { courseIdentity, parseCourseSelection } from '@/lib/v2CoursePresentation';
 import { CourseOffers } from '@/components/courses/CourseOffers';
 import { BrandLogo } from '@/components/BrandLogo';
 import styles from '@/components/courses/catalogue.module.css';
@@ -25,15 +25,11 @@ export default async function CourseCataloguePage({ searchParams }: { searchPara
     try { return { count, amountPaise: (await quoteV2Products(individualProducts.slice(0, count).map((product) => product.code))).amount_paise }; }
     catch { return { count, amountPaise: null }; }
   }));
-  let quote = null;
-  let quoteError = '';
+  // A chosen offer opens its detail page (older links that carry a selection keep working).
   if (params.course !== undefined) {
-    if (!selection) quoteError = 'Choose Full Course on its own, or one to three different subjects.';
-    else if (!products || selection.some((code) => !products.some((product) => product.code === code))) quoteError = 'One or more of those courses isn’t available. Please choose again.';
-    else {
-      try { quote = await quoteV2Products(selection); }
-      catch { quoteError = 'The price couldn’t be loaded just now. Please try again.'; }
-    }
+    const query = new URLSearchParams();
+    for (const value of Array.isArray(params.course) ? params.course : [params.course]) query.append('course', value);
+    redirect(`/courses/v2/review?${query}`);
   }
   return <div className={styles.page}>
     <header className={styles.header}>
@@ -66,15 +62,6 @@ export default async function CourseCataloguePage({ searchParams }: { searchPara
               <h2 id="compare-heading">Full Course or all three subjects?</h2>
               <p>They cost the same and cover the same subjects. <strong>Full Course</strong> teaches Quant, Verbal and DI together as one programme, with classes spread out over a longer period. <strong>All three subjects</strong> are three separate, shorter courses that you take one after another.</p>
             </aside>}
-
-            {(quote || quoteError) && <section id="quote" className={styles.panel} aria-labelledby="quote-heading">
-              <h2 id="quote-heading">Your selection</h2>
-              {quoteError ? <p role="alert">{quoteError}</p> : quote && <>
-                <div className={styles.quoteLine}><strong>{courseNames(quote.product_codes)}</strong><strong className={styles.price}>{courseMoney(quote.amount_paise)}</strong></div>
-                <p>Six months of access from the day your payment is confirmed.{!quote.product_codes.includes('full_batch') && ' You get the subjects you picked. Selecting all three does not create a Full Course purchase.'}</p>
-                {checkoutEnabled ? <Link className={styles.primary} href="/courses/v2/checkout">Choose a batch and register</Link> : <p className={styles.muted}>Online purchase opens soon.</p>}
-              </>}
-            </section>}
           </>}
 
     </main>
