@@ -37,6 +37,8 @@ export const sources = [
   'src/app/dashboard/dashboard.css',
   'src/components/student/StudentHeader.tsx',
   'src/components/student/StudentCourseNav.tsx',
+  'src/lib/calendarLink.ts',
+  'src/components/student/FeedbackTip.tsx',
   'src/components/student/studentPreview.module.css',
   'src/components/student/SignOutButton.tsx',
   'src/lib/v2Enrollments.ts',

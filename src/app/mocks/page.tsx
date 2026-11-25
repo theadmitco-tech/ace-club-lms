@@ -6,6 +6,7 @@ import { StudentHeader } from '@/components/student/StudentHeader';
 import type { StudentTimelineSession } from '@/lib/studentTimeline';
 import { getMyV2Mocks, type V2StudentMock } from '@/lib/server/v2Mocks';
 import styles from './mocks.module.css';
+import { googleCalendarLink } from '@/lib/calendarLink';
 import '../dashboard/dashboard.css';
 
 export const dynamic = 'force-dynamic';
@@ -40,6 +41,11 @@ function Materials({ mock, emptyText }: { mock: Mock; emptyText: string }) {
     : <Link key={link.key} className={styles.materialLink} href={link.href} prefetch={false}>{link.label}</Link>)}</div>;
 }
 
+function CalendarLink({ mock, now }: { mock: Mock; now: number }) {
+  const href = Date.parse(mock.startsAt) > now ? googleCalendarLink({ title: mock.title, startsAt: mock.startsAt, endsAt: mock.endsAt, durationMinutes: 210, details: mock.instructions }) : null;
+  return href ? <a className={styles.calendar} href={href} target="_blank" rel="noreferrer">Add to calendar <span aria-hidden="true">↗</span></a> : null;
+}
+
 /** The student's mock tests from their course schedule: the next one first, then the rest. */
 export default async function MocksPage() {
   const identity = await requirePortalRole('student');
@@ -71,10 +77,11 @@ export default async function MocksPage() {
             {next.where && <p className={styles.detail}>{next.where}</p>}
             {next.instructions && <p className={styles.instructions}>{next.instructions}</p>}
             <Materials mock={next} emptyText="The test link and papers appear here when they open." />
+            <CalendarLink mock={next} now={now} />
           </section>}
 
           {later.length > 0 && <section aria-labelledby="upcoming-mocks"><h2 id="upcoming-mocks" className={styles.sectionTitle}>Coming up</h2>
-            <ol className={styles.list}>{later.map(mock => <li key={mock.id}><div><strong>{mock.title}</strong><span>{when(mock, timeZone)} {zoneLabel}</span></div></li>)}</ol>
+            <ol className={styles.list}>{later.map(mock => <li key={mock.id}><div><strong>{mock.title}</strong><span>{when(mock, timeZone)} {zoneLabel}</span></div><CalendarLink mock={mock} now={now} /></li>)}</ol>
           </section>}
 
           {past.length > 0 && <section aria-labelledby="past-mocks"><h2 id="past-mocks" className={styles.sectionTitle}>Past mocks</h2>

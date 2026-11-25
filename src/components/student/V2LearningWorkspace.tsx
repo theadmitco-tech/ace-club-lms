@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { googleCalendarLink, siteLink } from '@/lib/calendarLink';
+import { FeedbackTip } from './FeedbackTip';
 import { courseReadmePosition, withCourseReadmes, pinCourseReadmes } from '@/lib/v2CourseReadmes';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -150,6 +152,9 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
   }
   function feedbackSaved() { setFeedbackId(null); setMessage('Thanks, your feedback was sent. Your sessions are opening again.'); router.refresh(); }
   const dueSessions = feedbackSessions.filter(item => item.batchId === course.batchId);
+  // Progress at a glance for the open subject (course reading pages aren't counted).
+  const teachingSessions = subjectSessions.filter(session => !courseReadmePosition(session.key));
+  const openedCount = teachingSessions.filter(session => learning.progress.some(p => p.sessionKey === session.key)).length;
   return <div className={styles.workspace}>
     {!headerNavigation && <div className={styles.toolbar}><div className={styles.tabs} aria-label="Learning routes">
       <button className={tab === 'recordings' ? styles.activeTab : ''} type="button" aria-pressed={tab === 'recordings'} onClick={() => setTab('recordings')}>Recordings & materials</button>
@@ -158,6 +163,7 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
     </div></div>}
     {preview && <p className={styles.notice}>Read-only Student preview. No progress, feedback or attendance is recorded.</p>}
     {message && <p role="status" className={styles.notice}>{message}</p>}
+    {headerNavigation && !learning.obligations.length && <FeedbackTip />}
     {!preview && learning.obligations.length > 0 && <section className={styles.gate} aria-labelledby="feedback-due-heading"><span className={styles.gateIcon} aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><div>
       <h2 id="feedback-due-heading">Quick feedback to continue</h2><p>{(dueSessions[0] ?? feedbackSessions[0]) ? <>Tell us how <strong>{(dueSessions[0] ?? feedbackSessions[0]).sessionTitle}</strong> went. </> : null}Your other {Array.from(new Set(learning.obligations.map(o => sectionName(o.section)))).join(' and ')} sessions open again as soon as you send it. It takes under a minute, and your other subjects stay open.</p>
       <ul>{feedbackSessions.map(item => <li key={item.id}><button type="button" onClick={() => showFeedback(item)}>Give feedback for {item.sessionTitle}</button></li>)}</ul>
@@ -179,7 +185,7 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
         <div className={styles.row}><Link className={styles.primary} href="/account/access/upgrade" prefetch={false}>See upgrade options</Link>{headerNavigation ? <Link className={styles.secondary} href={`?subject=${subject}`}>Back to {sectionName(subject)}</Link> : <button type="button" className={styles.secondary} onClick={() => setLockedSubject(null)}>Back to {sectionName(subject)}</button>}</div>
       </div></section> : <>
       <div className={styles.layout}>
-        <aside className={styles.outline} aria-label="Course outline"><details open><summary><span>{sectionName(subject)} sessions</span><small>{subjectSessions.filter(session => !courseReadmePosition(session.key)).length} · any order</small></summary>
+        <aside className={styles.outline} aria-label="Course outline"><details open><summary><span>{sectionName(subject)} sessions</span><small>{openedCount} of {teachingSessions.length} opened</small></summary>
           <ol>{subjectSessions.map(item => { const visited = learning.progress.some(p => p.sessionKey === item.key); return <li key={item.key} className={`${item.locked ? styles.locked : ''} ${item.key === selected ? styles.current : ''}`} data-last={item.key === learning.lastSessionKey && !item.locked || undefined}>
             <button type="button" disabled={item.locked} aria-current={item.key === selected ? 'step' : undefined} aria-label={`Open ${item.title}`} onClick={() => select(item.key)}><span>{courseReadmePosition(item.key) ? 'Course README' : sectionName(item.section)}</span><strong>{item.title}</strong><small data-status={item.locked ? 'locked' : learning.obligations.some(o => o.batchId === course.batchId && o.sessionKey === item.key) ? 'feedback' : visited ? 'opened' : undefined}>{item.locked ? 'Paused until feedback is sent' : learning.obligations.some(o => o.batchId === course.batchId && o.sessionKey === item.key) ? 'Feedback due' : item.key === learning.lastSessionKey ? 'Last opened' : visited ? 'Opened' : courseReadmePosition(item.key) ? 'Reading page' : ''}</small></button>
           </li>; })}</ol></details>
@@ -210,6 +216,8 @@ function LiveRow({ event, learning, batchId, now, onFeedback, onMaterials, hasMa
   const locked = event.sessionKey !== null && learning.sessions.some(s => s.key === event.sessionKey && s.locked);
   const due = learning.obligations.find(o => o.eventKey === event.key && o.batchId === batchId);
   const joinable = !event.completedAt && Date.parse(event.startsAt) - 15 * 60000 <= now && Date.parse(event.endsAt) > now;
+  const calendar = !event.completedAt && Date.parse(event.startsAt) > now
+    ? googleCalendarLink({ title: `Ace Club live class: ${event.title}`, startsAt: event.startsAt, endsAt: event.endsAt, details: `Join from your course: ${siteLink(`/schedule/v2/${batchId}/live/${event.key}`)}` }) : null;
   return <li className={styles.liveRow} data-now={joinable || undefined}>
     <div className={styles.liveDate}><strong>{dayLabel(event.startsAt)}</strong><span>{weekdayLabel(event.startsAt)}</span></div>
     <div className={styles.liveInfo}><span className={styles.label}>{[event.section !== 'programme' ? sectionName(event.section) : '', joinable ? 'On now' : event.completedAt ? 'Completed' : ''].filter(Boolean).join(' · ') || 'Live class'}</span><h3>{event.title}</h3><p>{clockLabel(event.startsAt)}–{clockLabel(event.endsAt)} IST</p>
@@ -217,6 +225,7 @@ function LiveRow({ event, learning, batchId, now, onFeedback, onMaterials, hasMa
     <div className={styles.liveActions}>
       {!event.completedAt && !locked && <Link className={joinable ? styles.primary : styles.secondary} href={`/schedule/v2/${batchId}/live/${event.key}`} prefetch={false}>{joinable ? 'Join class' : 'Class details'}</Link>}
       {due && <button className={styles.primary} type="button" onClick={() => onFeedback(due)}>Give feedback or report a missed class</button>}
+      {calendar && <a className={styles.calendarLink} href={calendar} target="_blank" rel="noreferrer">Add to calendar <span aria-hidden="true">↗</span></a>}
       {event.sessionKey && !locked && hasMaterials(event.sessionKey) && <button className={styles.secondary} type="button" onClick={() => onMaterials(event.sessionKey!)}>Session materials</button>}
     </div>
   </li>;
