@@ -90,35 +90,35 @@ export default function CheckoutForm({ batches, availability, email, checkouts, 
       {signInFailed && <p role="alert">Google sign-in could not be completed. Please select Continue with Google to try again.</p>}
       <p>The verified Google email becomes the learning account. Course outlines and prices remain available before sign-in.</p><button type="button" className={styles.button} disabled={busy} onClick={signIn}>Continue with Google</button></section> : <p className={styles.notice}>Signed in as {email}</p>}
     <form onSubmit={submit} className={form.grid}>
-      <section className={styles.panel}><h2>1. Choose the curriculum</h2>
-        <fieldset disabled={busy} className={styles.choices}><legend>Full Course or individual subjects</legend>
+      <section className={styles.panel}><h2>1. Choose your course</h2>
+        <fieldset disabled={busy} className={styles.choices}><legend>Full Course, or one to three subjects</legend>
           {(['full_batch', ...subjects] as V2ProductCode[]).map(code => <label key={code}><input type="checkbox" checked={selected.includes(code)} disabled={!batches.some(b => b.entitlementProductCode === code)} onChange={() => changeProducts(code)} />{courseNames([code])}</label>)}
         </fieldset>
-        <p>Individual package prices: {['quant_crash', 'quant_crash,verbal_crash', 'di_crash,quant_crash,verbal_crash'].map(key => prices[key] == null ? 'Price unavailable' : courseMoney(prices[key]!)).join(' / ')} for one, two or three subjects. Full Course is a separate offering.</p>
+        <p>{['One subject', 'Two subjects', 'All three subjects'].map((label, index) => { const key = ['quant_crash', 'quant_crash,verbal_crash', 'di_crash,quant_crash,verbal_crash'][index]; return `${label} ${prices[key] == null ? '(price unavailable)' : courseMoney(prices[key]!)}`; }).join(' · ')}. Full Course is a separate course.</p>
         {base && base.products.length < 3 && <label className={form.check}><input type="checkbox" checked={upgrade} disabled={busy} onChange={e => { reset(); setUpgrade(e.target.checked); }} />Upgrade the existing individual package; retain its expiry of {date(base.expiresAt)} IST.</label>}
         {selectedBatches.map(batch => <div className={form.batch} key={batch.entitlementProductCode}>
           <label htmlFor={`batch-${batch.entitlementProductCode}`}>{courseNames([batch.entitlementProductCode])} batch</label>
           <select id={`batch-${batch.entitlementProductCode}`} value={batch.batchId} disabled={busy} onChange={e => { reset(); setLive(current => current.filter(id => id !== batch.batchId)); setChosen(current => ({ ...current, [batch.entitlementProductCode]: e.target.value })); }}>
             {batches.filter(b => b.entitlementProductCode === batch.entitlementProductCode).map(b => <option value={b.batchId} key={b.batchId}>{b.title}</option>)}
           </select>
-          <p>{batch.sessions.length} published sessions</p>
+          <p>{batch.sessions.length} {batch.sessions.length === 1 ? 'session' : 'sessions'}</p>
           {batch.events.some(e => Date.parse(e.endsAt) > renderedAt) ? <label className={form.check}><input type="checkbox" disabled={busy || !availability.find(a => a.batchId === batch.batchId)?.placesRemaining} checked={live.includes(batch.batchId)} onChange={e => { reset(); setLive(current => e.target.checked ? [...current, batch.batchId] : current.filter(id => id !== batch.batchId)); }} />Include live classes · {availability.find(a => a.batchId === batch.batchId)?.placesRemaining ?? 0} of 8 places available · no extra fee</label> : <p>Recording library; no upcoming live classes.</p>}
         </div>)}
       </section>
-      <section className={styles.panel}><h2>2. Review and register</h2>
+      <section className={styles.panel}><h2>2. Your details</h2>
         <label className={form.field}>Full name<input required autoComplete="name" maxLength={120} value={name} disabled={busy} onChange={e => { reset(); setName(e.target.value); }} /></label>
-        <label className={form.field}>WhatsApp number<input required type="tel" autoComplete="tel" placeholder="+91…" pattern="\+[1-9][0-9]{7,14}" value={phone} disabled={busy} onChange={e => { reset(); setPhone(e.target.value); }} /><small>Include the country code. No automated messages are sent.</small></label>
+        <label className={form.field}>Phone number<input required type="tel" autoComplete="tel" placeholder="+91…" pattern="\+[1-9][0-9]{7,14}" value={phone} disabled={busy} onChange={e => { reset(); setPhone(e.target.value); }} /><small>Include the country code. Used only if the programme team needs to reach you about this registration.</small></label>
         <strong className={styles.price}>{estimate !== null && estimate > 0 ? courseMoney(estimate) : 'Select an eligible package'}</strong>
         {upgrade && <p>The upgrade estimate uses the current configured tier difference. The original expiry stays unchanged.</p>}
         {!validUpgrade && <p role="alert">An upgrade must include every current subject and at least one additional subject.</p>}
-        <label className={form.check}><input type="checkbox" required checked={terms} disabled={busy} onChange={e => setTerms(e.target.checked)} />The selection and price have been reviewed. New purchases provide six calendar months of access from verified payment; upgrades retain the existing expiry. Live places are confirmed only after payment verification.</label>
-        <p>A checkout holds selected live places for 15 minutes. There are no per-session bookings or waitlists.</p>
+        <label className={form.check}><input type="checkbox" required checked={terms} disabled={busy} onChange={e => setTerms(e.target.checked)} />The selection and price are correct. Access lasts six months from payment; an upgrade keeps your current end date. Live seats are confirmed once payment is verified.</label>
+        <p>Live seats you choose are held for 15 minutes while you pay. There’s no waitlist.</p>
         <button className={styles.button} disabled={busy || !newCheckoutOpen || !email || !scriptReady || !terms || !selected.length || selectedBatches.length !== selected.length || estimate == null || estimate <= 0 || !validUpgrade}>{busy ? 'Checking…' : mode === 'test' ? 'Continue to test payment' : 'Continue to payment'}</button>
       </section>
     </form>
     <p role="status" aria-live="polite" className={styles.notice}>{message || 'Payment status is verified securely before course access is granted.'}</p>
-    {email && <section id="history" className={styles.panel}><h2>Registration and payment history</h2>
-      {!checkouts.length && <p>No checkouts yet.</p>}
+    {email && <section id="history" className={styles.panel}><h2>Your registrations</h2>
+      {!checkouts.length && <p>No registrations yet.</p>}
       <ul className={styles.history}>{checkouts.map(c => <li key={c.id}>
         <h3>{courseNames(c.products)}{c.upgrade ? ' · Upgrade' : ''}</h3><p>{courseMoney(c.amountPaise)} · {c.state === 'fulfilled' ? 'Confirmed' : c.state === 'review' ? 'Programme-team review required' : 'Payment not yet confirmed'}</p>
         <small>Reference: {c.id}</small>
