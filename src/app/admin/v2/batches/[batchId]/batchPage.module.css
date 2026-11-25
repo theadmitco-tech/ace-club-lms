@@ -105,3 +105,15 @@
 .linkButton { background: none; border: 0; padding: 6px 0; margin-top: 6px; font: inherit; font-size: 13.5px; font-weight: 600; color: #245d47; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .saveBar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #eef2ef; }
 .page form > .panel { max-width: 860px; }
+
+/* Mocks: a simple form beside the scheduled list. */
+.page > form.panel { max-width: 760px; margin-top: 18px; }
+.mockForm { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 16px; margin: 14px 0; }
+.mockForm label { display: grid; gap: 6px; }
+.mockWide { grid-column: 1 / -1; }
+.mockForm input, .mockForm textarea { width: 100%; min-height: 42px; padding: 9px 12px; border: 1px solid #cfdcd4; border-radius: 10px; background: #fff; color: #1f3a2d; font: inherit; font-size: 14.5px; }
+.mockForm textarea { min-height: 84px; resize: vertical; }
+.mockForm input:focus-visible, .mockForm textarea:focus-visible { outline: 3px solid #2f6b52; outline-offset: 1px; }
+.mockActions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.classAction { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+@media (max-width: 640px) { .mockForm { grid-template-columns: minmax(0, 1fr); } }
