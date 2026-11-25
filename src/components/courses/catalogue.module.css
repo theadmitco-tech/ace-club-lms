@@ -81,3 +81,12 @@ a.primary:focus-visible, button.primary:focus-visible, a.secondary:focus-visible
 .callout p { margin: 0; font-size: 14.5px; line-height: 1.6; color: #34506b; }
 .callout a { display: inline-block; margin-top: 8px; font-weight: 600; color: #245c93; }
 .callout .muted { margin-top: 6px; color: #56708a; font-size: 13.5px; }
+
+/* Arriving from a subject the student hasn't bought. */
+.addNotice { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px; margin: 0 0 22px; padding: 20px 24px; border: 1px solid #cfe2d6; border-radius: 16px; background: linear-gradient(135deg, #eef6f1, #f8fbf9); }
+.addNotice > div:first-child { flex: 1 1 380px; }
+.addNotice h2 { margin: 0 0 4px; font-size: 19px; color: #1f3a2d; }
+.addNotice p { margin: 0; font-size: 14.5px; line-height: 1.55; color: #3d5246; }
+.addActions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+a.textLink { font-size: 14px; font-weight: 600; color: #245d47; text-decoration: none; }
+a.textLink:hover { text-decoration: underline; }

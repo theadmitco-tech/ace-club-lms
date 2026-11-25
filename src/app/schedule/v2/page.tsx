@@ -33,6 +33,8 @@ export default async function EnrolledSchedulePage(props: { searchParams?: Promi
     const live = query?.view === 'live';
     const ready: { publication: { batchId: string; productCode: keyof typeof V2_TEMPLATE_PRODUCTS }; learning: V2LearningState | null }[] = batches?.filter(batch => batch.learning) ?? [];
     const holding = subject ? ready.filter(batch => (V2_TEMPLATE_PRODUCTS[batch.publication.productCode].sections as readonly string[]).includes(subject)) : ready;
+    // Every course was checked and none holds the subject: offer it in Explore courses.
+    if (subject && ready.length && ready.length === batches?.length && !holding.length) redirect(`/courses/v2?add=${subject}`);
     const candidates = holding.length ? holding : ready;
     const landing = (live ? candidates.find(batch => batch.learning?.liveRegistered) : undefined) ?? candidates.find(batch => batch.learning?.lastSessionKey) ?? candidates[0];
     const suffix = live ? '?view=live' : subject ? `?subject=${subject}` : '';

@@ -250,7 +250,7 @@ test('course page never serializes stale resource URLs against newer gates or mi
     '../../../dashboard/dashboard.css': {}, '@/components/student/v2Learning.module.css': { default: {} },
     '@/lib/server/studentProfile': { getMyDisplayName: async () => 'Student' },
     '@/lib/server/v2StudentSchedules': { getMyV2BatchSchedules: async () => ({ status: 'ready', schedules: [] }) },
-    '@/lib/v2Templates': { V2_TEMPLATE_PRODUCTS: new Proxy({}, { get: () => ({ label: 'Course', sections: ['quant', 'verbal', 'di'] }) }) },
+    '@/lib/v2Templates': { V2_TEMPLATE_PRODUCTS: new Proxy({}, { get: (_target, code) => ({ label: 'Course', sections: code === 'quant-only' ? ['quant'] : ['quant', 'verbal', 'di'] }) }) },
   });
   const find = (node, type) => {
     if (!node || typeof node !== 'object') return null;
@@ -269,6 +269,10 @@ test('course page never serializes stale resource URLs against newer gates or mi
   assert.equal(verbal.props.navigation, 'header'); assert.equal(verbal.props.initialSubject, 'verbal'); assert.equal(verbal.props.initialSession, allowedKey);
   const ignored = find(await page.default({ params: Promise.resolve({ batchId }), searchParams: Promise.resolve({ subject: 'verbal', view: ['live', 'x'] }) }), 'LearningWorkspace');
   assert.equal(ignored.props.initialView, 'recordings');
+  // A Quant-only course sends Verbal and DI to Explore courses; another enrolled course holding the subject opens instead.
+  privateCourse.productCode = 'quant-only';
+  await assert.rejects(page.default({ params: Promise.resolve({ batchId }), searchParams: Promise.resolve({ subject: 'di' }) }), /redirect:\/courses\/v2\?add=di/);
+  privateCourse.productCode = undefined;
   state = { ...state, publicationRevision: 2 };
   const mismatch = await render(); assert.equal(find(mismatch, 'LearningWorkspace'), null); assert.doesNotMatch(JSON.stringify(mismatch), /private\.invalid/);
   state = null; const unavailable = await render(); assert.equal(find(unavailable, 'LearningWorkspace'), null); assert.doesNotMatch(JSON.stringify(unavailable), /private\.invalid/);

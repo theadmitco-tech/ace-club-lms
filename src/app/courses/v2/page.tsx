@@ -11,13 +11,16 @@ import { BrandLogo } from '@/components/BrandLogo';
 import styles from '@/components/courses/catalogue.module.css';
 
 export const dynamic = 'force-dynamic';
-export default async function CourseCataloguePage({ searchParams }: { searchParams: Promise<{ course?: string | string[] }> }) {
+export default async function CourseCataloguePage({ searchParams }: { searchParams: Promise<{ course?: string | string[]; add?: string | string[] }> }) {
   if (!isV2Phase1PreviewEnabled()) notFound();
   const params = await searchParams;
   const checkoutEnabled = isV2CheckoutEnabled();
   const sales = checkoutEnabled ? await loadV2Sales().catch(() => null) : null;
   const products = await loadCourseCatalogue();
   const selection = parseCourseSelection(params.course);
+  // Arriving from a subject the student hasn't bought: explain why, and pre-select that subject.
+  const addable = { quant: { code: 'quant_crash', name: 'Quant' }, verbal: { code: 'verbal_crash', name: 'Verbal' }, di: { code: 'di_crash', name: 'DI' } } as const;
+  const addSubject = typeof params.add === 'string' && Object.hasOwn(addable, params.add) ? addable[params.add as keyof typeof addable] : null;
   const individualProducts = (products ?? []).filter((product) => product.code !== 'full_batch');
   const fullCourse = products?.find((product) => product.code === 'full_batch');
   const tiers = await Promise.all([1, 2, 3].filter((count) => count <= individualProducts.length).map(async (count) => {
@@ -44,13 +47,18 @@ export default async function CourseCataloguePage({ searchParams }: { searchPara
         <h1>Explore courses</h1>
         <p>GMAT preparation in Quant, Verbal and DI. Every course includes six months of access to sessions, recordings and materials, plus live classes while seats last.</p>
       </div>
+      {addSubject && <section className={styles.addNotice} aria-labelledby="add-subject-heading">
+        <div><h2 id="add-subject-heading">Want to study {addSubject.name} too?</h2>
+          <p>{addSubject.name} isn’t part of your package yet. It’s ticked below so you can see the price. If you already have a course, adding a subject costs only the difference and keeps your end date.</p></div>
+        <div className={styles.addActions}><Link className={styles.secondary} href="/account/access/upgrade" prefetch={false}>See upgrade price</Link><Link className={styles.textLink} href="/schedule/v2" prefetch={false}>← Back to my course</Link></div>
+      </section>}
       {!checkoutEnabled && <p className={styles.notice}><strong>Preview</strong> Prices are live, but online purchase isn’t open yet.</p>}
 
       {products === null ? <section className={styles.panel} role="alert"><h2>Courses couldn’t be loaded</h2><p>No sample prices or courses are shown instead.</p><Link className={styles.secondary} href="/courses/v2" prefetch={false}>Retry catalogue</Link></section>
         : products.length === 0 ? <section className={styles.panel}><h2>No courses are open right now</h2><p>Your existing purchases are still listed in My access.</p></section>
           : <>
             <div className={styles.options}>
-              {individualProducts.length > 0 && <CoursePackagePicker key={selection?.join(',') ?? 'empty'} subjects={individualProducts.map((product) => ({ identity: courseIdentity(product.code), name: product.name }))} tiers={tiers} initialSelection={(selection ?? []).filter((code) => individualProducts.some((product) => product.code === code)).map(courseIdentity)} />}
+              {individualProducts.length > 0 && <CoursePackagePicker key={selection?.join(',') ?? addSubject?.code ?? 'empty'} subjects={individualProducts.map((product) => ({ identity: courseIdentity(product.code), name: product.name }))} tiers={tiers} initialSelection={(selection ?? (addSubject ? [addSubject.code] : [])).filter((code) => individualProducts.some((product) => product.code === code)).map(courseIdentity)} />}
               {fullCourse && <section className={styles.option} data-featured aria-labelledby="full-course-heading">
                 <h2 id="full-course-heading">Full Course</h2>
                 <p>Quant, Verbal and DI together as one complete programme.</p>

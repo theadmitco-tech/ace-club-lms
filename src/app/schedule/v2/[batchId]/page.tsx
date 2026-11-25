@@ -44,9 +44,10 @@ export default async function PublishedCoursePage({params,searchParams}:{params:
         ?? ownSections.find(section => learning.sessions.some(item => item.section === section)) ?? ownSections[0];
       redirect(`/schedule/v2/${batchId}?subject=${last?.section ?? first}`);
     }
-    // A subject owned through another enrolled course opens that course.
+    // A subject owned through another enrolled course opens that course; one not bought opens Explore courses.
     const elsewhere = otherSubjects.find(item => item.section === subject && item.href);
     if (elsewhere) redirect(`${elsewhere.href}?subject=${subject}`);
+    if (enrolled && !(ownSections as readonly string[]).includes(subject)) redirect(`/courses/v2?add=${subject}`);
   }
   const headerCourses = otherCourses.map(item => ({ href: `/schedule/v2/${item.batchId}`, title: item.title, current: item.batchId === batchId }));
   const filteredCourse = learning ? { ...course, sessions: course.sessions.filter(session => learning.sessions.some(outline =>
