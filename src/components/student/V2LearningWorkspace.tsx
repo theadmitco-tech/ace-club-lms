@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { courseReadmePosition, withCourseReadmes, pinCourseReadmes } from '@/lib/v2CourseReadmes';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { V2PublishedCourse } from '@/lib/v2StudentDelivery';
 import type { V2LearningState, V2LearningObligation, V2FeedbackResponse, V2LearningProgress } from '@/lib/v2Learning';
@@ -72,7 +72,7 @@ export type V2OtherSubject = { section: 'quant' | 'verbal' | 'di'; href: string 
  * `navigation="header"`: the student header drives the subject and view through the URL, so the
  * in-page tabs and subject switch are hidden. `inline` keeps them (Admin preview, fixtures).
  */
-export function V2LearningWorkspace({ course, learning, initialView = 'recordings', placements = [], preview = false, otherSubjects = [], navigation = 'inline', initialSubject, initialSession }: { course: V2PublishedCourse; learning: V2LearningState; initialView?: 'recordings' | 'live'; placements?: ContentPlacementView[]; preview?: boolean; otherSubjects?: V2OtherSubject[]; navigation?: 'inline' | 'header'; initialSubject?: string; initialSession?: string }) {
+export function V2LearningWorkspace({ course, learning, initialView = 'recordings', placements = [], preview = false, otherSubjects = [], navigation = 'inline', initialSubject, initialSession, feedbackFormUrls }: { course: V2PublishedCourse; learning: V2LearningState; initialView?: 'recordings' | 'live'; placements?: ContentPlacementView[]; preview?: boolean; otherSubjects?: V2OtherSubject[]; navigation?: 'inline' | 'header'; initialSubject?: string; initialSession?: string; feedbackFormUrls?: Record<string, string> }) {
   const headerNavigation = navigation === 'header' && !preview;
   const router = useRouter();
   const courseSessions = course.productCode === 'full_course' ? course.sessions : withCourseReadmes(course.batchId, course.productCode, course.sessions);
@@ -101,6 +101,24 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
     `${item.batchId}:${item.sessionKey}`, learning.obligations.find(other => other.batchId === item.batchId && other.sessionKey === item.sessionKey && other.source === 'live') ?? item,
   ])).values());
   const obligation = feedbackSessions.find(o => o.id === feedbackId);
+  // Tally feedback is confirmed by its webhook; after the form reports a submission, refresh until the obligation clears.
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const stillPending = !!confirmingId && learning.obligations.some(o => o.id === confirmingId);
+  useEffect(() => {
+    if (!feedbackFormUrls || !feedbackId) return;
+    const submitted = (event: MessageEvent) => {
+      if (event.origin !== 'https://tally.so' || typeof event.data !== 'string' || !event.data.includes('Tally.FormSubmitted')) return;
+      setConfirmingId(feedbackId);
+    };
+    window.addEventListener('message', submitted);
+    return () => window.removeEventListener('message', submitted);
+  }, [feedbackFormUrls, feedbackId]);
+  useEffect(() => {
+    if (!stillPending) return;
+    let checks = 0;
+    const timer = window.setInterval(() => { checks += 1; router.refresh(); if (checks >= 20) window.clearInterval(timer); }, 3000);
+    return () => window.clearInterval(timer);
+  }, [stillPending, router]);
   async function progress(sessionKey: string, itemKey: string | null, state: 'opened' | 'read') {
     if (preview || !learning.sessions.some(session => session.key === sessionKey)) return;
     try {
@@ -144,7 +162,11 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
       <h2 id="feedback-due-heading">Quick feedback to continue</h2><p>{(dueSessions[0] ?? feedbackSessions[0]) ? <>Tell us how <strong>{(dueSessions[0] ?? feedbackSessions[0]).sessionTitle}</strong> went. </> : null}Your other {Array.from(new Set(learning.obligations.map(o => sectionName(o.section)))).join(' and ')} sessions open again as soon as you send it. It takes under a minute, and your other subjects stay open.</p>
       <ul>{feedbackSessions.map(item => <li key={item.id}><button type="button" onClick={() => showFeedback(item)}>Give feedback for {item.sessionTitle}</button></li>)}</ul>
     </div></section>}
-    {!preview && obligation && <section tabIndex={-1} ref={feedbackRef} className={styles.feedbackPanel} aria-label="Required session feedback"><div className={styles.row}><h2 className={styles.visuallyHidden}>Session feedback</h2><button type="button" className={styles.closeFeedback} onClick={() => setFeedbackId(null)}>Close feedback</button></div><FeedbackForm key={obligation.id} obligation={obligation} onSaved={feedbackSaved} /></section>}
+    {!preview && obligation && <section tabIndex={-1} ref={feedbackRef} className={styles.feedbackPanel} aria-label="Required session feedback"><div className={styles.row}><h2 className={styles.visuallyHidden}>Session feedback</h2><button type="button" className={styles.closeFeedback} onClick={() => setFeedbackId(null)}>Close feedback</button></div>{feedbackFormUrls?.[obligation.id]
+      ? confirmingId === obligation.id ? <div className={styles.confirming} role="status"><h3>Thanks, we’re confirming your feedback…</h3><p>This usually takes a few seconds, and your sessions open again on their own. There’s no need to fill the form again.</p><button type="button" className={styles.secondary} onClick={() => router.refresh()}>Check again</button></div>
+        : <iframe className={styles.tallyFrame} src={feedbackFormUrls[obligation.id]} title={`Feedback for ${obligation.sessionTitle}`} loading="lazy" />
+      : <FeedbackForm key={obligation.id} obligation={obligation} onSaved={feedbackSaved} />}</section>}
+    {confirmingId && !stillPending && <p role="status" className={styles.notice}>Thanks, your feedback was received. Your sessions are open again.</p>}
     {tab === 'recordings' ? <>
       <V2PlacedReadings sessions={course.sessions} placements={placements} placement="before_course" mode={mode} batchId={course.batchId} learningForSession={learningForSession} />
       {!headerNavigation && <div className={styles.subjects} role="group" aria-label="Course subjects">{subjects.map(section => <button key={section} type="button" aria-label={sectionName(section)} aria-pressed={!lockedSubject && subject === section} onClick={() => chooseSubject(section)}>{sectionName(section)}{learning.obligations.some(o => o.section === section) && <small>Feedback due</small>}</button>)}

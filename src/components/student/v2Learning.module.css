@@ -228,3 +228,10 @@
   .subjects { display: flex; }
   .subjects button, .subjects > a { flex: 1; justify-content: center; padding: 7px 10px; }
 }
+
+/* Tally feedback form, embedded in the feedback panel. */
+.tallyFrame { display: block; width: 100%; min-height: 640px; border: 0; border-radius: 12px; background: #fff; }
+.confirming { display: grid; gap: 8px; justify-items: start; padding: 22px 4px; }
+.confirming h3 { margin: 0; font-size: 18px; color: #1f3a2d; }
+.confirming p { margin: 0; color: #4d6157; }
+@media (max-width: 560px) { .tallyFrame { min-height: 720px; } }

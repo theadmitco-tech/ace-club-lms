@@ -34,6 +34,7 @@ Values are set privately by the release operator. The build validator (`scripts/
 | `V2_RAZORPAY_LIVE_WEBHOOK_SECRET` | Live webhook signing secret | At least 32 characters at build time; distinct from the Test secret. |
 | `V2_CHECKOUT_NEW_ORDERS_PAUSED` | `false` normally; `true` to pause | Pausing keeps paid-order reconciliation running. |
 | `V2_CHECKOUT_TEST_ENABLED`, `V2_RAZORPAY_TEST_*` | Must be unset | A Production build refuses any of them. |
+| `V2_TALLY_FEEDBACK_FORM_ID`, `V2_TALLY_SIGNING_SECRET`, `V2_FEEDBACK_LINK_SECRET` | Production Tally form and secrets | Optional. With all three set, session feedback uses Tally; otherwise the in-app form is used. See the [Tally setup](../tally-feedback-2026-11-25/TALLY-SETUP.md). |
 
 ## Owner and operator steps that remain
 
