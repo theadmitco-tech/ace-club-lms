@@ -56,7 +56,7 @@ export async function verifyPhase5Hosted({state,save,saveSql,output,signIn,rpc,s
    await card.getByRole('link',{name:/Open QA after_video/}).waitFor();ok('notion-original-source-retained',true);
   }else{throw new Error('Existing Notion reading fixture unavailable');}
   const order=await student.page.locator('h5').allTextContents();ok('video-readings-surround-the-recording',order.indexOf('QA before_video')<order.indexOf(first.content.recordings[0].title)&&order.indexOf('QA after_video')>order.indexOf(first.content.recordings[0].title));
-  await student.page.getByRole('button',{name:'Mark as read',exact:true}).first().click();
+  await student.page.getByRole('button',{name:'Read here',exact:true}).first().click();
   const afterReading=await rpc(student.client,'get_my_v2_learning_state',{p_batch_id:full.batchId});ok('reading-reminder-never-creates-feedback',afterReading.obligations.length===0);
   const heading=await create({title:'QA independently edited heading',kind:'heading',url:null,targets:[target()]});await publish(heading);ok('independent-heading-edit-delivered',(await delivered()).sessions[0].title==='QA independently edited heading');
   await publish(heading,1,'unpublish');ok('heading-unpublish-restores-original-label',(await delivered()).sessions[0].title===first.title);

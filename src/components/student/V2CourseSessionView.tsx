@@ -65,7 +65,6 @@ export function SessionResource({ item, kind, mode, readingEndpoint, sessionKey,
           : learning && learning.feedbackTracking !== false && batchId && kind === 'recordings' ? <V2RecordingPlayer url={source} title={item.title || 'Session recording'} batchId={batchId} sessionKey={sessionKey} recordingKey={item.key} publicationRevision={learning.publicationRevision} onFeedbackDue={learning.onFeedbackDue} /> : nativeRecording ? <video controls preload="metadata" src={source} aria-label={item.title || 'Session recording'} style={{maxWidth:'100%'}} /> : recording && <div className={styles.video}><iframe src={recording} title={item.title || 'Session recording'}
             allow="encrypted-media; picture-in-picture; fullscreen" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen /></div>}
       </ContentBoundary></div>}
-      {learning && kind === 'preSessionReads' && !read && <button type="button" className={styles.markRead} onClick={() => void learning.onProgress(item.key, 'read')}>Mark as read</button>}
     </>}
   </div>;
 }
