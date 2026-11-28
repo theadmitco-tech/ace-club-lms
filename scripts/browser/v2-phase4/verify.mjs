@@ -372,8 +372,9 @@ async function runTests() {
   });
   await test('Practice summary shows overall progress and links to the review list', async page => {
     await page.goto(origin + '/practice-summary'); const summary = page.getByRole('region', { name: 'Your practice so far', exact: true });
-    await summary.getByText('22 of 120 questions logged', { exact: true }).waitFor(); await summary.getByText('18%', { exact: true }).waitFor();
-    assert.equal(await summary.getByRole('link', { name: 'Review now', exact: true }).getAttribute('href'), '/practice/v2?view=review');
+    assert.equal((await summary.locator('p').textContent()).replace(/\s+/g, ' ').trim(), 'You’ve started 3 of 16 worksheets and logged 22 of 120 questions. 4 are waiting for review.');
+    await summary.getByRole('img', { name: '18% of questions logged', exact: true }).waitFor();
+    assert.equal(await summary.getByRole('link', { name: '4 are waiting for review', exact: true }).getAttribute('href'), '/practice/v2?view=review');
     await page.screenshot({ path: path.join(output, 'student-practice-summary.png') });
     await page.setViewportSize({ width: 390, height: 844 }); await noOverflow(page); await page.screenshot({ path: path.join(output, 'student-practice-summary-mobile.png'), fullPage: true });
   });

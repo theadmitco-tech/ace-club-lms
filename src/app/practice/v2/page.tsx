@@ -47,7 +47,7 @@ export default async function V2PracticeLogPage({ searchParams }: { searchParams
   return <div className="student-page"><StudentHeader studentName={studentName} /><main className="student-main"><div className={`student-container ${styles.page}`}>
     <header className={styles.intro}>
       <h1>Practice log</h1>
-      <p>{reviewView ? 'Every question you marked “Review”, in one place. Revisit them, then clear each one when it clicks.' : 'Every worksheet in your course. Open one to work through it with your question log beside it.'}</p>
+      {!rows.length && <p>{reviewView ? 'Every question you marked “Review”, in one place. Revisit them, then clear each one when it clicks.' : 'Every worksheet in your course. Open one to work through it with your question log beside it.'}</p>}
     </header>
     {rows.length > 0 && <PracticeSummary worksheets={rows.length} started={totals.started} done={totals.done} review={totals.review} questions={totals.questions} reviewView={reviewView} />}
     {rows.length > 0 && <nav className={styles.viewTabs} aria-label="Practice log views">
