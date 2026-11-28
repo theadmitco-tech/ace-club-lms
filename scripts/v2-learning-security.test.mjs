@@ -282,10 +282,11 @@ test('course page never serializes stale resource URLs against newer gates or mi
   accessState = accessIn(60); assert.doesNotMatch(JSON.stringify(await render()), /Your access ends on/);
   accessState = [];
   // Students in more than one batch get a course switcher; one batch shows none.
-  enrolledState = [{ batchId, title: 'Course A', productCode: 'full_course' }];
-  assert.doesNotMatch(JSON.stringify(await render()), /Your courses/);
+  // The header's menu receives the student's batches; it lists them only when there is more than one.
   enrolledState = [{ batchId, title: 'Course A', productCode: 'full_course' }, { batchId: '10000000-0000-4000-8000-0000000000bb', title: 'Course B', productCode: 'full_course' }];
-  const switcher = JSON.stringify(await render()); assert.match(switcher, /Your courses/); assert.match(switcher, /Course B/);
+  const header = find(await render(), 'Header');
+  assert.deepEqual(header.props.courses.map(c => [c.title, c.current]), [['Course A', true], ['Course B', false]]);
+  assert.doesNotMatch(JSON.stringify(await render()), /courseSwitch/);
   enrolledState = [];
   state = { ...state, publicationRevision: 2 };
   const mismatch = await render(); assert.equal(find(mismatch, 'LearningWorkspace'), null); assert.doesNotMatch(JSON.stringify(mismatch), /private\.invalid/);

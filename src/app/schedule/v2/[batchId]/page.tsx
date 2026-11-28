@@ -62,13 +62,10 @@ export default async function PublishedCoursePage({params,searchParams}:{params:
   const daysLeft = accessEnds === null ? null : Math.ceil((accessEnds - requestTime()) / 86400000);
   const filteredCourse = learning ? { ...course, sessions: course.sessions.filter(session => learning.sessions.some(outline =>
     outline.key === session.key && outline.section === session.section && !outline.locked)) } : course;
-  return <div className="student-page"><StudentHeader studentName={studentName} />
+  return <div className="student-page"><StudentHeader studentName={studentName} courses={otherCourses.map(item => ({ href: `/schedule/v2/${item.batchId}`, title: item.title, current: item.batchId === batchId }))} />
     <main className="student-main"><div className="student-container">
       {!learningEnabled && <Link className={styles.backLink} href="/schedule/v2">← My learning</Link>}
       {/* Students study by subject from the header; batch names stay out of their way. */}
-      {/* Only students in more than one batch get a way to switch between them. */}
-      {learningEnabled && otherCourses.length > 1 && <nav className={styles.courseSwitch} aria-label="Your courses"><span className={styles.courseSwitchLabel}>Your courses</span>
-        {otherCourses.map(item => <Link key={item.batchId} href={`/schedule/v2/${item.batchId}`} aria-current={item.batchId === batchId ? 'page' : undefined} prefetch={false} title={item.title}>{item.title}</Link>)}</nav>}
       {learningEnabled ? <h1 className={styles.visuallyHidden}>My course</h1> : <header className={styles.courseHeader}><h1>{course.title}</h1>
         <p>Readings, recordings and worksheets for each session. Take them in any order. All times IST.</p></header>}
       {daysLeft !== null && daysLeft >= 0 && daysLeft <= 30 && accessEnds !== null && <p className={styles.accessEnding}>Your access ends on <strong>{courseDay(new Date(accessEnds).toISOString())}</strong>, {daysLeft <= 1 ? 'tomorrow or sooner' : `in ${daysLeft} days`}. <Link href="/account/access" prefetch={false}>See your access and options</Link></p>}

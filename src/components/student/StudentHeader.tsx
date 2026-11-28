@@ -12,7 +12,8 @@ function getInitials(name: string) {
   return name.split(/\s+/).filter(Boolean).map((part) => part[0]).join('').slice(0, 2).toUpperCase();
 }
 
-export function StudentHeader({ studentName }: { studentName: string }) {
+/** `courses` lists the student's batches; the menu shows them only when there is more than one. */
+export function StudentHeader({ studentName, courses = [] }: { studentName: string; courses?: { href: string; title: string; current: boolean }[] }) {
   const preview = isV2Phase1PreviewEnabled();
   const learning = isV2LearningEnabled();
   if (!learning) {
@@ -51,6 +52,10 @@ export function StudentHeader({ studentName }: { studentName: string }) {
           </summary>
           <div className={styles.menu}>
             <p className={styles.menuName}>{studentName}</p>
+            {courses.length > 1 && <nav aria-label="Your courses">
+              <p className={styles.menuGroup}>Your courses</p>
+              {courses.map(item => <Link key={item.href} href={item.href} aria-current={item.current ? 'page' : undefined} prefetch={false} title={item.title}>{item.title}</Link>)}
+            </nav>}
             <nav aria-label="Account">
               {preview && <><Link href="/account/access" prefetch={false}>My access</Link><Link href="/courses/v2" prefetch={false}>Explore courses</Link></>}
               <Link href="/help" prefetch={false}>Help</Link>
