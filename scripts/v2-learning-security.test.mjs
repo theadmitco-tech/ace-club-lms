@@ -237,7 +237,7 @@ test('course page never serializes stale resource URLs against newer gates or mi
     { key: allowedKey, section: 'verbal', content: { recordings: [{ url: 'https://private.invalid/allowed' }] } },
   ] };
   let state = { ...learning, obligations: [], sessions: [{ key: blockedKey, title: 'Quant 5', section: 'quant', locked: true }, { key: allowedKey, title: 'Verbal 1', section: 'verbal', locked: false }] };
-  let accessState = [];
+  let accessState = [], enrolledState = [];
   const jsx = (type, props) => ({ type, props });
   const page = load('src/app/schedule/v2/[batchId]/page.tsx', {
     'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'Link' }, 'next/navigation': { notFound: () => { throw Error('notFound'); }, redirect: url => { throw Error(`redirect:${url}`); } },
@@ -252,7 +252,7 @@ test('course page never serializes stale resource URLs against newer gates or mi
     '@/lib/server/studentProfile': { getMyDisplayName: async () => 'Student', requestTime: () => Date.now() },
     '@/lib/server/v2TallyFeedback': { tallyFeedbackConfig: () => null, feedbackLinkToken: () => '', tallyFormUrl: () => '' },
     '@/lib/server/v2Products': { getMyV2Access: async () => accessState }, '@/lib/server/v2LiveSchedule': { getMyV2LiveSchedule: async () => [] }, '@/lib/v2CoursePresentation': { courseDay: value => value },
-    '@/lib/server/v2StudentSchedules': { getMyV2BatchSchedules: async () => ({ status: 'ready', schedules: [] }) },
+    '@/lib/server/v2StudentSchedules': { getMyV2BatchSchedules: async () => ({ status: 'ready', schedules: enrolledState }) },
     '@/lib/v2Templates': { V2_TEMPLATE_PRODUCTS: new Proxy({}, { get: (_target, code) => ({ label: 'Course', sections: code === 'quant-only' ? ['quant'] : ['quant', 'verbal', 'di'] }) }) },
   });
   const find = (node, type) => {
@@ -281,6 +281,12 @@ test('course page never serializes stale resource URLs against newer gates or mi
   accessState = accessIn(10); assert.match(JSON.stringify(await render()), /Your access ends on/);
   accessState = accessIn(60); assert.doesNotMatch(JSON.stringify(await render()), /Your access ends on/);
   accessState = [];
+  // Students in more than one batch get a course switcher; one batch shows none.
+  enrolledState = [{ batchId, title: 'Course A', productCode: 'full_course' }];
+  assert.doesNotMatch(JSON.stringify(await render()), /Your courses/);
+  enrolledState = [{ batchId, title: 'Course A', productCode: 'full_course' }, { batchId: '10000000-0000-4000-8000-0000000000bb', title: 'Course B', productCode: 'full_course' }];
+  const switcher = JSON.stringify(await render()); assert.match(switcher, /Your courses/); assert.match(switcher, /Course B/);
+  enrolledState = [];
   state = { ...state, publicationRevision: 2 };
   const mismatch = await render(); assert.equal(find(mismatch, 'LearningWorkspace'), null); assert.doesNotMatch(JSON.stringify(mismatch), /private\.invalid/);
   state = null; const unavailable = await render(); assert.equal(find(unavailable, 'LearningWorkspace'), null); assert.doesNotMatch(JSON.stringify(unavailable), /private\.invalid/);

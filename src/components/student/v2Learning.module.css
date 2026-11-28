@@ -246,3 +246,7 @@
 .tip button:hover { background: #eaf3ed; }
 .tip button:focus-visible { outline: 3px solid #2f6b52; outline-offset: 2px; }
 .scheduleNote { margin: 0 0 6px; padding: 12px 16px; border-radius: 12px; background: #f3f7f4; color: #3d5246; font-size: 14.5px; line-height: 1.5; }
+/* Shown only when a student is enrolled in more than one batch. */
+.courseSwitch { align-items: center; padding: 6px; border: 1px solid #e3e9e5; border-radius: 14px; background: #fff; width: fit-content; max-width: 100%; }
+.courseSwitchLabel { padding: 0 8px 0 6px; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #56665d; }
+.courseSwitch a { border: 0; border-radius: 9px; padding: 7px 14px; }
