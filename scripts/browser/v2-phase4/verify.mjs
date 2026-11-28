@@ -99,7 +99,13 @@ const reviewSheets = JSON.stringify([
 ]);
 await put('src/app/review/page.tsx', `import {ReviewList} from '@/app/practice/v2/ReviewList';import '@/app/dashboard/dashboard.css';export default function Page(){return <main className="student-main"><div className="student-container" style={{paddingBlock:32}}><ReviewList worksheets={${reviewSheets}}/></div></main>}`);
 await copySource('src/app/practice/v2/PracticeSummary.tsx');
-await put('src/app/practice-summary/page.tsx', `import {PracticeSummary} from '@/app/practice/v2/PracticeSummary';import '@/app/dashboard/dashboard.css';export default function Page(){return <main className="student-main"><div className="student-container" style={{paddingBlock:32}}><h1>Practice log</h1><PracticeSummary worksheets={16} started={3} done={18} review={4} questions={120} reviewView={false}/></div></main>}`);
+await put('src/app/practice-summary/page.tsx', `import {PracticeOverview} from '@/app/practice/v2/PracticeSummary';import '@/app/dashboard/dashboard.css';import styles from '@/app/practice/v2/practice.module.css';
+const sheet=(n:number,done:number[],review:number[])=>Array.from({length:n},(_,i)=>done.includes(i+1)?'done' as const:review.includes(i+1)?'review' as const:null);
+const row=(t:string,s:string,c:ReturnType<typeof sheet>,paused=false)=>({href:'/w/'+t,title:t,sessionTitle:s,course:'Full Course',total:c.length,done:c.filter(x=>x==='done').length,review:c.filter(x=>x==='review').length,paused,cells:c});
+const quant=[row('QA 1 Worksheet','QA 1: Fractions, Percentages, Ratios and Mixtures',sheet(20,[1,2,3,4,5,6,8,9,10,11,13],[7,12])),row('QA 2 Worksheet','QA 2: Pipes and Cisterns, Work and Time',sheet(18,[1,2,3],[4])),row('QA 3 Worksheet','QA 3: Probability, Permutation and Combination',sheet(24,[],[]))];
+const verbal=[row('VA 4 Worksheet','VA 4: RC Point of View and CR Evaluate the Conclusion',sheet(15,[1,2],[3]),true)];
+const sum=(rows:typeof quant)=>({done:rows.reduce((n,r)=>n+r.done,0),review:rows.reduce((n,r)=>n+r.review,0),total:rows.reduce((n,r)=>n+r.total,0)});
+export default function Page(){return <main className="student-main"><div className={'student-container '+styles.page}><header className={styles.titleRow}><h1>Practice log</h1></header><PracticeOverview several={false} subjects={[{key:'quant',label:'Quant',...sum(quant)},{key:'verbal',label:'Verbal',...sum(verbal)}]} groups={[{key:'quant',label:'Quant',rows:quant},{key:'verbal',label:'Verbal',rows:verbal}]}/></div></main>}`);
 await put('src/app/review-empty/page.tsx', `import {ReviewList} from '@/app/practice/v2/ReviewList';import '@/app/dashboard/dashboard.css';export default function Page(){return <main className="student-main"><div className="student-container"><ReviewList worksheets={[]}/></div></main>}`);
 const reservation = createServer(); await new Promise(resolve => reservation.listen(0, '127.0.0.1', resolve));
 const port = reservation.address().port; await new Promise(resolve => reservation.close(resolve));
@@ -359,7 +365,7 @@ async function runTests() {
     assert.deepEqual(await chips.getByRole('button').allTextContents(), ['All3', 'Quant2', 'Verbal1']);
     await chips.getByRole('button', { name: /^Verbal/ }).click(); assert.equal(await page.getByRole('heading', { level: 3 }).count(), 1);
     await all.click(); assert.equal(await page.getByRole('heading', { level: 3 }).count(), 2);
-    await page.getByText('Took 2:30 · Marked 20 Nov', { exact: true }).waitFor(); await page.getByText('No note added', { exact: true }).waitFor();
+    await page.getByText('Took 2:30', { exact: true }).waitFor(); await page.getByText('Marked 20 Nov', { exact: true }).waitFor(); await page.getByText('No note added', { exact: true }).waitFor();
     await page.screenshot({ path: path.join(output, 'student-review-list.png'), fullPage: true });
     await page.getByRole('button', { name: 'Mark question 7 of QA 1 Worksheet done', exact: true }).click();
     await page.getByText('Question 7 marked done.', { exact: false }).waitFor(); assert.equal(await all.textContent(), 'All2');
@@ -370,12 +376,17 @@ async function runTests() {
       ['update_my_v2_worksheet_log', id(31), 'review', 150, 'Ratio trap: re-read what the question asks for']]);
     await page.goto(origin + '/review-empty'); await page.getByRole('heading', { name: 'Nothing to review yet', exact: true }).waitFor();
   });
-  await test('Practice summary shows overall progress and links to the review list', async page => {
-    await page.goto(origin + '/practice-summary'); const summary = page.getByRole('region', { name: 'Your practice so far', exact: true });
-    assert.equal((await summary.locator('p').textContent()).replace(/\s+/g, ' ').trim(), 'You’ve started 3 of 16 worksheets and logged 22 of 120 questions. 4 are waiting for review.');
-    await summary.getByRole('img', { name: '18% of questions logged', exact: true }).waitFor();
-    assert.equal(await summary.getByRole('link', { name: '4 are waiting for review', exact: true }).getAttribute('href'), '/practice/v2?view=review');
-    await page.screenshot({ path: path.join(output, 'student-practice-summary.png') });
+  await test('Practice log draws each worksheet as an answer sheet with subject totals', async page => {
+    await page.goto(origin + '/practice-summary');
+    const table = page.getByRole('table', { name: 'Questions logged by subject', exact: true });
+    assert.deepEqual(await table.locator('tbody tr').evaluateAll(rows => rows.map(r => r.textContent.replace(/\s+/g, ' ').trim())), ['Quant17 of 623', 'Verbal3 of 151']);
+    assert.equal(await table.getByRole('link', { name: '3 Quant questions to review', exact: true }).getAttribute('href'), '/practice/v2?view=review');
+    await page.getByRole('img', { name: '11 done, 2 to review, 7 not logged, of 20 questions', exact: true }).waitFor();
+    assert.equal(await page.getByRole('link', { name: 'Continue QA 1 Worksheet', exact: true }).getAttribute('href'), '/w/QA 1 Worksheet');
+    await page.getByRole('link', { name: 'Open QA 3 Worksheet', exact: true }).waitFor();
+    await page.getByText('Opens again once you send your Verbal feedback', { exact: true }).waitFor();
+    assert.equal(await page.getByRole('link', { name: /VA 4 Worksheet/ }).count(), 0);
+    await page.screenshot({ path: path.join(output, 'student-practice-summary.png'), fullPage: true });
     await page.setViewportSize({ width: 390, height: 844 }); await noOverflow(page); await page.screenshot({ path: path.join(output, 'student-practice-summary-mobile.png'), fullPage: true });
   });
   await test('To review list fits a phone', async page => {

@@ -55,20 +55,19 @@ export function ReviewList({ worksheets }: { worksheets: ReviewWorksheet[] }) {
       {failed && <p className={styles.toastError} role="alert">{failed}</p>}
     </div>
     {!shown.length ? <section className={styles.reviewEmpty}>
-      <span aria-hidden="true">✓</span>
       <h2>{worksheets.length ? 'All caught up' : 'Nothing to review yet'}</h2>
       <p>{worksheets.length ? 'Every question you marked for review has been cleared. Nice work.' : 'While working through a worksheet, mark a question “Review” in its log. It will be collected here so you can come back to it.'}</p>
     </section>
-      : <ul className={styles.sheets}>{shown.map(sheet => <li key={sheet.key} className={styles.sheet}>
+      : <ul className={styles.sheets}>{shown.map(sheet => <li key={sheet.key} className={styles.reviewSheet}>
         <header>
-          <div><span className={styles.sheetSubject}>{SUBJECTS[sheet.section] ?? 'Course'}</span><h3>{sheet.title}</h3><p>{sheet.sessionTitle}</p></div>
-          <Link className={styles.sheetLink} href={sheet.href} prefetch={false}>Open worksheet <span aria-hidden="true">→</span></Link>
+          <div><h3>{sheet.title}</h3><p>{SUBJECTS[sheet.section] ? `${SUBJECTS[sheet.section]}, ${sheet.sessionTitle}` : sheet.sessionTitle}</p></div>
+          <Link className={styles.sheetLink} href={sheet.href} prefetch={false}>Open worksheet</Link>
         </header>
         <ol className={styles.questions}>{sheet.questions.map(question => <li key={question.id} data-saving={cleared[question.id] === 'saving' || undefined}>
           <span className={styles.qNumber} aria-label={`Question ${question.number}`}>Q{question.number}</span>
           <div className={styles.qBody}>
             {question.comment ? <p className={styles.qNote}>{question.comment}</p> : <p className={styles.qNoNote}>No note added</p>}
-            <p className={styles.qMeta}>{[question.seconds !== null ? `Took ${clock(question.seconds)}` : null, question.updatedAt ? `Marked ${day(question.updatedAt)}` : null].filter(Boolean).join(' · ')}</p>
+            <p className={styles.qMeta}>{question.seconds !== null && <span>Took {clock(question.seconds)}</span>}{question.updatedAt && <span>Marked {day(question.updatedAt)}</span>}</p>
           </div>
           <button type="button" className={styles.qDone} disabled={cleared[question.id] === 'saving'} aria-label={`Mark question ${question.number} of ${sheet.title} done`} onClick={() => void markDone(sheet, question)}>
             <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
