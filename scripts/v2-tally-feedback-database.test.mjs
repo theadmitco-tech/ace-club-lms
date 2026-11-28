@@ -1,15 +1,15 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { readdirSync } from 'node:fs';
 import test from 'node:test';
 import { withDisposablePostgres } from './helpers/disposable-postgres.mjs';
+import { applyLatestMigrations } from './helpers/v2-latest-migrations.mjs';
 import { preparePhase3Database, as, json, literal } from './helpers/v2-phase3-fixture.mjs';
 
 // Synthetic students and obligations in a disposable database; no hosted connection is used.
 test('Tally feedback is service-only, clears only its own obligation and replays safely', { timeout: 240000 }, () => withDisposablePostgres(async db => {
   const { query, apply, rejects } = db;
   const f = preparePhase3Database(db);
-  for (const name of readdirSync(new URL('../supabase/migrations/', import.meta.url)).filter(n => n.slice(0, 14) > '20261103120000' && n.endsWith('.sql')).sort()) apply(name);
+  applyLatestMigrations(db);
   const b = f.batch('quant'); f.publish(b);
   const student = () => { const id = randomUUID(); query(`insert into auth.users(id,email) values('${id}','${id}@example.invalid');update public.profiles set is_active=true,role='student' where id='${id}'`); return id; };
   const s = student(), other = student();

@@ -251,7 +251,7 @@ test('course page never serializes stale resource URLs against newer gates or mi
     '../../../dashboard/dashboard.css': {}, '@/components/student/v2Learning.module.css': { default: {} },
     '@/lib/server/studentProfile': { getMyDisplayName: async () => 'Student', requestTime: () => Date.now() },
     '@/lib/server/v2TallyFeedback': { tallyFeedbackConfig: () => null, feedbackLinkToken: () => '', tallyFormUrl: () => '' },
-    '@/lib/server/v2Products': { getMyV2Access: async () => accessState }, '@/lib/v2CoursePresentation': { courseDay: value => value },
+    '@/lib/server/v2Products': { getMyV2Access: async () => accessState }, '@/lib/server/v2LiveSchedule': { getMyV2LiveSchedule: async () => [] }, '@/lib/v2CoursePresentation': { courseDay: value => value },
     '@/lib/server/v2StudentSchedules': { getMyV2BatchSchedules: async () => ({ status: 'ready', schedules: [] }) },
     '@/lib/v2Templates': { V2_TEMPLATE_PRODUCTS: new Proxy({}, { get: (_target, code) => ({ label: 'Course', sections: code === 'quant-only' ? ['quant'] : ['quant', 'verbal', 'di'] }) }) },
   });

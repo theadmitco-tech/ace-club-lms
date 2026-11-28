@@ -28,7 +28,7 @@ const sourceSessions = [
   { key: di, title: 'DI 1', section: 'di', content: content(7) },
 ];
 function initial() {
-  return { obligations: [], progress: [], lastSessionKey: null, liveRegistered: false, liveEvents: [], calls: [], submissions: [], interruptOnce: false, rejectProgress: false, noRecording: false, externalRecording: false, feedbackAlreadyComplete: false, extraSessions: [] };
+  return { obligations: [], progress: [], lastSessionKey: null, liveRegistered: false, liveEvents: [], calls: [], submissions: [], interruptOnce: false, rejectProgress: false, noRecording: false, externalRecording: false, feedbackAlreadyComplete: false, extraSessions: [], liveSchedule: null };
 }
 let state = initial();
 function view() {
@@ -38,6 +38,7 @@ function view() {
   }));
   return { course: { batchId, publicationRevision: 1, batchRevision: 1, title: 'Synthetic Full Course', productCode: 'full_course', sessions: allSessions.filter(s => !sessions.find(item => item.key === s.key).locked).map(s => ({...s, content: {...s.content, recordings: state.noRecording ? [] : state.externalRecording ? s.content.recordings.map(item => ({...item,url:'https://recordings.example.test/player/session'})) : s.content.recordings}})) },
     learning: { batchId, publicationRevision: 1, sessions, obligations: state.obligations, progress: state.progress, lastSessionKey: state.lastSessionKey, liveRegistered: state.liveRegistered, liveEvents: state.liveEvents },
+    liveSchedule: state.liveSchedule,
   };
 }
 function obligation(key = quant4, source = 'recording', count = 1) {
@@ -234,6 +235,20 @@ async function runTests() {
     await page.getByRole('button', { name: 'Recordings & materials', exact: true }).click();
     await page.getByRole('button', { name: 'Open Quant 4', exact: true }).waitFor();
   });
+  await test('Students without a live seat still see their batch’s class dates, but no join actions', async page => {
+    state.liveSchedule = [
+      { key: id(960), title: 'Quant live class', section: 'quant', startsAt: '2099-11-02T12:30:00Z', endsAt: '2099-11-02T14:00:00Z', completedAt: null },
+      { key: id(961), title: 'Earlier live class', section: 'quant', startsAt: '2026-10-02T12:30:00Z', endsAt: '2026-10-02T14:00:00Z', completedAt: '2026-10-02T15:00:00Z' },
+    ];
+    await page.goto(origin); await page.getByRole('button', { name: 'Live classes', exact: true }).click();
+    const panel = page.getByRole('region', { name: 'Your live classes' });
+    await panel.getByText('Quant live class', { exact: true }).waitFor(); await panel.getByText('Earlier live class', { exact: true }).waitFor();
+    await panel.getByText(/Joining needs a live seat/).waitFor();
+    assert.equal(await panel.getByText('You don’t have a live seat').count(), 0);
+    for (const name of ['Join class', 'Class details']) assert.equal(await panel.getByRole('link', { name, exact: true }).count(), 0);
+    assert.equal(await panel.getByRole('link', { name: /Add to calendar/ }).count(), 1, 'only the upcoming class');
+    await noOverflow(page);
+  }, true);
   await test('Missed live feedback requires no ratings or recording and makes no attendance claim', async page => {
     state.liveRegistered = true; state.noRecording = true; const due = obligation(quant4, 'live'); state.obligations = [due];
     state.liveEvents = [{ key: due.eventKey, title: 'Quant live class', section: 'quant', startsAt: '2026-11-02T08:00:00Z', endsAt: '2026-11-02T09:00:00Z', completedAt: '2026-11-02T10:00:00Z', sessionKey: quant4 }];

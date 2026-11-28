@@ -1,17 +1,15 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { readdirSync } from 'node:fs';
 import test from 'node:test';
 import { withDisposablePostgres } from './helpers/disposable-postgres.mjs';
+import { applyLatestMigrations } from './helpers/v2-latest-migrations.mjs';
 import { preparePhase3Database, as } from './helpers/v2-phase3-fixture.mjs';
 
 // Synthetic accounts, batches and worksheets in a disposable database; no hosted connection is used.
 test('V2 practice logs follow worksheet access and the master question list', { timeout: 240000 }, () => withDisposablePostgres(async db => {
   const { query, apply, rejects } = db;
   const f = preparePhase3Database(db);
-  // Worksheet question rows come from an earlier migration that this test database's setup skips.
-  for (const name of ['20260731150000_add_private_master_worksheets.sql', '20260731160000_align_master_course.sql', '20260731170000_add_master_worksheet_question_rows.sql']) apply(name);
-  for (const name of readdirSync(new URL('../supabase/migrations/', import.meta.url)).filter(n => n.slice(0, 14) > '20261103120000' && n.endsWith('.sql')).sort()) apply(name);
+  applyLatestMigrations(db);
   const b = f.batch('quant'); f.publish(b);
   const worksheet = b.document.sessions[0].content.materials[0];
   // The master worksheet shares the V2 item's file address and has three questions.

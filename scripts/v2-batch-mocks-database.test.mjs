@@ -1,15 +1,15 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { readdirSync } from 'node:fs';
 import test from 'node:test';
 import { withDisposablePostgres } from './helpers/disposable-postgres.mjs';
+import { applyLatestMigrations } from './helpers/v2-latest-migrations.mjs';
 import { preparePhase3Database, as, literal } from './helpers/v2-phase3-fixture.mjs';
 
 // Synthetic accounts and batches in a disposable database; no hosted connection is used.
 test('batch mocks are managed by Admins and shown only to enrolled students with active access', { timeout: 240000 }, () => withDisposablePostgres(async db => {
   const { query, apply, rejects } = db;
   const f = preparePhase3Database(db);
-  for (const name of readdirSync(new URL('../supabase/migrations/', import.meta.url)).filter(n => n.slice(0, 14) > '20261103120000' && n.endsWith('.sql')).sort()) apply(name);
+  applyLatestMigrations(db);
   const b = f.batch('quant'); f.publish(b);
   const student = () => {
     const id = randomUUID();

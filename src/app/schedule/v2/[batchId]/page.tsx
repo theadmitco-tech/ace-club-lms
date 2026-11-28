@@ -10,6 +10,7 @@ import { getMyV2PublishedCourse } from '@/lib/server/v2StudentDelivery';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { getMyDisplayName, requestTime } from '@/lib/server/studentProfile';
 import { getMyV2Access } from '@/lib/server/v2Products';
+import { getMyV2LiveSchedule } from '@/lib/server/v2LiveSchedule';
 import { courseDay } from '@/lib/v2CoursePresentation';
 import { tallyFeedbackConfig, feedbackLinkToken, tallyFormUrl } from '@/lib/server/v2TallyFeedback';
 import { getMyV2BatchSchedules } from '@/lib/server/v2StudentSchedules';
@@ -27,7 +28,7 @@ export default async function PublishedCoursePage({params,searchParams}:{params:
   const view = one(query.view), session = one(query.session);
   const subject = (['quant', 'verbal', 'di'] as const).find(item => item === one(query.subject));
   const learningEnabled = isV2LearningEnabled();
-  const [course, learning, placements, studentName, enrolled, access] = await Promise.all([getMyV2PublishedCourse(batchId), learningEnabled ? getMyV2LearningState(batchId) : Promise.resolve(null), readMyContentPlacements(batchId), getMyDisplayName(), learningEnabled ? getMyV2BatchSchedules().catch(() => null) : Promise.resolve(null), learningEnabled ? getMyV2Access().catch(() => null) : Promise.resolve(null)]);
+  const [course, learning, placements, studentName, enrolled, access, liveSchedule] = await Promise.all([getMyV2PublishedCourse(batchId), learningEnabled ? getMyV2LearningState(batchId) : Promise.resolve(null), readMyContentPlacements(batchId), getMyDisplayName(), learningEnabled ? getMyV2BatchSchedules().catch(() => null) : Promise.resolve(null), learningEnabled ? getMyV2Access().catch(() => null) : Promise.resolve(null), learningEnabled ? getMyV2LiveSchedule(batchId) : Promise.resolve(null)]);
   const otherCourses = enrolled?.status === 'ready' ? enrolled.schedules : [];
   if (!course) {
     if (!learningEnabled) notFound();
@@ -68,7 +69,7 @@ export default async function PublishedCoursePage({params,searchParams}:{params:
       {learningEnabled ? <h1 className={styles.visuallyHidden}>My course</h1> : <header className={styles.courseHeader}><h1>{course.title}</h1>
         <p>Readings, recordings and worksheets for each session. Take them in any order. All times IST.</p></header>}
       {daysLeft !== null && daysLeft >= 0 && daysLeft <= 30 && accessEnds !== null && <p className={styles.accessEnding}>Your access ends on <strong>{courseDay(new Date(accessEnds).toISOString())}</strong>, {daysLeft <= 1 ? 'tomorrow or sooner' : `in ${daysLeft} days`}. <Link href="/account/access" prefetch={false}>See your access and options</Link></p>}
-      {learningEnabled ? learning && placements && learning.publicationRevision === course.publicationRevision ? <V2LearningWorkspace key={`${view ?? ''}:${subject ?? ''}:${session ?? ''}`} navigation="header" feedbackFormUrls={feedbackFormUrls} initialSubject={subject} initialSession={session} placements={placements} course={filteredCourse} learning={learning} initialView={view === 'live' ? 'live' : 'recordings'} otherSubjects={enrolled ? otherSubjects : []} /> : <section className="student-state student-state-error" role="alert"><h2>Learning status could not be verified</h2><p>Reload the course to check feedback and resource access before continuing.</p><Link className="student-button" href={`/schedule/v2/${batchId}`}>Retry</Link></section> : course.sessions.length ? course.sessions.map((session) => <V2CourseSessionView key={session.key} session={session} mode="student" batchId={batchId} readingEndpoint={`/api/v2/course-reading?batchId=${batchId}`} />)
+      {learningEnabled ? learning && placements && learning.publicationRevision === course.publicationRevision ? <V2LearningWorkspace key={`${view ?? ''}:${subject ?? ''}:${session ?? ''}`} navigation="header" feedbackFormUrls={feedbackFormUrls} liveSchedule={liveSchedule} initialSubject={subject} initialSession={session} placements={placements} course={filteredCourse} learning={learning} initialView={view === 'live' ? 'live' : 'recordings'} otherSubjects={enrolled ? otherSubjects : []} /> : <section className="student-state student-state-error" role="alert"><h2>Learning status could not be verified</h2><p>Reload the course to check feedback and resource access before continuing.</p><Link className="student-button" href={`/schedule/v2/${batchId}`}>Retry</Link></section> : course.sessions.length ? course.sessions.map((session) => <V2CourseSessionView key={session.key} session={session} mode="student" batchId={batchId} readingEndpoint={`/api/v2/course-reading?batchId=${batchId}`} />)
         : <section className="student-state"><h2>No sessions published yet</h2><p>Course materials appear after the programme team publishes them.</p></section>}
     </div></main></div>;
 }

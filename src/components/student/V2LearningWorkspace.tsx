@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { googleCalendarLink, siteLink } from '@/lib/calendarLink';
 import { FeedbackTip } from './FeedbackTip';
+import type { V2ScheduledClass } from '@/lib/server/v2LiveSchedule';
 import { courseReadmePosition, withCourseReadmes, pinCourseReadmes } from '@/lib/v2CourseReadmes';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -74,7 +75,7 @@ export type V2OtherSubject = { section: 'quant' | 'verbal' | 'di'; href: string 
  * `navigation="header"`: the student header drives the subject and view through the URL, so the
  * in-page tabs and subject switch are hidden. `inline` keeps them (Admin preview, fixtures).
  */
-export function V2LearningWorkspace({ course, learning, initialView = 'recordings', placements = [], preview = false, otherSubjects = [], navigation = 'inline', initialSubject, initialSession, feedbackFormUrls }: { course: V2PublishedCourse; learning: V2LearningState; initialView?: 'recordings' | 'live'; placements?: ContentPlacementView[]; preview?: boolean; otherSubjects?: V2OtherSubject[]; navigation?: 'inline' | 'header'; initialSubject?: string; initialSession?: string; feedbackFormUrls?: Record<string, string> }) {
+export function V2LearningWorkspace({ course, learning, initialView = 'recordings', placements = [], preview = false, otherSubjects = [], navigation = 'inline', initialSubject, initialSession, feedbackFormUrls, liveSchedule }: { course: V2PublishedCourse; learning: V2LearningState; initialView?: 'recordings' | 'live'; placements?: ContentPlacementView[]; preview?: boolean; otherSubjects?: V2OtherSubject[]; navigation?: 'inline' | 'header'; initialSubject?: string; initialSession?: string; feedbackFormUrls?: Record<string, string>; liveSchedule?: V2ScheduledClass[] | null }) {
   const headerNavigation = navigation === 'header' && !preview;
   const router = useRouter();
   const courseSessions = course.productCode === 'full_course' ? course.sessions : withCourseReadmes(course.batchId, course.productCode, course.sessions);
@@ -202,7 +203,8 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
       <V2PlacedReadings sessions={course.sessions} placements={placements} placement="after_course" mode={mode} batchId={course.batchId} learningForSession={learningForSession} />
       </>}
     </> : <section className={styles.livePanel} aria-labelledby="live-classes-heading"><h2 id="live-classes-heading">Your live classes</h2>
-      {!learning.liveRegistered ? <div className={styles.empty}><h3>You don’t have a live seat</h3><p>Live classes are optional. Every session’s recording and materials stay open to you. Each batch has eight live seats; the programme team can tell you if one is available.</p><Link href="/account/access">Check my access</Link></div>
+      {!learning.liveRegistered ? liveSchedule?.length ? <ScheduleOnly classes={liveSchedule} now={now} />
+        : <div className={styles.empty}><h3>You don’t have a live seat</h3><p>Live classes are optional. Every session’s recording and materials stay open to you. Each batch has eight live seats; the programme team can tell you if one is available.</p><Link href="/account/access">Check my access</Link></div>
         : !learning.liveEvents.length ? <div className={styles.empty}><h3>No live classes yet</h3><p>Class dates appear here once they’re published. Recordings and materials are open meanwhile.</p></div>
         : <>
           {upcoming.length > 0 && <><h3 className={styles.liveGroup}>Coming up</h3><ol className={styles.liveList}>{upcoming.map(event => <LiveRow key={event.key} event={event} learning={learning} batchId={course.batchId} now={now} onFeedback={showFeedback} onMaterials={select} hasMaterials={key => outlineSessions.some(item => item.key === key)} />)}</ol></>}
@@ -210,6 +212,24 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
         </>}
     </section>}
   </div>;
+}
+/** The batch's class dates for a student without a live seat: when classes are, without join details. */
+function ScheduleOnly({ classes, now }: { classes: V2ScheduledClass[]; now: number }) {
+  const coming = classes.filter(item => !item.completedAt && Date.parse(item.endsAt) > now).toSorted((a, b) => Date.parse(a.startsAt) - Date.parse(b.startsAt));
+  const done = classes.filter(item => !coming.includes(item)).toSorted((a, b) => Date.parse(b.startsAt) - Date.parse(a.startsAt));
+  const row = (item: V2ScheduledClass, upcoming: boolean) => {
+    const calendar = upcoming ? googleCalendarLink({ title: `Ace Club live class: ${item.title}`, startsAt: item.startsAt, endsAt: item.endsAt }) : null;
+    return <li key={item.key} className={styles.liveRow}>
+      <div className={styles.liveDate}><strong>{dayLabel(item.startsAt)}</strong><span>{weekdayLabel(item.startsAt)}</span></div>
+      <div className={styles.liveInfo}><span className={styles.label}>{[item.section !== 'programme' ? sectionName(item.section) : '', item.completedAt ? 'Completed' : ''].filter(Boolean).join(' · ') || 'Live class'}</span><h3>{item.title}</h3><p>{clockLabel(item.startsAt)}–{clockLabel(item.endsAt)} IST</p></div>
+      <div className={styles.liveActions}>{calendar && <a className={styles.calendarLink} href={calendar} target="_blank" rel="noreferrer">Add to calendar <span aria-hidden="true">↗</span></a>}</div>
+    </li>;
+  };
+  return <>
+    <p className={styles.scheduleNote}>Here’s when your batch’s live classes happen. Joining needs a live seat; each class’s recording is added to its session afterwards.</p>
+    {coming.length > 0 && <><h3 className={styles.liveGroup}>Coming up</h3><ol className={styles.liveList}>{coming.map(item => row(item, true))}</ol></>}
+    {done.length > 0 && <><h3 className={styles.liveGroup}>Past classes</h3><ol className={styles.liveList}>{done.map(item => row(item, false))}</ol></>}
+  </>;
 }
 /** One live class: date, time and the single action that fits its state. */
 function LiveRow({ event, learning, batchId, now, onFeedback, onMaterials, hasMaterials }: { event: V2LearningState['liveEvents'][number]; learning: V2LearningState; batchId: string; now: number; onFeedback: (item: V2LearningObligation) => void; onMaterials: (sessionKey: string) => void; hasMaterials: (sessionKey: string) => boolean }) {
