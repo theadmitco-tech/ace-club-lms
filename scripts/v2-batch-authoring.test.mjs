@@ -87,7 +87,7 @@ test('live edit metadata is optional for legacy requests and checked against the
     app.state.result = { data: { draft: { ...draft, events: [{ ...draft.events[0], ...patch }] }, fingerprint }, error: null };
     assert.equal((await app.previewV2BatchDraft(input)).status, 'error');
   }
-  const legacy = { ...input, events: input.events.map(({ title, section, ...rest }) => rest) };
+  const legacy = { ...input, events: input.events.map(event => Object.fromEntries(Object.entries(event).filter(([key]) => key !== 'title' && key !== 'section'))) };
   app.state.result = { data: { draft, fingerprint }, error: null };
   assert.equal((await app.previewV2BatchDraft(legacy)).status, 'success');
 });

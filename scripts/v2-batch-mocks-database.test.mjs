@@ -7,7 +7,7 @@ import { preparePhase3Database, as, literal } from './helpers/v2-phase3-fixture.
 
 // Synthetic accounts and batches in a disposable database; no hosted connection is used.
 test('batch mocks are managed by Admins and shown only to enrolled students with active access', { timeout: 240000 }, () => withDisposablePostgres(async db => {
-  const { query, apply, rejects } = db;
+  const { query, rejects } = db;
   const f = preparePhase3Database(db);
   applyLatestMigrations(db);
   const b = f.batch('quant'); f.publish(b);

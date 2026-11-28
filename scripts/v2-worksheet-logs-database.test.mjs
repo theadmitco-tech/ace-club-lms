@@ -7,7 +7,7 @@ import { preparePhase3Database, as } from './helpers/v2-phase3-fixture.mjs';
 
 // Synthetic accounts, batches and worksheets in a disposable database; no hosted connection is used.
 test('V2 practice logs follow worksheet access and the master question list', { timeout: 240000 }, () => withDisposablePostgres(async db => {
-  const { query, apply, rejects } = db;
+  const { query, rejects } = db;
   const f = preparePhase3Database(db);
   applyLatestMigrations(db);
   const b = f.batch('quant'); f.publish(b);
