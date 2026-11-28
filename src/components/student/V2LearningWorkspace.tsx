@@ -151,7 +151,8 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
     requestAnimationFrame(() => { feedbackRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }); feedbackRef.current?.focus(); });
   }
   function feedbackSaved() { setFeedbackId(null); setMessage('Thanks, your feedback was sent. Your sessions are opening again.'); router.refresh(); }
-  const dueSessions = feedbackSessions.filter(item => item.batchId === course.batchId);
+  // Feedback is asked for only on the subject it belongs to; other subjects stay undisturbed.
+  const subjectDue = feedbackSessions.filter(item => item.batchId === course.batchId && item.section === subject);
   // Progress at a glance for the open subject (course reading pages aren't counted).
   const teachingSessions = subjectSessions.filter(session => !courseReadmePosition(session.key));
   const openedCount = teachingSessions.filter(session => learning.progress.some(p => p.sessionKey === session.key)).length;
@@ -164,10 +165,15 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
     {preview && <p className={styles.notice}>Read-only Student preview. No progress, feedback or attendance is recorded.</p>}
     {message && <p role="status" className={styles.notice}>{message}</p>}
     {headerNavigation && !learning.obligations.length && <FeedbackTip />}
-    {!preview && learning.obligations.length > 0 && <section className={styles.gate} aria-labelledby="feedback-due-heading"><span className={styles.gateIcon} aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><div>
-      <h2 id="feedback-due-heading">Quick feedback to continue</h2><p>{(dueSessions[0] ?? feedbackSessions[0]) ? <>Tell us how <strong>{(dueSessions[0] ?? feedbackSessions[0]).sessionTitle}</strong> went. </> : null}Your other {Array.from(new Set(learning.obligations.map(o => sectionName(o.section)))).join(' and ')} sessions open again as soon as you send it. It takes under a minute, and your other subjects stay open.</p>
-      <ul>{feedbackSessions.map(item => <li key={item.id}><button type="button" onClick={() => showFeedback(item)}>Give feedback for {item.sessionTitle}</button></li>)}</ul>
-    </div></section>}
+    {!preview && tab === 'recordings' && !lockedSubject && !obligation && subjectDue.length > 0 && <section className={styles.gate} aria-labelledby="feedback-due-heading">
+      <span className={styles.gateIcon} aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg></span>
+      <div className={styles.gateBody}>
+        <p className={styles.gateEyebrow}>{sectionName(subject)} · Feedback needed</p>
+        <h2 id="feedback-due-heading">{subjectDue.length > 1 ? `${subjectDue.length} sessions need quick feedback` : <>How was {subjectDue[0].sessionTitle}?</>}</h2>
+        <p>It takes under a minute. Your other {sectionName(subject)} sessions open again once it’s sent.</p>
+      </div>
+      <ul className={styles.gateActions}>{subjectDue.map(item => <li key={item.id}><button type="button" aria-label={`Give feedback for ${item.sessionTitle}`} onClick={() => showFeedback(item)}>{subjectDue.length > 1 ? item.sessionTitle : 'Give feedback'}</button></li>)}</ul>
+    </section>}
     {!preview && obligation && <section tabIndex={-1} ref={feedbackRef} className={styles.feedbackPanel} aria-label="Required session feedback"><div className={styles.row}><h2 className={styles.visuallyHidden}>Session feedback</h2><button type="button" className={styles.closeFeedback} onClick={() => setFeedbackId(null)}>Close feedback</button></div>{feedbackFormUrls?.[obligation.id]
       ? confirmingId === obligation.id ? <div className={styles.confirming} role="status"><h3>Thanks, we’re confirming your feedback…</h3><p>This usually takes a few seconds, and your sessions open again on their own. There’s no need to fill the form again.</p><button type="button" className={styles.secondary} onClick={() => router.refresh()}>Check again</button></div>
         : <iframe className={styles.tallyFrame} src={feedbackFormUrls[obligation.id]} title={`Feedback for ${obligation.sessionTitle}`} loading="lazy" />

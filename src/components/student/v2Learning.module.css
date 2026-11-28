@@ -250,3 +250,16 @@
 .courseSwitch { align-items: center; padding: 6px; border: 1px solid #e3e9e5; border-radius: 14px; background: #fff; width: fit-content; max-width: 100%; }
 .courseSwitchLabel { padding: 0 8px 0 6px; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #56665d; }
 .courseSwitch a { border: 0; border-radius: 9px; padding: 7px 14px; }
+
+/* ── Feedback gate v2: shown only on its own subject; calm card with one clear action ── */
+.gate { display: flex; align-items: center; gap: 18px; margin: 4px 0 22px; padding: 18px 22px; border: 1px solid #ecdcb4; border-left: 4px solid #d39b2a; border-radius: 14px; background: #fffbf2; box-shadow: 0 4px 18px #8a5a120d; }
+.gateIcon { display: inline-grid; place-items: center; flex: none; width: 46px; height: 46px; border-radius: 12px; background: #fdecc4; color: #8a5a12; }
+.gateBody { flex: 1; min-width: 0; }
+.gateEyebrow { margin: 0 0 2px; font-size: 12px !important; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #9a6a1c !important; }
+.gate h2 { margin: 0 0 4px; font-size: 18px; line-height: 1.35; color: #2f2a1a; }
+.gate .gateBody > p:last-child { margin: 0; font-size: 14.5px; color: #6a5a3a; }
+.gate .gateActions { display: flex; flex-wrap: wrap; gap: 8px; flex: none; margin: 0; padding: 0; list-style: none; }
+.gate .gateActions button { min-height: 44px; padding: 10px 20px; border: 0; border-radius: 10px; background: #245d47; color: #fff; font: inherit; font-size: 15px; font-weight: 600; box-shadow: 0 2px 8px #245d4733; cursor: pointer; }
+.gate .gateActions button:hover { background: #1d4c3a; }
+.gate .gateActions button:focus-visible { outline: 2px solid #245d47; outline-offset: 2px; }
+@media (max-width: 640px) { .gate { flex-direction: row; flex-wrap: wrap; align-items: flex-start; padding: 16px; } .gate .gateActions { flex-basis: 100%; } .gate .gateActions li, .gate .gateActions button { width: 100%; } .gateIcon { width: 40px; height: 40px; } }
