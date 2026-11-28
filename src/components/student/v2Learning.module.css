@@ -263,3 +263,11 @@
 .gate .gateActions button:hover { background: #1d4c3a; }
 .gate .gateActions button:focus-visible { outline: 2px solid #245d47; outline-offset: 2px; }
 @media (max-width: 640px) { .gate { flex-direction: row; flex-wrap: wrap; align-items: flex-start; padding: 16px; } .gate .gateActions { flex-basis: 100%; } .gate .gateActions li, .gate .gateActions button { width: 100%; } .gateIcon { width: 40px; height: 40px; } }
+
+/* ── Course reading pages pinned at the start and end of the session list ── */
+.outline li[data-readme] button { border: 1px solid #dce8e0; background: linear-gradient(180deg, #f6faf7, #eef5f0); }
+.outline li[data-readme] button > span { display: inline-flex; align-items: center; gap: 5px; color: #2f6b52; font-weight: 700; letter-spacing: .03em; }
+.outline li[data-readme] button small { color: #56665d; }
+.outline li[data-readme="before"] { margin-bottom: 8px; }
+.outline li[data-readme="after"] { margin-top: 8px; }
+.outline li[data-readme].current button { border-color: #9cc3ad; background: #e3f0e8; box-shadow: inset 3px 0 #2f6b52; }

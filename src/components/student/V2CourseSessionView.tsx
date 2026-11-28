@@ -91,11 +91,14 @@ export function V2PlacedReadings({ sessions, placements, placement, anchorKey, m
 export function V2CourseSessionView({ session, mode, readingEndpoint, batchId, learning, placements = [] }: {
   session: V2CourseSession; mode: 'admin-preview' | 'student'; readingEndpoint?: string; batchId?: string; learning?: V2ResourceLearning; placements?: ContentPlacementView[];
 }) {
+  const subjectLabel = session.section === 'programme' ? 'Programme' : session.section === 'di' ? 'DI' : session.section === 'quant' ? 'Quant' : 'Verbal';
+  const readme = courseReadmePosition(session.key);
   const outsideStage = new Set(placements.filter(p => p.sessionKey === session.key && p.placement !== 'session').map(p => p.key));
   return <article className={styles.session} aria-label={`Session content: ${session.title}`}>
     <header className={styles.heading}>
-      <p className={styles.eyebrow}>{session.section === 'programme' ? 'Programme' : session.section === 'di' ? 'DI' : session.section === 'quant' ? 'Quant' : 'Verbal'} · {courseReadmePosition(session.key) ? 'Course README' : 'Course session'}</p>
+      <p className={styles.eyebrow}>{subjectLabel} · {readme ? mode === 'student' ? readme === 'before' ? 'Start here' : 'When you finish' : 'Course README' : 'Course session'}</p>
       <h3>{session.title || 'Untitled session'}</h3>
+      {readme && mode === 'student' && <p className={styles.readmeIntro}>{readme === 'before' ? `A short read to set you up before your first ${subjectLabel} session.` : `Wrap-up reading for once you’ve finished the ${subjectLabel} sessions.`}</p>}
       {mode === 'admin-preview' && <p className={styles.notice}>Student-view preview · Viewing does not record progress, feedback or attendance.</p>}
     </header>
     <ol className={styles.stages}>{v2SessionStages(session.key).map(({ kind, title, description }, _index, stages) => {

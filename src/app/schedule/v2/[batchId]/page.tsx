@@ -1,5 +1,6 @@
 import { readMyContentPlacements } from '@/lib/server/v2ContentPublishing';
 import Link from 'next/link';
+import { courseReadmePosition } from '@/lib/v2CourseReadmes';
 import { isV2LearningEnabled } from '@/lib/server/v2LearningFeature';
 import { getMyV2LearningState } from '@/lib/server/v2Learning';
 import { V2LearningWorkspace } from '@/components/student/V2LearningWorkspace';
@@ -60,7 +61,8 @@ export default async function PublishedCoursePage({params,searchParams}:{params:
   const coveringEnds = (access ?? []).filter(item => item.sections.some(section => (ownSections as readonly string[]).includes(section))).map(item => Date.parse(item.expires_at)).filter(Number.isFinite);
   const accessEnds = coveringEnds.length ? Math.max(...coveringEnds) : null;
   const daysLeft = accessEnds === null ? null : Math.ceil((accessEnds - requestTime()) / 86400000);
-  const filteredCourse = learning ? { ...course, sessions: course.sessions.filter(session => learning.sessions.some(outline =>
+  // The fixed reading pages before and after the course are never paused, so they are kept alongside open sessions.
+  const filteredCourse = learning ? { ...course, sessions: course.sessions.filter(session => courseReadmePosition(session.key) || learning.sessions.some(outline =>
     outline.key === session.key && outline.section === session.section && !outline.locked)) } : course;
   return <div className="student-page"><StudentHeader studentName={studentName} courses={otherCourses.map(item => ({ href: `/schedule/v2/${item.batchId}`, title: item.title, current: item.batchId === batchId }))} />
     <main className="student-main"><div className="student-container">
