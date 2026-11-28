@@ -144,7 +144,7 @@ async function rating(page) {
 async function runTests() {
   await test('Student navigation leads with study destinations and keeps account pages in the menu',async page=>{
     await page.goto(origin+'/header');const nav=page.getByRole('navigation',{name:'Student navigation'});
-    assert.deepEqual(await nav.getByRole('link').allTextContents(),['Quant','Verbal','DI','Live classes','Mocks']);
+    assert.deepEqual(await nav.getByRole('link').allTextContents(),['Quant','Verbal','DI','Live classes','Mocks','Practice log']);
     for(const [label,href] of [['Quant','/schedule/v2?subject=quant'],['Verbal','/schedule/v2?subject=verbal'],['DI','/schedule/v2?subject=di'],['Live classes','/schedule/v2?view=live'],['Mocks','/mocks']])assert.equal(await nav.getByRole('link',{name:label,exact:true}).getAttribute('href'),href);
     assert.equal(await nav.getByRole('link',{name:'My learning'}).count(),0);
     await page.locator('summary[aria-label^="Account menu"]').focus();await page.keyboard.press('Enter');
@@ -166,7 +166,7 @@ async function runTests() {
   });
   await test('Quant 4 first and pre-read opening create only visual progress', async page => {
     await page.goto(origin); await page.getByRole('button', { name: 'Open Quant 4', exact: true }).click();
-    assert.equal(await page.getByRole('link', { name: 'Log practice', exact: true }).getAttribute('href'), `/schedule/v2/${batchId}/worksheet/${quant4}/${id(404)}`);
+    assert.equal(await page.getByRole('link', { name: 'Open worksheet', exact: true }).getAttribute('href'), `/schedule/v2/${batchId}/worksheet/${quant4}/${id(404)}`);
     await page.getByRole('button', { name: 'Read here', exact: true }).first().click();
     await page.getByText('Inline reading is available for Notion pages.').waitFor();
     assert.equal(state.obligations.length, 0); assert.equal(state.submissions.length, 0);

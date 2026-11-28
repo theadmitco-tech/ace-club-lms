@@ -38,6 +38,8 @@ export function SessionResource({ item, kind, mode, readingEndpoint, sessionKey,
   const read = !!learning?.progress.some(p => p.itemKey === item.key && p.status === 'read');
   const opened = !!learning?.progress.some(p => p.itemKey === item.key);
   const playable = reading || recording || nativeRecording || (learning && learning.feedbackTracking !== false && kind === 'recordings');
+  // A worksheet opens on its own page beside the practice log, in the same tab.
+  const worksheetPage = learning && mode === 'student' && batchId && kind === 'materials' && !reading ? `/schedule/v2/${batchId}/worksheet/${sessionKey}/${item.key}` : null;
   const markOpened = () => { if (learning && kind === 'preSessionReads') void learning.onProgress(item.key, 'opened'); };
   const icon = kind === 'recordings' ? <path d="m10 8 6 4-6 4z M3 5h18v14H3z" /> : kind === 'materials' && !reading ? <path d="M6 3h9l4 4v14H6z M14 3v5h5 M9 12h7 M9 16h7" /> : <path d="M3 5h6a3 3 0 0 1 3 3v12a2.5 2.5 0 0 0-2.5-2.5H3z M21 5h-6a3 3 0 0 0-3 3v12a2.5 2.5 0 0 1 2.5-2.5H21z" />;
   return <div className={styles.resource} data-open={open || undefined} data-read={read || undefined}>
@@ -50,9 +52,9 @@ export function SessionResource({ item, kind, mode, readingEndpoint, sessionKey,
       {source && <div className={styles.actions}>
         {playable ? <button type="button" className={styles.primaryAction} aria-expanded={open} onClick={() => { setOpen(!open); if (!open) markOpened(); }}>
           {open ? 'Close resource' : reading ? 'Read here' : learning && v2RecordingSource(source).kind === 'external' ? 'Recording options' : 'Watch here'}
-        </button> : <a className={styles.primaryAction} href={source} target="_blank" rel="noreferrer" aria-label={`Open ${item.title || 'resource'} in a new tab`}>{kind === 'materials' ? 'Open worksheet' : 'Open'} <span aria-hidden="true">↗</span></a>}
-        {playable && <a className={styles.newTab} onClick={markOpened} href={source} target="_blank" rel="noreferrer" aria-label={`Open ${item.title || 'resource'} in a new tab`} title="Open in a new tab"><span aria-hidden="true">↗</span></a>}
-        {learning && mode === 'student' && batchId && kind === 'materials' && !reading && <a className={styles.logLink} href={`/schedule/v2/${batchId}/worksheet/${sessionKey}/${item.key}`}>Log practice</a>}
+        </button> : worksheetPage ? <a className={styles.primaryAction} href={worksheetPage}>Open worksheet</a>
+          : <a className={styles.primaryAction} href={source} target="_blank" rel="noreferrer" aria-label={`Open ${item.title || 'resource'} in a new tab`}>{kind === 'materials' ? 'Open worksheet' : 'Open'} <span aria-hidden="true">↗</span></a>}
+        {(playable || worksheetPage) && <a className={styles.newTab} onClick={markOpened} href={source} target="_blank" rel="noreferrer" aria-label={`Open ${item.title || 'resource'} in a new tab`} title="Open in a new tab"><span aria-hidden="true">↗</span></a>}
       </div>}
     </div>
     {!source ? <p role="alert">A valid resource source and authorized course context are required.</p> : <>

@@ -9,6 +9,7 @@ const ITEMS = [
   { key: 'di', label: 'DI' },
   { key: 'live', label: 'Live classes' },
   { key: 'mocks', label: 'Mocks' },
+  { key: 'practice', label: 'Practice log' },
 ] as const;
 const COURSE_PATH = /^(\/schedule\/v2\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(\/live\/[^/]+)?$/i;
 
@@ -22,9 +23,10 @@ export function StudentCourseNav({ className }: { className?: string }) {
   const match = pathname.match(COURSE_PATH);
   const base = match ? match[1] : '/schedule/v2';
   const active = pathname === '/mocks' ? 'mocks'
+    : pathname === '/practice/v2' || /^\/schedule\/v2\/[^/]+\/worksheet\//.test(pathname) ? 'practice'
     : match?.[2] || (match && params?.get('view') === 'live') ? 'live'
       : match ? params?.get('subject') ?? null : null;
-  const href = (key: string) => key === 'mocks' ? '/mocks' : key === 'live' ? `${base}?view=live` : `${base}?subject=${key}`;
+  const href = (key: string) => key === 'mocks' ? '/mocks' : key === 'practice' ? '/practice/v2' : key === 'live' ? `${base}?view=live` : `${base}?subject=${key}`;
   return <nav className={className} aria-label="Student navigation">
     {ITEMS.map(item => <Link key={item.key} href={href(item.key)} aria-current={active === item.key ? 'page' : undefined} prefetch={false}>{item.label}</Link>)}
   </nav>;

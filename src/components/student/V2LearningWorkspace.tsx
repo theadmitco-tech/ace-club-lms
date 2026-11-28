@@ -152,7 +152,7 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
   }
   function feedbackSaved() { setFeedbackId(null); setMessage('Thanks, your feedback was sent. Your sessions are opening again.'); router.refresh(); }
   // Feedback is asked for only on the subject it belongs to; other subjects stay undisturbed.
-  const subjectDue = feedbackSessions.filter(item => item.batchId === course.batchId && item.section === subject);
+  const subjectDue = feedbackSessions.filter(item => item.section === subject).sort((a, b) => Number(b.batchId === course.batchId) - Number(a.batchId === course.batchId));
   // Progress at a glance for the open subject (course reading pages aren't counted).
   const teachingSessions = subjectSessions.filter(session => !courseReadmePosition(session.key));
   const openedCount = teachingSessions.filter(session => learning.progress.some(p => p.sessionKey === session.key)).length;
