@@ -98,6 +98,8 @@ const reviewSheets = JSON.stringify([
     questions: [{ id: id(51), number: 3, comment: 'Picked the extreme answer again', seconds: 95, updatedAt: '2026-11-22T06:00:00Z' }] },
 ]);
 await put('src/app/review/page.tsx', `import {ReviewList} from '@/app/practice/v2/ReviewList';import '@/app/dashboard/dashboard.css';export default function Page(){return <main className="student-main"><div className="student-container" style={{paddingBlock:32}}><ReviewList worksheets={${reviewSheets}}/></div></main>}`);
+await copySource('src/app/practice/v2/PracticeSummary.tsx');
+await put('src/app/practice-summary/page.tsx', `import {PracticeSummary} from '@/app/practice/v2/PracticeSummary';import '@/app/dashboard/dashboard.css';export default function Page(){return <main className="student-main"><div className="student-container" style={{paddingBlock:32}}><h1>Practice log</h1><PracticeSummary worksheets={16} started={3} done={18} review={4} questions={120} reviewView={false}/></div></main>}`);
 await put('src/app/review-empty/page.tsx', `import {ReviewList} from '@/app/practice/v2/ReviewList';import '@/app/dashboard/dashboard.css';export default function Page(){return <main className="student-main"><div className="student-container"><ReviewList worksheets={[]}/></div></main>}`);
 const reservation = createServer(); await new Promise(resolve => reservation.listen(0, '127.0.0.1', resolve));
 const port = reservation.address().port; await new Promise(resolve => reservation.close(resolve));
@@ -367,6 +369,13 @@ async function runTests() {
       ['update_my_v2_worksheet_log', id(31), 'done', 150, 'Ratio trap: re-read what the question asks for'],
       ['update_my_v2_worksheet_log', id(31), 'review', 150, 'Ratio trap: re-read what the question asks for']]);
     await page.goto(origin + '/review-empty'); await page.getByRole('heading', { name: 'Nothing to review yet', exact: true }).waitFor();
+  });
+  await test('Practice summary shows overall progress and links to the review list', async page => {
+    await page.goto(origin + '/practice-summary'); const summary = page.getByRole('region', { name: 'Your practice so far', exact: true });
+    await summary.getByText('22 of 120 questions logged', { exact: true }).waitFor(); await summary.getByText('18%', { exact: true }).waitFor();
+    assert.equal(await summary.getByRole('link', { name: 'Review now', exact: true }).getAttribute('href'), '/practice/v2?view=review');
+    await page.screenshot({ path: path.join(output, 'student-practice-summary.png') });
+    await page.setViewportSize({ width: 390, height: 844 }); await noOverflow(page); await page.screenshot({ path: path.join(output, 'student-practice-summary-mobile.png'), fullPage: true });
   });
   await test('To review list fits a phone', async page => {
     await page.goto(origin + '/review'); await page.getByRole('button', { name: 'Mark question 3 of VA 4 Worksheet done', exact: true }).waitFor();

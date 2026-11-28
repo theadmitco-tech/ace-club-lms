@@ -10,6 +10,7 @@ import { StudentHeader } from '@/components/student/StudentHeader';
 import { v2ReadingPageId } from '@/lib/v2ReadingPreview';
 import styles from './practice.module.css';
 import { ReviewList, type ReviewWorksheet } from './ReviewList';
+import { PracticeSummary } from './PracticeSummary';
 import '../../dashboard/dashboard.css';
 
 export const dynamic = 'force-dynamic';
@@ -40,18 +41,15 @@ export default async function V2PracticeLogPage({ searchParams }: { searchParams
         done: questions.filter(q => q.status === 'done').length, review: questions.filter(q => q.status === 'review').length };
     }))));
   const groups = SUBJECTS.map(([key, label]) => ({ key, label, rows: rows.filter(row => row.section === key) })).filter(group => group.rows.length);
-  const totals = { done: rows.reduce((n, r) => n + r.done, 0), review: rows.reduce((n, r) => n + r.review, 0), started: rows.filter(r => r.done + r.review > 0).length };
+  const totals = { done: rows.reduce((n, r) => n + r.done, 0), review: rows.reduce((n, r) => n + r.review, 0), started: rows.filter(r => r.done + r.review > 0).length,
+    questions: rows.reduce((n, r) => n + r.total, 0) };
 
   return <div className="student-page"><StudentHeader studentName={studentName} /><main className="student-main"><div className={`student-container ${styles.page}`}>
     <header className={styles.intro}>
       <h1>Practice log</h1>
       <p>{reviewView ? 'Every question you marked “Review”, in one place. Revisit them, then clear each one when it clicks.' : 'Every worksheet in your course. Open one to work through it with your question log beside it.'}</p>
-      {rows.length > 0 && <dl className={styles.stats}>
-        <div><dt>Worksheets started</dt><dd>{totals.started} <small>of {rows.length}</small></dd></div>
-        <div><dt>Questions done</dt><dd>{totals.done}</dd></div>
-        <div><dt>Marked to review</dt><dd>{totals.review}</dd></div>
-      </dl>}
     </header>
+    {rows.length > 0 && <PracticeSummary worksheets={rows.length} started={totals.started} done={totals.done} review={totals.review} questions={totals.questions} reviewView={reviewView} />}
     {rows.length > 0 && <nav className={styles.viewTabs} aria-label="Practice log views">
       <Link href="/practice/v2" aria-current={!reviewView ? 'page' : undefined} prefetch={false}>Worksheets</Link>
       <Link href="/practice/v2?view=review" aria-current={reviewView ? 'page' : undefined} prefetch={false}>To review{totals.review > 0 && <span>{totals.review}</span>}</Link>
