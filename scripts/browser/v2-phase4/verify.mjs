@@ -160,9 +160,10 @@ async function runTests() {
     state.liveRegistered=true;await page.reload();await page.getByText('Live seat',{exact:true}).waitFor();assert.equal(await page.getByRole('link',{name:'Live classes',exact:true}).getAttribute('href'),`/schedule/v2/${batchId}?view=live`);assert.equal(state.calls.length,0);
   });
   await test('Subjects and collapsible outline leave a full-width reading area',async page=>{
-    await page.goto(origin);const outline=page.getByRole('complementary',{name:'Course outline'});assert.equal(await outline.getByRole('button').count(),2);const content=page.getByRole('region',{name:'Selected session'});const a=await outline.boundingBox(),b=await content.boundingBox();assert.ok(b.x>=a.x+a.width);assert.ok(b.width>700);
+    await page.goto(origin);const outline=page.getByRole('complementary',{name:'Course outline'});assert.equal(await outline.getByRole('button',{name:/^Open /}).count(),2);const content=page.getByRole('region',{name:'Selected session'});const a=await outline.boundingBox(),b=await content.boundingBox();assert.ok(b.x>=a.x+a.width);assert.ok(b.width>700);
     await page.screenshot({path:path.join(output,'student-course-sidebar.png'),fullPage:false});
-    await outline.locator('summary').click();assert.equal(await page.getByRole('button',{name:'Open Quant 5',exact:true}).count(),0);await until(async()=>assert.ok((await content.boundingBox()).width>900));await page.getByRole('article',{name:'Session content: Quant 4'}).waitFor();assert.equal(state.calls.length,0);await page.screenshot({path:path.join(output,'student-session.png'),fullPage:true});
+    await outline.getByRole('button',{name:'Hide Quant sessions',exact:true}).click();assert.equal(await page.getByRole('button',{name:'Open Quant 5',exact:true}).count(),0);await until(async()=>assert.ok((await content.boundingBox()).width>900));await page.getByRole('article',{name:'Session content: Quant 4'}).waitFor();assert.equal(state.calls.length,0);await page.screenshot({path:path.join(output,'student-session.png'),fullPage:true});
+    await outline.getByRole('button',{name:'Show Quant sessions',exact:true}).click();await page.getByRole('button',{name:'Open Quant 5',exact:true}).waitFor();await until(async()=>assert.ok(Math.abs((await outline.boundingBox()).width-300)<2));
   });
   await test('Quant 4 first and pre-read opening create only visual progress', async page => {
     await page.goto(origin); await page.getByRole('button', { name: 'Open Quant 4', exact: true }).click();
@@ -319,7 +320,7 @@ async function runTests() {
     state.extraSessions=Array.from({length:27},(_,index)=>({key:id(1000+index),title:`Additional session ${index+1}`,section:'quant',content:content(2000+index)}));
     await page.goto(origin);
     const outline=page.getByRole('complementary',{name:'Course outline'});
-    assert.equal(await outline.getByRole('button').count(),29);
+    assert.equal(await outline.getByRole('button',{name:/^Open /}).count(),29);
     const dimensions=await outline.locator('ol').evaluate(element=>({height:element.getBoundingClientRect().height,scrollHeight:element.scrollHeight,clientHeight:element.clientHeight,viewport:innerHeight}));
     assert.ok(dimensions.height<=dimensions.viewport*0.46);assert.ok(dimensions.scrollHeight>dimensions.clientHeight);
     const last=outline.getByRole('button',{name:'Open Additional session 27',exact:true});await last.focus();await page.keyboard.press('Enter');

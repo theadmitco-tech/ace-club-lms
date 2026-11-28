@@ -90,6 +90,7 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
       ?? outlineSessions.find(s => s.key === learning.lastSessionKey && s.section === requested && !s.locked)
       ?? outlineSessions.find(s => s.section === requested && !s.locked))?.key ?? null
     : outlineSessions.find(s => s.key === learning.lastSessionKey && !s.locked)?.key ?? outlineSessions.find(s => !s.locked)?.key ?? null;
+  const [outlineOpen, setOutlineOpen] = useState(true);
   const [selected, setSelected] = useState<string | null>(initial), [tab, setTab] = useState<'recordings' | 'live'>(initialView);
   const [subject, setSubject] = useState<string>(() => requested ?? outlineSessions.find(s => s.key === initial)?.section ?? subjects[0] ?? 'quant');
   const subjectSessions = outlineSessions.filter(session => session.section === subject);
@@ -192,11 +193,17 @@ export function V2LearningWorkspace({ course, learning, initialView = 'recording
         <p>Add it to get every {sectionName(lockedSubject)} session, recording and worksheet. You pay only the price difference, and your access end date stays the same.</p>
         <div className={styles.row}><Link className={styles.primary} href="/account/access/upgrade" prefetch={false}>See upgrade options</Link>{headerNavigation ? <Link className={styles.secondary} href={`?subject=${subject}`}>Back to {sectionName(subject)}</Link> : <button type="button" className={styles.secondary} onClick={() => setLockedSubject(null)}>Back to {sectionName(subject)}</button>}</div>
       </div></section> : <>
-      <div className={styles.layout}>
-        <aside className={styles.outline} aria-label="Course outline"><details open><summary><span>{sectionName(subject)} sessions</span><small>{openedCount} of {teachingSessions.length} opened</small></summary>
+      <div className={styles.layout} data-outline={outlineOpen ? 'open' : 'closed'}>
+        <aside className={styles.outline} aria-label="Course outline">
+          <button type="button" className={styles.outlineToggle} aria-expanded={outlineOpen} aria-controls="course-outline-list" aria-label={`${outlineOpen ? 'Hide' : 'Show'} ${sectionName(subject)} sessions`} onClick={() => setOutlineOpen(open => !open)}>
+            <span className={styles.outlineTitle}>{sectionName(subject)} sessions</span>
+            <small>{openedCount} of {teachingSessions.length} opened</small>
+            <svg className={styles.outlineIcon} aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M9 4v16" /><path className={styles.outlineChevron} d="m15 10-2 2 2 2" /></svg>
+          </button>
+          <div className={styles.outlineBody} id="course-outline-list" inert={!outlineOpen} aria-hidden={!outlineOpen || undefined}><div className={styles.outlineInner}>
           <ol>{subjectSessions.map(item => { const visited = learning.progress.some(p => p.sessionKey === item.key); const readme = courseReadmePosition(item.key); return <li key={item.key} className={`${item.locked ? styles.locked : ''} ${item.key === selected ? styles.current : ''}`} data-readme={readme ?? undefined} data-last={item.key === learning.lastSessionKey && !item.locked && !readme || undefined}>
             <button type="button" disabled={item.locked} aria-current={item.key === selected ? 'step' : undefined} aria-label={`Open ${item.title}`} onClick={() => select(item.key)}><span>{readme ? <><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"><path d="M3 5h6a3 3 0 0 1 3 3v12a2.5 2.5 0 0 0-2.5-2.5H3z M21 5h-6a3 3 0 0 0-3 3v12a2.5 2.5 0 0 1 2.5-2.5H21z" /></svg>{readme === 'before' ? 'Start here' : 'When you finish'}</> : sectionName(item.section)}</span><strong>{item.title}</strong><small data-status={item.locked ? 'locked' : learning.obligations.some(o => o.batchId === course.batchId && o.sessionKey === item.key) ? 'feedback' : visited ? 'opened' : undefined}>{item.locked ? 'Paused until feedback is sent' : learning.obligations.some(o => o.batchId === course.batchId && o.sessionKey === item.key) ? 'Feedback due' : item.key === learning.lastSessionKey ? 'Last opened' : visited ? 'Opened' : readme === 'before' ? 'Read this before your first session' : readme ? 'Read this once you’ve finished' : ''}</small></button>
-          </li>; })}</ol></details>
+          </li>; })}</ol></div></div>
         </aside>
         <section className={styles.content} aria-label="Selected session">
           {active ? <>

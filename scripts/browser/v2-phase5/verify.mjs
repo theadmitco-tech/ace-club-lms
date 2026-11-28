@@ -207,7 +207,7 @@ async function runTests() {
   const saved=state.sessionCalls.find(c=>c.action==='save').input;assert.equal(saved.sessions.length,4);assert.equal(saved.sessions[0].title,'Read before the course');assert.equal(saved.sessions.at(-1).title,'Read after the course');assert.deepEqual(saved.sessions.slice(1,-1),sourceSessions.filter(s=>s.section==='quant'));assert.equal(saved.sessions[0].content.preSessionReads.length,1);for(const kind of ['recordings','postSessionReads','materials'])assert.equal(saved.sessions[0].content[kind].length,0);assert.deepEqual(saved.events,[existingEvent]);assert.equal(state.editorCalls.length,0);
  });
  await test('Course README Student outline includes both fixed pages without synthetic learning writes',async page=>{
-  state.subjectCourse=true;const outline=page.getByRole('complementary',{name:'Course outline',exact:true});const buttons=outline.getByRole('button');const labels=()=>buttons.evaluateAll(items=>items.map(item=>item.getAttribute('aria-label')));
+  state.subjectCourse=true;const outline=page.getByRole('complementary',{name:'Course outline',exact:true});const buttons=outline.getByRole('button',{name:/^Open /});const labels=()=>buttons.evaluateAll(items=>items.map(item=>item.getAttribute('aria-label')));
   // Empty course reading pages stay hidden from students.
   await page.goto(origin);await outline.getByRole('button',{name:'Open Quant 4',exact:true}).waitFor();assert.deepEqual(await labels(),['Open Quant 4','Open Quant 5']);
   const readme=(prefix,title,n)=>({key:prefix+batchId.slice(8),title,section:'quant',content:{preSessionReads:[],recordings:[],postSessionReads:[],materials:[{key:id(n),title:title+' notes',url:'https://example.test/readme-'+n}]}});
