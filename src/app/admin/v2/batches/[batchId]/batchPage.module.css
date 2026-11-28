@@ -117,3 +117,8 @@
 .mockActions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .classAction { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
 @media (max-width: 640px) { .mockForm { grid-template-columns: minmax(0, 1fr); } }
+/* Live seats from the Students page. */
+.seatBadge { margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: #e8f2ec; color: #245d47; font-size: 11.5px; font-weight: 700; vertical-align: middle; }
+.seatOption { display: flex; align-items: center; gap: 10px; margin: 10px 0; font-size: 14px; color: #1f3a2d; cursor: pointer; }
+.seatOption input { width: 18px; height: 18px; accent-color: #245d47; }
+.seatOption small { margin-left: 6px; color: #56665d; font-size: 12.5px; }

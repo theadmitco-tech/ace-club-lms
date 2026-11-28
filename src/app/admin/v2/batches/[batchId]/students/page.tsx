@@ -4,6 +4,8 @@ import { requirePortalRole } from '@/lib/server/portalAuthorization';
 import { isV2StudentScheduleEnabled } from '@/lib/server/v2StudentScheduleFeature';
 import { listV2EnrollmentOptions } from '@/lib/server/v2Enrollments';
 import { listV2BatchDrafts } from '@/lib/server/v2Batches';
+import { readV2LiveOperations } from '@/lib/server/v2StudentDelivery';
+import { listV2BatchPublications } from '@/lib/server/v2Publications';
 import { isV2MeetingBatchId } from '@/lib/v2Meetings';
 import { V2_TEMPLATE_PRODUCTS } from '@/lib/v2Templates';
 import EnrollmentEditor from './EnrollmentEditor';
@@ -14,7 +16,14 @@ export default async function V2StudentsPage({ params }: { params: Promise<{ bat
   const identity = await requirePortalRole('admin');
   const { batchId } = await params;
   if (!isV2MeetingBatchId(batchId)) notFound();
-  const [result, batches] = await Promise.all([listV2EnrollmentOptions(batchId), listV2BatchDrafts()]);
+  const [result, batches, operations, publications] = await Promise.all([listV2EnrollmentOptions(batchId), listV2BatchDrafts(),
+    readV2LiveOperations(batchId), listV2BatchPublications().catch(() => null)]);
+  // Live seats can be given from here once the batch is published with live classes.
+  const publication = publications?.status === 'ready' ? publications.publications.find(item => item.batchId === batchId && item.state === 'published') : undefined;
+  const live = publication?.liveRegistrationLimit && operations ? {
+    limit: publication.liveRegistrationLimit,
+    seats: Object.fromEntries(operations.registrations.map(row => [row.studentId, { active: row.active, revision: row.revision }])),
+  } : null;
   const batch = batches.status === 'ready' ? batches.drafts.find((row) => row.id === batchId) : null;
   const product = batch ? (batch.productCode === 'full_course' ? 'Full Course' : V2_TEMPLATE_PRODUCTS[batch.productCode].label) : 'course';
   return <div className={styles.page}>
@@ -23,7 +32,7 @@ export default async function V2StudentsPage({ params }: { params: Promise<{ bat
       <h1 className="admin-page-title">{batch?.title ?? 'Batch students'}</h1>
       <p className="admin-page-subtitle">Enrolled students see this batch’s schedule. Only students with active {product} access can be enrolled.</p>
     </header>
-    {result.status === 'ready' && batch ? <EnrollmentEditor key={`${identity.id}:${batchId}`} batchId={batchId} options={result.options} product={product} />
+    {result.status === 'ready' && batch ? <EnrollmentEditor key={`${identity.id}:${batchId}`} batchId={batchId} options={result.options} product={product} live={live} />
       : <section className={styles.panel} role="alert"><h2>Students could not be loaded</h2><p className={styles.muted}>Check the batch and reload.</p>
         <Link className={styles.secondaryAction} href={`/admin/v2/batches/${batchId}/students`} prefetch={false}>Reload student list</Link></section>}
   </div>;

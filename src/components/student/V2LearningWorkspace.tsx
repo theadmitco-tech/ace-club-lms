@@ -3,12 +3,11 @@
 import Link from 'next/link';
 import { googleCalendarLink, siteLink } from '@/lib/calendarLink';
 import { FeedbackTip } from './FeedbackTip';
-import type { V2ScheduledClass } from '@/lib/server/v2LiveSchedule';
 import { courseReadmePosition, withCourseReadmes, pinCourseReadmes } from '@/lib/v2CourseReadmes';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { V2PublishedCourse } from '@/lib/v2StudentDelivery';
-import type { V2LearningState, V2LearningObligation, V2FeedbackResponse, V2LearningProgress } from '@/lib/v2Learning';
+import type { V2LearningState, V2LearningObligation, V2FeedbackResponse, V2LearningProgress, V2ScheduledClass } from '@/lib/v2Learning';
 import type { ContentPlacementView } from '@/lib/v2ContentPublishing';
 import { V2CourseSessionView, V2PlacedReadings } from './V2CourseSessionView';
 import styles from './v2Learning.module.css';

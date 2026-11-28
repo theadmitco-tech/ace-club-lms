@@ -134,6 +134,13 @@ const handlers = {
     row.active = input.active; row.revision++;
     return { status: 'success' };
   },
+  setV2LiveRegistration: (state, input) => {
+    state.liveRegistrations ??= [];
+    const row = state.liveRegistrations.find((item) => item.studentId === input.studentId);
+    if ((row?.revision ?? 0) !== input.expectedRevision) return { status: 'error', message: 'Registration changed. Reload the roster before retrying.' };
+    if (row) { row.active = input.active; row.revision++; } else state.liveRegistrations.push({ studentId: input.studentId, name: input.studentId, active: input.active, eligible: true, revision: 1 });
+    return { status: 'success' };
+  },
   fixtureIdentity: (state, role) => ({ id: state.ownerId, role }),
   fixtureWorksheet: worksheet,
   fixtureSaveQuestion: (state, input) => {

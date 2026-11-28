@@ -2,7 +2,8 @@ import 'server-only';
 import { createClient } from '@/utils/supabase/server';
 import { isV2MeetingBatchId } from '@/lib/v2Meetings';
 
-export type V2ScheduledClass = { key: string; title: string; section: string; startsAt: string; endsAt: string; completedAt: string | null };
+import type { V2ScheduledClass } from '@/lib/v2Learning';
+export type { V2ScheduledClass };
 
 const isClass = (value: unknown): value is V2ScheduledClass => {
   const item = value as Record<string, unknown> | null;

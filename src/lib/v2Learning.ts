@@ -74,3 +74,6 @@ export function isV2WatchSample(v: unknown): v is V2WatchSample {
     && typeof v.durationSeconds === 'number' && Number.isFinite(v.durationSeconds) && v.durationSeconds > 0 && v.durationSeconds <= 43200
     && v.positionSeconds <= v.durationSeconds + 1;
 }
+
+/** A live class date shown to every enrolled student, with or without a live seat. No join details. */
+export type V2ScheduledClass = { key: string; title: string; section: string; startsAt: string; endsAt: string; completedAt: string | null };

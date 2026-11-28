@@ -192,7 +192,7 @@ export async function call(method: string, ...args: unknown[]) {
     v2Publications: ['listV2BatchPublications', 'previewV2BatchPublication', 'saveV2BatchPublication'],
     v2PublicationScopes: ['previewPublicationScope', 'savePublicationScope'],
     v2Meetings: ['readV2MeetingDraft', 'saveV2MeetingDraft'],
-    v2StudentDelivery: ['readV2LiveOperations'],
+    v2StudentDelivery: ['readV2LiveOperations', 'setV2LiveRegistration'],
   })) {
     await put(`src/lib/server/${module}.ts`, `import { call } from './fixture';\n`
       + methods.map((method) => `export async function ${method}(...args: unknown[])${returnTypes[method] ? ': ' + returnTypes[method] : ''} { return call('${method}', ...args); }`).join('\n'));
