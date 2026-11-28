@@ -50,6 +50,17 @@ These follow the [release plan](RELEASE-PLAN.md) order and are not performed by 
 7. **Authorization** naming the exact artifact, migrations, configuration, content operations, smoke writes and rollback limits; then a fresh Production-target build, pre-assignment smoke and domain assignment.
 8. **Live payment smoke**, only if separately approved, naming the account, amount and refund/reconciliation procedure.
 
+## Migrations added after this handoff
+
+These are additive and leave existing rows, functions and history unchanged. They must be applied to staging (through the reviewed process) before the features appear on a Preview, and to Production only as part of an authorized release. Until they are applied, the pages fall back gracefully: no mocks from batches, no practice log for V2 worksheets, and no class dates for students without a live seat.
+
+| Migration | Adds |
+| --- | --- |
+| `20261125100000_add_v2_tally_feedback.sql` | Tally as a feedback provider and the service-only `record_v2_tally_feedback` |
+| `20261125110000_add_v2_batch_mocks.sql` | `v2_batch_mocks`, Admin mock management and `get_my_v2_mocks` |
+| `20261128100000_add_v2_worksheet_logs.sql` | `v2_worksheet_logs` and practice-log reads and saves for V2 worksheets |
+| `20261128110000_add_v2_live_schedule.sql` | `get_my_v2_live_schedule`: class dates for every enrolled student, without join details |
+
 ## Known limits and follow-ups
 
 - Newer `sb_publishable_` / `sb_secret_` Supabase keys carry no project identifier, so only their slot can be checked locally; Supabase still rejects them against another project. Legacy JWT keys are checked for project and role.
