@@ -21,9 +21,8 @@ export default async function V2WorksheetLogPage({ params }: { params: Promise<{
   const [log, studentName] = await Promise.all([getMyV2WorksheetLog(batchId, sessionKey, itemKey), getMyDisplayName()]);
   const subject = log?.section && SECTION[log.section];
   const pdf = log ? v2CourseResourceHref(log.url, { mode: 'student', sessionKey, batchId, itemKey }) : null;
-  const back = `/schedule/v2/${batchId}${subject ? `?subject=${log!.section}&session=${sessionKey}` : ''}`;
   return <div className="student-page"><StudentHeader studentName={studentName} /><main className="student-main"><div className="student-container">
-    <Link className="session-back-link" href={back}>← Back to {log?.sessionTitle || 'the session'}</Link>
+    <Link className="session-back-link" href="/practice/v2">← Back to Practice log</Link>
     {!log ? <section className="student-state" role="alert"><h1>This worksheet isn’t available</h1><p>It may be paused until you send feedback for this subject, or your access may have ended. <Link href="/account/access">Check My access</Link>.</p></section> : <>
       <header className="material-header">
         <span className="student-eyebrow">{subject ? `${subject} · ` : ''}Worksheet</span>
