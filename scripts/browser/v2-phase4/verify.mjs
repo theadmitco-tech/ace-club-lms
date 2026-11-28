@@ -99,13 +99,12 @@ const reviewSheets = JSON.stringify([
 ]);
 await put('src/app/review/page.tsx', `import {ReviewList} from '@/app/practice/v2/ReviewList';import '@/app/dashboard/dashboard.css';export default function Page(){return <main className="student-main"><div className="student-container" style={{paddingBlock:32}}><ReviewList worksheets={${reviewSheets}}/></div></main>}`);
 await copySource('src/app/practice/v2/PracticeSummary.tsx');
-await put('src/app/practice-summary/page.tsx', `import {PracticeOverview} from '@/app/practice/v2/PracticeSummary';import '@/app/dashboard/dashboard.css';import styles from '@/app/practice/v2/practice.module.css';
+await put('src/app/practice-summary/page.tsx', `import {PracticeOverview,SheetLegend} from '@/app/practice/v2/PracticeSummary';import '@/app/dashboard/dashboard.css';import styles from '@/app/practice/v2/practice.module.css';
 const sheet=(n:number,done:number[],review:number[])=>Array.from({length:n},(_,i)=>done.includes(i+1)?'done' as const:review.includes(i+1)?'review' as const:null);
-const row=(t:string,s:string,c:ReturnType<typeof sheet>,paused=false)=>({href:'/w/'+t,title:t,sessionTitle:s,course:'Full Course',total:c.length,done:c.filter(x=>x==='done').length,review:c.filter(x=>x==='review').length,paused,cells:c});
-const quant=[row('QA 1 Worksheet','QA 1: Fractions, Percentages, Ratios and Mixtures',sheet(20,[1,2,3,4,5,6,8,9,10,11,13],[7,12])),row('QA 2 Worksheet','QA 2: Pipes and Cisterns, Work and Time',sheet(18,[1,2,3],[4])),row('QA 3 Worksheet','QA 3: Probability, Permutation and Combination',sheet(24,[],[]))];
-const verbal=[row('VA 4 Worksheet','VA 4: RC Point of View and CR Evaluate the Conclusion',sheet(15,[1,2],[3]),true)];
-const sum=(rows:typeof quant)=>({done:rows.reduce((n,r)=>n+r.done,0),review:rows.reduce((n,r)=>n+r.review,0),total:rows.reduce((n,r)=>n+r.total,0)});
-export default function Page(){return <main className="student-main"><div className={'student-container '+styles.page}><header className={styles.titleRow}><h1>Practice log</h1></header><PracticeOverview several={false} subjects={[{key:'quant',label:'Quant',...sum(quant)},{key:'verbal',label:'Verbal',...sum(verbal)}]} groups={[{key:'quant',label:'Quant',rows:quant},{key:'verbal',label:'Verbal',rows:verbal}]}/></div></main>}`);
+const row=(t:string,s:string,c:ReturnType<typeof sheet>,last:string|null,paused=false)=>({href:'/w/'+t,title:t,sessionTitle:s,course:'Full Course',total:c.length,done:c.filter(x=>x==='done').length,review:c.filter(x=>x==='review').length,paused,cells:c,lastActivity:last});
+const quant=[row('QA 1 Worksheet','QA 1: Fractions, Percentages, Ratios and Mixtures',sheet(20,[1,2,3,4,5,6,8,9,10,11,13],[7,12]),'2026-11-20T06:00:00Z'),row('QA 2 Worksheet','QA 2: Pipes and Cisterns, Work and Time',sheet(18,[1,2,3],[4]),'2026-11-26T06:00:00Z'),row('QA 3 Worksheet','QA 3: Probability, Permutation and Combination',sheet(24,[],[]),null)];
+const verbal=[row('VA 4 Worksheet','VA 4: RC Point of View and CR Evaluate the Conclusion',sheet(15,[1,2],[3]),'2026-11-27T06:00:00Z',true)];
+export default function Page(){return <main className="student-main"><div className={'student-container '+styles.page}><header className={styles.titleRow}><h1>Practice log</h1><SheetLegend/><nav className={styles.viewTabs} aria-label="Practice log views"><a href="/practice/v2" aria-current="page">Worksheets</a><a href="/practice/v2?view=review">To review<span>4</span></a></nav></header><PracticeOverview several={false} groups={[{key:'quant',label:'Quant',rows:quant},{key:'verbal',label:'Verbal',rows:verbal}]}/></div></main>}`);
 await put('src/app/review-empty/page.tsx', `import {ReviewList} from '@/app/practice/v2/ReviewList';import '@/app/dashboard/dashboard.css';export default function Page(){return <main className="student-main"><div className="student-container"><ReviewList worksheets={[]}/></div></main>}`);
 const reservation = createServer(); await new Promise(resolve => reservation.listen(0, '127.0.0.1', resolve));
 const port = reservation.address().port; await new Promise(resolve => reservation.close(resolve));
@@ -378,14 +377,15 @@ async function runTests() {
   });
   await test('Practice log draws each worksheet as an answer sheet with subject totals', async page => {
     await page.goto(origin + '/practice-summary');
-    const table = page.getByRole('table', { name: 'Questions logged by subject', exact: true });
-    assert.deepEqual(await table.locator('tbody tr').evaluateAll(rows => rows.map(r => r.textContent.replace(/\s+/g, ' ').trim())), ['Quant17 of 623', 'Verbal3 of 151']);
-    assert.equal(await table.getByRole('link', { name: '3 Quant questions to review', exact: true }).getAttribute('href'), '/practice/v2?view=review');
+    const quant = page.getByRole('region', { name: 'Quant', exact: true });
+    assert.equal((await quant.locator('header').textContent()).replace(/\s+/g, ' ').trim(), 'Quant17 of 62 logged3 to review');
+    assert.equal(await quant.getByRole('link', { name: '3 to review', exact: true }).getAttribute('href'), '/practice/v2?view=review');
     await page.getByRole('img', { name: '11 done, 2 to review, 7 not logged, of 20 questions', exact: true }).waitFor();
-    assert.equal(await page.getByRole('link', { name: 'Continue QA 1 Worksheet', exact: true }).getAttribute('href'), '/w/QA 1 Worksheet');
-    await page.getByRole('link', { name: 'Open QA 3 Worksheet', exact: true }).waitFor();
+    assert.equal(await page.locator('[title="Question 7: to review"]').count(), 1);
+    // Only the most recently worked, unfinished worksheet is the solid Continue; a paused one never is.
+    assert.deepEqual(await page.getByRole('link', { name: /^(Continue|Open) / }).evaluateAll(links => links.map(l => [l.getAttribute('aria-label'), getComputedStyle(l).backgroundColor !== 'rgba(0, 0, 0, 0)'])),
+      [['Continue QA 1 Worksheet', false], ['Continue QA 2 Worksheet', true], ['Open QA 3 Worksheet', false]]);
     await page.getByText('Opens again once you send your Verbal feedback', { exact: true }).waitFor();
-    assert.equal(await page.getByRole('link', { name: /VA 4 Worksheet/ }).count(), 0);
     await page.screenshot({ path: path.join(output, 'student-practice-summary.png'), fullPage: true });
     await page.setViewportSize({ width: 390, height: 844 }); await noOverflow(page); await page.screenshot({ path: path.join(output, 'student-practice-summary-mobile.png'), fullPage: true });
   });
