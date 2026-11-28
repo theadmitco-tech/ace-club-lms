@@ -9,16 +9,18 @@ import { getMyV2WorksheetLog } from '@/lib/server/v2WorksheetLogs';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { v2ReadingPageId } from '@/lib/v2ReadingPreview';
 import styles from './practice.module.css';
+import { ReviewList, type ReviewWorksheet } from './ReviewList';
 import '../../dashboard/dashboard.css';
 
 export const dynamic = 'force-dynamic';
 
 const SUBJECTS = [['quant', 'Quant'], ['verbal', 'Verbal'], ['di', 'DI']] as const;
 
-type Row = { href: string; title: string; sessionTitle: string; course: string; section: string; total: number; done: number; review: number; paused: boolean };
+type Row = { reviewSheet: ReviewWorksheet | null; href: string; title: string; sessionTitle: string; course: string; section: string; total: number; done: number; review: number; paused: boolean };
 
 /** Every worksheet in the student's V2 courses, by subject, with how far their practice log has got. */
-export default async function V2PracticeLogPage() {
+export default async function V2PracticeLogPage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
+  const reviewView = (await searchParams).view === 'review';
   if (!isV2LearningEnabled()) notFound();
   await requirePortalRole('student');
   const [studentName, enrolled] = await Promise.all([getMyDisplayName(), getMyV2BatchSchedules()]);
@@ -28,7 +30,12 @@ export default async function V2PracticeLogPage() {
     session.content.materials.filter(item => v2ReadingPageId(item.url) === null).map(async (item): Promise<Row> => {
       const log = await getMyV2WorksheetLog(course.batchId, session.key, item.key);
       const questions = log?.questions ?? [];
-      return { href: `/schedule/v2/${course.batchId}/worksheet/${session.key}/${item.key}`, title: item.title || 'Worksheet', sessionTitle: session.title,
+      const href = `/schedule/v2/${course.batchId}/worksheet/${session.key}/${item.key}`;
+      const toReview = questions.filter(q => q.status === 'review');
+      const reviewSheet: ReviewWorksheet | null = toReview.length ? { key: `${course.batchId}:${session.key}:${item.key}`, href, title: item.title || 'Worksheet', sessionTitle: session.title,
+        section: session.section, batchId: course.batchId, sessionKey: session.key, itemKey: item.key,
+        questions: toReview.map(q => ({ id: q.id, number: q.question_number, comment: q.comment, seconds: q.time_taken_seconds, updatedAt: q.updated_at })) } : null;
+      return { reviewSheet, href, title: item.title || 'Worksheet', sessionTitle: session.title,
         course: course.title, section: session.section, total: questions.length, paused: !log,
         done: questions.filter(q => q.status === 'done').length, review: questions.filter(q => q.status === 'review').length };
     }))));
@@ -38,14 +45,19 @@ export default async function V2PracticeLogPage() {
   return <div className="student-page"><StudentHeader studentName={studentName} /><main className="student-main"><div className={`student-container ${styles.page}`}>
     <header className={styles.intro}>
       <h1>Practice log</h1>
-      <p>Every worksheet in your course. Open one to work through it with your question log beside it.</p>
+      <p>{reviewView ? 'Every question you marked “Review”, in one place. Revisit them, then clear each one when it clicks.' : 'Every worksheet in your course. Open one to work through it with your question log beside it.'}</p>
       {rows.length > 0 && <dl className={styles.stats}>
         <div><dt>Worksheets started</dt><dd>{totals.started} <small>of {rows.length}</small></dd></div>
         <div><dt>Questions done</dt><dd>{totals.done}</dd></div>
         <div><dt>Marked to review</dt><dd>{totals.review}</dd></div>
       </dl>}
     </header>
-    {enrolled.status !== 'ready' ? <section className={styles.empty} role="alert"><h2>Your worksheets couldn’t be loaded</h2><p>Please try again in a moment.</p><Link className={styles.secondary} href="/practice/v2">Try again</Link></section>
+    {rows.length > 0 && <nav className={styles.viewTabs} aria-label="Practice log views">
+      <Link href="/practice/v2" aria-current={!reviewView ? 'page' : undefined} prefetch={false}>Worksheets</Link>
+      <Link href="/practice/v2?view=review" aria-current={reviewView ? 'page' : undefined} prefetch={false}>To review{totals.review > 0 && <span>{totals.review}</span>}</Link>
+    </nav>}
+    {reviewView && enrolled.status === 'ready' ? <ReviewList worksheets={rows.flatMap(row => row.reviewSheet ? [row.reviewSheet] : [])} />
+      : enrolled.status !== 'ready' ? <section className={styles.empty} role="alert"><h2>Your worksheets couldn’t be loaded</h2><p>Please try again in a moment.</p><Link className={styles.secondary} href="/practice/v2">Try again</Link></section>
       : !groups.length ? <section className={styles.empty}><h2>No worksheets yet</h2><p>Worksheets appear here as soon as they’re added to your course sessions.</p></section>
         : groups.map(group => <section key={group.key} className={styles.group} aria-labelledby={`practice-${group.key}`}>
           <h2 id={`practice-${group.key}`}>{group.label} <small>{group.rows.length} worksheet{group.rows.length === 1 ? '' : 's'}</small></h2>

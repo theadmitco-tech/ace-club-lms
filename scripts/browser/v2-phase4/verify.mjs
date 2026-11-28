@@ -86,6 +86,19 @@ export const dynamic='force-dynamic';
 export default async function Page(){const data=await(await fetch('http://127.0.0.1:${backend.address().port}/state',{cache:'no-store'})).json();return <main style={{maxWidth:1200,margin:'auto',padding:20}}><h1>Synthetic Full Course</h1><V2LearningWorkspace {...data}/></main>}`);
 await put('src/app/library/page.tsx', `import {V2LearningLibrary} from '@/components/student/V2LearningLibrary';export const dynamic='force-dynamic';export default async function Page(){const data=await(await fetch('http://127.0.0.1:${backend.address().port}/state',{cache:'no-store'})).json();return <main style={{maxWidth:1000,margin:'auto',padding:24}}><V2LearningLibrary batches={[{publication:{...data.course,revision:1,state:'published',events:[]},learning:data.learning}]} studentName="Asha Verma" now={Date.parse('2026-11-23T06:00:00Z')} access={[{product_code:'full_batch',sections:['quant','verbal','di'],expires_at:'2027-01-01T00:00:00Z'}]}/></main>}`);
 await put('src/app/header/page.tsx', `import {StudentHeader} from '@/components/student/StudentHeader';import '@/app/dashboard/dashboard.css';export default function Page(){return <div className="student-page"><StudentHeader studentName="Student"/><main className="student-main"><div className="student-container"><h1>Student navigation fixture</h1></div></main></div>}`);
+// To review list: a stubbed browser client records practice-log saves in the page instead of reaching a database.
+if (copied.has('src/utils/supabase/client.ts')) throw Error('The review fixture needs its own browser client stub');
+copied.add('src/utils/supabase/client.ts');
+await put('src/utils/supabase/client.ts', `export function createClient(){return {rpc:async(name:string,args:Record<string,unknown>)=>{const w=window as unknown as {__rpc?:unknown[]};(w.__rpc??=[]).push({name,...args});return {data:{id:args.p_question_id},error:null};}};}`);
+await copySource('src/app/practice/v2/ReviewList.tsx');
+const reviewSheets = JSON.stringify([
+  { key: 'q1', href: '/schedule/v2/b/worksheet/s/i', title: 'QA 1 Worksheet', sessionTitle: 'QA 1: Fractions + Percentages', section: 'quant', batchId: id(1), sessionKey: id(2), itemKey: id(3),
+    questions: [{ id: id(31), number: 7, comment: 'Ratio trap: re-read what the question asks for', seconds: 150, updatedAt: '2026-11-20T06:00:00Z' }, { id: id(32), number: 12, comment: null, seconds: null, updatedAt: '2026-11-21T06:00:00Z' }] },
+  { key: 'v1', href: '/schedule/v2/b/worksheet/s/j', title: 'VA 4 Worksheet', sessionTitle: 'VA 4: RC Point of View', section: 'verbal', batchId: id(1), sessionKey: id(4), itemKey: id(5),
+    questions: [{ id: id(51), number: 3, comment: 'Picked the extreme answer again', seconds: 95, updatedAt: '2026-11-22T06:00:00Z' }] },
+]);
+await put('src/app/review/page.tsx', `import {ReviewList} from '@/app/practice/v2/ReviewList';import '@/app/dashboard/dashboard.css';export default function Page(){return <main className="student-main"><div className="student-container" style={{paddingBlock:32}}><ReviewList worksheets={${reviewSheets}}/></div></main>}`);
+await put('src/app/review-empty/page.tsx', `import {ReviewList} from '@/app/practice/v2/ReviewList';import '@/app/dashboard/dashboard.css';export default function Page(){return <main className="student-main"><div className="student-container"><ReviewList worksheets={[]}/></div></main>}`);
 const reservation = createServer(); await new Promise(resolve => reservation.listen(0, '127.0.0.1', resolve));
 const port = reservation.address().port; await new Promise(resolve => reservation.close(resolve));
 const origin = `http://127.0.0.1:${port}`, next = path.join(repo, 'node_modules/next/dist/bin/next');
@@ -338,6 +351,27 @@ async function runTests() {
     await page.getByRole('article', { name: 'Session content: Verbal 1' }).waitFor();
     assert.equal(state.obligations.length, 0); assert.equal(state.submissions.length, 0);
   });
+  await test('To review list filters by subject and clears a question with undo', async page => {
+    await page.goto(origin + '/review');
+    const chips = page.getByRole('group', { name: 'Filter by subject', exact: true }), all = chips.getByRole('button', { name: /^All/ });
+    assert.deepEqual(await chips.getByRole('button').allTextContents(), ['All3', 'Quant2', 'Verbal1']);
+    await chips.getByRole('button', { name: /^Verbal/ }).click(); assert.equal(await page.getByRole('heading', { level: 3 }).count(), 1);
+    await all.click(); assert.equal(await page.getByRole('heading', { level: 3 }).count(), 2);
+    await page.getByText('Took 2:30 · Marked 20 Nov', { exact: true }).waitFor(); await page.getByText('No note added', { exact: true }).waitFor();
+    await page.screenshot({ path: path.join(output, 'student-review-list.png'), fullPage: true });
+    await page.getByRole('button', { name: 'Mark question 7 of QA 1 Worksheet done', exact: true }).click();
+    await page.getByText('Question 7 marked done.', { exact: false }).waitFor(); assert.equal(await all.textContent(), 'All2');
+    await page.getByRole('button', { name: 'Undo', exact: true }).click(); await until(async () => assert.equal(await all.textContent(), 'All3'));
+    const calls = await page.evaluate(() => window.__rpc);
+    assert.deepEqual(calls.map(c => [c.name, c.p_question_id, c.p_status, c.p_time_taken_seconds, c.p_comment]), [
+      ['update_my_v2_worksheet_log', id(31), 'done', 150, 'Ratio trap: re-read what the question asks for'],
+      ['update_my_v2_worksheet_log', id(31), 'review', 150, 'Ratio trap: re-read what the question asks for']]);
+    await page.goto(origin + '/review-empty'); await page.getByRole('heading', { name: 'Nothing to review yet', exact: true }).waitFor();
+  });
+  await test('To review list fits a phone', async page => {
+    await page.goto(origin + '/review'); await page.getByRole('button', { name: 'Mark question 3 of VA 4 Worksheet done', exact: true }).waitFor();
+    await noOverflow(page); await page.screenshot({ path: path.join(output, 'student-review-list-mobile.png'), fullPage: true });
+  }, true);
 }
 try {
   const build = spawn(process.execPath, [next, 'build', '--webpack'], { cwd: root, env, stdio: ['ignore', 'pipe', 'pipe'] });
