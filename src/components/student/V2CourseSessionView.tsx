@@ -52,6 +52,7 @@ export function SessionResource({ item, kind, mode, readingEndpoint, sessionKey,
           {open ? 'Close resource' : reading ? 'Read here' : learning && v2RecordingSource(source).kind === 'external' ? 'Recording options' : 'Watch here'}
         </button> : <a className={styles.primaryAction} href={source} target="_blank" rel="noreferrer" aria-label={`Open ${item.title || 'resource'} in a new tab`}>{kind === 'materials' ? 'Open worksheet' : 'Open'} <span aria-hidden="true">↗</span></a>}
         {playable && <a className={styles.newTab} onClick={markOpened} href={source} target="_blank" rel="noreferrer" aria-label={`Open ${item.title || 'resource'} in a new tab`} title="Open in a new tab"><span aria-hidden="true">↗</span></a>}
+        {learning && mode === 'student' && batchId && kind === 'materials' && !reading && <a className={styles.logLink} href={`/schedule/v2/${batchId}/worksheet/${sessionKey}/${item.key}`}>Log practice</a>}
       </div>}
     </div>
     {!source ? <p role="alert">A valid resource source and authorized course context are required.</p> : <>

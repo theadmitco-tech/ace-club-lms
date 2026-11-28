@@ -81,3 +81,7 @@
 .pendingRecording { display: grid; gap: 4px; padding: 14px 16px; border: 1px dashed #d8bc7d; border-radius: 12px; background: #fffaf0; }
 .pendingRecording strong { font-size: 14.5px; color: #5d4824; }
 .pendingRecording span { font-size: 13.5px; line-height: 1.5; color: #6b5a33; }
+/* Worksheets open their practice log beside the PDF. */
+.logLink { display: inline-flex; align-items: center; min-height: 40px; padding: 8px 14px; border: 1px solid #cfdcd4; border-radius: 10px; background: #fff; color: #245d47; font-size: 14px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.logLink:hover { background: #f1f6f3; }
+.logLink:focus-visible { outline: 3px solid #2f6b52; outline-offset: 2px; }

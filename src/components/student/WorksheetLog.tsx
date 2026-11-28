@@ -25,7 +25,8 @@ function statusLabel(status: StudentQuestionStatus | null) {
   return 'Not updated';
 }
 
-export function WorksheetLog({ worksheet, ownerId }: { worksheet: StudentWorksheetLog; ownerId: string }) {
+/** `v2` saves to the V2 practice log for that batch, session and worksheet instead of the older course log. */
+export function WorksheetLog({ worksheet, ownerId, v2 }: { worksheet: StudentWorksheetLog; ownerId: string; v2?: { batchId: string; sessionKey: string; itemKey: string } }) {
   const [questions, setQuestions] = useState(worksheet.questions);
   const [timeValues, setTimeValues] = useState<Record<string, string>>(() => (
     Object.fromEntries(worksheet.questions.map((question) => [
@@ -101,13 +102,18 @@ export function WorksheetLog({ worksheet, ownerId }: { worksheet: StudentWorkshe
     inFlight.current.add(question.id);
     try {
       const supabase = createClient();
-      const { data, error } = await supabase.rpc('update_student_question_log', {
-        p_material_id: worksheet.material_id,
-        p_question_id: question.id,
-        p_status: question.status,
-        p_time_taken_seconds: duration.seconds,
-        p_comment: question.comment,
-      });
+      const { data, error } = v2
+        ? await supabase.rpc('update_my_v2_worksheet_log', {
+          p_batch_id: v2.batchId, p_session_key: v2.sessionKey, p_item_key: v2.itemKey,
+          p_question_id: question.id, p_status: question.status, p_time_taken_seconds: duration.seconds, p_comment: question.comment,
+        })
+        : await supabase.rpc('update_student_question_log', {
+          p_material_id: worksheet.material_id,
+          p_question_id: question.id,
+          p_status: question.status,
+          p_time_taken_seconds: duration.seconds,
+          p_comment: question.comment,
+        });
 
       if (error || !isWorksheetSaveReceipt(data, question.id)) {
         const message = 'Could not save. Retry this question.';

@@ -165,6 +165,7 @@ async function runTests() {
   });
   await test('Quant 4 first and pre-read opening create only visual progress', async page => {
     await page.goto(origin); await page.getByRole('button', { name: 'Open Quant 4', exact: true }).click();
+    assert.equal(await page.getByRole('link', { name: 'Log practice', exact: true }).getAttribute('href'), `/schedule/v2/${batchId}/worksheet/${quant4}/${id(404)}`);
     await page.getByRole('button', { name: 'Read here', exact: true }).first().click();
     await page.getByText('Inline reading is available for Notion pages.').waitFor();
     assert.equal(state.obligations.length, 0); assert.equal(state.submissions.length, 0);
