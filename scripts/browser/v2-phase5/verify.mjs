@@ -110,6 +110,8 @@ async function test(name, run, mobile = false) {
   const context = await browser.newContext({ viewport: mobile ? { width: 390, height: 844 } : { width: 1440, height: 1000 }, reducedMotion: 'reduce', serviceWorkers: 'block' });
   await context.route('**/*', async route => {
     const request = route.request(), url = new URL(request.url());
+    // Synthetic reading links answer with a stub page so in-place readings stay offline.
+    if ((url.hostname === 'example.test' || url.hostname.endsWith('.example.test')) && request.resourceType() === 'document') return route.fulfill({ status: 200, contentType: 'text/html', body: '<p>Synthetic reading</p>' });
     if (url.origin !== origin) { blocked.push(url.origin); return route.abort(); }
     if(url.pathname==='/api/fixture/sessions'){
       const body=request.postDataJSON();state.sessionCalls.push(body);

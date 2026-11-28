@@ -88,3 +88,11 @@
 
 /* Fixed reading pages before and after the course. */
 .readmeIntro { margin: 6px 0 0; color: #56665d; font-size: 15px; line-height: 1.5; }
+
+/* Readings shown in place: PDFs, documents and other embeddable pages. */
+.reader { display: grid; gap: 8px; }
+.readerFrame { display: block; width: 100%; height: min(78vh, 900px); min-height: 420px; border: 1px solid #dfe7e2; border-radius: 10px; background: #fff; }
+.readerVideo { display: block; width: 100%; max-height: 78vh; border-radius: 10px; background: #000; }
+.readerNote { margin: 0; color: #5b6b62; font-size: 13px; }
+.readerNote a { color: #245d47; font-weight: 600; text-underline-offset: 3px; }
+@media (max-width: 640px) { .readerFrame { height: 70vh; min-height: 360px; } }

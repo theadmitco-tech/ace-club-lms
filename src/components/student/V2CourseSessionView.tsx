@@ -4,6 +4,7 @@ import { courseReadmePosition } from '@/lib/v2CourseReadmes';
 import dynamic from 'next/dynamic';
 import { Component, Fragment, useState, type ReactNode } from 'react';
 import { v2ReadingPageId } from '@/lib/v2ReadingPreview';
+import { v2ReadingEmbed } from '@/lib/v2ReadingEmbed';
 import { v2SessionStages, v2CourseResourceHref } from '@/lib/v2SessionPresentation';
 import { getYoutubeEmbedUrl } from '@/lib/youtube';
 import type { V2CourseSession, V2SessionContentItem, V2SessionContentKind } from '@/lib/v2Templates';
@@ -32,7 +33,8 @@ export function SessionResource({ item, kind, mode, readingEndpoint, sessionKey,
   const [open, setOpen] = useState(false);
   const source = v2CourseResourceHref(item.url, { mode, sessionKey, batchId, itemKey: item.key });
   const pageId = v2ReadingPageId(item.url);
-  const reading = kind === 'preSessionReads' || kind === 'postSessionReads' || (kind === 'materials' && pageId !== null);
+  // Everything on the course reading pages is reading, including their materials.
+  const reading = kind === 'preSessionReads' || kind === 'postSessionReads' || (kind === 'materials' && (pageId !== null || courseReadmePosition(sessionKey) !== null));
   const recording = kind === 'recordings' && source ? getYoutubeEmbedUrl(source) : null;
   const nativeRecording = kind === 'recordings' && source && v2RecordingSource(source).kind === 'native';
   const read = !!learning?.progress.some(p => p.itemKey === item.key && p.status === 'read');
@@ -61,7 +63,7 @@ export function SessionResource({ item, kind, mode, readingEndpoint, sessionKey,
       {open && <div className={styles.expanded}><ContentBoundary key={`${source}:${mode}`}>
         {reading ? pageId ? <div className="material-content"><NotionReader allowSourceEmbedFallback pageId={pageId} sourceUrl={source} title={item.title}
           mode={mode} readingType={kind === 'materials' ? 'material' : kind === 'preSessionReads' ? 'pre-read' : 'post-read'} endpoint={readingEndpoint} /></div>
-          : <p className={styles.empty}>Inline reading is available for Notion pages. This resource opens at its source.</p>
+          : <SourceReading source={source} title={item.title || 'Reading'} />
           : learning && learning.feedbackTracking !== false && batchId && kind === 'recordings' ? <V2RecordingPlayer url={source} title={item.title || 'Session recording'} batchId={batchId} sessionKey={sessionKey} recordingKey={item.key} publicationRevision={learning.publicationRevision} onFeedbackDue={learning.onFeedbackDue} /> : nativeRecording ? <video controls preload="metadata" src={source} aria-label={item.title || 'Session recording'} style={{maxWidth:'100%'}} /> : recording && <div className={styles.video}><iframe src={recording} title={item.title || 'Session recording'}
             allow="encrypted-media; picture-in-picture; fullscreen" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen /></div>}
       </ContentBoundary></div>}
@@ -85,6 +87,17 @@ export function V2PlacedReadings({ sessions, placements, placement, anchorKey, m
     <SessionResource key={`${session.key}:${item.key}`} item={item} kind={kind} sessionKey={session.key} mode={mode} batchId={batchId}
       readingEndpoint={mode === 'admin-preview' ? '/api/admin/v2/reading-preview' : `/api/v2/course-reading?batchId=${batchId}&sessionKey=${session.key}`}
       learning={mode === 'student' ? learningForSession?.(session.key) : undefined} />)}</section>;
+}
+
+/** A reading that is not a Notion page, shown in place: a PDF or video the site serves, or an embeddable link. */
+function SourceReading({ source, title }: { source: string; title: string }) {
+  const embed = v2ReadingEmbed(source);
+  if (!embed) return <p className={styles.empty}>This reading can’t be shown here. Use the open-in-new-tab button beside it.</p>;
+  if (embed.kind === 'video') return <video className={styles.readerVideo} controls preload="metadata" src={embed.src} aria-label={title} />;
+  return <div className={styles.reader}>
+    <iframe className={styles.readerFrame} src={embed.src} title={title} loading="lazy" referrerPolicy="strict-origin-when-cross-origin" allow="fullscreen" allowFullScreen />
+    {embed.external && <p className={styles.readerNote}>Page not showing? Some sites block being shown inside another site. <a href={source} target="_blank" rel="noreferrer">Open it in a new tab</a>.</p>}
+  </div>;
 }
 
 export function V2CourseSessionView({ session, mode, readingEndpoint, batchId, learning, placements = [] }: {

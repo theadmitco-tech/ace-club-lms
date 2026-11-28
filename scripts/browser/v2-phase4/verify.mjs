@@ -120,6 +120,8 @@ async function test(name, run, mobile = false) {
   const context = await browser.newContext({ viewport: mobile ? { width: 390, height: 844 } : { width: 1440, height: 1000 }, reducedMotion: 'reduce', serviceWorkers: 'block' });
   await context.route('**/*', async route => {
     const request = route.request(), url = new URL(request.url());
+    // Synthetic reading links answer with a stub page so in-place readings stay offline.
+    if (url.hostname.endsWith('.example.test') && request.resourceType() === 'document') return route.fulfill({ status: 200, contentType: 'text/html', body: '<p>Synthetic reading</p>' });
     if (url.origin !== origin) { blocked.push(url.origin); return route.abort(); }
     if (url.pathname !== '/api/v2/learning') return route.continue();
     const body = request.postDataJSON(); state.calls.push(body);
@@ -189,7 +191,9 @@ async function runTests() {
     await page.goto(origin); await page.getByRole('button', { name: 'Open Quant 4', exact: true }).click();
     assert.equal(await page.getByRole('link', { name: 'Open worksheet', exact: true }).getAttribute('href'), `/schedule/v2/${batchId}/worksheet/${quant4}/${id(404)}`);
     await page.getByRole('button', { name: 'Read here', exact: true }).first().click();
-    await page.getByText('Inline reading is available for Notion pages.').waitFor();
+    const reading = page.locator('iframe[title="Preparation reading"]'); await reading.waitFor(); assert.equal(await reading.getAttribute('src'), 'https://docs.example.test/pre-read');
+    await page.frameLocator('iframe[title="Preparation reading"]').getByText('Synthetic reading', { exact: true }).waitFor();
+    await page.getByRole('link', { name: 'Open it in a new tab', exact: true }).waitFor();
     assert.equal(state.obligations.length, 0); assert.equal(state.submissions.length, 0);
     assert.ok(state.calls.every(c => c.action === 'progress'));
     assert.equal(await page.getByRole('button', { name: 'Open Quant 5', exact: true }).isEnabled(), true);
